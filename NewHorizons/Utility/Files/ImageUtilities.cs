@@ -28,6 +28,8 @@ namespace NewHorizons.Utility.Files
             return _textureCache.ContainsKey(key);
         }
 
+        // needed for backwards compat :P
+        public static Texture2D GetTexture(IModBehaviour mod, string filename, bool useMipmaps, bool wrap) => GetTexture(mod, filename, useMipmaps, wrap, false);
         // bug: cache only considers file path, not wrap/mips/linear. oh well
         public static Texture2D GetTexture(IModBehaviour mod, string filename, bool useMipmaps = true, bool wrap = false, bool linear = false)
         {
