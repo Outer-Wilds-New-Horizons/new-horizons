@@ -7,7 +7,7 @@ namespace NewHorizons.Patches.ShipLogPatches
     {
         [HarmonyPrefix]
         [HarmonyPatch(typeof(SlideCollectionContainer), nameof(SlideCollectionContainer.Initialize))]
-        public static bool SlideCollectionContainer_Initialize(SlideCollectionContainer __instance, string id)
+        public static bool SlideCollectionContainer_Initialize(SlideCollectionContainer __instance)
         {
             if (__instance._initialized)
                 return false;
