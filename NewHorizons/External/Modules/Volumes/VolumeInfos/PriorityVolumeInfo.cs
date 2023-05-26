@@ -10,9 +10,7 @@ namespace NewHorizons.External.Modules.Volumes.VolumeInfos
         /// The layer of this volume.
         /// 
         /// Layers separate the priority system. The priority of volumes in one layer will not affect or override volumes in another. The highest priority volume in each layer will stack like normal.
-        /// The exception is layer 0. Layer 0 effectively bypasses the layer system. A higher-priority volume in layer 0 will override lower-priority volumes in ALL other layers. A lower-priority volume in layer 0 will stack with other layers like normal.
-        ///
-        /// Default value here is 0 because in most cases people don't want to think about layers and only care about priority.
+        /// The exception is layer 0. A higher-priority volume in layer 0 will override lower-priority volumes in ALL other layers. A lower-priority volume in layer 0 will stack with other layers like normal.
         /// </summary>
         [DefaultValue(0)] public int layer = 0;
 
