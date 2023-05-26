@@ -3383,7 +3383,7 @@
       "properties": {
         "layer": {
           "type": "integer",
-          "description": "The layer of this volume.\n\nLayers separate the priority system. The priority of volumes in one layer will not affect or override volumes in another. The highest priority volume in each layer will stack like normal.\nThe exception is layer 0. Layer 0 effectively bypasses the layer system. A higher-priority volume in layer 0 will override lower-priority volumes in ALL other layers. A lower-priority volume in layer 0 will stack with other layers like normal.\n            \nDefault value here is 0 because in most cases people don't want to think about layers and only care about priority.",
+          "description": "The layer of this volume.\n\nLayers separate the priority system. The priority of volumes in one layer will not affect or override volumes in another. The highest priority volume in each layer will stack like normal.\nThe exception is layer 0. A higher-priority volume in layer 0 will override lower-priority volumes in ALL other layers. A lower-priority volume in layer 0 will stack with other layers like normal.",
           "format": "int32",
           "default": 0
         },
@@ -3561,7 +3561,7 @@
       "properties": {
         "layer": {
           "type": "integer",
-          "description": "The layer of this volume.\n\nLayers separate the priority system. The priority of volumes in one layer will not affect or override volumes in another. The highest priority volume in each layer will stack like normal.\nThe exception is layer 0. Layer 0 effectively bypasses the layer system. A higher-priority volume in layer 0 will override lower-priority volumes in ALL other layers. A lower-priority volume in layer 0 will stack with other layers like normal.\n            \nDefault value here is 0 because in most cases people don't want to think about layers and only care about priority.",
+          "description": "The layer of this volume.\n\nLayers separate the priority system. The priority of volumes in one layer will not affect or override volumes in another. The highest priority volume in each layer will stack like normal.\nThe exception is layer 0. A higher-priority volume in layer 0 will override lower-priority volumes in ALL other layers. A lower-priority volume in layer 0 will stack with other layers like normal.",
           "format": "int32",
           "default": 0
         },
@@ -4186,7 +4186,7 @@
       "properties": {
         "layer": {
           "type": "integer",
-          "description": "The layer of this volume.\n\nLayers separate the priority system. The priority of volumes in one layer will not affect or override volumes in another. The highest priority volume in each layer will stack like normal.\nThe exception is layer 0. Layer 0 effectively bypasses the layer system. A higher-priority volume in layer 0 will override lower-priority volumes in ALL other layers. A lower-priority volume in layer 0 will stack with other layers like normal.\n            \nDefault value here is 0 because in most cases people don't want to think about layers and only care about priority.",
+          "description": "The layer of this volume.\n\nLayers separate the priority system. The priority of volumes in one layer will not affect or override volumes in another. The highest priority volume in each layer will stack like normal.\nThe exception is layer 0. A higher-priority volume in layer 0 will override lower-priority volumes in ALL other layers. A lower-priority volume in layer 0 will stack with other layers like normal.",
           "format": "int32",
           "default": 0
         },
@@ -4240,7 +4240,7 @@
       "properties": {
         "layer": {
           "type": "integer",
-          "description": "The layer of this volume.\n\nLayers separate the priority system. The priority of volumes in one layer will not affect or override volumes in another. The highest priority volume in each layer will stack like normal.\nThe exception is layer 0. Layer 0 effectively bypasses the layer system. A higher-priority volume in layer 0 will override lower-priority volumes in ALL other layers. A lower-priority volume in layer 0 will stack with other layers like normal.\n            \nDefault value here is 0 because in most cases people don't want to think about layers and only care about priority.",
+          "description": "The layer of this volume.\n\nLayers separate the priority system. The priority of volumes in one layer will not affect or override volumes in another. The highest priority volume in each layer will stack like normal.\nThe exception is layer 0. A higher-priority volume in layer 0 will override lower-priority volumes in ALL other layers. A lower-priority volume in layer 0 will stack with other layers like normal.",
           "format": "int32",
           "default": 0
         },
@@ -4314,7 +4314,7 @@
         },
         "layer": {
           "type": "integer",
-          "description": "The layer of this volume.\n\nLayers separate the priority system. The priority of volumes in one layer will not affect or override volumes in another. The highest priority volume in each layer will stack like normal.\nThe exception is layer 0. Layer 0 effectively bypasses the layer system. A higher-priority volume in layer 0 will override lower-priority volumes in ALL other layers. A lower-priority volume in layer 0 will stack with other layers like normal.\n            \nDefault value here is 0 because in most cases people don't want to think about layers and only care about priority.",
+          "description": "The layer of this volume.\n\nLayers separate the priority system. The priority of volumes in one layer will not affect or override volumes in another. The highest priority volume in each layer will stack like normal.\nThe exception is layer 0. A higher-priority volume in layer 0 will override lower-priority volumes in ALL other layers. A lower-priority volume in layer 0 will stack with other layers like normal.",
           "format": "int32",
           "default": 0
         },
