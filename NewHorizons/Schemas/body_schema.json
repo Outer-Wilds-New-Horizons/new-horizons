@@ -560,7 +560,8 @@
         "gravityVolumePriority": {
           "type": "integer",
           "description": "Optional. You can force this planet's gravity to be felt over other gravity/zero-gravity sources by increasing this number.",
-          "format": "int32"
+          "format": "int32",
+          "default": 0
         }
       }
     },
@@ -3382,13 +3383,13 @@
       "properties": {
         "layer": {
           "type": "integer",
-          "description": "The layer of this volume.",
+          "description": "The layer of this volume.\n\nLayers separate the priority system. The priority of volumes in one layer will not affect or override volumes in another. The highest priority volume in each layer will stack like normal.\nThe exception is layer 0. Layer 0 effectively bypasses the layer system. The priority of volumes in layer 0 will override volumes in all other layers, as if they were all in the same layer.\n            \nDefault value here is 0 because in most cases people don't want to think about layers and only care about priority.",
           "format": "int32",
           "default": 0
         },
         "priority": {
           "type": "integer",
-          "description": "The priority for this volume's effects to be applied. \nEx, a player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.",
+          "description": "The priority of this volume.\n\nVolumes of higher priority will override volumes of lower priority. Volumes of the same priority will stack like normal.\nEx: A player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.\n            \nDefault value here is 1 instead of 0 so it automatically overrides planet gravity, which is 0 by default. ",
           "format": "int32",
           "default": 1
         },
@@ -3560,13 +3561,13 @@
       "properties": {
         "layer": {
           "type": "integer",
-          "description": "The layer of this volume.",
+          "description": "The layer of this volume.\n\nLayers separate the priority system. The priority of volumes in one layer will not affect or override volumes in another. The highest priority volume in each layer will stack like normal.\nThe exception is layer 0. Layer 0 effectively bypasses the layer system. The priority of volumes in layer 0 will override volumes in all other layers, as if they were all in the same layer.\n            \nDefault value here is 0 because in most cases people don't want to think about layers and only care about priority.",
           "format": "int32",
           "default": 0
         },
         "priority": {
           "type": "integer",
-          "description": "The priority for this volume's effects to be applied. \nEx, a player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.",
+          "description": "The priority of this volume.\n\nVolumes of higher priority will override volumes of lower priority. Volumes of the same priority will stack like normal.\nEx: A player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.\n            \nDefault value here is 1 instead of 0 so it automatically overrides planet gravity, which is 0 by default. ",
           "format": "int32",
           "default": 1
         },
@@ -4185,13 +4186,13 @@
       "properties": {
         "layer": {
           "type": "integer",
-          "description": "The layer of this volume.",
+          "description": "The layer of this volume.\n\nLayers separate the priority system. The priority of volumes in one layer will not affect or override volumes in another. The highest priority volume in each layer will stack like normal.\nThe exception is layer 0. Layer 0 effectively bypasses the layer system. The priority of volumes in layer 0 will override volumes in all other layers, as if they were all in the same layer.\n            \nDefault value here is 0 because in most cases people don't want to think about layers and only care about priority.",
           "format": "int32",
           "default": 0
         },
         "priority": {
           "type": "integer",
-          "description": "The priority for this volume's effects to be applied. \nEx, a player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.",
+          "description": "The priority of this volume.\n\nVolumes of higher priority will override volumes of lower priority. Volumes of the same priority will stack like normal.\nEx: A player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.\n            \nDefault value here is 1 instead of 0 so it automatically overrides planet gravity, which is 0 by default. ",
           "format": "int32",
           "default": 1
         },
@@ -4239,13 +4240,13 @@
       "properties": {
         "layer": {
           "type": "integer",
-          "description": "The layer of this volume.",
+          "description": "The layer of this volume.\n\nLayers separate the priority system. The priority of volumes in one layer will not affect or override volumes in another. The highest priority volume in each layer will stack like normal.\nThe exception is layer 0. Layer 0 effectively bypasses the layer system. The priority of volumes in layer 0 will override volumes in all other layers, as if they were all in the same layer.\n            \nDefault value here is 0 because in most cases people don't want to think about layers and only care about priority.",
           "format": "int32",
           "default": 0
         },
         "priority": {
           "type": "integer",
-          "description": "The priority for this volume's effects to be applied. \nEx, a player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.",
+          "description": "The priority of this volume.\n\nVolumes of higher priority will override volumes of lower priority. Volumes of the same priority will stack like normal.\nEx: A player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.\n            \nDefault value here is 1 instead of 0 so it automatically overrides planet gravity, which is 0 by default. ",
           "format": "int32",
           "default": 1
         },
@@ -4313,13 +4314,13 @@
         },
         "layer": {
           "type": "integer",
-          "description": "The layer of this volume.",
+          "description": "The layer of this volume.\n\nLayers separate the priority system. The priority of volumes in one layer will not affect or override volumes in another. The highest priority volume in each layer will stack like normal.\nThe exception is layer 0. Layer 0 effectively bypasses the layer system. The priority of volumes in layer 0 will override volumes in all other layers, as if they were all in the same layer.\n            \nDefault value here is 0 because in most cases people don't want to think about layers and only care about priority.",
           "format": "int32",
           "default": 0
         },
         "priority": {
           "type": "integer",
-          "description": "The priority for this volume's effects to be applied. \nEx, a player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.",
+          "description": "The priority of this volume.\n\nVolumes of higher priority will override volumes of lower priority. Volumes of the same priority will stack like normal.\nEx: A player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.\n            \nDefault value here is 1 instead of 0 so it automatically overrides planet gravity, which is 0 by default. ",
           "format": "int32",
           "default": 1
         }
