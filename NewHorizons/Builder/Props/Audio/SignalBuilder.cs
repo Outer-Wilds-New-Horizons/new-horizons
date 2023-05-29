@@ -8,6 +8,7 @@ using OWML.Utils;
 using System.Collections.Generic;
 using UnityEngine;
 using NewHorizons.External.Modules.Props.Audio;
+using System.Linq;
 
 namespace NewHorizons.Builder.Props.Audio
 {
@@ -19,8 +20,8 @@ namespace NewHorizons.Builder.Props.Audio
 
         public static int NumberOfFrequencies;
 
-        private static List<SignalName> _qmSignals;
-        private static List<SignalName> _cloakedSignals;
+        private static List<AudioSignal> _qmSignals;
+        private static List<AudioSignal> _cloakedSignals;
 
         public static bool Initialized;
 
@@ -35,20 +36,20 @@ namespace NewHorizons.Builder.Props.Audio
             };
             NumberOfFrequencies = EnumUtils.GetValues<SignalFrequency>().Length;
 
-            _qmSignals = new List<SignalName>() { SignalName.Quantum_QM };
-            _cloakedSignals = new List<SignalName>();
+            _qmSignals = new List<AudioSignal>() { SearchUtilities.Find("QuantumMoon_Body/Signal_Quantum").GetComponent<AudioSignal>() };
+            _cloakedSignals = new List<AudioSignal>();
 
             Initialized = true;
         }
 
-        public static bool IsCloaked(this SignalName signalName)
+        public static bool IsCloaked(this AudioSignal signal)
         {
-            return _cloakedSignals.Contains(signalName);
+            return _cloakedSignals.Contains(signal);
         }
 
-        public static bool IsOnQuantumMoon(this SignalName signalName)
+        public static bool IsOnQuantumMoon(this AudioSignal signal)
         {
-            return _qmSignals.Contains(signalName);
+            return _qmSignals.Contains(signal);
         }
 
         public static SignalFrequency AddFrequency(string str)
@@ -149,8 +150,8 @@ namespace NewHorizons.Builder.Props.Audio
             signalGO.SetActive(true);
 
             // Track certain special signal things
-            if (planetGO.GetComponent<AstroObject>()?.GetAstroObjectName() == AstroObject.Name.QuantumMoon) _qmSignals.Add(name);
-            if (info.insideCloak) _cloakedSignals.Add(name);
+            if (planetGO.GetComponent<AstroObject>()?.GetAstroObjectName() == AstroObject.Name.QuantumMoon) _qmSignals.Add(audioSignal);
+            if (info.insideCloak) _cloakedSignals.Add(audioSignal);
 
             return signalGO;
         }
