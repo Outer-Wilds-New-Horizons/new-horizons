@@ -52,18 +52,6 @@ namespace NewHorizons.External.Modules.Volumes.VolumeInfos
         /// Pause the music when exiting the volume.
         /// </summary>
         public bool pauseOnFadeOut;
-
-        /// <summary>
-        /// Whether the audio sounds like it emits from the center of the volume.
-        /// </summary>
-        public bool spatialBlend;
-
-        /// <summary>
-        /// If spatialBlend is true, how much does the direction of audio "spread" out from facing the center, between 0 and 180 degrees.
-        /// </summary>
-        [Range(0f, 180f)]
-        [DefaultValue(180f)]
-        public float spread = 180f;
     }
 
 }
