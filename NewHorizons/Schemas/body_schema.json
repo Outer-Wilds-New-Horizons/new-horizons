@@ -3458,18 +3458,6 @@
         "pauseOnFadeOut": {
           "type": "boolean",
           "description": "Pause the music when exiting the volume."
-        },
-        "spatialBlend": {
-          "type": "boolean",
-          "description": "Whether the audio sounds like it emits from the center of the volume."
-        },
-        "spread": {
-          "type": "number",
-          "description": "If spatialBlend is true, how much does the direction of audio \"spread\" out from facing the center, between 0 and 180 degrees.",
-          "format": "float",
-          "default": 180.0,
-          "maximum": 180.0,
-          "minimum": 0.0
         }
       }
     },
