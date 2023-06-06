@@ -131,6 +131,7 @@ namespace NewHorizons.Builder.Atmosphere
             OWShellCollider fluidOWSC = cloudsFluidGO.AddComponent<OWShellCollider>();
             fluidOWSC._innerRadius = atmo.size * 0.9f;
 
+            // copied from gd
             CloudLayerFluidVolume fluidCLFV = cloudsFluidGO.AddComponent<CloudLayerFluidVolume>();
             fluidCLFV._layer = 5;
             fluidCLFV._priority = 1;
