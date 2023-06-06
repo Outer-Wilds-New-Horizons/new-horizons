@@ -484,11 +484,11 @@
       "type": "string",
       "description": "",
       "x-enumNames": [
-        "None",
-        "Water",
-        "Cloud",
-        "Sand",
-        "Plasma"
+        "NONE",
+        "WATER",
+        "CLOUD",
+        "SAND",
+        "PLASMA"
       ],
       "enum": [
         "none",
@@ -2690,7 +2690,7 @@
           "description": "An optional rename of this object"
         },
         "track": {
-          "description": "The audio track of this audio source",
+          "description": "The audio track of this audio source.\nMost of the time you'll use environment (the default) for sound effects and music for music. ",
           "default": "environment",
           "$ref": "#/definitions/NHAudioMixerTrackName"
         }
@@ -3424,7 +3424,7 @@
           "$ref": "#/definitions/NHClipSelectionType"
         },
         "track": {
-          "description": "The audio track of this audio volume",
+          "description": "The audio track of this audio volume.\nMost of the time you'll use environment (the default) for sound effects and music for music. ",
           "default": "environment",
           "$ref": "#/definitions/NHAudioMixerTrackName"
         },
