@@ -484,11 +484,11 @@
       "type": "string",
       "description": "",
       "x-enumNames": [
-        "None",
-        "Water",
-        "Cloud",
-        "Sand",
-        "Plasma"
+        "NONE",
+        "WATER",
+        "CLOUD",
+        "SAND",
+        "PLASMA"
       ],
       "enum": [
         "none",
