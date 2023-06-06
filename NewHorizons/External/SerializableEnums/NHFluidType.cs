@@ -7,14 +7,14 @@ namespace NewHorizons.External.SerializableEnums
     [JsonConverter(typeof(StringEnumConverter))]
     public enum NHFluidType
     {
-        [EnumMember(Value = @"none")] None = 0,
+        [EnumMember(Value = @"none")] NONE = 0,
 
-        [EnumMember(Value = @"water")] Water = 1,
+        [EnumMember(Value = @"water")] WATER = 1,
 
-        [EnumMember(Value = @"cloud")] Cloud = 2,
+        [EnumMember(Value = @"cloud")] CLOUD = 2,
 
-        [EnumMember(Value = @"sand")] Sand = 3,
+        [EnumMember(Value = @"sand")] SAND = 3,
 
-        [EnumMember(Value = @"plasma")] Plasma = 4
+        [EnumMember(Value = @"plasma")] PLASMA = 4
     }
 }
