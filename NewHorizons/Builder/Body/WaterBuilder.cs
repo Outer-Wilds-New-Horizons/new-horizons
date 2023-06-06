@@ -117,14 +117,15 @@ namespace NewHorizons.Builder.Body
             // copied from gd
             var fluidVolume = buoyancyObject.AddComponent<RadialFluidVolume>();
             fluidVolume._fluidType = FluidVolume.Type.WATER;
-            fluidVolume._allowShipAutoroll = true;
-            fluidVolume._disableOnStart = false;
+            fluidVolume._attachedBody = rb;
             fluidVolume._triggerVolume = buoyancyTriggerVolume;
             fluidVolume._radius = waterSize;
             fluidVolume._buoyancyDensity = module.buoyancy;
             fluidVolume._density = module.density;
             fluidVolume._layer = 5;
             fluidVolume._priority = 3;
+            fluidVolume._allowShipAutoroll = true;
+            fluidVolume._disableOnStart = false;
 
             var fogGO = Object.Instantiate(_oceanFog, waterGO.transform);
             fogGO.name = "OceanFog";
