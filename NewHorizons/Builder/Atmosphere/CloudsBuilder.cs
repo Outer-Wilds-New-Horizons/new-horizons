@@ -126,10 +126,10 @@ namespace NewHorizons.Builder.Atmosphere
 
             SphereCollider fluidSC = cloudsFluidGO.AddComponent<SphereCollider>();
             fluidSC.isTrigger = true;
-            fluidSC.radius = atmo.size;
+            fluidSC.radius = atmo.clouds.outerCloudRadius;
 
             OWShellCollider fluidOWSC = cloudsFluidGO.AddComponent<OWShellCollider>();
-            fluidOWSC._innerRadius = atmo.size * 0.9f;
+            fluidOWSC._innerRadius = atmo.clouds.innerCloudRadius;
 
             // copied from gd
             CloudLayerFluidVolume fluidCLFV = cloudsFluidGO.AddComponent<CloudLayerFluidVolume>();
