@@ -35,8 +35,9 @@ namespace NewHorizons.Builder.General
 
             var owTriggerVolume = gravityGO.AddComponent<OWTriggerVolume>();
 
+            // copied from th and qm
             var gravityVolume = gravityGO.AddComponent<GravityVolume>();
-            gravityVolume._cutoffAcceleration = 0.1f;
+            gravityVolume._cutoffAcceleration = 0f;
 
             var falloff = config.Base.gravityFallOff == GravityFallOff.Linear? GravityVolume.FalloffType.linear : GravityVolume.FalloffType.inverseSquared;
             

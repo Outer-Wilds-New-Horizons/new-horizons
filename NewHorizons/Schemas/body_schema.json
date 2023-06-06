@@ -3226,13 +3226,13 @@
           "type": "number",
           "description": "Density of the water sphere. The higher the density, the harder it is to go through this fluid.",
           "format": "float",
-          "default": 1.2
+          "default": 30.0
         },
         "buoyancy": {
           "type": "number",
           "description": "Buoyancy density of the water sphere",
           "format": "float",
-          "default": 1.0
+          "default": 1.1
         },
         "tint": {
           "description": "Tint of the water",
