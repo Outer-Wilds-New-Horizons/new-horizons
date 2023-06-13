@@ -68,7 +68,7 @@ namespace NewHorizons.External.Modules.Props
         /// <summary>
         /// Fluid type for sounds/effects when colliding with this tornado.
         /// </summary>
-        [DefaultValue("cloud")] public NHFluidType fluidType = NHFluidType.Cloud;
+        [DefaultValue("cloud")] public NHFluidType fluidType = NHFluidType.CLOUD;
     }
 
 }

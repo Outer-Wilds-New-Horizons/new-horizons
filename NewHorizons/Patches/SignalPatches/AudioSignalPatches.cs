@@ -81,8 +81,8 @@ namespace NewHorizons.Patches.SignalPatches
         {
             if (!SignalBuilder.Initialized) return true;
 
-            var isCloaked = __instance._name.IsCloaked();
-            var isOnQuantumMoon = __instance._name.IsOnQuantumMoon();
+            var isCloaked = __instance.IsCloaked();
+            var isOnQuantumMoon = __instance.IsOnQuantumMoon();
 
             if (!isCloaked && !isOnQuantumMoon) return true;
 
