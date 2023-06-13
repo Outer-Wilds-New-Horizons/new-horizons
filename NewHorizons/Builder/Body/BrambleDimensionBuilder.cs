@@ -247,7 +247,7 @@ namespace NewHorizons.Builder.Body
             Delay.FireOnNextUpdate(() =>
             {
                 // Cull stuff
-                // this in in the delay because it fixes #588
+                // this in in the delay because it fixes #562
                 var cullController = go.AddComponent<BrambleSectorController>();
                 cullController.SetSector(sector);
 
