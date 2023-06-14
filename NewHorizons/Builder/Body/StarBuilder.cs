@@ -357,7 +357,7 @@ namespace NewHorizons.Builder.Body
                 foreach (var controller in solarFlareEmitter.GetComponentsInChildren<SolarFlareController>())
                 {
                     controller.GetComponent<MeshRenderer>().sharedMaterial = material;
-                    controller._color = new Color(1, 1, 1);
+                    controller._color = Color.white;
                     controller._tint = flareTint;
                 }
             }
