@@ -351,7 +351,8 @@ namespace NewHorizons.Builder.Body
                 {
                     // It multiplies color by tint but wants something very bright idk
                     controller._color = new Color(1, 1, 1);
-                    controller.GetComponent<MeshRenderer>().sharedMaterial.SetColor("_Color", controller._color);
+                    // makes new material per flare, even tho they could probably all share one. oh well
+                    controller.GetComponent<MeshRenderer>().material.SetColor("_Color", controller._color);
                     controller._tint = flareTint;
                 }
             }
