@@ -485,17 +485,25 @@
       "description": "",
       "x-enumNames": [
         "NONE",
+        "AIR",
         "WATER",
+        "TRACTOR_BEAM",
         "CLOUD",
         "SAND",
-        "PLASMA"
+        "PLASMA",
+        "FOG",
+        "GEYSER"
       ],
       "enum": [
         "none",
+        "air",
         "water",
+        "tractorBeam",
         "cloud",
         "sand",
-        "plasma"
+        "plasma",
+        "fog",
+        "geyser"
       ]
     },
     "MGradient": {
