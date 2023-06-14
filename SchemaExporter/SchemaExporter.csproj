@@ -18,9 +18,9 @@
         <None Include="UnityEngine.CoreModule.dll">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
-        <PackageReference Include="NJsonSchema" Version="10.8.0" />
-        <PackageReference Include="OuterWildsGameLibs" Version="1.1.13.393" IncludeAssets="compile" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+        <PackageReference Include="NJsonSchema" Version="10.9.0" />
+        <PackageReference Include="OuterWildsGameLibs" Version="1.1.13.456" IncludeAssets="compile" />
         <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
     </ItemGroup>
     <ItemGroup>
