@@ -1636,26 +1636,28 @@
       "x-enumNames": [
         "Wall",
         "Scroll",
+        "Whiteboard",
         "Computer",
-        "Cairn",
+        "PreCrashComputer",
         "Recorder",
         "PreCrashRecorder",
-        "PreCrashComputer",
-        "Trailmarker",
-        "CairnVariant",
-        "Whiteboard"
+        "CairnBrittleHollow",
+        "CairnTimberHearth",
+        "CairnEmberTwin",
+        "Trailmarker"
       ],
       "enum": [
         "wall",
         "scroll",
+        "whiteboard",
         "computer",
-        "cairn",
+        "preCrashComputer",
         "recorder",
         "preCrashRecorder",
-        "preCrashComputer",
-        "trailmarker",
-        "cairnVariant",
-        "whiteboard"
+        "cairnBH",
+        "cairnTH",
+        "cairnCT",
+        "trailmarker"
       ]
     },
     "NomaiTextLocation": {

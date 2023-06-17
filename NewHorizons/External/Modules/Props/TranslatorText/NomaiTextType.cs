@@ -1,5 +1,6 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
 using System.Runtime.Serialization;
 
 namespace NewHorizons.External.Modules.TranslatorText
@@ -7,24 +8,34 @@ namespace NewHorizons.External.Modules.TranslatorText
     [JsonConverter(typeof(StringEnumConverter))]
     public enum NomaiTextType
     {
-        [EnumMember(Value = @"wall")] Wall = 0,
+        [EnumMember(Value = @"wall")] Wall,
 
-        [EnumMember(Value = @"scroll")] Scroll = 1,
+        [EnumMember(Value = @"scroll")] Scroll,
 
-        [EnumMember(Value = @"computer")] Computer = 2,
+        [EnumMember(Value = @"whiteboard")] Whiteboard,
 
-        [EnumMember(Value = @"cairn")] Cairn = 3,
+        [EnumMember(Value = @"computer")] Computer,
 
-        [EnumMember(Value = @"recorder")] Recorder = 4,
+        [EnumMember(Value = @"preCrashComputer")] PreCrashComputer,
 
-        [EnumMember(Value = @"preCrashRecorder")] PreCrashRecorder = 5,
+        [EnumMember(Value = @"recorder")] Recorder,
 
-        [EnumMember(Value = @"preCrashComputer")] PreCrashComputer = 6,
+        [EnumMember(Value = @"preCrashRecorder")] PreCrashRecorder,
 
-        [EnumMember(Value = @"trailmarker")] Trailmarker = 7,
+        [EnumMember(Value = @"cairnBH")] CairnBrittleHollow,
 
-        [EnumMember(Value = @"cairnVariant")] CairnVariant = 8,
+        [EnumMember(Value = @"cairnTH")] CairnTimberHearth,
 
-        [EnumMember(Value = @"whiteboard")] Whiteboard = 9,
+        [EnumMember(Value = @"cairnCT")] CairnEmberTwin,
+
+        [EnumMember(Value = @"trailmarker")] Trailmarker,
+
+        #region Obsolete
+
+        [Obsolete("Please use CairnBrittleHollow instead")][EnumMember(Value = @"cairn")] Cairn,
+
+        [Obsolete("Please use CairnTimberHearth instead")][EnumMember(Value = @"cairnVariant")] CairnVariant,
+
+        #endregion
     }
 }
