@@ -256,6 +256,7 @@ namespace NewHorizons.Builder.Props
             else if(component is SectoredMonoBehaviour behaviour)
             {
                 // not using SetSector here because it registers the events twice
+                // perhaps this happens with ISectorGroup.SetSector or Sector.SetParentSector too? idk and nothing seems to break because of it yet
                 behaviour._sector = sector;
             }
 
