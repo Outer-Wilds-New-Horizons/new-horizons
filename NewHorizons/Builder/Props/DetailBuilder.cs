@@ -255,7 +255,9 @@ namespace NewHorizons.Builder.Props
 
             else if(component is SectoredMonoBehaviour behaviour)
             {
-                behaviour.SetSector(sector);
+                // not using SetSector here because it registers the events twice
+                // perhaps this happens with ISectorGroup.SetSector or Sector.SetParentSector too? idk and nothing seems to break because of it yet
+                behaviour._sector = sector;
             }
 
             else if(component is OWItemSocket socket)
@@ -345,8 +347,9 @@ namespace NewHorizons.Builder.Props
 
             else if (component is NomaiInterfaceOrb orb)
             {
-                orb._parentAstroObject = planetGO.GetComponent<AstroObject>();
-                orb._parentBody = planetGO.GetComponent<OWRigidbody>();
+                // detect planet gravity
+                var gravityVolume = planetGO.GetAttachedOWRigidbody().GetAttachedGravityVolume();
+                orb.GetComponent<ConstantForceDetector>()._detectableFields = gravityVolume ? new ForceVolume[] { gravityVolume } : new ForceVolume[] { };
             }
 
             else if (component is VisionTorchItem torchItem)
