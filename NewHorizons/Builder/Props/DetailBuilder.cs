@@ -255,7 +255,8 @@ namespace NewHorizons.Builder.Props
 
             else if(component is SectoredMonoBehaviour behaviour)
             {
-                behaviour.SetSector(sector);
+                // not using SetSector here because it registers the events twice
+                behaviour._sector = sector;
             }
 
             else if(component is OWItemSocket socket)
@@ -345,7 +346,7 @@ namespace NewHorizons.Builder.Props
 
             else if (component is NomaiInterfaceOrb orb)
             {
-                // TODO: orb lock count is negative. this breaks things. simply resetting it does not work
+                // detect planet gravity
                 orb.GetComponent<ConstantForceDetector>()._detectableFields = new ForceVolume[] { planetGO.GetComponent<AstroObject>().GetGravityVolume() };
             }
 
