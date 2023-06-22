@@ -1644,7 +1644,9 @@
         "CairnBrittleHollow",
         "CairnTimberHearth",
         "CairnEmberTwin",
-        "Trailmarker"
+        "Trailmarker",
+        "Cairn",
+        "CairnVariant"
       ],
       "enum": [
         "wall",
@@ -1657,7 +1659,9 @@
         "cairnBH",
         "cairnTH",
         "cairnCT",
-        "trailmarker"
+        "trailmarker",
+        "cairn",
+        "cairnVariant"
       ]
     },
     "NomaiTextLocation": {
