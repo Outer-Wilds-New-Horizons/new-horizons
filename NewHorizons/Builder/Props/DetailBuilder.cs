@@ -345,8 +345,8 @@ namespace NewHorizons.Builder.Props
 
             else if (component is NomaiInterfaceOrb orb)
             {
-                orb._parentAstroObject = planetGO.GetComponent<AstroObject>();
-                orb._parentBody = planetGO.GetComponent<OWRigidbody>();
+                // TODO: orb lock count is negative. this breaks things. simply resetting it does not work
+                orb.GetComponent<ConstantForceDetector>()._detectableFields = new ForceVolume[] { planetGO.GetComponent<AstroObject>().GetGravityVolume() };
             }
 
             else if (component is VisionTorchItem torchItem)
