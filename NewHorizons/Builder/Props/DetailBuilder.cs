@@ -348,6 +348,7 @@ namespace NewHorizons.Builder.Props
             else if (component is NomaiInterfaceOrb orb)
             {
                 // detect planet gravity
+                // perhaps we should just detect no volumes. it seems to behave similarly in either case
                 orb.GetComponent<ConstantForceDetector>()._detectableFields = new ForceVolume[] { planetGO.GetComponent<AstroObject>().GetGravityVolume() };
             }
 
