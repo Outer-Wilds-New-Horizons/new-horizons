@@ -1,0 +1,61 @@
+---
+import type { JSONSchema } from "@apidevtools/json-schema-ref-parser/dist/lib/types";
+import { readFileSync } from "fs";
+import { readdir } from "fs/promises";
+import Content from "../../../../components/Schemas/Content.astro";
+import MainLayout from "../../../../layouts/MainLayout.astro";
+import { getHeaders, getSchemaSlug } from "../../../../schema_utils";
+
+export async function getStaticPaths() {
+    const schemaFiles = (await readdir("../NewHorizons/Schemas")).filter((f) =>
+        f.endsWith(".json")
+    );
+    const schemas: [string, JSONSchema][] = schemaFiles.map((f) => {
+        const contents = readFileSync(`../NewHorizons/Schemas/${f}`).toString();
+        return [f, JSON.parse(contents) as JSONSchema];
+    });
+
+    const allDefs: [[string, JSONSchema], [string, JSONSchema]][] = [];
+
+    for (const [f, schema] of schemas) {
+        for (const def of Object.entries(schema.definitions ?? {})) {
+            allDefs.push([[f, schema], def]);
+        }
+    }
+
+    return allDefs.map(([[f, parent], [name, def]]) => {
+        return {
+            params: {
+                schema: getSchemaSlug(f),
+                def: name
+            },
+            props: {
+                name,
+                definition: def,
+                parent
+            }
+        };
+    });
+}
+
+const { name, definition, parent } = Astro.props;
+
+const headers = getHeaders(definition);
+
+const meta = {
+    title: name,
+    description: `${parent.title} Definition For ${name}`
+};
+
+const iter = Object.entries(definition.properties as Record<string, JSONSchema>);
+---
+
+<MainLayout
+    lang="en-us"
+    dir="ltr"
+    headings={headers}
+    title={`${parent.title} / ${meta.title}`}
+    description={meta.description}
+>
+    {iter.map((i) => <Content name={i[0]} slug={i[0]} schema={i[1]} parentSchema={definition} />)}
+</MainLayout>

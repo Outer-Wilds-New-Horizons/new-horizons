@@ -1,0 +1,32 @@
+---
+import { readdir } from "node:fs/promises";
+import MainLayout from "../../layouts/MainLayout.astro";
+import { Schema, SchemaTools } from "../../schema_utils";
+
+export interface Props {
+    schema: Schema;
+}
+
+export async function getStaticPaths() {
+    const schemaFiles = await readdir("../NewHorizons/Schemas");
+    return schemaFiles.map((f) => {
+        const schema = SchemaTools.readSchema(f);
+        return {
+            params: {
+                slug: schema.slug
+            },
+            props: {
+                schema
+            }
+        };
+    });
+}
+
+const { schema } = Astro.props;
+const title = SchemaTools.getTitle(schema);
+const properties = SchemaTools.getProps(schema);
+---
+
+<MainLayout lang="en-us" dir="ltr" headings={[]} title={title} description={""}>
+    {properties.map(([name, _]) => <h2>{name}</h2>)}
+</MainLayout>

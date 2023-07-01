@@ -1,0 +1,73 @@
+---
+import type { JSONSchema } from "@apidevtools/json-schema-ref-parser/dist/lib/types";
+
+export interface Props {
+    name: string;
+    slug: string;
+    schema: JSONSchema;
+    parentSchema: JSONSchema;
+}
+
+const { name, slug, schema, parentSchema } = Astro.props;
+
+const getTag = () => {
+    switch (schema.type) {
+        default:
+            return Fragment;
+    }
+};
+
+const Tag = getTag();
+
+const displayType = schema.$ref?.split("/").at(-1) ?? schema.type;
+
+const required =
+    parentSchema.required &&
+    Array.isArray(parentSchema.required) &&
+    parentSchema.required.includes(name);
+---
+
+<div class="wrapper">
+    <div class="header">
+        <h2 id={slug}>{name}</h2>
+        <div class="badges">
+            {required && <span class="required">Required</span>}
+            <span>Type: {displayType}</span>
+        </div>
+    </div>
+
+    <p>
+        {schema.description}
+    </p>
+    <Tag schema={schema} />
+</div>
+
+<style>
+    h2 {
+        margin-top: 0.5rem !important;
+    }
+
+    div.header {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 0.5rem;
+    }
+
+    div.wrapper {
+        margin: 2rem 0;
+    }
+
+    span {
+        background-color: var(--theme-bg-accent);
+        font-size: small;
+        padding: 0.3rem;
+        margin-right: 0.3rem;
+        border: solid 2px var(--theme-accent);
+        border-radius: 5rem;
+    }
+
+    span.required {
+        background-color: hsla(var(--color-yellow), var(--theme-accent-opacity));
+        border-color: hsla(var(--color-yellow), 1);
+    }
+</style>

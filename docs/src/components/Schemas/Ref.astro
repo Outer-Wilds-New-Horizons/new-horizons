@@ -1,0 +1,12 @@
+---
+import type { JSONSchema } from "@apidevtools/json-schema-ref-parser/dist/lib/types";
+
+export interface Props {
+    name: string;
+    parentSlug: string;
+}
+
+const { name, parentSlug } = Astro.props;
+---
+
+<a href={`/schemas/defs/${parentSlug}/${name}`}>View {name}</a>
