@@ -34,26 +34,34 @@ namespace NewHorizons.Builder.General
             if (config.tint != null)
             {
                 var tint = config.tint.ToColor();
-                var baseCubemap = Main.NHPrivateAssetBundle.LoadAsset<Cubemap>("AmbientLight_QM");
-                var cubemap = new Cubemap(baseCubemap.width, baseCubemap.format, baseCubemap.mipmapCount != 1);
-                cubemap.name = baseCubemap.name + "Tinted";
-                cubemap.wrapMode = baseCubemap.wrapMode;
-                for (int i = 0; i < 6; i++)
+                var key = $"AmbientLight_QM > tint {tint}";
+                if (ImageUtilities.CheckCachedTexture(key, out var existingTexture))
                 {
-                    var cubemapFace = (CubemapFace)i;
-                    var sourceColors = baseCubemap.GetPixels(cubemapFace);
-                    var newColors = new Color[sourceColors.Length];
-                    for (int j = 0; j < sourceColors.Length; j++)
-                    {
-                        var grey = sourceColors[j].grayscale * 2; // looks nicer with multiplier
-                        newColors[j] = new Color(grey, grey, grey) * tint;
-                    }
-                    cubemap.SetPixels(newColors, cubemapFace);
+                    light.cookie = existingTexture;
                 }
-                cubemap.Apply();
-                ImageUtilities.TrackGeneratedTexture(cubemap);
-                
-                light.cookie = cubemap;
+                else
+                {
+                    var baseCubemap = Main.NHPrivateAssetBundle.LoadAsset<Cubemap>("AmbientLight_QM");
+                    var cubemap = new Cubemap(baseCubemap.width, baseCubemap.format, baseCubemap.mipmapCount != 1);
+                    cubemap.name = key;
+                    cubemap.wrapMode = baseCubemap.wrapMode;
+                    for (int i = 0; i < 6; i++)
+                    {
+                        var cubemapFace = (CubemapFace)i;
+                        var sourceColors = baseCubemap.GetPixels(cubemapFace);
+                        var newColors = new Color[sourceColors.Length];
+                        for (int j = 0; j < sourceColors.Length; j++)
+                        {
+                            var grey = sourceColors[j].grayscale * 2; // looks nicer with multiplier
+                            newColors[j] = new Color(grey, grey, grey) * tint;
+                        }
+                        cubemap.SetPixels(newColors, cubemapFace);
+                    }
+                    cubemap.Apply();
+                    ImageUtilities.TrackCachedTexture(key, cubemap);
+
+                    light.cookie = cubemap;
+                }
             }
 
             return light;

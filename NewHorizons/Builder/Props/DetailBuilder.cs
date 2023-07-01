@@ -255,7 +255,9 @@ namespace NewHorizons.Builder.Props
 
             else if(component is SectoredMonoBehaviour behaviour)
             {
-                behaviour.SetSector(sector);
+                // not using SetSector here because it registers the events twice
+                // perhaps this happens with ISectorGroup.SetSector or Sector.SetParentSector too? idk and nothing seems to break because of it yet
+                behaviour._sector = sector;
             }
 
             else if(component is OWItemSocket socket)
@@ -345,8 +347,9 @@ namespace NewHorizons.Builder.Props
 
             else if (component is NomaiInterfaceOrb orb)
             {
-                orb._parentAstroObject = planetGO.GetComponent<AstroObject>();
-                orb._parentBody = planetGO.GetComponent<OWRigidbody>();
+                // detect planet gravity
+                var gravityVolume = planetGO.GetAttachedOWRigidbody().GetAttachedGravityVolume();
+                orb.GetComponent<ConstantForceDetector>()._detectableFields = gravityVolume ? new ForceVolume[] { gravityVolume } : new ForceVolume[] { };
             }
 
             else if (component is VisionTorchItem torchItem)
@@ -363,7 +366,7 @@ namespace NewHorizons.Builder.Props
             else if(component is Shape shape) shape.enabled = true;
 
             // If it's not a moving anglerfish make sure the anim controller is regular
-            else if(component is AnglerfishAnimController && component.GetComponentInParent<AnglerfishController>() == null)
+            else if(component is AnglerfishAnimController && component.transform.parent.GetComponent<AnglerfishController>() == null) //Manual parent chain so we can find inactive
             {
                 component.gameObject.AddComponent<AnglerAnimFixer>();
             }
@@ -380,7 +383,7 @@ namespace NewHorizons.Builder.Props
             public void Start()
             {
                 var angler = GetComponent<AnglerfishAnimController>();
-                
+
                 NHLogger.LogVerbose("Fixing anglerfish animation");
 
                 // Remove any event reference to its angler

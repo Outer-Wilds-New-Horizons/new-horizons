@@ -32,6 +32,7 @@ namespace NewHorizons.Builder.Body
         private static GameObject _supernovaPrefab;
         private static Material _mainSequenceMaterial;
         private static Material _giantMaterial;
+        private static Material _flareMaterial;
 
         private static bool _isInit;
 
@@ -54,6 +55,11 @@ namespace NewHorizons.Builder.Body
             if (_supernovaPrefab == null) _supernovaPrefab = SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/Supernova").InstantiateInactive().Rename("Prefab_Supernova").DontDestroyOnLoad();
             if (_mainSequenceMaterial == null) _mainSequenceMaterial = new Material(SearchUtilities.Find("Sun_Body").GetComponent<SunController>()._startSurfaceMaterial).DontDestroyOnLoad();
             if (_giantMaterial == null) _giantMaterial = new Material(SearchUtilities.Find("Sun_Body").GetComponent<SunController>()._endSurfaceMaterial).DontDestroyOnLoad();
+            if (_flareMaterial == null)
+            {
+                _flareMaterial = new Material(_starSolarFlareEmitter.GetComponentInChildren<SolarFlareController>().GetComponent<MeshRenderer>().sharedMaterial).DontDestroyOnLoad();
+                _flareMaterial.color = Color.white;
+            }
         }
 
         public static (GameObject, StarController, StarEvolutionController, Light) Make(GameObject planetGO, Sector sector, StarModule starModule, IModBehaviour mod, bool isStellarRemnant)
@@ -347,11 +353,11 @@ namespace NewHorizons.Builder.Body
                 var flareTint = starModule.tint.ToColor();
                 var emitter = solarFlareEmitter.GetComponent<SolarFlareEmitter>();
                 emitter.tint = flareTint;
+                var material = new Material(_flareMaterial);
                 foreach (var controller in solarFlareEmitter.GetComponentsInChildren<SolarFlareController>())
                 {
-                    // It multiplies color by tint but wants something very bright idk
-                    controller._color = new Color(1, 1, 1);
-                    controller.GetComponent<MeshRenderer>().sharedMaterial.SetColor("_Color", controller._color);
+                    controller.GetComponent<MeshRenderer>().sharedMaterial = material;
+                    controller._color = Color.white;
                     controller._tint = flareTint;
                 }
             }

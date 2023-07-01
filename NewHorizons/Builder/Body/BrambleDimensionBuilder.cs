@@ -243,13 +243,14 @@ namespace NewHorizons.Builder.Body
             cloak._sectors = new Sector[] { sector };
             cloak.GetComponent<Renderer>().enabled = true;
 
-            // Cull stuff
-            var cullController = go.AddComponent<BrambleSectorController>();
-            cullController.SetSector(sector);
-
             // Do next update so other nodes can be built first
             Delay.FireOnNextUpdate(() =>
             {
+                // Cull stuff
+                // this in in the delay because it fixes #562
+                var cullController = go.AddComponent<BrambleSectorController>();
+                cullController.SetSector(sector);
+
                 // Prevent recursion from causing hard crash
                 foreach (var senderWarp in outerFogWarpVolume._senderWarps.ToList())
                 {

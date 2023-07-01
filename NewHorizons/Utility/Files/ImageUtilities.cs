@@ -1,3 +1,4 @@
+using HarmonyLib;
 using NewHorizons.Utility.OWML;
 using OWML.Common;
 using System;
@@ -13,40 +14,43 @@ namespace NewHorizons.Utility.Files
 {
     public static class ImageUtilities
     {
-        private static readonly Dictionary<string, Texture2D> _loadedTextures = new();
-        private static readonly List<Texture> _generatedTextures = new();
+        // key is path + applied effects
+        private static readonly Dictionary<string, Texture> _textureCache = new();
+        public static bool CheckCachedTexture(string key, out Texture existingTexture) => _textureCache.TryGetValue(key, out existingTexture);
+        public static void TrackCachedTexture(string key, Texture texture) => _textureCache.Add(key, texture);
 
-        /// <summary>
-        /// Track textures generated outside of this file so they can be cleaned up on scene unload
-        /// </summary>
-        /// <param name="texture"></param>
-        public static void TrackGeneratedTexture(Texture texture) => _generatedTextures.Add(texture);
+        private static string GetKey(string path) => path.Substring(Main.Instance.ModHelper.OwmlConfig.ModsPath.Length);
 
         public static bool IsTextureLoaded(IModBehaviour mod, string filename)
         {
             var path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, filename);
-            return _loadedTextures.ContainsKey(path);
+            var key = GetKey(path);
+            return _textureCache.ContainsKey(key);
         }
 
-        public static Texture2D GetTexture(IModBehaviour mod, string filename, bool useMipmaps = true, bool wrap = false)
+        // needed for backwards compat :P
+        public static Texture2D GetTexture(IModBehaviour mod, string filename, bool useMipmaps, bool wrap) => GetTexture(mod, filename, useMipmaps, wrap, false);
+        // bug: cache only considers file path, not wrap/mips/linear. oh well
+        public static Texture2D GetTexture(IModBehaviour mod, string filename, bool useMipmaps = true, bool wrap = false, bool linear = false)
         {
             // Copied from OWML but without the print statement lol
             var path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, filename);
-            if (_loadedTextures.ContainsKey(path))
+            var key = GetKey(path);
+            if (_textureCache.TryGetValue(key, out var existingTexture))
             {
                 NHLogger.LogVerbose($"Already loaded image at path: {path}");
-                return _loadedTextures[path];
+                return (Texture2D)existingTexture;
             }
 
             NHLogger.LogVerbose($"Loading image at path: {path}");
             try
             {
                 var data = File.ReadAllBytes(path);
-                var texture = new Texture2D(2, 2, TextureFormat.RGBA32, useMipmaps);
-                texture.name = Path.GetFileNameWithoutExtension(path);
+                var texture = new Texture2D(2, 2, TextureFormat.RGBA32, useMipmaps, linear);
+                texture.name = key;
                 texture.wrapMode = wrap ? TextureWrapMode.Repeat : TextureWrapMode.Clamp;
                 texture.LoadImage(data);
-                _loadedTextures.Add(path, texture);
+                _textureCache.Add(key, texture);
 
                 return texture;
             }
@@ -61,11 +65,12 @@ namespace NewHorizons.Utility.Files
         public static void DeleteTexture(IModBehaviour mod, string filename, Texture2D texture)
         {
             var path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, filename);
-            if (_loadedTextures.ContainsKey(path))
+            var key = GetKey(path);
+            if (_textureCache.ContainsKey(key))
             {
-                if (_loadedTextures[path] == texture)
+                if (_textureCache[key] == texture)
                 {
-                    _loadedTextures.Remove(path);
+                    _textureCache.Remove(key);
                     UnityEngine.Object.Destroy(texture);
                 }
             }
@@ -77,23 +82,19 @@ namespace NewHorizons.Utility.Files
         {
             NHLogger.LogVerbose("Clearing image cache");
 
-            foreach (var texture in _loadedTextures.Values)
+            foreach (var texture in _textureCache.Values)
             {
                 if (texture == null) continue;
                 UnityEngine.Object.Destroy(texture);
             }
-            _loadedTextures.Clear();
-
-            foreach (var texture in _generatedTextures)
-            {
-                if (texture == null) continue;
-                UnityEngine.Object.Destroy(texture);
-            }
-            _generatedTextures.Clear();
+            _textureCache.Clear();
         }
 
         public static Texture2D Invert(Texture2D texture)
         {
+            var key = $"{texture.name} > invert";
+            if (_textureCache.TryGetValue(key, out var existingTexture)) return (Texture2D)existingTexture;
+
             var pixels = texture.GetPixels();
             for (int i = 0; i < pixels.Length; i++)
             {
@@ -117,23 +118,26 @@ namespace NewHorizons.Utility.Files
             }
 
             var newTexture = new Texture2D(texture.width, texture.height, texture.format, texture.mipmapCount != 1);
-            newTexture.name = texture.name + "Inverted";
+            newTexture.name = key;
             newTexture.SetPixels(pixels);
             newTexture.Apply();
 
             newTexture.wrapMode = texture.wrapMode;
 
-            _generatedTextures.Add(newTexture);
+            _textureCache.Add(key, newTexture);
 
             return newTexture;
         }
 
         public static Texture2D MakeReelTexture(Texture2D[] textures)
         {
+            var key = $"SlideReelAtlas of {textures.Join(x => x.name)}";
+            if (_textureCache.TryGetValue(key, out var existingTexture)) return (Texture2D)existingTexture;
+
             var size = 256;
 
             var texture = new Texture2D(size * 4, size * 4, TextureFormat.ARGB32, false);
-            texture.name = "SlideReelAtlas";
+            texture.name = key;
 
             var fillPixels = new Color[size * size * 4 * 4];
             for (int xIndex = 0; xIndex < 4; xIndex++)
@@ -175,15 +179,18 @@ namespace NewHorizons.Utility.Files
             texture.SetPixels(fillPixels);
             texture.Apply();
 
-            _generatedTextures.Add(texture);
+            _textureCache.Add(key, texture);
 
             return texture;
         }
 
         public static Texture2D MakeOutline(Texture2D texture, Color color, int thickness)
         {
+            var key = $"{texture.name} > outline {color} {thickness}";
+            if (_textureCache.TryGetValue(key, out var existingTexture)) return (Texture2D)existingTexture;
+
             var outline = new Texture2D(texture.width, texture.height, texture.format, texture.mipmapCount != 1);
-            outline.name = texture.name + "Outline";
+            outline.name = key;
             var outlinePixels = new Color[texture.width * texture.height];
             var pixels = texture.GetPixels();
 
@@ -206,7 +213,7 @@ namespace NewHorizons.Utility.Files
 
             outline.wrapMode = texture.wrapMode;
 
-            _generatedTextures.Add(outline);
+            _textureCache.Add(key, outline);
 
             return outline;
         }
@@ -231,6 +238,9 @@ namespace NewHorizons.Utility.Files
 
         public static Texture2D TintImage(Texture2D image, Color tint)
         {
+            var key = $"{image.name} > tint {tint}";
+            if (_textureCache.TryGetValue(key, out var existingTexture)) return (Texture2D)existingTexture;
+
             if (image == null)
             {
                 NHLogger.LogError($"Tried to tint null image");
@@ -246,19 +256,22 @@ namespace NewHorizons.Utility.Files
             }
 
             var newImage = new Texture2D(image.width, image.height, image.format, image.mipmapCount != 1);
-            newImage.name = image.name + "Tinted";
+            newImage.name = key;
             newImage.SetPixels(pixels);
             newImage.Apply();
 
             newImage.wrapMode = image.wrapMode;
 
-            _generatedTextures.Add(newImage);
+            _textureCache.Add(key, newImage);
 
             return newImage;
         }
 
         public static Texture2D LerpGreyscaleImage(Texture2D image, Color lightTint, Color darkTint)
         {
+            var key = $"{image.name} > lerp greyscale {lightTint} {darkTint}";
+            if (_textureCache.TryGetValue(key, out var existingTexture)) return (Texture2D)existingTexture;
+
             var pixels = image.GetPixels();
             for (int i = 0; i < pixels.Length; i++)
             {
@@ -268,21 +281,24 @@ namespace NewHorizons.Utility.Files
             }
 
             var newImage = new Texture2D(image.width, image.height, image.format, image.mipmapCount != 1);
-            newImage.name = image.name + "LerpedGrayscale";
+            newImage.name = key;
             newImage.SetPixels(pixels);
             newImage.Apply();
 
             newImage.wrapMode = image.wrapMode;
 
-            _generatedTextures.Add(newImage);
+            _textureCache.Add(key, newImage);
 
             return newImage;
         }
 
         public static Texture2D ClearTexture(int width, int height, bool wrap = false)
         {
+            var key = $"Clear {width} {height} {wrap}";
+            if (_textureCache.TryGetValue(key, out var existingTexture)) return (Texture2D)existingTexture;
+
             var tex = new Texture2D(1, 1, TextureFormat.ARGB32, false);
-            tex.name = "Clear";
+            tex.name = key;
             var fillColor = Color.clear;
             var fillPixels = new Color[tex.width * tex.height];
             for (int i = 0; i < fillPixels.Length; i++)
@@ -294,15 +310,18 @@ namespace NewHorizons.Utility.Files
 
             tex.wrapMode = wrap ? TextureWrapMode.Repeat : TextureWrapMode.Clamp;
 
-            _generatedTextures.Add(tex);
+            _textureCache.Add(key, tex);
 
             return tex;
         }
 
         public static Texture2D CanvasScaled(Texture2D src, int width, int height)
         {
+            var key = $"{src.name} > canvas scaled {width} {height}";
+            if (_textureCache.TryGetValue(key, out var existingTexture)) return (Texture2D)existingTexture;
+
             var tex = new Texture2D(width, height, src.format, src.mipmapCount != 1);
-            tex.name = src.name + "CanvasScaled";
+            tex.name = key;
             var fillPixels = new Color[tex.width * tex.height];
             for (int i = 0; i < tex.width; i++)
             {
@@ -322,7 +341,7 @@ namespace NewHorizons.Utility.Files
 
             tex.wrapMode = src.wrapMode;
 
-            _generatedTextures.Add(tex);
+            _textureCache.Add(key, tex);
 
             return tex;
         }
@@ -410,13 +429,13 @@ namespace NewHorizons.Utility.Files
 
             IEnumerator DownloadTexture(string url, int index)
             {
-                lock (_loadedTextures)
+                var key = GetKey(url);
+                lock (_textureCache)
                 {
-                    if (_loadedTextures.ContainsKey(url))
+                    if (_textureCache.TryGetValue(key, out var existingTexture))
                     {
                         NHLogger.LogVerbose($"Already loaded image {index}:{url}");
-                        var texture = _loadedTextures[url];
-                        imageLoadedEvent?.Invoke(texture, index);
+                        imageLoadedEvent?.Invoke((Texture2D)existingTexture, index);
                         yield break;
                     }
                 }
@@ -433,25 +452,24 @@ namespace NewHorizons.Utility.Files
                 }
                 else
                 {
-                    var texture = new Texture2D(2, 2, TextureFormat.RGBA32, false)
-                    {
-                        wrapMode = TextureWrapMode.Clamp
-                    };
+                    var texture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+                    texture.name = key;
+                    texture.wrapMode = TextureWrapMode.Clamp;
 
                     var handler = (DownloadHandlerTexture)uwr.downloadHandler;
                     texture.LoadImage(handler.data);
 
-                    lock (_loadedTextures)
+                    lock (_textureCache)
                     {
-                        if (_loadedTextures.ContainsKey(url))
+                        if (_textureCache.TryGetValue(key, out var existingTexture))
                         {
                             NHLogger.LogVerbose($"Already loaded image {index}:{url}");
                             Destroy(texture);
-                            texture = _loadedTextures[url];
+                            texture = (Texture2D)existingTexture;
                         }
                         else
                         {
-                            _loadedTextures.Add(url, texture);
+                            _textureCache.Add(key, texture);
                         }
 
                         imageLoadedEvent?.Invoke(texture, index);

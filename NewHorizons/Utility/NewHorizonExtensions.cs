@@ -255,13 +255,13 @@ namespace NewHorizons.Utility
         }
     
 		public static FluidVolume.Type ConvertToOW(this NHFluidType fluidType, FluidVolume.Type @default = FluidVolume.Type.NONE)
-            => EnumUtils.Parse(fluidType.ToString().ToUpper(), @default);
+            => EnumUtils.Parse(fluidType.ToString(), @default);
 
         public static OWAudioMixer.TrackName ConvertToOW(this NHAudioMixerTrackName trackName, OWAudioMixer.TrackName @default = OWAudioMixer.TrackName.Environment)
-            => EnumUtils.Parse(trackName.ToString().ToUpper(), @default);
+            => EnumUtils.Parse(trackName.ToString(), @default);
         
         public static OWAudioSource.ClipSelectionOnPlay ConvertToOW(this NHClipSelectionType clipSelection, OWAudioSource.ClipSelectionOnPlay @default = OWAudioSource.ClipSelectionOnPlay.RANDOM)
-            => EnumUtils.Parse(clipSelection.ToString().ToUpper(), @default);
+            => EnumUtils.Parse(clipSelection.ToString(), @default);
 	
         public static void SmoothLookDir(this GameObject go, Vector3 direction, float dt, float angularVelocity)
         {

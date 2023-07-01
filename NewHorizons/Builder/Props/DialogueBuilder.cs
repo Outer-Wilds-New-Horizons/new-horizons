@@ -147,6 +147,7 @@ namespace NewHorizons.Builder.Props
             var controller = character.GetComponent<CharacterAnimController>();
             var traveler = character.GetComponent<TravelerController>();
             var travelerEye = character.GetComponent<TravelerEyeController>();
+            var hearthianRecorder = character.GetComponent<HearthianRecorderEffects>();
 
             var lookOnlyWhenTalking = info.lookAtRadius <= 0;
 
@@ -195,6 +196,34 @@ namespace NewHorizons.Builder.Props
                     dialogue.OnStartConversation += nomaiController.StartWatchingPlayer;
                     dialogue.OnEndConversation += nomaiController.StopWatchingPlayer;
                 }
+            }
+            else if (hearthianRecorder != null)
+            {
+                Delay.FireOnNextUpdate(() =>
+                {
+                    // #520
+                    if (hearthianRecorder._characterDialogueTree != null)
+                    {
+                        hearthianRecorder._characterDialogueTree.OnStartConversation -= hearthianRecorder.OnPlayRecorder;
+                        hearthianRecorder._characterDialogueTree.OnEndConversation -= hearthianRecorder.OnStopRecorder;
+                    }
+
+                    // Recorder props have their own dialogue on them already
+                    // Make sure to delete it when we're trying to connect new dialogue to it
+                    var existingDialogue = hearthianRecorder.GetComponent<CharacterDialogueTree>();
+                    if (existingDialogue != dialogue && existingDialogue != null)
+                    {
+                        // Can't delete the existing dialogue because its a required component but we can make it unable to select at least
+                        GameObject.Destroy(hearthianRecorder.GetComponent<OWCollider>());
+                        GameObject.Destroy(hearthianRecorder.GetComponent<SphereCollider>());
+                        GameObject.Destroy(existingDialogue._interactVolume);
+                        existingDialogue.enabled = false;
+                    }
+
+                    hearthianRecorder._characterDialogueTree = dialogue;
+                    hearthianRecorder._characterDialogueTree.OnStartConversation += hearthianRecorder.OnPlayRecorder;
+                    hearthianRecorder._characterDialogueTree.OnEndConversation += hearthianRecorder.OnStopRecorder;
+                });
             }
             else
             {
