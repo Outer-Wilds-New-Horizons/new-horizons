@@ -199,8 +199,31 @@ namespace NewHorizons.Builder.Props
             }
             else if (hearthianRecorder != null)
             {
-                // #520
-                hearthianRecorder._characterDialogueTree = dialogue;
+                Delay.FireOnNextUpdate(() =>
+                {
+                    // #520
+                    if (hearthianRecorder._characterDialogueTree != null)
+                    {
+                        hearthianRecorder._characterDialogueTree.OnStartConversation -= hearthianRecorder.OnPlayRecorder;
+                        hearthianRecorder._characterDialogueTree.OnEndConversation -= hearthianRecorder.OnStopRecorder;
+                    }
+
+                    // Recorder props have their own dialogue on them already
+                    // Make sure to delete it when we're trying to connect new dialogue to it
+                    var existingDialogue = hearthianRecorder.GetComponent<CharacterDialogueTree>();
+                    if (existingDialogue != dialogue && existingDialogue != null)
+                    {
+                        // Can't delete the existing dialogue because its a required component but we can make it unable to select at least
+                        GameObject.Destroy(hearthianRecorder.GetComponent<OWCollider>());
+                        GameObject.Destroy(hearthianRecorder.GetComponent<SphereCollider>());
+                        GameObject.Destroy(existingDialogue._interactVolume);
+                        existingDialogue.enabled = false;
+                    }
+
+                    hearthianRecorder._characterDialogueTree = dialogue;
+                    hearthianRecorder._characterDialogueTree.OnStartConversation += hearthianRecorder.OnPlayRecorder;
+                    hearthianRecorder._characterDialogueTree.OnEndConversation += hearthianRecorder.OnStopRecorder;
+                });
             }
             else
             {
