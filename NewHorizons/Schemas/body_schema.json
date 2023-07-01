@@ -774,7 +774,7 @@
       "properties": {
         "curve": {
           "type": "array",
-          "description": "Scale this object over time",
+          "description": "Scale this object over time. Time value is in minutes.",
           "items": {
             "$ref": "#/definitions/TimeValuePair"
           }
@@ -963,7 +963,7 @@
       "properties": {
         "curve": {
           "type": "array",
-          "description": "Scale this object over time",
+          "description": "Scale this object over time. Time value is in minutes.",
           "items": {
             "$ref": "#/definitions/TimeValuePair"
           }
@@ -2854,7 +2854,7 @@
       "properties": {
         "curve": {
           "type": "array",
-          "description": "Scale this object over time",
+          "description": "Scale this object over time. Time value is in minutes.",
           "items": {
             "$ref": "#/definitions/TimeValuePair"
           }
@@ -3088,7 +3088,7 @@
       "properties": {
         "curve": {
           "type": "array",
-          "description": "Scale this object over time",
+          "description": "Scale this object over time. Time value is in minutes.",
           "items": {
             "$ref": "#/definitions/TimeValuePair"
           }
@@ -3222,7 +3222,7 @@
       "properties": {
         "curve": {
           "type": "array",
-          "description": "Scale this object over time",
+          "description": "Scale this object over time. Time value is in minutes.",
           "items": {
             "$ref": "#/definitions/TimeValuePair"
           }
@@ -4430,7 +4430,7 @@
       "properties": {
         "curve": {
           "type": "array",
-          "description": "Scale this object over time",
+          "description": "Scale this object over time. Time value is in minutes.",
           "items": {
             "$ref": "#/definitions/TimeValuePair"
           }
