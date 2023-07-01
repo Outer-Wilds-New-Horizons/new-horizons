@@ -19,10 +19,11 @@ on:
       - "*.md"
       - "NewHorizons/Schemas/**"
       - "LICENSE"
-      - ".gitignore" 
+      - ".gitignore"
 
 jobs:
-  CheckVersion:
+  Check_Version:
+    name: Check Version
     if: ${{ contains(github.event.pull_request.labels.*.name, 'update-pr') }}
     runs-on: ubuntu-latest
     steps:
@@ -35,13 +36,13 @@ jobs:
         if: ${{ steps.read-manifest.outputs.version != github.event.pull_request.title }}
         run: echo "::error file=manifest.json,title=Version Error::Hey DUMB-DUMB UPDATE THE MANIFEST VERSION"
   Build:
-    needs: CheckVersion
-    if: ${{ github.ref == 'refs/heads/main' || contains(github.event.pull_request.labels.*.name, 'update-pr')  }}
+    needs: Check_Version
+    if: ${{ needs.Check_Version.result == 'success' && (github.ref == 'refs/heads/main' || contains(github.event.pull_request.labels.*.name, 'update-pr'))  }}
     uses: ./.github/workflows/build.yaml
     with:
       build_type: Release
   Update_Schemas:
-    name: 'Update Schemas'
+    name: "Update Schemas"
     needs: Build
     if: ${{ needs.Build.outputs.schemas_changed == 'true' && github.ref == 'refs/heads/main' }} # Debug build will update schemas on push, so don't run if we're on pull request
     uses: ./.github/workflows/update_schemas.yml
@@ -49,7 +50,7 @@ jobs:
       artifact_name: NewHorizons-Schemas-Release
     secrets: inherit
   Update_Release:
-    name: 'Create/Update Release Asset'
+    name: "Create/Update Release Asset"
     needs: Build
     if: ${{ github.ref != 'refs/heads/main' && contains(github.event.pull_request.labels.*.name, 'update-pr') }}
     runs-on: ubuntu-latest
@@ -78,5 +79,3 @@ jobs:
           artifacts: "xen.NewHorizons.zip"
           draft: true
           prerelease: false
-
-
