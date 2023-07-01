@@ -147,6 +147,7 @@ namespace NewHorizons.Builder.Props
             var controller = character.GetComponent<CharacterAnimController>();
             var traveler = character.GetComponent<TravelerController>();
             var travelerEye = character.GetComponent<TravelerEyeController>();
+            var hearthianRecorder = character.GetComponent<HearthianRecorderEffects>();
 
             var lookOnlyWhenTalking = info.lookAtRadius <= 0;
 
@@ -195,6 +196,11 @@ namespace NewHorizons.Builder.Props
                     dialogue.OnStartConversation += nomaiController.StartWatchingPlayer;
                     dialogue.OnEndConversation += nomaiController.StopWatchingPlayer;
                 }
+            }
+            else if (hearthianRecorder != null)
+            {
+                // #520
+                hearthianRecorder._characterDialogueTree = dialogue;
             }
             else
             {
