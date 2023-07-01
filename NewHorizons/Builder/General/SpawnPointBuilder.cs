@@ -30,6 +30,8 @@ namespace NewHorizons.Builder.General
                 // #601 we need to actually set the right trigger volumes here
                 playerSpawn._triggerVolumes = new OWTriggerVolume[0];
 
+                // This was a stupid hack to stop players getting stuck in the ground and now we have to keep it forever
+                spawnGO.transform.position += 4f * spawnGO.transform.up;
                 spawnGO.SetActive(true);
             }
 
