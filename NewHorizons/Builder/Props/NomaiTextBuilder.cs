@@ -29,8 +29,9 @@ namespace NewHorizons.Builder.Props
         private static GameObject _scrollPrefab;
         private static GameObject _computerPrefab;
         private static GameObject _preCrashComputerPrefab;
-        private static GameObject _cairnPrefab;
-        private static GameObject _cairnVariantPrefab;
+        private static GameObject _cairnBHPrefab;
+        private static GameObject _cairnTHPrefab;
+        private static GameObject _cairnCTPrefab;
         private static GameObject _recorderPrefab;
         private static GameObject _preCrashRecorderPrefab;
         private static GameObject _trailmarkerPrefab;
@@ -121,16 +122,22 @@ namespace NewHorizons.Builder.Props
                 _preCrashComputerPrefab.transform.rotation = Quaternion.identity;
             }
 
-            if (_cairnPrefab == null)
+            if (_cairnBHPrefab == null)
             {
-                _cairnPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_Crossroads/Interactables_Crossroads/Trailmarkers/Prefab_NOM_BH_Cairn_Arc (1)").InstantiateInactive().Rename("Prefab_NOM_Cairn").DontDestroyOnLoad();
-                _cairnPrefab.transform.rotation = Quaternion.identity;
+                _cairnBHPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_Crossroads/Interactables_Crossroads/Trailmarkers/Prefab_NOM_BH_Cairn_Arc (1)").InstantiateInactive().Rename("Prefab_NOM_BH_Cairn").DontDestroyOnLoad();
+                _cairnBHPrefab.transform.rotation = Quaternion.identity;
             }
 
-            if (_cairnVariantPrefab == null)
+            if (_cairnTHPrefab == null)
             {
-                _cairnVariantPrefab = SearchUtilities.Find("TimberHearth_Body/Sector_TH/Sector_NomaiMines/Interactables_NomaiMines/Prefab_NOM_TH_Cairn_Arc").InstantiateInactive().Rename("Prefab_NOM_Cairn").DontDestroyOnLoad();
-                _cairnVariantPrefab.transform.rotation = Quaternion.identity;
+                _cairnTHPrefab = SearchUtilities.Find("TimberHearth_Body/Sector_TH/Sector_NomaiMines/Interactables_NomaiMines/Prefab_NOM_TH_Cairn_Arc").InstantiateInactive().Rename("Prefab_NOM_TH_Cairn").DontDestroyOnLoad();
+                _cairnTHPrefab.transform.rotation = Quaternion.identity;
+            }
+
+            if (_cairnCTPrefab == null)
+            {
+                _cairnCTPrefab = SearchUtilities.Find("CaveTwin_Body/Sector_CaveTwin/Sector_NorthHemisphere/Sector_NorthSurface/Sector_TimeLoopExperiment/Interactables_TimeLoopExperiment/Prefab_NOM_CT_Cairn_Arc").InstantiateInactive().Rename("Prefab_NOM_CT_Cairn").DontDestroyOnLoad();
+                _cairnCTPrefab.transform.rotation = Quaternion.identity;
             }
 
             if (_recorderPrefab == null)
@@ -410,18 +417,15 @@ namespace NewHorizons.Builder.Props
                         
                         return computerObject;
                     }
-                case NomaiTextType.Cairn:
-                case NomaiTextType.CairnVariant:
+                case NomaiTextType.CairnBrittleHollow:
+                case NomaiTextType.CairnTimberHearth:
+                case NomaiTextType.CairnEmberTwin:
                     {
-                        var cairnObject = (info.type == NomaiTextType.CairnVariant ? _cairnVariantPrefab : _cairnPrefab).InstantiateInactive();
+                        var cairnObject = (info.type == NomaiTextType.CairnTimberHearth ? _cairnTHPrefab : (info.type == NomaiTextType.CairnEmberTwin ? _cairnCTPrefab : _cairnBHPrefab)).InstantiateInactive();
 
                         if (!string.IsNullOrEmpty(info.rename))
                         {
                             cairnObject.name = info.rename;
-                        }
-                        else
-                        {
-                            cairnObject.name = _cairnPrefab.name;
                         }
 
                         cairnObject.transform.parent = sector?.transform ?? planetGO.transform;

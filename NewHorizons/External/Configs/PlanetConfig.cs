@@ -579,6 +579,34 @@ namespace NewHorizons.External.Configs
                     }
                 }
             }
+            if (Props?.nomaiText != null)
+            {
+                foreach (var nomaiText in Props.nomaiText)
+                {
+                    if (nomaiText.type == Modules.TranslatorText.NomaiTextType.Cairn)
+                    {
+                        nomaiText.type = Modules.TranslatorText.NomaiTextType.CairnBrittleHollow;
+                    }
+                    else if (nomaiText.type == Modules.TranslatorText.NomaiTextType.CairnVariant)
+                    {
+                        nomaiText.type = Modules.TranslatorText.NomaiTextType.CairnTimberHearth;
+                    }
+                }
+            }
+            if (Props?.translatorText != null)
+            {
+                foreach (var translatorText in Props.translatorText)
+                {
+                    if (translatorText.type == Modules.TranslatorText.NomaiTextType.Cairn)
+                    {
+                        translatorText.type = Modules.TranslatorText.NomaiTextType.CairnBrittleHollow;
+                    }
+                    else if (translatorText.type == Modules.TranslatorText.NomaiTextType.CairnVariant)
+                    {
+                        translatorText.type = Modules.TranslatorText.NomaiTextType.CairnTimberHearth;
+                    }
+                }
+            }
 
             if (Base.hasCometTail)
             {

@@ -27,8 +27,9 @@ namespace NewHorizons.Builder.Props.TranslatorText
         private static GameObject _scrollPrefab;
         public static GameObject ComputerPrefab { get; private set; }
         private static GameObject _preCrashComputerPrefab;
-        private static GameObject _cairnPrefab;
-        private static GameObject _cairnVariantPrefab;
+        private static GameObject _cairnBHPrefab;
+        private static GameObject _cairnTHPrefab;
+        private static GameObject _cairnCTPrefab;
         private static GameObject _recorderPrefab;
         private static GameObject _preCrashRecorderPrefab;
         private static GameObject _trailmarkerPrefab;
@@ -93,14 +94,19 @@ namespace NewHorizons.Builder.Props.TranslatorText
                 _preCrashComputerPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_EscapePodCrashSite/Sector_CrashFragment/EscapePod_Socket/Interactibles_EscapePod/Prefab_NOM_Vessel_Computer").InstantiateInactive().Rename("Prefab_NOM_Vessel_Computer").DontDestroyOnLoad();
             }
 
-            if (_cairnPrefab == null)
+            if (_cairnBHPrefab == null)
             {
-                _cairnPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_Crossroads/Interactables_Crossroads/Trailmarkers/Prefab_NOM_BH_Cairn_Arc (1)").InstantiateInactive().Rename("Prefab_NOM_Cairn").DontDestroyOnLoad();
+                _cairnBHPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_Crossroads/Interactables_Crossroads/Trailmarkers/Prefab_NOM_BH_Cairn_Arc (1)").InstantiateInactive().Rename("Prefab_NOM_BH_Cairn").DontDestroyOnLoad();
             }
 
-            if (_cairnVariantPrefab == null)
+            if (_cairnTHPrefab == null)
             {
-                _cairnVariantPrefab = SearchUtilities.Find("TimberHearth_Body/Sector_TH/Sector_NomaiMines/Interactables_NomaiMines/Prefab_NOM_TH_Cairn_Arc").InstantiateInactive().Rename("Prefab_NOM_Cairn").DontDestroyOnLoad();
+                _cairnTHPrefab = SearchUtilities.Find("TimberHearth_Body/Sector_TH/Sector_NomaiMines/Interactables_NomaiMines/Prefab_NOM_TH_Cairn_Arc").InstantiateInactive().Rename("Prefab_NOM_TH_Cairn").DontDestroyOnLoad();
+            }
+
+            if (_cairnCTPrefab == null)
+            {
+                _cairnCTPrefab = SearchUtilities.Find("CaveTwin_Body/Sector_CaveTwin/Sector_NorthHemisphere/Sector_NorthSurface/Sector_TimeLoopExperiment/Interactables_TimeLoopExperiment/Prefab_NOM_CT_Cairn_Arc").InstantiateInactive().Rename("Prefab_NOM_CT_Cairn").DontDestroyOnLoad();
             }
 
             if (_recorderPrefab == null)
@@ -269,11 +275,12 @@ namespace NewHorizons.Builder.Props.TranslatorText
                         
                         return computerObject;
                     }
-                case NomaiTextType.Cairn:
-                case NomaiTextType.CairnVariant:
+                case NomaiTextType.CairnBrittleHollow:
+                case NomaiTextType.CairnTimberHearth:
+                case NomaiTextType.CairnEmberTwin:
                     {
-                        var cairnPrefab = info.type == NomaiTextType.CairnVariant ? _cairnVariantPrefab : _cairnPrefab;
-                        var cairnObject = GeneralPropBuilder.MakeFromPrefab(cairnPrefab, _cairnPrefab.name, planetGO, sector, info);
+                        var cairnPrefab = info.type == NomaiTextType.CairnTimberHearth ? _cairnTHPrefab : (info.type == NomaiTextType.CairnEmberTwin ? _cairnCTPrefab : _cairnBHPrefab);
+                        var cairnObject = GeneralPropBuilder.MakeFromPrefab(cairnPrefab, cairnPrefab.name, planetGO, sector, info);
 
                         // Idk do we have to set it active before finding things?
                         cairnObject.SetActive(true);
