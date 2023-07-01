@@ -456,9 +456,12 @@ namespace NewHorizons.Handlers
             // Spawning on other planets is a bit hacky so we do it last
             if (body.Config.Spawn != null)
             {
-                NHLogger.LogVerbose("Making spawn point");
+                NHLogger.LogVerbose($"Making spawn point on {body.Config.name}");
                 var spawnPoint = SpawnPointBuilder.Make(go, body.Config.Spawn, owRigidBody);
-                if (Main.SystemDict[body.Config.starSystem].SpawnPoint == null || (body.Config.Spawn.playerSpawn?.isDefault ?? false))
+                var isVanillaSystem = body.Config.starSystem == "SolarSystem" || body.Config.starSystem == "EyeOfTheUniverse";
+                var needsSpawnPoint = Main.SystemDict[body.Config.starSystem].SpawnPoint == null || isVanillaSystem;
+                var isDefaultSpawn = body.Config.Spawn.playerSpawn?.isDefault ?? true; // Backwards compat
+                if (needsSpawnPoint || isDefaultSpawn)
                 {
                     Main.SystemDict[body.Config.starSystem].SpawnPoint = spawnPoint;
                 }

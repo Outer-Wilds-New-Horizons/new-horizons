@@ -564,11 +564,27 @@ namespace NewHorizons
             Locator.GetPlayerBody().gameObject.AddComponent<DebugRaycaster>();
             Locator.GetPlayerBody().gameObject.AddComponent<DebugPropPlacer>();
             Locator.GetPlayerBody().gameObject.AddComponent<DebugMenu>();
-            // DebugArrow.CreateArrow(Locator.GetPlayerBody().gameObject); // This is for NH devs mostly. It shouldn't be active in debug mode for now. Someone should make a dev tools submenu for it though.
 
-            if (shouldWarpInFromShip) _shipWarpController.WarpIn(WearingSuit);
-            else if (shouldWarpInFromVessel) VesselWarpHandler.TeleportToVessel();
-            else FindObjectOfType<PlayerSpawner>().DebugWarp(SystemDict[_currentStarSystem].SpawnPoint);
+            if (shouldWarpInFromShip)
+            {
+                _shipWarpController.WarpIn(WearingSuit);
+            }
+            else if (shouldWarpInFromVessel)
+            {
+                VesselWarpHandler.TeleportToVessel();
+            }
+            else
+            {
+                var spawnPoint = SystemDict[CurrentStarSystem].SpawnPoint;
+                if (spawnPoint != null)
+                {
+                   Delay.FireOnNextUpdate(() => GameObject.FindObjectOfType<PlayerSpawner>().DebugWarp(spawnPoint));
+                }
+                else
+                {
+                    NHLogger.Log($"No NH spawn point for {CurrentStarSystem}");
+                }
+            }
 
             VesselCoordinatePromptHandler.RegisterPrompts(SystemDict.Where(system => system.Value.Config.Vessel?.coords != null).Select(x => x.Value).ToList());
         }
