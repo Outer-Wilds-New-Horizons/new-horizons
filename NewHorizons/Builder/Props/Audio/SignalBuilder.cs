@@ -6,8 +6,6 @@ using OWML.Utils;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using NewHorizons.External.Modules.Props.Audio;
-using System.Linq;
 
 namespace NewHorizons.Builder.Props.Audio
 {

@@ -1,6 +1,5 @@
 using HarmonyLib;
 using NewHorizons.Builder.Props.Audio;
-using UnityEngine;
 
 namespace NewHorizons.Patches.SignalPatches
 {
@@ -19,14 +18,14 @@ namespace NewHorizons.Patches.SignalPatches
         public static bool Signalscope_SwitchFrequencyFilter(Signalscope __instance, int increment)
         {
             var count = SignalBuilder.NumberOfFrequencies;
-            __instance._frequencyFilterIndex = (__instance._frequencyFilterIndex + increment + count) % count;
-
+            __instance._frequencyFilterIndex += increment;
+            __instance._frequencyFilterIndex = __instance._frequencyFilterIndex >= count ? 0 : __instance._frequencyFilterIndex;
+            __instance._frequencyFilterIndex = __instance._frequencyFilterIndex < 0 ? count - 1 : __instance._frequencyFilterIndex;
             var signalFrequency = AudioSignal.IndexToFrequency(__instance._frequencyFilterIndex);
 
-            var isUnknownNearby = __instance._isUnknownFreqNearby && __instance._unknownFrequency == signalFrequency;
-
-            // If it's not in use, or its unknown and isn't about to be learned, then go to the next one.
-            if ((!PlayerData.KnowsFrequency(signalFrequency) && !isUnknownNearby) || !SignalBuilder.IsFrequencyInUse(signalFrequency)) 
+            // Skip over this frequency
+            var isUnknown = !PlayerData.KnowsFrequency(signalFrequency) && !(__instance._isUnknownFreqNearby && __instance._unknownFrequency == signalFrequency);
+            if (isUnknown || !SignalBuilder.IsFrequencyInUse(signalFrequency))
             {
                 __instance.SwitchFrequencyFilter(increment);
             }
