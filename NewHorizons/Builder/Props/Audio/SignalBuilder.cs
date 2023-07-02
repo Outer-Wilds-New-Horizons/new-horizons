@@ -67,15 +67,9 @@ namespace NewHorizons.Builder.Props.Audio
 
         public static bool IsFrequencyInUse(SignalFrequency freq) => _frequenciesInUse.Contains(freq);
 
-        public static bool IsCloaked(this AudioSignal signal)
-        {
-            return _cloakedSignals.Contains(signal);
-        }
+        public static bool IsCloaked(this AudioSignal signal) => _cloakedSignals.Contains(signal);
 
-        public static bool IsOnQuantumMoon(this AudioSignal signal)
-        {
-            return _qmSignals.Contains(signal);
-        }
+        public static bool IsOnQuantumMoon(this AudioSignal signal) => _qmSignals.Contains(signal);
 
         public static SignalFrequency AddFrequency(string str)
         {
