@@ -15,9 +15,8 @@ namespace NewHorizons.Patches.MapPatches
 
             if (ao == null) return true;
 
-            if (ao._name
-                is not AstroObject.Name.CustomString
-                and (<= AstroObject.Name.Comet or >= AstroObject.Name.TimberMoon))
+            if (ao._name != AstroObject.Name.CustomString
+                && (ao._name - AstroObject.Name.Sun <= 7 || ao._name - AstroObject.Name.TimberMoon <= 1))
             {
                 __result = AstroObject.AstroObjectNameToString(ao._name);
                 return false;
