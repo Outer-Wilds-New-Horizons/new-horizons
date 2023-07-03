@@ -1,14 +1,13 @@
-using NewHorizons.External.Modules;
+using HarmonyLib;
+using NewHorizons.External.Modules.Props.Audio;
 using NewHorizons.Utility;
-using NewHorizons.Utility.Files;
 using NewHorizons.Utility.OWML;
-using NewHorizons.Utility.OuterWilds;
 using OWML.Common;
 using OWML.Utils;
 using System.Collections.Generic;
-using UnityEngine;
-using NewHorizons.External.Modules.Props.Audio;
 using System.Linq;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace NewHorizons.Builder.Props.Audio
 {
@@ -20,8 +19,8 @@ namespace NewHorizons.Builder.Props.Audio
 
         public static int NumberOfFrequencies;
 
-        private static List<AudioSignal> _qmSignals;
-        private static List<AudioSignal> _cloakedSignals;
+        private static HashSet<AudioSignal> _qmSignals;
+        private static HashSet<AudioSignal> _cloakedSignals;
 
         public static bool Initialized;
 
@@ -36,21 +35,45 @@ namespace NewHorizons.Builder.Props.Audio
             };
             NumberOfFrequencies = EnumUtils.GetValues<SignalFrequency>().Length;
 
-            _qmSignals = new List<AudioSignal>() { SearchUtilities.Find("QuantumMoon_Body/Signal_Quantum").GetComponent<AudioSignal>() };
-            _cloakedSignals = new List<AudioSignal>();
+            _qmSignals = new (){ SearchUtilities.Find("QuantumMoon_Body/Signal_Quantum").GetComponent<AudioSignal>() };
+            _cloakedSignals = new();
 
             Initialized = true;
+
+            SceneManager.sceneUnloaded += OnSceneUnloaded;
+            Main.Instance.OnStarSystemLoaded.AddListener(OnStarSystemLoaded);
         }
 
-        public static bool IsCloaked(this AudioSignal signal)
+        private static HashSet<SignalFrequency> _frequenciesInUse = new();
+
+        private static void OnSceneUnloaded(Scene _)
         {
-            return _cloakedSignals.Contains(signal);
+            _frequenciesInUse.Clear();
         }
 
-        public static bool IsOnQuantumMoon(this AudioSignal signal)
+        private static void OnStarSystemLoaded(string starSystem)
         {
-            return _qmSignals.Contains(signal);
+            // If its the base game solar system or eye we get all the main frequencies
+            if (starSystem == "SolarSystem" || starSystem == "EyeOfTheUniverse")
+            {
+                _frequenciesInUse.Add(SignalFrequency.Quantum);
+                _frequenciesInUse.Add(SignalFrequency.EscapePod);
+                _frequenciesInUse.Add(SignalFrequency.Radio);
+                _frequenciesInUse.Add(SignalFrequency.HideAndSeek);
+            }
+
+            // Always show the traveler frequency. The signalscope defaults to this on spawn, and is the only frequency known by default
+            // We don't want a scenario where the player knows no frequencies
+            _frequenciesInUse.Add(SignalFrequency.Traveler);
+
+            NHLogger.LogVerbose($"Frequencies in use in {starSystem}: {_frequenciesInUse.Join(x => x.ToString())}");
         }
+
+        public static bool IsFrequencyInUse(SignalFrequency freq) => _frequenciesInUse.Contains(freq);
+
+        public static bool IsCloaked(this AudioSignal signal) => _cloakedSignals.Contains(signal);
+
+        public static bool IsOnQuantumMoon(this AudioSignal signal) => _qmSignals.Contains(signal);
 
         public static SignalFrequency AddFrequency(string str)
         {
@@ -152,6 +175,8 @@ namespace NewHorizons.Builder.Props.Audio
             // Track certain special signal things
             if (planetGO.GetComponent<AstroObject>()?.GetAstroObjectName() == AstroObject.Name.QuantumMoon) _qmSignals.Add(audioSignal);
             if (info.insideCloak) _cloakedSignals.Add(audioSignal);
+
+            _frequenciesInUse.Add(frequency);
 
             return signalGO;
         }
