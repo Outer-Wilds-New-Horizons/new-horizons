@@ -7,9 +7,10 @@ namespace NewHorizons.Builder.General
 {
     public static class AstroObjectBuilder
     {
-        public static NHAstroObject Make(GameObject body, AstroObject primaryBody, PlanetConfig config)
+        public static NHAstroObject Make(GameObject body, AstroObject primaryBody, PlanetConfig config, bool isVanilla)
         {
             NHAstroObject astroObject = body.AddComponent<NHAstroObject>();
+            astroObject.isVanilla = isVanilla;
             astroObject.HideDisplayName = !config.Base.hasMapMarker;
             astroObject.invulnerableToSun = config.Base.invulnerableToSun;
 
