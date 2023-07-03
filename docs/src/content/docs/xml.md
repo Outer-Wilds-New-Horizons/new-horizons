@@ -18,7 +18,7 @@ XML is composed of tags, a tag can represent a section or attribute
 </Person>
 ```
 
-Notice how each tag is closed by an identical tag with a slash at the front (i.e. `<Person>` is closed by `</Person>`).  
+Notice how each tag is closed by an identical tag with a slash at the front (i.e. `<Person>` is closed by `</Person>`).
 
 If the tag has no content you can use the self-closing tag shorthand (i.e. `<IsMarried/>` doesn't need a closing tag because of the `/` at the end).
 
@@ -26,9 +26,9 @@ This XML could be written in JSON as:
 
 ```json
 {
- "name": "Jim",
- "age": 32,
- "isMarried": true
+    "name": "Jim",
+    "age": 32,
+    "isMarried": true
 }
 ```
 
@@ -36,7 +36,7 @@ XML is a lot more descriptive, you can actually tell that the object is supposed
 
 ## Structure
 
-All XML files must have **one** top-level tag, this varies depending on what you're using it for (like how ship logs use a `<AstroObjectEntry>` tag).  
+All XML files must have **one** top-level tag, this varies depending on what you're using it for (like how ship logs use a `<AstroObjectEntry>` tag).
 
 ## Schemas
 
@@ -53,5 +53,5 @@ In order to get schema validation and autofill you'll need the [Redhat XML VSCod
 
 XML is used for the following:
 
-- [Ship log Entries](/en/ship-log)
-- [Dialogue](/en/dialogue)
+-   [Ship log Entries](/ship-log)
+-   [Dialogue](/dialogue)

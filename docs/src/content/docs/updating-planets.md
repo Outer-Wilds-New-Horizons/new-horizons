@@ -11,10 +11,8 @@ You can also delete parts of an existing planet. Here's part of an example confi
 
 ```json
 {
-  "name": "Ember Twin",
-  "removeChildren": [
-    "SandSphere_Rising"
-  ]
+    "name": "Ember Twin",
+    "removeChildren": ["SandSphere_Rising"]
 }
 ```
 
@@ -26,8 +24,8 @@ You do this (but with the appropriate name) as its own config.
 
 ```json
 {
- "name" : "Ember Twin",
- "destroy" : true
+    "name": "Ember Twin",
+    "destroy": true
 }
 ```
 

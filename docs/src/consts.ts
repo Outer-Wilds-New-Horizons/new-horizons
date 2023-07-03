@@ -1,19 +1,19 @@
 export const SITE = {
-    title: 'New Horizons',
-    description: 'Documentation on how to use the New Horizons planet creation tool for Outer Wilds.',
-    defaultLanguage: 'en-us',
+    title: "New Horizons",
+    description:
+        "Documentation on how to use the New Horizons planet creation tool for Outer Wilds.",
+    defaultLanguage: "en-us"
 } as const;
 
 export const OPEN_GRAPH = {
     image: {
-        src: 'https://nh.outerwildsmods.com/public/home_logo.webp',
-        alt:
-            'The New Horizons Logo'
+        src: "https://nh.outerwildsmods.com/public/home_logo.webp",
+        alt: "The New Horizons Logo"
     }
 };
 
 export const KNOWN_LANGUAGES = {
-    English: 'en',
+    English: "en"
 } as const;
 export const KNOWN_LANGUAGE_CODES = Object.values(KNOWN_LANGUAGES);
 
@@ -23,9 +23,9 @@ export const COMMUNITY_INVITE_URL = `https://discord.gg/wusTQYbYTc`;
 
 // See "Algolia" section of the README for more information.
 export const ALGOLIA = {
-    indexName: 'XXXXXXXXXX',
-    appId: 'XXXXXXXXXX',
-    apiKey: 'XXXXXXXXXX',
+    indexName: "XXXXXXXXXX",
+    appId: "XXXXXXXXXX",
+    apiKey: "XXXXXXXXXX"
 };
 
 export type Sidebar = Record<
@@ -34,26 +34,34 @@ export type Sidebar = Record<
 >;
 export const SIDEBAR: Sidebar = {
     en: {
-        'Intro': [
-            { text: 'Introduction', link: 'en/introduction' },
+        Intro: [{ text: "Introduction", link: "" }],
+        Guides: [
+            { text: "Getting Started", link: "getting-started" },
+            { text: "Creating An Addon", link: "creating-addons" },
+            { text: "Updating Existing Planets", link: "updating-planets" },
+            { text: "Creating New Planets", link: "planet-generation" },
+            { text: "Detailing Planets", link: "details" },
+            { text: "Custom Star Systems", link: "star-systems" },
+            { text: "Adding Translations", link: "translation" },
+            { text: "Understanding XML", link: "xml" },
+            { text: "Ship Log", link: "ship-log" },
+            { text: "Dialogue", link: "dialogue" },
+            { text: "API", link: "api" },
+            { text: "Extending Configs", link: "extending-configs" },
+            { text: "Publishing Your Addon", link: "publishing" }
         ],
-        'Guides': [
-            { text: 'Getting Started', link: 'en/getting-started' },
-            { text: 'Creating An Addon', link: 'en/creating-addons' },
-            { text: 'Updating Existing Planets', link: 'en/updating-planets' },
-            { text: 'Creating New Planets', link: 'en/planet-generation' },
-            { text: 'Detailing Planets', link: 'en/details' },
-            { text: 'Custom Star Systems', link: 'en/star-systems' },
-            { text: 'Adding Translations', link: 'en/translation' },
-            { text: 'Understanding XML', link: 'en/xml' },
-            { text: 'Ship Log', link: 'en/ship-log' },
-            { text: 'Dialogue', link: 'en/dialogue' },
-            { text: 'API', link: 'en/api' },
-            { text: 'Extending Configs', link: 'en/extending-configs' },
-            { text: 'Publishing Your Addon', link: 'en/publishing' },
+        Schemas: [
+            { text: "Celestial Body Schema", link: "schemas/body-schema" },
+            { text: "Star System Schema", link: "schemas/star-system-schema" },
+            { text: "Translation Schema", link: "schemas/translation-schema" },
+            { text: "Addon Manifest Schema", link: "schemas/addon-manifest-schema" },
+            { text: "Dialogue Schema", link: "schemas/dialogue-schema" },
+            { text: "Text Schema", link: "schemas/text-schema" },
+            { text: "Ship Log Schema", link: "schemas/shiplog-schema" }
         ],
-        "Schemas": [
-            { text: "Celestial Body Schema", link: "schemas/body-schema" }
+        Reference: [
+            { text: "Bramble Colors", link: "reference/bramble-colors" },
+            { text: "AudioClip Values", link: "reference/audio-enum" }
         ]
-    },
+    }
 };

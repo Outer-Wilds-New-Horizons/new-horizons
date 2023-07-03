@@ -17,7 +17,7 @@ To get started, navigate to your mod manager and click the ⋮ symbol, then sele
 
 ![Select "Show in explorer"](/getting_started/mod_manager_show_in_explorer.webp)
 
-Now, create a new folder named "planets".  As the name suggests, New Horizons will search the files in this folder for planets to generate.
+Now, create a new folder named "planets". As the name suggests, New Horizons will search the files in this folder for planets to generate.
 
 ## Making Your First Planet
 
@@ -27,33 +27,33 @@ Once in VSCode, paste this code into the file:
 
 ```json
 {
-  "name": "Wetrock",
-  "$schema": "https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/main/NewHorizons/Schemas/body_schema.json",
-  "starSystem": "SolarSystem",
-  "Base": {
-    "groundSize": 100,
-    "surfaceSize": 101,
-    "surfaceGravity": 12,
-    "hasMapMarker": true
-  },
-  "Orbit": {
-    "semiMajorAxis": 1300,
-    "primaryBody": "TIMBER_HEARTH",
-    "isMoon": true,
-    "isTidallyLocked": true
-  },
-  "Atmosphere": {
-    "size": 150,
-    "fogTint": {
-      "r": 200,
-      "g": 255,
-      "b": 255,
-      "a": 255
+    "name": "Wetrock",
+    "$schema": "https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/main/NewHorizons/Schemas/body_schema.json",
+    "starSystem": "SolarSystem",
+    "Base": {
+        "groundSize": 100,
+        "surfaceSize": 101,
+        "surfaceGravity": 12,
+        "hasMapMarker": true
     },
-    "fogSize": 150,
-    "fogDensity": 0.2,
-    "hasRain": true
-  }
+    "Orbit": {
+        "semiMajorAxis": 1300,
+        "primaryBody": "TIMBER_HEARTH",
+        "isMoon": true,
+        "isTidallyLocked": true
+    },
+    "Atmosphere": {
+        "size": 150,
+        "fogTint": {
+            "r": 200,
+            "g": 255,
+            "b": 255,
+            "a": 255
+        },
+        "fogSize": 150,
+        "fogDensity": 0.2,
+        "hasRain": true
+    }
 }
 ```
 
@@ -83,9 +83,9 @@ Objects can have multiple keys as well, as long as you separate them by commas:
 ```
 
 But wait! why is `Jim` in quotation marks while `23` isn't? that's because of something called data types.
-Each value has a datatype, in this case `"Jim"` is a `string`, because it represents a *string* of characters.
-Age is a `number`, it represents a numerical value.  If we put 23 in quotation marks, its data type switches from a number to a string.
-And if we remove the quotation marks from `"Jim"` we get a syntax error (a red underline).  Datatypes are a common source of errors, which is why we recommend using an editor like VSCode.
+Each value has a datatype, in this case `"Jim"` is a `string`, because it represents a _string_ of characters.
+Age is a `number`, it represents a numerical value. If we put 23 in quotation marks, its data type switches from a number to a string.
+And if we remove the quotation marks from `"Jim"` we get a syntax error (a red underline). Datatypes are a common source of errors, which is why we recommend using an editor like VSCode.
 
 ### JSON Data Types
 
@@ -167,33 +167,33 @@ Now that we understand JSON better, let's look at that config file again:
 
 ```json
 {
-  "name": "Wetrock",
-  "$schema": "https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/main/NewHorizons/Schemas/body_schema.json",
-  "starSystem": "SolarSystem",
-  "Base": {
-    "groundSize": 100,
-    "surfaceSize": 101,
-    "surfaceGravity": 12,
-    "hasMapMarker": true
-  },
-  "Orbit": {
-    "semiMajorAxis": 1300,
-    "primaryBody": "TIMBER_HEARTH",
-    "isMoon": true,
-    "isTidallyLocked": true
-  },
-  "Atmosphere": {
-    "size": 150,
-    "fogTint": {
-      "r": 200,
-      "g": 255,
-      "b": 255,
-      "a": 255
+    "name": "Wetrock",
+    "$schema": "https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/main/NewHorizons/Schemas/body_schema.json",
+    "starSystem": "SolarSystem",
+    "Base": {
+        "groundSize": 100,
+        "surfaceSize": 101,
+        "surfaceGravity": 12,
+        "hasMapMarker": true
     },
-    "fogSize": 150,
-    "fogDensity": 0.2,
-    "hasRain": true
-  }
+    "Orbit": {
+        "semiMajorAxis": 1300,
+        "primaryBody": "TIMBER_HEARTH",
+        "isMoon": true,
+        "isTidallyLocked": true
+    },
+    "Atmosphere": {
+        "size": 150,
+        "fogTint": {
+            "r": 200,
+            "g": 255,
+            "b": 255,
+            "a": 255
+        },
+        "fogSize": 150,
+        "fogDensity": 0.2,
+        "hasRain": true
+    }
 }
 ```
 
@@ -202,43 +202,43 @@ It has an object called Base, which has a groundSize of 100, and a surfaceSize o
 
 Alright so now that we understand how the file is structures, let's look into what each value actually does:
 
-- `name` simply sets the name of the planet
-- `$schema` we'll get to in a second
-- `starSystem` specifies what star system this planet is located in, in this case we're using the base game star system, so we put "SolarSystem"
-- Then it has an object called `Base`
-  - Base has a `groundSize` of 100, this generates a perfect sphere that is 100 units in radius as the ground of our planet
-  - It also has a `surfaceSize` of 101, surface size is used in many calculations, it's generally good to set it to a bit bigger than ground size.
-  - `surfaceGravity` describes the strength of gravity on this planet, in this case it's 12 which is the same as Timber Hearth
-  - `hasMapMarker` tells new horizons that we want this planet to have a marker on the map screen
-- Next it has another object called `Orbit`
-  - `semiMajorAxis` specifies the radius of the orbit (how far away the body is from its parent)
-  - `primaryBody` is set to TIMBER_HEARTH, this makes our planet orbit timber hearth
-  - `isMoon` simply tells the game how close you have to be to the planet in map mode before its name appears
-  - `isTidallyLocked` makes sure that one side of our planet is always facing timber hearth (the primary body)
-- Finally, we have `Atmosphere`
-  - Its `size` is 150, this simply sets how far away from the planet our atmosphere stretches
-  - Its `fogTint` is set to a color which is an object with r, g, b, and a properties (properties is another word for keys)
-  - `fogSize` determines how far away the fog stretches from the planet
-  - `fogDensity` is simply how dense the fog is
-  - `hasRain` makes rainfall on the planet
+-   `name` simply sets the name of the planet
+-   `$schema` we'll get to in a second
+-   `starSystem` specifies what star system this planet is located in, in this case we're using the base game star system, so we put "SolarSystem"
+-   Then it has an object called `Base`
+    -   Base has a `groundSize` of 100, this generates a perfect sphere that is 100 units in radius as the ground of our planet
+    -   It also has a `surfaceSize` of 101, surface size is used in many calculations, it's generally good to set it to a bit bigger than ground size.
+    -   `surfaceGravity` describes the strength of gravity on this planet, in this case it's 12 which is the same as Timber Hearth
+    -   `hasMapMarker` tells new horizons that we want this planet to have a marker on the map screen
+-   Next it has another object called `Orbit`
+    -   `semiMajorAxis` specifies the radius of the orbit (how far away the body is from its parent)
+    -   `primaryBody` is set to TIMBER_HEARTH, this makes our planet orbit timber hearth
+    -   `isMoon` simply tells the game how close you have to be to the planet in map mode before its name appears
+    -   `isTidallyLocked` makes sure that one side of our planet is always facing timber hearth (the primary body)
+-   Finally, we have `Atmosphere`
+    -   Its `size` is 150, this simply sets how far away from the planet our atmosphere stretches
+    -   Its `fogTint` is set to a color which is an object with r, g, b, and a properties (properties is another word for keys)
+    -   `fogSize` determines how far away the fog stretches from the planet
+    -   `fogDensity` is simply how dense the fog is
+    -   `hasRain` makes rainfall on the planet
 
 ### What's a Schema?
 
 That `$schema` property is a bit special, it instructs VSCode to use a pre-made schema to provide a better editing experience.
 With the schema you get:
 
-- Automatic descriptions for properties when hovering over keys
-- Automatic error detection for incorrect data types or values
-- Autocomplete, also called IntelliSense
+-   Automatic descriptions for properties when hovering over keys
+-   Automatic error detection for incorrect data types or values
+-   Autocomplete, also called IntelliSense
 
 ## Testing The Planet
 
-With the new planet created (*and saved!*), launch the game through the mod manager and click resume expedition. If all went well you should be able to open your map and see wetrock orbiting Timber Hearth.
+With the new planet created (_and saved!_), launch the game through the mod manager and click resume expedition. If all went well you should be able to open your map and see wetrock orbiting Timber Hearth.
 
 If you run into issues please make sure:
 
-- You placed the JSON file in a folder called `planets` in the New Horizons mod folder
-- There are no red or yellow squiggly lines in your file
+-   You placed the JSON file in a folder called `planets` in the New Horizons mod folder
+-   There are no red or yellow squiggly lines in your file
 
 ## Experiment
 

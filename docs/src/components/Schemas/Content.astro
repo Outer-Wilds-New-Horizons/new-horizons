@@ -1,60 +1,147 @@
 ---
-import type { JSONSchema } from "@apidevtools/json-schema-ref-parser/dist/lib/types";
+import { Schema, SchemaTools } from "../../schema_utils";
 
 export interface Props {
-    name: string;
-    slug: string;
-    schema: JSONSchema;
-    parentSchema: JSONSchema;
+    schema: Schema;
+    level: number;
+    isDef?: boolean;
 }
 
-const { name, slug, schema, parentSchema } = Astro.props;
+// Makes TS Happy
+type HeadingType = "h2" | "h3" | "h4" | "h5" | "h6";
 
-const getTag = () => {
-    switch (schema.type) {
-        default:
-            return Fragment;
-    }
-};
+const levelMap: HeadingType[] = ["h2", "h2", "h3", "h4", "h5", "h6"];
 
-const Tag = getTag();
+const { schema, level, isDef } = Astro.props;
 
-const displayType = schema.$ref?.split("/").at(-1) ?? schema.type;
+const description = SchemaTools.getDescription(schema);
+const type = SchemaTools.getType(schema);
+const link = `https://raw.githubusercontent.com/Outer-Wilds-New-Horizons/new-horizons/main/NewHorizons/Schemas/${schema.fileName}`;
+const refSlug = SchemaTools.getRefSlug(schema);
+const enumVals = SchemaTools.getEnumValues(schema);
+const props = SchemaTools.getProps(schema);
 
-const required =
-    parentSchema.required &&
-    Array.isArray(parentSchema.required) &&
-    parentSchema.required.includes(name);
+const HeadingTag = levelMap[level] ?? "h6";
 ---
 
-<div class="wrapper">
+<div data-level={level} class="wrapper">
     <div class="header">
-        <h2 id={slug}>{name}</h2>
+        {
+            level !== 0 && (
+                <HeadingTag class="title" id={schema.slug}>
+                    {SchemaTools.getTitle(schema)}
+                </HeadingTag>
+            )
+        }
         <div class="badges">
-            {required && <span class="required">Required</span>}
-            <span>Type: {displayType}</span>
+            {level === 0 && <span>Schema Type: {schema.internalSchema.type}</span>}
+            {
+                SchemaTools.getRequired(schema) && level !== 0 && (
+                    <span class="required">Required</span>
+                )
+            }
+            {type && <span>Type: {type}</span>}
+            {SchemaTools.getAdditionalBadges(schema).map((b) => <span>{b}</span>)}
         </div>
     </div>
-
-    <p>
-        {schema.description}
-    </p>
-    <Tag schema={schema} />
+    {description && <p>{description}</p>}
+    {
+        enumVals.length !== 0 && (
+            <>
+                <p>Must be equal to any of the following:</p>
+                <ul>
+                    {enumVals.map((v) => (
+                        <li>
+                            <code>{v}</code>
+                        </li>
+                    ))}
+                </ul>
+            </>
+        )
+    }
+    {
+        refSlug && (
+            <a href={`/schemas/${schema.rootSlug}/defs/${refSlug}`}>See Definitions/{refSlug}</a>
+        )
+    }
+    {
+        level === 0 && !isDef && (
+            <div>
+                <p>
+                    <a href={`/schemas/${schema.slug}/defs`}>View Definitions</a>
+                </p>
+                <p>
+                    <a rel="noreferer" target="_blank" href={link}>
+                        View Raw
+                    </a>
+                </p>
+            </div>
+        )
+    }
+    {
+        props.length !== 0 && (
+            <div class="children">
+                {props.map(([_, child], i) => (
+                    <>
+                        {i !== 0 && <hr />}
+                        <Astro.self level={level + 1} schema={child} />
+                    </>
+                ))}
+            </div>
+        )
+    }
 </div>
 
 <style>
-    h2 {
-        margin-top: 0.5rem !important;
+    @keyframes flash {
+        0% {
+            color: unset;
+        }
+        50% {
+            color: var(--theme-accent);
+        }
+        100% {
+            color: unset;
+        }
+    }
+
+    .title:target {
+        transition: color;
+        animation: flash 600ms cubic-bezier(0.45, 0.05, 0.55, 0.95) 3;
     }
 
     div.header {
         display: flex;
         flex-direction: column;
-        margin-bottom: 0.5rem;
+    }
+
+    div.wrapper[data-level="2"] {
+        margin-left: 2rem;
+    }
+
+    div.wrapper[data-level="3"] {
+        margin-left: 3.5rem;
+    }
+
+    div.wrapper[data-level="4"] {
+        margin-left: 5rem;
     }
 
     div.wrapper {
-        margin: 2rem 0;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    div.children {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    ul {
+        margin-top: 0.5rem;
     }
 
     span {

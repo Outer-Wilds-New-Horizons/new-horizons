@@ -14,14 +14,14 @@ npm create astro@latest -- --template docs
 
 ## Features
 
-- ✅ **Full Markdown support**
-- ✅ **Responsive mobile-friendly design**
-- ✅ **Sidebar navigation**
-- ✅ **Search (powered by Algolia)**
-- ✅ **Multi-language i18n**
-- ✅ **Automatic table of contents**
-- ✅ **Automatic list of contributors**
-- ✅ (and, best of all) **dark mode**
+-   ✅ **Full Markdown support**
+-   ✅ **Responsive mobile-friendly design**
+-   ✅ **Sidebar navigation**
+-   ✅ **Search (powered by Algolia)**
+-   ✅ **Multi-language i18n**
+-   ✅ **Automatic table of contents**
+-   ✅ **Automatic list of contributors**
+-   ✅ (and, best of all) **dark mode**
 
 ## 🧞 Commands
 
@@ -86,14 +86,14 @@ The sidebar navigation is controlled by the `SIDEBAR` variable in your `src/cons
 
 ```ts
 export const SIDEBAR = {
-  en: {
-		'Section Header': [
-			{ text: 'Introduction', link: 'en/introduction' },
-			{ text: 'Page 2', link: 'en/page-2' },
-			{ text: 'Page 3', link: 'en/page-3' },
-		],
-		'Another Section': [{ text: 'Page 4', link: 'en/page-4' }],
-	},
+    en: {
+        "Section Header": [
+            { text: "Introduction", link: "en/introduction" },
+            { text: "Page 2", link: "en/page-2" },
+            { text: "Page 3", link: "en/page-3" }
+        ],
+        "Another Section": [{ text: "Page 4", link: "en/page-4" }]
+    }
 };
 ```
 
@@ -135,17 +135,17 @@ Last step: you'll need to add a new entry to your sidebar, to create the table o
 // src/consts.ts
 export const SIDEBAR = {
   en: {
-		'Section Header': [
-			{ text: 'Introduction', link: 'en/introduction' },
+  'Section Header': [
+   { text: 'Introduction', link: 'en/introduction' },
       // ...
-		],
-		// ...
-	},,
+  ],
+  // ...
+ },,
 +  es: {
-+		'Encabezado de sección': [
-+			{ text: 'Introducción', link: 'en/introduction' },
++  'Encabezado de sección': [
++   { text: 'Introducción', link: 'en/introduction' },
 +     // ...
-+		],
++  ],
 +   // ...
 +  },
 };
@@ -157,7 +157,7 @@ If you plan to use Spanish as the default language, you just need to modify the 
 
 ```diff
 <script>
-- window.location.pathname = `/en/introduction`;
+- window.location.pathname = `introduction`;
 + window.location.pathname = `/es/introduction`;
 </script>
 ```

@@ -15,20 +15,20 @@ A star system config file will look something like this:
 
 ```json
 {
- "$schema": "https://raw.githubusercontent.com/Outer-Wilds-New-Horizons/new-horizons/main/NewHorizons/Schemas/star_system_schema.json",
- "travelAudio": "assets/Travel.mp3",
- "Vessel": {
-  "coords": {
-   "x": [ 4, 0, 3, 1 ],
-   "y": [ 0, 5, 4 ],
-   "z": [ 5, 4, 0, 3, 1 ]
-  },
-  "vesselPosition": {
-   "x": 0,
-   "y": 0,
-   "z": 8000
-  }
- }
+    "$schema": "https://raw.githubusercontent.com/Outer-Wilds-New-Horizons/new-horizons/main/NewHorizons/Schemas/star_system_schema.json",
+    "travelAudio": "assets/Travel.mp3",
+    "Vessel": {
+        "coords": {
+            "x": [4, 0, 3, 1],
+            "y": [0, 5, 4],
+            "z": [5, 4, 0, 3, 1]
+        },
+        "vesselPosition": {
+            "x": 0,
+            "y": 0,
+            "z": 8000
+        }
+    }
 }
 ```
 

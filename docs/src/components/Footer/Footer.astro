@@ -1,19 +1,13 @@
----
-import AvatarList from './AvatarList.astro';
-type Props = {
-	path: string;
-};
-const { path } = Astro.props;
----
-
 <footer>
-	<AvatarList path={path} />
+    <span>© The New Horizons Team 2023 |</span>
+    <span>Built With {Astro.generator}</span>
 </footer>
 
 <style>
-	footer {
-		margin-top: auto;
-		padding: 2rem;
-		border-top: 3px solid var(--theme-divider);
-	}
+    footer {
+        text-align: center;
+        margin-top: auto;
+        padding: 2rem;
+        border-top: 3px solid var(--theme-divider);
+    }
 </style>

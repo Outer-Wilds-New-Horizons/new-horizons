@@ -23,7 +23,7 @@ public interface INewHorizons
     void LoadConfigs(IModBehaviour mod);
 
     /// <summary>
-    /// Retrieve the root GameObject of a custom planet made by creating configs. 
+    /// Retrieve the root GameObject of a custom planet made by creating configs.
     /// Will only work if the planet has been created (see GetStarSystemLoadedEvent)
     /// </summary>
     GameObject GetPlanet(string name);
@@ -91,7 +91,7 @@ public interface INewHorizons
     /// Allows you to spawn a copy of a prop by specifying its path.
     /// This is the same as using Props->details in a config, but also returns the spawned gameObject to you.
     /// </summary>
-    GameObject SpawnObject(GameObject planet, Sector sector, string propToCopyPath, Vector3 position, Vector3 eulerAngles, 
+    GameObject SpawnObject(GameObject planet, Sector sector, string propToCopyPath, Vector3 position, Vector3 eulerAngles,
         float scale, bool alignWithNormal);
 
     /// <summary>
@@ -117,9 +117,9 @@ public interface INewHorizons
 In your main `ModBehaviour` class you can get the NewHorizons API like so:
 
 ```cs
-public class MyMod : ModBehaviour 
+public class MyMod : ModBehaviour
 {
-    void Start() 
+    void Start()
     {
         INewHorizons NewHorizonsAPI = ModHelper.Interaction.TryGetModApi<INewHorizons>("xen.NewHorizons");
     }

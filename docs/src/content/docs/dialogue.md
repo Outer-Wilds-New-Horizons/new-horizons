@@ -5,7 +5,7 @@ description: Guide to making dialogue in New Horizons
 
 This page goes over how to use dialogue in New Horizons.
 
-You may want to view [Understanding XML](/en/xml) if you haven't already.
+You may want to view [Understanding XML](/xml) if you haven't already.
 
 ## Understanding Dialogue
 
@@ -19,11 +19,11 @@ A node is a set of pages shown to the player followed by options the player can 
 
 ### Condition
 
-A condition is a yes/no value stored **for this loop and this loop only**.  It can be used to show new dialogue options, stop someone from talking to you (looking at you Slate), and more.
+A condition is a yes/no value stored **for this loop and this loop only**. It can be used to show new dialogue options, stop someone from talking to you (looking at you Slate), and more.
 
 ### Persistent Condition
 
-A persistent condition is similar to a condition, except it *persists* through loops, and is saved on the players save file.
+A persistent condition is similar to a condition, except it _persists_ through loops, and is saved on the players save file.
 
 ### Remote Trigger
 
@@ -47,7 +47,7 @@ Here's an example dialogue XML:
    <Page>Start</Page> <!-- A single page of the dialogue -->
         <Page>Start Part 2</Page> <!-- Another page -->
   </Dialogue>
-        
+
   <DialogueOptionsList> <!-- Show options the player can choose from when the character is done talking -->
    <DialogueOption> <!-- A single option the player can pick -->
     <Text>Goto 1</Text> <!-- The text to display for the option -->
@@ -64,14 +64,14 @@ Here's an example dialogue XML:
    </DialogueOption>
   </DialogueOptionsList>
  </DialogueNode>
- 
+
  <DialogueNode> <!-- Another node -->
   <Name>1</Name> <!-- Name of the node -->
   <!-- (Note the lack of an EntryCondition) -->
   <Dialogue>
    <Page>This is 1</Page>
   </Dialogue>
-  
+
   <DialogueOptionsList>
    <DialogueOption>
     <Text>Goto 2</Text>
@@ -83,7 +83,7 @@ Here's an example dialogue XML:
    </DialogueOption>
   </DialogueOptionsList>
  </DialogueNode>
-    
+
  <DialogueNode> <!-- Another node why not -->
   <Name>2</Name>
   <Dialogue>
@@ -101,7 +101,7 @@ Here's an example dialogue XML:
    </DialogueOption>
   </DialogueOptionsList>
  </DialogueNode>
- 
+
  <DialogueNode> <!-- The end node -->
   <Name>End</Name>
   <Dialogue>
@@ -118,14 +118,14 @@ To use the dialogue XML you have created, you simply need to reference it in the
 
 ```json
 {
- "Props": {
-  "dialogue": [
-   {
-    "position": {"x": 5, "y": 10, "z": 0},
-    "xmlFile": "planets/path/to/your_file.xml"
-   }
-  ]
- }
+    "Props": {
+        "dialogue": [
+            {
+                "position": { "x": 5, "y": 10, "z": 0 },
+                "xmlFile": "planets/path/to/your_file.xml"
+            }
+        ]
+    }
 }
 ```
 
@@ -160,4 +160,4 @@ Defining `<DialogueTarget>` in the `<DialogueNode>` tag instead of a `<DialogueO
 
 ### DialogueTargetShipLogCondition
 
-Used in tandem with `DialogueTarget`, makes it so you must have a [ship log fact](/en/ship-log#explore-facts) to go to the next node.
+Used in tandem with `DialogueTarget`, makes it so you must have a [ship log fact](/ship-log#explore-facts) to go to the next node.

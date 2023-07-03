@@ -3,11 +3,11 @@ title: Planet Generation
 description: A guide to creating new planets with New Horizons
 ---
 
-This guide covers some aspects of generating your planet, a lot of stuff is already explained in [the celestial body schema](/schemas/body_schema).
+This guide covers some aspects of generating your planet, a lot of stuff is already explained in [the celestial body schema](/schemas/body-schema).
 
 ## Orbits
 
-First thing you should specify about your planet is its orbit. `primaryBody` will specify what planet this body will orbit.  If you're in a new solar system and want this planet to be the center, set `centerOfSolarSystem` to `true` (keep in mind `centerOfSolarSystem` is in the `Base` module, not `Orbit`).  Next up you'll need to specify the [orbital parameters](https://en.wikipedia.org/wiki/Orbital_elements).
+First thing you should specify about your planet is its orbit. `primaryBody` will specify what planet this body will orbit. If you're in a new solar system and want this planet to be the center, set `centerOfSolarSystem` to `true` (keep in mind `centerOfSolarSystem` is in the `Base` module, not `Orbit`). Next up you'll need to specify the [orbital parameters](https://en.wikipedia.org/wiki/Orbital_elements).
 
 ## Heightmaps
 
@@ -35,12 +35,12 @@ There are also tools to help generate these images for you such as [Textures For
 
 The following modules support variable sizing, meaning they can change scale over the course of the loop.
 
-- Water
-- Lava
-- Star
-- Sand
-- Funnel
-- Ring
+-   Water
+-   Lava
+-   Star
+-   Sand
+-   Funnel
+-   Ring
 
 To do this, simply specify a `curve` property on the module
 

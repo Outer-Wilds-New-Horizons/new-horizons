@@ -1,0 +1,43 @@
+---
+import { readdir } from "node:fs/promises";
+import { SchemaTools, type Schema } from "../../../../schema_utils";
+import Breadcrumb from "../../../../components/Schemas/Breadcrumb.astro";
+import MainLayout from "../../../../layouts/MainLayout.astro";
+
+export interface Props {
+    schema: Schema;
+}
+
+export async function getStaticPaths() {
+    const schemaFiles = await readdir("../NewHorizons/Schemas");
+    return schemaFiles.map((f) => {
+        const schema = SchemaTools.readSchema(f);
+        return {
+            params: {
+                schema: schema.slug
+            },
+            props: {
+                schema
+            }
+        };
+    });
+}
+
+const { schema } = Astro.props;
+
+const title = `${SchemaTools.getTitle(schema) ?? "??"} Definitions`;
+const defs = SchemaTools.getDefs(schema).map((d) => d.slug);
+---
+
+<MainLayout noFileEdit lang="en-us" dir="ltr" headings={[]} title={title} description={""}>
+    <Breadcrumb schema={schema} onlyDefs />
+    <ul>
+        {
+            defs.map((d) => (
+                <li>
+                    <a href={`/schemas/${schema.slug}/defs/${d}`}>{d}</a>
+                </li>
+            ))
+        }
+    </ul>
+</MainLayout>

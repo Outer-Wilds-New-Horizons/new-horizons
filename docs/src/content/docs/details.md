@@ -5,9 +5,9 @@ description: A guide to adding details to planets in New Horizons
 
 For physical objects there are currently two ways of setting them up: specify an asset bundle and path to load a custom asset you created, or specify the path to the item you want to copy from the game in the scene hierarchy. Use the [Unity Explorer](https://outerwildsmods.com/mods/unityexplorer) mod to find an object you want to copy onto your new body. Some objects work better than others for this. Good luck. Some pointers:
 
-- Use "Object Explorer" to search
-- Generally you can find planets by writing their name with no spaces/punctuation followed by "_Body".
-- There's also [this community-maintained list of props](https://docs.google.com/spreadsheets/d/1VJaglB1kRL0VqaXhvXepIeymo93zqhWex-j7_QDm6NE/edit?usp=sharing) which you can use to find interesting props and check to see if they have collision.
+-   Use "Object Explorer" to search
+-   Generally you can find planets by writing their name with no spaces/punctuation followed by "\_Body".
+-   There's also [this community-maintained list of props](https://docs.google.com/spreadsheets/d/1VJaglB1kRL0VqaXhvXepIeymo93zqhWex-j7_QDm6NE/edit?usp=sharing) which you can use to find interesting props and check to see if they have collision.
 
 ## Using the Prop Placer
 
@@ -17,7 +17,7 @@ The Prop Placer is a convenience tool that lets you manually place details from 
 
 1. Pause the game. You will see an extra menu option titled "Toggle Prop Placer Menu". Click it
 2. The prop placer menu should now be open. At the bottom of the menu, you will see a list of mods. Click yours.
-   1. This menu scrolls. If you do not see your mod, it may be further down the list.
+    1. This menu scrolls. If you do not see your mod, it may be further down the list.
 3. The Prop Placer is now active! Unpause the game, and you can now place Nomai vases using "G"
 
 ### How to Select Props
@@ -31,11 +31,11 @@ The Prop Placer is a convenience tool that lets you manually place details from 
 
 ### Extra features
 
-1. Made a mistake? **Press the "-" key to undo.** Press the "+" key to redo.  
-2. If you have the Unity Explorer mod enabled, you can use this to tweak the position, rotation, and scale of your props. Your changes will be saved.  
-3. Want to save some recently placed props between game launches? On the recently placed props list, click the star next to the prop's name to favorite it.  
-4. Found a bug that ruined your configs? Check `AppData\Roaming\OuterWildsModManager\OWML\Mods\xen.NewHorizons\configBackups` for backup saves of your work. Folders are titled "\[date\]T\[time\]".  
-5. Want to add props to Ember Twin but don't feel like making a config file for it? We got you! Place that prop and the config file will be created automatically on your next save.  
+1. Made a mistake? **Press the "-" key to undo.** Press the "+" key to redo.
+2. If you have the Unity Explorer mod enabled, you can use this to tweak the position, rotation, and scale of your props. Your changes will be saved.
+3. Want to save some recently placed props between game launches? On the recently placed props list, click the star next to the prop's name to favorite it.
+4. Found a bug that ruined your configs? Check `AppData\Roaming\OuterWildsModManager\OWML\Mods\xen.NewHorizons\configBackups` for backup saves of your work. Folders are titled "\[date\]T\[time\]".
+5. Want to add props to Ember Twin but don't feel like making a config file for it? We got you! Place that prop and the config file will be created automatically on your next save.
 6. This even works for planets that were created by other mods!
 
 ## Asset Bundles
@@ -79,7 +79,7 @@ public class CreateAssetBundles
 
 ## Importing a planet's surface from Unity
 
-Making a planet's entire surface from a Unity prefab is the exact same thing as adding one single big detail at position (0, 0, 0).  
+Making a planet's entire surface from a Unity prefab is the exact same thing as adding one single big detail at position (0, 0, 0).
 
 ## Examples
 
@@ -87,20 +87,20 @@ To add a Mars rover to the red planet in [RSS](https://github.com/xen-42/outer-w
 
 ```json
 {
-  "Props": {
-    "Details": [
-      {
-        "assetBundle": "planets/assetbundle/rss",
-        "path": "Assets/RSS/Prefabs/Rover.prefab",
-        "position": {
-          "x": 146.5099,
-          "y": -10.83688,
-          "z": -36.02736
-        },
-        "alignToNormal": true
-      }
-    ]
-  }
+    "Props": {
+        "Details": [
+            {
+                "assetBundle": "planets/assetbundle/rss",
+                "path": "Assets/RSS/Prefabs/Rover.prefab",
+                "position": {
+                    "x": 146.5099,
+                    "y": -10.83688,
+                    "z": -36.02736
+                },
+                "alignToNormal": true
+            }
+        ]
+    }
 }
 ```
 
@@ -108,14 +108,14 @@ To scatter 12 trees from the Dream World around Wetrock in [NH Examples](https:/
 
 ```json
 {
-  "Props": {
-    "Scatter": [
-      {
-        "path": "DreamWorld_Body/Sector_DreamWorld/Sector_DreamZone_1/Props_DreamZone_1/OtherComponentsGroup/Trees_Z1/DreamHouseIsland/Tree_DW_M_Var",
-        "count": 12
-      }
-    ]
-  }
+    "Props": {
+        "Scatter": [
+            {
+                "path": "DreamWorld_Body/Sector_DreamWorld/Sector_DreamZone_1/Props_DreamZone_1/OtherComponentsGroup/Trees_Z1/DreamHouseIsland/Tree_DW_M_Var",
+                "count": 12
+            }
+        ]
+    }
 }
 ```
 
@@ -123,26 +123,26 @@ You can swap these around too. The following would scatter 12 Mars rovers across
 
 ```json
 {
-  "Props": {
-    "Details": [
-      {
-        "path": "DreamWorld_Body/Sector_DreamWorld/Sector_DreamZone_1/Props_DreamZone_1/OtherComponentsGroup/Trees_Z1/DreamHouseIsland/Tree_DW_M_Var",
-        "position": {
-          "x": 146.5099,
-          "y": -10.83688,
-          "z": -36.02736
-        },
-        "alignToNormal": true
-      }
-    ],
-    "Scatter": [
-      {
-        "assetBundle": "planets/assetbundle/rss",
-        "path": "Assets/RSS/Prefabs/Rover.prefab",
-        "count": 12
-      }
-    ]
-  }
+    "Props": {
+        "Details": [
+            {
+                "path": "DreamWorld_Body/Sector_DreamWorld/Sector_DreamZone_1/Props_DreamZone_1/OtherComponentsGroup/Trees_Z1/DreamHouseIsland/Tree_DW_M_Var",
+                "position": {
+                    "x": 146.5099,
+                    "y": -10.83688,
+                    "z": -36.02736
+                },
+                "alignToNormal": true
+            }
+        ],
+        "Scatter": [
+            {
+                "assetBundle": "planets/assetbundle/rss",
+                "path": "Assets/RSS/Prefabs/Rover.prefab",
+                "count": 12
+            }
+        ]
+    }
 }
 ```
 

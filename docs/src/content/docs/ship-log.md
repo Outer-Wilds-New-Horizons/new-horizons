@@ -7,7 +7,7 @@ description: A guide to editing the ship log in New Horizons
 
 Welcome! this page outlines how to create a custom ship log.
 
-If you haven't already, you may want to take a look at [Understanding XML](/en/xml) to get a better idea of how XML works.
+If you haven't already, you may want to take a look at [Understanding XML](/xml) to get a better idea of how XML works.
 
 ## Understanding Ship Logs
 
@@ -20,7 +20,7 @@ village or the southern observatory on Brittle Hollow.
 An entry is split up into facts, a fact can either be a rumor fact or an explore fact.
 
 ![entryExample](/ship_log/entry_example.webp)
-*In red you can see an entry, in green you can see the entry's facts*
+_In red you can see an entry, in green you can see the entry's facts_
 
 #### Curiosities
 
@@ -29,14 +29,14 @@ Non-curiosity entries have a Curiosity attribute that can be set to make the col
 curiosity (Like how everything regarding the Vessel is red)
 
 ![curiosityExample](/ship_log/curiosity_example.webp)
-*The Ash Twin Project is an example of a curiosity (internally it's called TIME_LOOP)*
+_The Ash Twin Project is an example of a curiosity (internally it's called TIME_LOOP)_
 
 #### Child Entries
 
 Entries can be children of other entries, meaning they'll be smaller.
 
 ![childEntryExample](/ship_log/child_entry_example.webp)
-*The murals at the old settlement on Brittle Hollow are examples of child entries*
+_The murals at the old settlement on Brittle Hollow are examples of child entries_
 
 ### Rumor Facts
 
@@ -149,9 +149,9 @@ You can load your XML file to your planet by doing adding the following to your 
 
 ```json
 {
-  "ShipLog": {
-    "xmlFile": "planets/example.xml"
-  }
+    "ShipLog": {
+        "xmlFile": "planets/example.xml"
+    }
 }
 ```
 
@@ -166,20 +166,20 @@ For example, if I want to change an entry with the ID of `EXAMPLE_ENTRY` and ano
 ```json
 {
     "entryPositions": [
-      {
-        "id": "EXAMPLE_ENTRY",
-        "position": {
-          "x": 100,
-          "y": 200
+        {
+            "id": "EXAMPLE_ENTRY",
+            "position": {
+                "x": 100,
+                "y": 200
+            }
+        },
+        {
+            "id": "EXAMPLE_ENTRY_2",
+            "position": {
+                "x": 200,
+                "y": 100
+            }
         }
-      },
-      {
-        "id": "EXAMPLE_ENTRY_2",
-        "position": {
-          "x": 200,
-          "y": 100
-        }
-      }
     ]
 }
 ```
@@ -187,7 +187,7 @@ For example, if I want to change an entry with the ID of `EXAMPLE_ENTRY` and ano
 To help with this, download the unity explorer mod and manually position entries, then simply use the dev tools to dump all the entries to a json string you can copy and paste into your config.
 
 ![autoDetectiveMode](/ship_log/auto_rumor_mode.webp)
-*A set of entries laid out with auto mode*
+_A set of entries laid out with auto mode_
 
 ### Images
 
@@ -196,10 +196,10 @@ point to a folder:
 
 ```json
 {
-  "ShipLog": {
-    "xmlFile": "planets/example.xml",
-    "spriteFolder": "planets/example_planet_entry_sprites/"
-  }
+    "ShipLog": {
+        "xmlFile": "planets/example.xml",
+        "spriteFolder": "planets/example_planet_entry_sprites/"
+    }
 }
 ```
 
@@ -214,31 +214,31 @@ Colors for each curiosity is given in a list, so if I wanted the curiosity `EXAM
 
 ```json
 {
-  "ShipLog": {
-    "xmlFile": "planets/example.xml",
-    "curiosities": [
-      {
-        "id": "EXAMPLE_ENTRY",
-        "color": {
-          "r": 0,
-          "g": 0,
-          "b": 100,
-          "a": 255
-        },
-        "highlightColor": {
-          "r": 0,
-          "g": 1,
-          "b": 255,
-          "a": 255
-        }
-      }
-    ]
-  }
+    "ShipLog": {
+        "xmlFile": "planets/example.xml",
+        "curiosities": [
+            {
+                "id": "EXAMPLE_ENTRY",
+                "color": {
+                    "r": 0,
+                    "g": 0,
+                    "b": 100,
+                    "a": 255
+                },
+                "highlightColor": {
+                    "r": 0,
+                    "g": 1,
+                    "b": 255,
+                    "a": 255
+                }
+            }
+        ]
+    }
 }
 ```
 
 ![curiosityColorChange](/ship_log/change_color.webp)
-*The curiosity's color is changed to blue*
+_The curiosity's color is changed to blue_
 
 ## Map Mode Options
 
@@ -251,12 +251,12 @@ Also, adding planets to the vanilla solar system requires you to use manual layo
 #### Automatic Layout
 
 In automatic layout, each planet that orbits the center of the solar system is put in a row, then, each planet orbiting
-those planets are put in a column, then, each planet orbiting *those* planets are put in a row for as many planets there
+those planets are put in a column, then, each planet orbiting _those_ planets are put in a row for as many planets there
 are. The order of each planet is determined by their semi-major axis, if two planets have the same semi-major axis then
 they're sorted by order loaded in.
 
 ![autoMapMode](/ship_log/auto_map_mode.webp)
-*An example system laid out with auto mode*
+_An example system laid out with auto mode_
 
 ##### Offset
 
@@ -264,12 +264,12 @@ The `offset` option lets you adjust a planet's offset from the last planet.
 
 ```json
 {
-  "ShipLog": {
-    "xmlFile": "planets/example.xml",
-    "mapMode": {
-      "offset": -5.0
+    "ShipLog": {
+        "xmlFile": "planets/example.xml",
+        "mapMode": {
+            "offset": -5.0
+        }
     }
-  }
 }
 ```
 
@@ -287,17 +287,16 @@ the planet is using automatic mode)
 
 ```json
 {
-  "ShipLog": {
-    "xmlFile": "planets/example.xml",
-    "mapMode": {
-      "manualPosition": {
-        "x": 0,
-        "y": 500
-      },
-      "manualNavigationPosition": {
-      }
+    "ShipLog": {
+        "xmlFile": "planets/example.xml",
+        "mapMode": {
+            "manualPosition": {
+                "x": 0,
+                "y": 500
+            },
+            "manualNavigationPosition": {}
+        }
     }
-  }
 }
 ```
 
@@ -309,19 +308,19 @@ second row (you can't select the sun, so it doesn't have a row or column). So, b
 
 ```json
 {
-  "ShipLog": {
-    "xmlFile": "planets/example.xml",
-    "mapMode": {
-      "manualPosition": {
-        "x": 0,
-        "y": 500
-      },
-      "manualNavigationPosition": {
-        "x": 1,
-        "y": 1
-      }
+    "ShipLog": {
+        "xmlFile": "planets/example.xml",
+        "mapMode": {
+            "manualPosition": {
+                "x": 0,
+                "y": 500
+            },
+            "manualNavigationPosition": {
+                "x": 1,
+                "y": 1
+            }
+        }
     }
-  }
 }
 ```
 
@@ -360,12 +359,12 @@ How much to scale this planet in the map mode screen (you may have to change off
 
 ```json
 {
-  "ShipLog": {
-    "xmlFile": "planets/example.xml",
-    "mapMode": {
-      "scale": 0.5
+    "ShipLog": {
+        "xmlFile": "planets/example.xml",
+        "mapMode": {
+            "scale": 0.5
+        }
     }
-  }
 }
 ```
 
@@ -382,27 +381,27 @@ between Ash Twin and Ember Twin)
 
 ```json
 {
-  "ShipLog": {
-    "xmlFile": "planets/example.xml",
-    "mapMode": {
-      "details": [
-        {
-          "revealedSprite": "planets/assets/image.png",
-          "outlineSprite": "planets/assets/outline.png",
-          "invisibleWhenHidden": true,
-          "rotation": 45,
-          "scale": {
-            "x": 0.2,
-            "y": 0.2
-          },
-          "position": {
-            "x": 20,
-            "y": 10
-          }
+    "ShipLog": {
+        "xmlFile": "planets/example.xml",
+        "mapMode": {
+            "details": [
+                {
+                    "revealedSprite": "planets/assets/image.png",
+                    "outlineSprite": "planets/assets/outline.png",
+                    "invisibleWhenHidden": true,
+                    "rotation": 45,
+                    "scale": {
+                        "x": 0.2,
+                        "y": 0.2
+                    },
+                    "position": {
+                        "x": 20,
+                        "y": 10
+                    }
+                }
+            ]
         }
-      ]
     }
-  }
 }
 ```
 
@@ -418,12 +417,10 @@ You can set facts to reveal as soon as the player enters the system by adding th
 
 ```json
 {
-  "ShipLog": {
-    "xmlFile": "planets/example.xml",
-    "initialReveal": [
-      "EXAMPLE_RUMOR_FACT"
-    ]
-  }
+    "ShipLog": {
+        "xmlFile": "planets/example.xml",
+        "initialReveal": ["EXAMPLE_RUMOR_FACT"]
+    }
 }
 ```
 
@@ -433,17 +430,17 @@ You can set a fact to reveal as soon as a signal is identified by editing the si
 
 ```json
 {
-  "Signal": {
-    "Signals": [
-      {
-        "Frequency": "Quantum",
-        "Name": "Quantum Planet",
-        "AudioClip": "OW_QuantumSignal",
-        "SourceRadius": 1000,
-        "Reveals": "EXAMPLE_EXPLORE_FACT"
-      }
-    ]
-  }
+    "Signal": {
+        "Signals": [
+            {
+                "Frequency": "Quantum",
+                "Name": "Quantum Planet",
+                "AudioClip": "OW_QuantumSignal",
+                "SourceRadius": 1000,
+                "Reveals": "EXAMPLE_EXPLORE_FACT"
+            }
+        ]
+    }
 }
 ```
 
@@ -515,23 +512,20 @@ trigger the reveal
 
 ```json
 {
-  "Props": {
-    "reveal": [
-      {
-        "position": {
-          "x": -55.65454,
-          "y": 83.1335,
-          "z": 2.7004
-        },
-        "revealOn": "snapshot",
-        "reveals": [
-          "EXAMPLE_EXPLORE_FACT",
-          "EXAMPLE_EXPLORE_FACT_2"
-        ],
-        "radius": 5.0
-      }
-    ]
-  }
+    "Props": {
+        "reveal": [
+            {
+                "position": {
+                    "x": -55.65454,
+                    "y": 83.1335,
+                    "z": 2.7004
+                },
+                "revealOn": "snapshot",
+                "reveals": ["EXAMPLE_EXPLORE_FACT", "EXAMPLE_EXPLORE_FACT_2"],
+                "radius": 5.0
+            }
+        ]
+    }
 }
 ```
 
@@ -543,19 +537,19 @@ Adding an entry location is similar to adding a Reveal Volume:
 
 ```json
 {
-  "Props": {
-    "entryLocation": [
-      {
-        "id": "EXAMPLE_ENTRY",
-        "position": {
-          "x": -55.65454,
-          "y": 83.1335,
-          "z": 2.7004
-        },
-        "cloaked": false
-      }
-    ]
-  }
+    "Props": {
+        "entryLocation": [
+            {
+                "id": "EXAMPLE_ENTRY",
+                "position": {
+                    "x": -55.65454,
+                    "y": 83.1335,
+                    "z": 2.7004
+                },
+                "cloaked": false
+            }
+        ]
+    }
 }
 ```
 
