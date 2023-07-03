@@ -58,7 +58,7 @@ namespace NewHorizons.Builder.Body
             if (_flareMaterial == null)
             {
                 _flareMaterial = new Material(_starSolarFlareEmitter.GetComponentInChildren<SolarFlareController>().GetComponent<MeshRenderer>().sharedMaterial).DontDestroyOnLoad();
-                _flareMaterial.color = Color.white;
+                _flareMaterial.SetColor(Shader.PropertyToID("_Color"), Color.white);
             }
         }
 
@@ -353,9 +353,13 @@ namespace NewHorizons.Builder.Body
                 var flareTint = starModule.tint.ToColor();
                 var emitter = solarFlareEmitter.GetComponent<SolarFlareEmitter>();
                 emitter.tint = flareTint;
+
                 var material = new Material(_flareMaterial);
-                foreach (var controller in solarFlareEmitter.GetComponentsInChildren<SolarFlareController>())
+                // Since the star isn't awake yet the controllers haven't been made 
+                foreach (var prefab in new GameObject[] { emitter.domePrefab, emitter.loopPrefab, emitter.streamerPrefab })
                 {
+                    var controller = prefab.GetComponent<SolarFlareController>();
+                    // controller._meshRenderer doesn't exist yet since Awake hasn't been called
                     controller.GetComponent<MeshRenderer>().sharedMaterial = material;
                     controller._color = Color.white;
                     controller._tint = flareTint;
