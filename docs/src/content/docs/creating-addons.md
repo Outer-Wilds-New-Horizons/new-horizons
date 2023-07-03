@@ -13,7 +13,7 @@ While this is the easiest way to get started, you won't be able to publish your 
 ## Making a GitHub Repository
 
 To get started, we need a place to store our code. GitHub is one of the most popular websites to store source code, and it's also what the mod database uses to let people access our mod.
-First you're going to want to [create a GitHub account](https://github.com/signup), and then head to [this repository](https://github.com/xen-42/ow-new-horizons-config-template).
+First you're going to want to [create a GitHub account](https://github.com/signup), and then head to [the nh-addon-template template repository](https://github.com/xen-42/ow-new-horizons-config-template).
 Now, click the green "Use This Template" button.
 
 -   Set the Name to your username followed by a dot (`.`), followed by your mod's name in PascalCase (no spaces, new words have capital letters). So for example if my username was "Test" and my mod's name was "Really Cool Addon", I would name the repo `Test.ReallyCoolAddon`.
