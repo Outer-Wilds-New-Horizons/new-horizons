@@ -13,7 +13,7 @@ namespace NewHorizons.OtherMods.MenuFramework
     {
         private static IMenuAPI _menuApi;
 
-        private static List<(IModBehaviour mod, string message)> _registeredPopups = new();
+        private static List<(IModBehaviour mod, string message, bool repeat)> _registeredPopups = new();
         private static List<string> _failedFiles = new();
 
         public static void Init()
@@ -38,9 +38,9 @@ namespace NewHorizons.OtherMods.MenuFramework
                 _menuApi.RegisterStartupPopup(warning);
             }
 
-            foreach(var (mod, message) in _registeredPopups)
+            foreach(var (mod, message, repeat) in _registeredPopups)
             {
-                if (!NewHorizonsData.HasReadOneTimePopup(mod.ModHelper.Manifest.UniqueName))
+                if (repeat || !NewHorizonsData.HasReadOneTimePopup(mod.ModHelper.Manifest.UniqueName))
                 {
                     _menuApi.RegisterStartupPopup(TranslationHandler.GetTranslation(message, TranslationHandler.TextType.UI));
                     NewHorizonsData.ReadOneTimePopup(mod.ModHelper.Manifest.UniqueName);
@@ -64,6 +64,6 @@ namespace NewHorizons.OtherMods.MenuFramework
 
         public static void RegisterFailedConfig(string filename) => _failedFiles.Add(filename);
 
-        public static void RegisterOneTimePopup(IModBehaviour mod, string message) => _registeredPopups.Add((mod, message));
+        public static void RegisterOneTimePopup(IModBehaviour mod, string message, bool repeat) => _registeredPopups.Add((mod, message, repeat));
     }
 }

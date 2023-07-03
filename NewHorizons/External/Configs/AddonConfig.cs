@@ -26,5 +26,10 @@ namespace NewHorizons.External.Configs
         /// A pop-up message for the first time a user runs the add-on
         /// </summary>
         public string popupMessage;
+
+        /// <summary>
+        /// If popupMessage is set, should it repeat every time the game starts or only once
+        /// </summary>
+        public bool repeatPopup;
     }
 }
