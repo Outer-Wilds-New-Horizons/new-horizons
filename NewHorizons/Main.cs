@@ -700,7 +700,7 @@ namespace NewHorizons
             }
             if (!string.IsNullOrEmpty(addonConfig.popupMessage))
             {
-                MenuHandler.RegisterOneTimePopup(mod, TranslationHandler.GetTranslation(addonConfig.popupMessage, TranslationHandler.TextType.UI));
+                MenuHandler.RegisterOneTimePopup(mod, TranslationHandler.GetTranslation(addonConfig.popupMessage, TranslationHandler.TextType.UI), addonConfig.repeatPopup);
             }
         }
 
