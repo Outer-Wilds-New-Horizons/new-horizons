@@ -1,9 +1,11 @@
+using HarmonyLib;
 using NewHorizons.External.Modules.Props.Audio;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OWML;
 using OWML.Common;
 using OWML.Utils;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -39,7 +41,7 @@ namespace NewHorizons.Builder.Props.Audio
             Initialized = true;
 
             SceneManager.sceneUnloaded += OnSceneUnloaded;
-            SceneManager.sceneLoaded += OnSceneLoaded;
+            Main.Instance.OnStarSystemLoaded.AddListener(OnStarSystemLoaded);
         }
 
         private static HashSet<SignalFrequency> _frequenciesInUse = new();
@@ -49,11 +51,10 @@ namespace NewHorizons.Builder.Props.Audio
             _frequenciesInUse.Clear();
         }
 
-        private static void OnSceneLoaded(Scene scene, LoadSceneMode _)
+        private static void OnStarSystemLoaded(string starSystem)
         {
             // If its the base game solar system or eye we get all the main frequencies
-            if (scene.name == LoadManager.SceneToName(OWScene.EyeOfTheUniverse) ||
-                (scene.name == LoadManager.SceneToName(OWScene.SolarSystem) && Main.Instance.CurrentStarSystem == "SolarSystem"))
+            if (starSystem == "SolarSystem" || starSystem == "EyeOfTheUniverse")
             {
                 _frequenciesInUse.Add(SignalFrequency.Quantum);
                 _frequenciesInUse.Add(SignalFrequency.EscapePod);
@@ -61,8 +62,11 @@ namespace NewHorizons.Builder.Props.Audio
                 _frequenciesInUse.Add(SignalFrequency.HideAndSeek);
             }
 
-            // By default lets always have travelers
+            // Always show the traveler frequency. The signalscope defaults to this on spawn, and is the only frequency known by default
+            // We don't want a scenario where the player knows no frequencies
             _frequenciesInUse.Add(SignalFrequency.Traveler);
+
+            NHLogger.LogVerbose($"Frequencies in use in {starSystem}: {_frequenciesInUse.Join(x => x.ToString())}");
         }
 
         public static bool IsFrequencyInUse(SignalFrequency freq) => _frequenciesInUse.Contains(freq);
