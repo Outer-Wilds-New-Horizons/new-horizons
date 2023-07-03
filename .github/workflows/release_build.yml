@@ -32,6 +32,13 @@ jobs:
       - name: Read Manifest
         id: read-manifest
         run: echo "manifest=$(< ./NewHorizons/manifest.json sed ':a;N;$!ba;s/\n/ /g')" >> $GITHUB_OUTPUT
+      - name: Print version numbers
+        run: |
+          echo "Manifest version: $MANIFEST_VERSION"
+          echo "PR version: $PR_VERSION"
+        env:
+          MANIFEST_VERSION: ${{ steps.read-manifest.outputs.version }}
+          PR_VERSION: ${{ github.event.pull_request.titl }}
       - name: Error
         if: ${{ steps.read-manifest.outputs.version != github.event.pull_request.title }}
         run: echo "::error file=manifest.json,title=Version Error::Hey DUMB-DUMB UPDATE THE MANIFEST VERSION" && exit 1
