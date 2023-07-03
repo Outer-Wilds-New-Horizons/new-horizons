@@ -9,7 +9,7 @@ Welcome! This page outlines how to edit a custom star system.
 
 Star Systems are placed in a folder called systems within your mod folder.
 
-The name of your star system config must be the same as the unique id used in the `starSystem` field of your planet configs. Example: `xen.RealSolarSystem.json`.
+The name of your star system config must be the same as the unique id used in the `starSystem` field of your planet configs. So if you used `xen.RealSolarSystem` as the `starSystem` in your planet, the star system's JSON file would have to be named `xen.RealSolarSystem.json`.
 
 A star system config file will look something like this:
 
@@ -32,7 +32,7 @@ A star system config file will look something like this:
 }
 ```
 
-To see all the different things you can put into a config file check out the [Star System Schema](/schemas/star_system_schema).
+To see all the different things you can put into a config file check out the [Star System Schema](/schemas/star-system-schema).
 
 ## Vessel Coordinates
 

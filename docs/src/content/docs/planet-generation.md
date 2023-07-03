@@ -11,7 +11,7 @@ First thing you should specify about your planet is its orbit. `primaryBody` wil
 
 ## Heightmaps
 
-Heightmaps are a way to generate unique terrain on your planet. First you specify a maximum and minimum height, and then specify a [heightMap](/schemas/body_schema#HeightMap_heightMap) image. The more white a section of that image is, the closer to `maxHeight` that part of the terrain will be. Finally, you specify a `textureMap` which is an image that gets applied to the terrain.
+Heightmaps are a way to generate unique terrain on your planet. First you specify a maximum and minimum height, and then specify a [heightMap](/schemas/body-schema/defs/HeightMapModule#HeightMapModule-heightMap) image. The more white a section of that image is, the closer to `maxHeight` that part of the terrain will be. Finally, you specify a `textureMap` which is an image that gets applied to the terrain.
 
 Here's an example heightmap of earth from the Real Solar System addon.
 
