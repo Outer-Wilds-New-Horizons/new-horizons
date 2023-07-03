@@ -7,9 +7,10 @@ namespace NewHorizons.Builder.General
 {
     public static class AstroObjectBuilder
     {
-        public static NHAstroObject Make(GameObject body, AstroObject primaryBody, PlanetConfig config)
+        public static NHAstroObject Make(GameObject body, AstroObject primaryBody, PlanetConfig config, bool isVanilla)
         {
             NHAstroObject astroObject = body.AddComponent<NHAstroObject>();
+            astroObject.isVanilla = isVanilla;
             astroObject.HideDisplayName = !config.Base.hasMapMarker;
             astroObject.invulnerableToSun = config.Base.invulnerableToSun;
 
@@ -48,8 +49,9 @@ namespace NewHorizons.Builder.General
                 alignment._localAlignmentAxis = alignmentAxis;
 
                 // Static bodies won't update rotation with physics for some reason
-                // Have to set it next tick else it flings the player into deep space on spawn (#171)
-                if (!config.Orbit.isStatic) Delay.FireOnNextUpdate(() => alignment._usePhysicsToRotate = true);
+                // Have to set it in 2 ticks else it flings the player into deep space on spawn (#171)
+                // Pushed to 3 frames after system is ready, bc spawning takes 2 frames, this is hurting my brain too much to try to improve the numbers idc
+                if (!config.Orbit.isStatic) Delay.RunWhen(() => Main.IsSystemReady, () => Delay.FireInNUpdates(() => alignment._usePhysicsToRotate = true, 3));
             }
 
             if (config.Base.centerOfSolarSystem)

@@ -1,4 +1,5 @@
 using NewHorizons.Builder.Props.TranslatorText;
+using NewHorizons.Components;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.WarpPad;
 using NewHorizons.Utility;
@@ -136,6 +137,9 @@ namespace NewHorizons.Builder.Props
             transmitter._upsideDown = info.flipAlignment;
 
             transmitter.GetComponent<BoxShape>().enabled = true;
+
+            // Prevents the transmitter from sending you straight back if you use the return function of the receiver #563
+            transmitterObject.AddComponent<NomaiWarpTransmitterCooldown>();
 
             transmitterObject.SetActive(true);
         }

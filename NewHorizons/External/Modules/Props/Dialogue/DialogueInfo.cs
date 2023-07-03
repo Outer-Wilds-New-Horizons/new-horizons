@@ -22,7 +22,10 @@ namespace NewHorizons.External.Modules.Props.Dialogue
 
         /// <summary>
         /// If this dialogue is meant for a character, this is the relative path from the planet to that character's
-        /// CharacterAnimController, TravelerController, TravelerEyeController (eye of the universe), FacePlayerWhenTalking, or SolanumAnimController.
+        /// CharacterAnimController, TravelerController, TravelerEyeController (eye of the universe), FacePlayerWhenTalking, 
+        /// HearthianRecorderEffects or SolanumAnimController.
+        /// 
+        /// If it's a Recorder this will also delete the existing dialogue already attached to that prop.
         /// 
         /// If none of those components are present it will add a FacePlayerWhenTalking component.
         /// </summary>

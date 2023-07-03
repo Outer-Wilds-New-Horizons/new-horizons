@@ -774,7 +774,7 @@
       "properties": {
         "curve": {
           "type": "array",
-          "description": "Scale this object over time",
+          "description": "Scale this object over time. Time value is in minutes.",
           "items": {
             "$ref": "#/definitions/TimeValuePair"
           }
@@ -963,7 +963,7 @@
       "properties": {
         "curve": {
           "type": "array",
-          "description": "Scale this object over time",
+          "description": "Scale this object over time. Time value is in minutes.",
           "items": {
             "$ref": "#/definitions/TimeValuePair"
           }
@@ -1323,7 +1323,7 @@
         },
         "pathToAnimController": {
           "type": "string",
-          "description": "If this dialogue is meant for a character, this is the relative path from the planet to that character's\nCharacterAnimController, TravelerController, TravelerEyeController (eye of the universe), FacePlayerWhenTalking, or SolanumAnimController.\n\nIf none of those components are present it will add a FacePlayerWhenTalking component."
+          "description": "If this dialogue is meant for a character, this is the relative path from the planet to that character's\nCharacterAnimController, TravelerController, TravelerEyeController (eye of the universe), FacePlayerWhenTalking, \nHearthianRecorderEffects or SolanumAnimController.\n\nIf it's a Recorder this will also delete the existing dialogue already attached to that prop.\n\nIf none of those components are present it will add a FacePlayerWhenTalking component."
         },
         "radius": {
           "type": "number",
@@ -2854,7 +2854,7 @@
       "properties": {
         "curve": {
           "type": "array",
-          "description": "Scale this object over time",
+          "description": "Scale this object over time. Time value is in minutes.",
           "items": {
             "$ref": "#/definitions/TimeValuePair"
           }
@@ -3088,7 +3088,7 @@
       "properties": {
         "curve": {
           "type": "array",
-          "description": "Scale this object over time",
+          "description": "Scale this object over time. Time value is in minutes.",
           "items": {
             "$ref": "#/definitions/TimeValuePair"
           }
@@ -3222,7 +3222,7 @@
       "properties": {
         "curve": {
           "type": "array",
-          "description": "Scale this object over time",
+          "description": "Scale this object over time. Time value is in minutes.",
           "items": {
             "$ref": "#/definitions/TimeValuePair"
           }
@@ -4430,7 +4430,7 @@
       "properties": {
         "curve": {
           "type": "array",
-          "description": "Scale this object over time",
+          "description": "Scale this object over time. Time value is in minutes.",
           "items": {
             "$ref": "#/definitions/TimeValuePair"
           }

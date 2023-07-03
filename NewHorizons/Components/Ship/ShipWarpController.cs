@@ -134,7 +134,7 @@ namespace NewHorizons.Components.Ship
         {
             if (_isWarpingIn && LateInitializerManager.isDoneInitializing)
             {
-                Delay.FireInNUpdates(() => StartWarpInEffect(), 1);
+                Delay.FireOnNextUpdate(StartWarpInEffect);
                 _isWarpingIn = false;
             }
 
@@ -167,7 +167,7 @@ namespace NewHorizons.Components.Ship
             NHLogger.LogVerbose("Starting warp-in effect");
             _oneShotSource.PlayOneShot(AudioType.VesselSingularityCollapse, 1f);
             Locator.GetDeathManager()._invincible = true;
-            if (Main.Instance.CurrentStarSystem.Equals("SolarSystem")) TeleportToShip();
+            TeleportToShip();
             _whitehole.Create();
             _waitingToBeSeated = true;
             if (_wearingSuit && !Locator.GetPlayerController()._isWearingSuit)
@@ -179,6 +179,7 @@ namespace NewHorizons.Components.Ship
         private void TeleportToShip()
         {
             var playerSpawner = FindObjectOfType<PlayerSpawner>();
+            NHLogger.LogVerbose("Debug warping into ship");
             playerSpawner.DebugWarp(playerSpawner.GetSpawnPoint(SpawnLocation.Ship));
         }
 

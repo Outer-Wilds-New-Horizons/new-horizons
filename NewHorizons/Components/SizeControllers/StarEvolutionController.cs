@@ -252,7 +252,10 @@ namespace NewHorizons.Components.SizeControllers
                 _surface._materials[0].SetFloat(ColorTime, 0);
             }
 
-            if (_flareEmitter != null) _flareEmitter._tint = _currentColour;
+            if (_flareEmitter != null)
+            {
+                _flareEmitter.tint = _currentColour;
+            }
         }
 
         private void UpdateCollapse()

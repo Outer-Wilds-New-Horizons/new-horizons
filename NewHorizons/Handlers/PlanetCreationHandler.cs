@@ -343,7 +343,7 @@ namespace NewHorizons.Handlers
             body.Config.Base.hasMapMarker = false;
 
             var owRigidBody = RigidBodyBuilder.Make(go, body.Config);
-            var ao = AstroObjectBuilder.Make(go, null, body.Config);
+            var ao = AstroObjectBuilder.Make(go, null, body.Config, false);
 
             var sector = SectorBuilder.Make(go, owRigidBody, 2000f);
             ao._rootSector = sector;
@@ -409,7 +409,7 @@ namespace NewHorizons.Handlers
             }
 
             var owRigidBody = RigidBodyBuilder.Make(go, body.Config);
-            var ao = AstroObjectBuilder.Make(go, primaryBody, body.Config);
+            var ao = AstroObjectBuilder.Make(go, primaryBody, body.Config, false);
 
             var sphereOfInfluence = GetSphereOfInfluence(body);
 
@@ -456,9 +456,12 @@ namespace NewHorizons.Handlers
             // Spawning on other planets is a bit hacky so we do it last
             if (body.Config.Spawn != null)
             {
-                NHLogger.LogVerbose("Making spawn point");
+                NHLogger.LogVerbose($"Making spawn point on {body.Config.name}");
                 var spawnPoint = SpawnPointBuilder.Make(go, body.Config.Spawn, owRigidBody);
-                if (Main.SystemDict[body.Config.starSystem].SpawnPoint == null || (body.Config.Spawn.playerSpawn?.isDefault ?? false))
+                var isVanillaSystem = body.Config.starSystem == "SolarSystem" || body.Config.starSystem == "EyeOfTheUniverse";
+                var needsSpawnPoint = Main.SystemDict[body.Config.starSystem].SpawnPoint == null || isVanillaSystem;
+                var isDefaultSpawn = body.Config.Spawn.playerSpawn?.isDefault ?? true; // Backwards compat
+                if (needsSpawnPoint || isDefaultSpawn)
                 {
                     Main.SystemDict[body.Config.starSystem].SpawnPoint = spawnPoint;
                 }
@@ -702,7 +705,7 @@ namespace NewHorizons.Handlers
                 }
 
                 // Just destroy the existing AO after copying everything over
-                var newAO = AstroObjectBuilder.Make(go, primary, body.Config);
+                var newAO = AstroObjectBuilder.Make(go, primary, body.Config, true);
                 newAO._gravityVolume = ao._gravityVolume;
                 newAO._moon = ao._moon;
                 newAO._name = ao._name;
