@@ -29,7 +29,14 @@ const title = `${SchemaTools.getTitle(schema) ?? "??"} Definitions`;
 const defs = SchemaTools.getDefs(schema).map((d) => d.slug);
 ---
 
-<MainLayout noFileEdit lang="en-us" dir="ltr" headings={[]} title={title} description={""}>
+<MainLayout
+    noFileEdit
+    lang="en-us"
+    dir="ltr"
+    headings={[]}
+    title={title}
+    description={`New Horizons ${title}`}
+>
     <Breadcrumb schema={schema} onlyDefs />
     <ul>
         {

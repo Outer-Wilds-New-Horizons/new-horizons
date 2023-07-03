@@ -44,6 +44,21 @@ const HeadingTag = levelMap[level] ?? "h6";
             {SchemaTools.getAdditionalBadges(schema).map((b) => <span>{b}</span>)}
         </div>
     </div>
+    {
+        level === 0 && !isDef && (
+            <div class="tool-links">
+                <p>
+                    <a href={`/schemas/${schema.slug}/defs`}>View Definitions</a>
+                </p>
+                <p>|</p>
+                <p>
+                    <a rel="noreferer" target="_blank" href={link}>
+                        View Raw
+                    </a>
+                </p>
+            </div>
+        )
+    }
     {description && <p>{description}</p>}
     {
         enumVals.length !== 0 && (
@@ -62,20 +77,6 @@ const HeadingTag = levelMap[level] ?? "h6";
     {
         refSlug && (
             <a href={`/schemas/${schema.rootSlug}/defs/${refSlug}`}>See Definitions/{refSlug}</a>
-        )
-    }
-    {
-        level === 0 && !isDef && (
-            <div>
-                <p>
-                    <a href={`/schemas/${schema.slug}/defs`}>View Definitions</a>
-                </p>
-                <p>
-                    <a rel="noreferer" target="_blank" href={link}>
-                        View Raw
-                    </a>
-                </p>
-            </div>
         )
     }
     {
@@ -138,6 +139,11 @@ const HeadingTag = levelMap[level] ?? "h6";
         display: flex;
         flex-direction: column;
         gap: 2rem;
+    }
+
+    div.tool-links {
+        display: flex;
+        gap: 1rem;
     }
 
     ul {

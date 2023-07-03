@@ -1,5 +1,4 @@
 ---
-import ThemeToggleButton from "./ThemeToggleButton";
 import { COMMUNITY_INVITE_URL } from "../../consts";
 
 type Props = {
@@ -66,9 +65,6 @@ const showMoreSection = Boolean(COMMUNITY_INVITE_URL);
         )
     }
 </ul>
-<div style="margin: 2rem 0; text-align: center;">
-    <ThemeToggleButton client:visible />
-</div>
 
 <style>
     .edit-on-github {
