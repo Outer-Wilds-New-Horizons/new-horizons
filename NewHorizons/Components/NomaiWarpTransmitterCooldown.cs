@@ -16,6 +16,14 @@ namespace NewHorizons.Components
             _transmitter.OnReceiveWarpedBody += _transmitter_OnReceiveWarpedBody;
         }
 
+        public void OnDestroy()
+        {
+            if (_transmitter != null)
+            {
+                _transmitter.OnReceiveWarpedBody -= _transmitter_OnReceiveWarpedBody;
+            }
+        }
+
         private void _transmitter_OnReceiveWarpedBody(OWRigidbody warpedBody, NomaiWarpPlatform startPlatform, NomaiWarpPlatform targetPlatform)
         {
             _cooldownActive = true;
