@@ -62,6 +62,7 @@ namespace NewHorizons.Handlers
         public static void TeleportToVessel()
         {
             var playerSpawner = Object.FindObjectOfType<PlayerSpawner>();
+            NHLogger.LogVerbose("Debug warping into vessel");
             playerSpawner.DebugWarp(_vesselSpawnPoint);
             Builder.General.SpawnPointBuilder.SuitUp();
 

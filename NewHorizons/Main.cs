@@ -75,7 +75,7 @@ namespace NewHorizons
         private string _defaultStarSystem = "SolarSystem";
         internal string _currentStarSystem = "SolarSystem";
         private bool _firstLoad = true;
-        private ShipWarpController _shipWarpController;
+        public ShipWarpController ShipWarpController { get; private set; }
 
         // API events
         public class StarSystemEvent : UnityEvent<string> { }
@@ -418,18 +418,21 @@ namespace NewHorizons
 
                 StarChartHandler.Init(SystemDict.Values.ToArray());
 
+                // Fix spawn point
+                PlayerSpawnHandler.SetUpPlayerSpawn();
+
                 if (isSolarSystem)
                 {
                     // Warp drive
                     HasWarpDrive = StarChartHandler.CanWarp();
-                    if (_shipWarpController == null)
+                    if (ShipWarpController == null)
                     {
-                        _shipWarpController = SearchUtilities.Find("Ship_Body").AddComponent<ShipWarpController>();
-                        _shipWarpController.Init();
+                        ShipWarpController = SearchUtilities.Find("Ship_Body").AddComponent<ShipWarpController>();
+                        ShipWarpController.Init();
                     }
                     if (HasWarpDrive == true) EnableWarpDrive();
 
-                    var shouldWarpInFromShip = IsWarpingFromShip && _shipWarpController != null;
+                    var shouldWarpInFromShip = IsWarpingFromShip && ShipWarpController != null;
                     var shouldWarpInFromVessel = IsWarpingFromVessel && VesselWarpHandler.VesselSpawnPoint != null;
                     Delay.RunWhen(() => IsSystemReady, () => OnSystemReady(shouldWarpInFromShip, shouldWarpInFromVessel));
 
@@ -442,7 +445,6 @@ namespace NewHorizons
 
                     // Fix the map satellite
                     SearchUtilities.Find("HearthianMapSatellite_Body", false).AddComponent<MapSatelliteOrbitFix>();
-
 
                     // Sector changes (so that projection pools actually turn off proxies and cull groups on these moons)
 
@@ -564,11 +566,8 @@ namespace NewHorizons
             Locator.GetPlayerBody().gameObject.AddComponent<DebugRaycaster>();
             Locator.GetPlayerBody().gameObject.AddComponent<DebugPropPlacer>();
             Locator.GetPlayerBody().gameObject.AddComponent<DebugMenu>();
-            // DebugArrow.CreateArrow(Locator.GetPlayerBody().gameObject); // This is for NH devs mostly. It shouldn't be active in debug mode for now. Someone should make a dev tools submenu for it though.
 
-            if (shouldWarpInFromShip) _shipWarpController.WarpIn(WearingSuit);
-            else if (shouldWarpInFromVessel) VesselWarpHandler.TeleportToVessel();
-            else FindObjectOfType<PlayerSpawner>().DebugWarp(SystemDict[_currentStarSystem].SpawnPoint);
+            PlayerSpawnHandler.OnSystemReady(shouldWarpInFromShip, shouldWarpInFromVessel);
 
             VesselCoordinatePromptHandler.RegisterPrompts(SystemDict.Where(system => system.Value.Config.Vessel?.coords != null).Select(x => x.Value).ToList());
         }
@@ -820,7 +819,7 @@ namespace NewHorizons
             OnChangeStarSystem?.Invoke(newStarSystem);
 
             NHLogger.Log($"Warping to {newStarSystem}");
-            if (warp && _shipWarpController) _shipWarpController.WarpOut();
+            if (warp && ShipWarpController) ShipWarpController.WarpOut();
             IsChangingStarSystem = true;
             WearingSuit = PlayerState.IsWearingSuit();
 
@@ -868,5 +867,7 @@ namespace NewHorizons
             }
         }
         #endregion Change star system
+
+
     }
 }
