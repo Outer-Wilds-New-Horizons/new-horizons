@@ -7,32 +7,19 @@ namespace NewHorizons.Patches.MapPatches
     [HarmonyPatch(typeof(ReferenceFrame))]
     public static class ReferenceFramePatches
     {
-        [HarmonyPrefix]
+        [HarmonyPostfix]
         [HarmonyPatch(nameof(ReferenceFrame.GetHUDDisplayName))]
-        public static bool ReferenceFrame_GetHUDDisplayName(ReferenceFrame __instance, ref string __result)
+        public static void ReferenceFrame_GetHUDDisplayName(ReferenceFrame __instance, ref string __result)
         {
-            var ao = __instance.GetAstroObject();
-
-            if (ao == null) return true;
-
-            if (ao._name != AstroObject.Name.CustomString)
+            if (__instance.GetAstroObject() is NHAstroObject nhao && !nhao.isVanilla && !nhao.HideDisplayName)
             {
-                __result = AstroObject.AstroObjectNameToString(ao._name);
-                return false;
+                var customName = nhao.GetCustomName();
+
+                if (!string.IsNullOrWhiteSpace(customName))
+                {
+                    __result = TranslationHandler.GetTranslation(customName, TranslationHandler.TextType.UI, false);
+                }
             }
-
-            __result = string.Empty;
-
-            if (ao is NHAstroObject nhao && nhao.HideDisplayName) return false;
-
-            var customName = ao.GetCustomName();
-
-            if (!string.IsNullOrWhiteSpace(customName))
-            {
-                __result = TranslationHandler.GetTranslation(customName, TranslationHandler.TextType.UI, false);
-            }
-
-            return false;
         }
     }
 }
