@@ -264,7 +264,7 @@ namespace NewHorizons.Builder.Props
                 socket._sector = sector;
             }
 
-            // TODO: Fix low res reels
+            // TODO: Fix low res reels (probably in VanillaFix since its a vanilla bug)
             else if(component is SlideReelItem)
             {
 
