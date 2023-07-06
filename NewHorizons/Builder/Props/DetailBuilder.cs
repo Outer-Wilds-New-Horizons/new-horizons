@@ -1,5 +1,6 @@
 using NewHorizons.Builder.General;
 using NewHorizons.Components;
+using NewHorizons.Components.Fixers;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
@@ -265,10 +266,10 @@ namespace NewHorizons.Builder.Props
                 socket._sector = sector;
             }
 
-            // Fix slide reel - Softlocks if this object is a vision torch
-            else if(!isTorch && component is SlideCollectionContainer container)
+            // TODO: Fix low res reels
+            else if(component is SlideReelItem)
             {
-                sector.OnOccupantEnterSector.AddListener(_ => container.LoadStreamingTextures());
+
             }
 
             else if(component is NomaiRemoteCameraPlatform remoteCameraPlatform)
