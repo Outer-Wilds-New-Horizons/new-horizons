@@ -1,6 +1,5 @@
 using NewHorizons.Builder.General;
 using NewHorizons.Components;
-using NewHorizons.Components.Fixers;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
@@ -103,7 +102,6 @@ namespace NewHorizons.Builder.Props
                 StreamingHandler.SetUpStreaming(prop, detail.keepLoaded ? null : sector);
 
                 // Could check this in the for loop but I'm not sure what order we need to know about this in
-                var isTorch = prop.GetComponent<VisionTorchItem>() != null;
                 isItem = false;
 
                 foreach (var component in prop.GetComponentsInChildren<Component>(true))
@@ -121,7 +119,7 @@ namespace NewHorizons.Builder.Props
                     {
                         if (FixUnsectoredComponent(component)) continue;
                     }
-                    else FixSectoredComponent(component, sector, isTorch, detail.keepLoaded);
+                    else FixSectoredComponent(component, sector, detail.keepLoaded);
 
                     FixComponent(component, go, detail.ignoreSun);
                 }
@@ -220,7 +218,7 @@ namespace NewHorizons.Builder.Props
         /// <summary>
         /// Fix components that have sectors. Has a specific fix if there is a VisionTorchItem on the object.
         /// </summary>
-        private static void FixSectoredComponent(Component component, Sector sector, bool isTorch, bool keepLoaded)
+        private static void FixSectoredComponent(Component component, Sector sector, bool keepLoaded)
         {
             // keepLoaded should remove existing groups
             // renderers/colliders get enabled later so we dont have to do that here
