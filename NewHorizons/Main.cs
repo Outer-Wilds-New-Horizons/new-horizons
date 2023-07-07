@@ -811,6 +811,12 @@ namespace NewHorizons
                 return;
             }
 
+            if (LoadManager.GetCurrentScene() == OWScene.SolarSystem || LoadManager.GetCurrentScene() == OWScene.EyeOfTheUniverse)
+            {
+                // Slide reel unloading is tied to being removed from the sector, so we do that here to prevent a softlock
+                Locator.GetPlayerSectorDetector().RemoveFromAllSectors();
+            }
+
             if (IsChangingStarSystem) return;
 
             IsWarpingFromShip = warp;
