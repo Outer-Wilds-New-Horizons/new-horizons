@@ -3263,7 +3263,7 @@
         },
         "destructionVolumes": {
           "type": "array",
-          "description": "Add destruction volumes to this planet.",
+          "description": "Add destruction volumes to this planet.\nDestroys bodies if they enter this volume. Can kill the player and recall the scout probe.",
           "items": {
             "$ref": "#/definitions/DestructionVolumeInfo"
           }
@@ -3277,42 +3277,42 @@
         },
         "hazardVolumes": {
           "type": "array",
-          "description": "Add hazard volumes to this planet.",
+          "description": "Add hazard volumes to this planet.\nCauses damage to player when inside this volume.",
           "items": {
             "$ref": "#/definitions/HazardVolumeInfo"
           }
         },
         "interferenceVolumes": {
           "type": "array",
-          "description": "Add interference volumes to this planet.",
+          "description": "Add interference volumes to this planet.\nHides HUD markers of ship scout/probe and prevents scout photos if you are not inside the volume together with ship or scout probe.",
           "items": {
             "$ref": "#/definitions/VolumeInfo"
           }
         },
         "insulatingVolumes": {
           "type": "array",
-          "description": "Add insulating volumes to this planet. These will stop electricty hazard volumes from affecting you (just like the jellyfish).",
+          "description": "Add insulating volumes to this planet.\nThese will stop electricty hazard volumes from affecting you (just like the jellyfish).",
           "items": {
             "$ref": "#/definitions/VolumeInfo"
           }
         },
         "lightSourceVolumes": {
           "type": "array",
-          "description": "Add light source volumes to this planet. These will activate rafts and other light detectors.",
+          "description": "Add light source volumes to this planet.\nThese will activate rafts and other light detectors.",
           "items": {
             "$ref": "#/definitions/VolumeInfo"
           }
         },
         "mapRestrictionVolumes": {
           "type": "array",
-          "description": "Add map restriction volumes to this planet.",
+          "description": "Add map restriction volumes to this planet.\nThe map will be disabled when inside this volume.",
           "items": {
             "$ref": "#/definitions/VolumeInfo"
           }
         },
         "notificationVolumes": {
           "type": "array",
-          "description": "Add notification volumes to this planet.",
+          "description": "Add notification volumes to this planet.\nSends a notification to the player just like ghost matter does when you get too close\nand also to the ship just like when you damage a component on the ship.",
           "items": {
             "$ref": "#/definitions/NotificationVolumeInfo"
           }
@@ -3330,7 +3330,7 @@
         },
         "referenceFrameBlockerVolumes": {
           "type": "array",
-          "description": "Add reference frame blocker volumes to this planet. These will stop the player from seeing/targeting any reference frames.",
+          "description": "Add reference frame blocker volumes to this planet.\nThese will stop the player from seeing/targeting any reference frames.",
           "items": {
             "$ref": "#/definitions/VolumeInfo"
           }
@@ -3355,7 +3355,7 @@
         },
         "speedTrapVolumes": {
           "type": "array",
-          "description": "Add speed trap volumes to this planet. Slows down the player when they enter this volume.",
+          "description": "Add speed trap volumes to this planet.\nSlows down the player when they enter this volume.",
           "items": {
             "$ref": "#/definitions/SpeedTrapVolumeInfo"
           }
@@ -3494,9 +3494,9 @@
           "description": "Whether the bodies will shrink when they enter this volume or just disappear instantly.",
           "default": true
         },
-        "onlyAffectsPlayerAndShip": {
+        "onlyAffectsPlayerRelatedBodies": {
           "type": "boolean",
-          "description": "Whether this volume only affects the player and ship."
+          "description": "Whether this volume only affects the player, ship, probe/scout, model rocket ship, and nomai shuttle."
         },
         "radius": {
           "type": "number",
@@ -3859,14 +3859,14 @@
       "properties": {
         "destructionVolumes": {
           "type": "array",
-          "description": "Add probe destruction volumes to this planet. These will delete your probe.",
+          "description": "Add probe destruction volumes to this planet.\nThese will delete your probe just like the eye of the universe does.",
           "items": {
             "$ref": "#/definitions/VolumeInfo"
           }
         },
         "safetyVolumes": {
           "type": "array",
-          "description": "Add probe safety volumes to this planet. These will stop the probe destruction volumes from working.",
+          "description": "Add probe safety volumes to this planet.\nThese will stop the probe destruction volumes from working.",
           "items": {
             "$ref": "#/definitions/VolumeInfo"
           }
@@ -3968,14 +3968,14 @@
       "properties": {
         "antiTravelMusicRulesets": {
           "type": "array",
-          "description": "Add anti travel music rulesets to this planet.",
+          "description": "Add anti travel music rulesets to this planet.\nThis means no space/traveling music while inside the ruleset/volume.\nUsually used on planets.",
           "items": {
             "$ref": "#/definitions/VolumeInfo"
           }
         },
         "playerImpactRulesets": {
           "type": "array",
-          "description": "Add player impact rulesets to this planet.",
+          "description": "Add player impact rulesets to this planet. ",
           "items": {
             "$ref": "#/definitions/PlayerImpactRulesetInfo"
           }
