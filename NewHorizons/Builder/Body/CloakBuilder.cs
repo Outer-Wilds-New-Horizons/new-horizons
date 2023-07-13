@@ -44,14 +44,21 @@ namespace NewHorizons.Builder.Body
             Object.Destroy(newCloak.GetComponent<PlayerCloakEntryRedirector>());
 
             var cloakFieldController = newCloak.GetComponent<CloakFieldController>();
-            cloakFieldController._cloakScaleDist = radius * 2000 / 3000f;
-            cloakFieldController._farCloakRadius = radius * 500 / 3000f;
-            cloakFieldController._innerCloakRadius = radius * 900 / 3000f;
-            cloakFieldController._nearCloakRadius = radius * 800 / 3000f;
+            cloakFieldController._cloakScaleDist = module.cloakScaleDist ?? (radius * 2000 / 3000f);
+            cloakFieldController._farCloakRadius = module.farCloakRadius ?? (radius * 500 / 3000f);
+            cloakFieldController._innerCloakRadius = module.innerCloakRadius ?? (radius * 900 / 3000f);
+            cloakFieldController._nearCloakRadius = module.nearCloakRadius ?? (radius * 800 / 3000f);
 
             cloakFieldController._referenceFrameVolume = OWRB._attachedRFVolume;
             cloakFieldController._exclusionSector = null;
-            cloakFieldController._cloakSphereVolume = (sector?.transform ?? planetGO.transform).GetComponentInChildren<OWTriggerVolume>();
+
+            var cloakVolumeObj = new GameObject("CloakVolume");
+            cloakVolumeObj.transform.parent = planetGO.transform;
+            cloakVolumeObj.transform.localPosition = Vector3.zero;
+            var cloakVolume = cloakVolumeObj.AddComponent<SphereShape>();
+            cloakVolume.radius = module.farCloakRadius ?? (radius * 500 / 3000f);
+
+            cloakFieldController._cloakSphereVolume = cloakVolumeObj.AddComponent<OWTriggerVolume>();
             cloakFieldController._ringworldFadeRenderers = new OWRenderer[0];
 
             var cloakSectorController = newCloak.AddComponent<CloakSectorController>();
