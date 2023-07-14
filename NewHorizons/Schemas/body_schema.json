@@ -745,7 +745,36 @@
       "properties": {
         "radius": {
           "type": "number",
-          "description": "Radius of the cloaking field around the planet. It's a bit finicky so experiment with different values. If you\ndon't want a cloak, leave this as 0.",
+          "description": "Radius of the cloaking field around the planet. For the Stranger this is 3000",
+          "format": "float"
+        },
+        "cloakScaleDist": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "description": "Not sure what this is. For the Stranger it is 2000. Optional (will default to be proportional to the cloak radius).",
+          "format": "float"
+        },
+        "innerCloakRadius": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "format": "float"
+        },
+        "nearCloakRadius": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "format": "float"
+        },
+        "farCloakRadius": {
+          "type": [
+            "null",
+            "number"
+          ],
           "format": "float"
         },
         "audio": {

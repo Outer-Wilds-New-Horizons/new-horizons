@@ -403,6 +403,7 @@ namespace NewHorizons
                 SingularityBuilder.Init();
                 AtmosphereBuilder.Init();
                 BrambleNodeBuilder.Init(BodyDict[CurrentStarSystem].Select(x => x.Config).Where(x => x.Bramble?.dimension != null).ToArray());
+                CloakHandler.Init();
 
                 if (isSolarSystem)
                 {
@@ -570,6 +571,8 @@ namespace NewHorizons
             PlayerSpawnHandler.OnSystemReady(shouldWarpInFromShip, shouldWarpInFromVessel);
 
             VesselCoordinatePromptHandler.RegisterPrompts(SystemDict.Where(system => system.Value.Config.Vessel?.coords != null).Select(x => x.Value).ToList());
+
+            CloakHandler.OnSystemReady();
         }
 
         public void EnableWarpDrive()
