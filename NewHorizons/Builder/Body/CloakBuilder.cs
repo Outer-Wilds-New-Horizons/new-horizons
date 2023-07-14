@@ -1,5 +1,6 @@
 using NewHorizons.Components.Sectored;
 using NewHorizons.External.Modules;
+using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using NewHorizons.Utility.Files;
 using NewHorizons.Utility.OWML;
@@ -63,7 +64,7 @@ namespace NewHorizons.Builder.Body
             cloakFieldController._ringworldFadeRenderers = new OWRenderer[0];
 
             var cloakSectorController = newCloak.AddComponent<CloakSectorController>();
-            cloakSectorController.Init(newCloak.GetComponent<CloakFieldController>(), planetGO);
+            cloakSectorController.Init(cloakFieldController, planetGO);
 
             var cloakAudioSource = newCloak.GetComponentInChildren<OWAudioSource>();
             cloakAudioSource._audioSource = cloakAudioSource.GetComponent<AudioSource>();
@@ -74,6 +75,8 @@ namespace NewHorizons.Builder.Body
             cloakFieldController.enabled = true;
 
             cloakSectorController.EnableCloak();
+
+            CloakHandler.RegisterCloak(cloakFieldController);
 
             // To cloak from the start
             Delay.FireOnNextUpdate(cloakSectorController.OnPlayerExit);

@@ -83,6 +83,12 @@ namespace NewHorizons.Handlers
         {
             NHLogger.LogVerbose($"Removing [{ao.name}]");
 
+            if (ao.GetAstroObjectName() == AstroObject.Name.RingWorld)
+            {
+                CloakHandler.FlagStrangerDisabled = true;
+                if (Locator._cloakFieldController.GetComponentInParent<AstroObject>() == ao) Locator._cloakFieldController = null;
+            }
+
             if (ao.gameObject == null || !ao.gameObject.activeInHierarchy)
             {
                 NHLogger.LogVerbose($"[{ao.name}] was already removed");
