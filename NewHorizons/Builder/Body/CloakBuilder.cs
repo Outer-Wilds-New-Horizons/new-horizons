@@ -36,7 +36,8 @@ namespace NewHorizons.Builder.Body
 
             var radius = module.radius;
 
-            var newCloak = Object.Instantiate(_prefab, sector?.transform ?? planetGO.transform);
+            var newCloak = _prefab.InstantiateInactive();
+            newCloak.transform.parent = sector?.transform ?? planetGO.transform;
             newCloak.transform.position = planetGO.transform.position;
             newCloak.transform.name = "CloakingField";
             newCloak.transform.localScale = Vector3.one * radius;
