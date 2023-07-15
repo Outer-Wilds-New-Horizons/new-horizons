@@ -1,6 +1,5 @@
 using NewHorizons.Utility;
 using NewHorizons.Utility.OWML;
-using System;
 using System.Collections;
 using UnityEngine;
 
@@ -8,10 +7,6 @@ namespace NewHorizons.Handlers
 {
     public static class PlayerSpawnHandler
     {
-        private static bool _wasInvincible;
-        private static bool _wasDeathManagerInvincible;
-        private static float _impactDeathSpeed;
-
         public static void SetUpPlayerSpawn()
         {
             var spawnPoint = Main.SystemDict[Main.Instance.CurrentStarSystem].SpawnPoint;
