@@ -11,6 +11,8 @@ namespace NewHorizons.Patches.PlayerPatches
         [HarmonyPatch(nameof(PlayerSpawner.SpawnPlayer))]
         public static bool PlayerSpawner_SpawnPlayer(PlayerSpawner __instance)
         {
+            Main.Instance.PlayerSpawned = true;
+
             if (Main.Instance.IsWarpingFromVessel || Main.Instance.DidWarpFromVessel || Main.Instance.IsWarpingFromShip)
             {
                 NHLogger.LogWarning("Abort player spawn. Vessel/Ship will handle it.");
