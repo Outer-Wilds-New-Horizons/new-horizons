@@ -1,6 +1,7 @@
 using NewHorizons.Utility;
 using NewHorizons.Utility.OWML;
 using System;
+using System.Collections;
 using UnityEngine;
 
 namespace NewHorizons.Handlers
@@ -27,6 +28,7 @@ namespace NewHorizons.Handlers
 
         public static void OnSystemReady(bool shouldWarpInFromShip, bool shouldWarpInFromVessel)
         {
+            NHLogger.Log($"OnSystemReady {shouldWarpInFromVessel}, {shouldWarpInFromShip}, {UsingCustomSpawn()}");
             if (shouldWarpInFromShip)
             {
                 Main.Instance.ShipWarpController.WarpIn(Main.Instance.WearingSuit);
@@ -37,40 +39,29 @@ namespace NewHorizons.Handlers
             }
             else if (UsingCustomSpawn())
             {
-                var player = SearchUtilities.Find("Player_Body");
-                var playerBody = player.GetAttachedOWRigidbody();
+                InvulnerabilityHandler.MakeInvulnerable(true);
+
+                var player = SearchUtilities.Find("Player_Body").GetAttachedOWRigidbody();
                 var spawn = GetDefaultSpawn();
 
-                // Player dies during the teleport sometimes so we prevent that
-                var resources = player.GetComponent<PlayerResources>();
-                var deathManager = Locator.GetDeathManager();
+                // Idk why but these just don't work?
+                var matchInitialMotion = player.GetComponent<MatchInitialMotion>();
+                if (matchInitialMotion != null) UnityEngine.Object.Destroy(matchInitialMotion);
 
-                _wasInvincible = resources._invincible;
-                _wasDeathManagerInvincible = deathManager._invincible;
-                _impactDeathSpeed = deathManager._impactDeathSpeed;
-
-                resources._invincible = true;
-                deathManager._invincible = true;
-                deathManager._impactDeathSpeed = float.MaxValue;
-
-                Delay.FireOnNextUpdate(() =>
-                {
-                    var matchInitialMotion = playerBody.GetComponent<MatchInitialMotion>();
-
-                    playerBody.WarpToPositionRotation(spawn.transform.position, spawn.transform.rotation);
-
-                    if (matchInitialMotion != null)
-                    {
-                        // Idk why but these just don't work?
-                        UnityEngine.Object.Destroy(matchInitialMotion);
-                        Delay.FireOnNextUpdate(FixVelocity);
-                    }
-                    else
-                    {
-                        FixVelocity();
-                    }
-                });
+                Main.Instance.StartCoroutine(SpawnCoroutine(player, spawn, 5));
             }
+        }
+
+        private static IEnumerator SpawnCoroutine(OWRigidbody playerBody, SpawnPoint spawn, int length)
+        {
+            for(int i = 0; i < length; i++) 
+            {
+                playerBody.WarpToPositionRotation(spawn.transform.position, spawn.transform.rotation);
+                FixVelocity();
+                yield return new WaitForEndOfFrame();
+            }
+
+            InvulnerabilityHandler.MakeInvulnerable(false);
         }
 
         private static void FixVelocity()

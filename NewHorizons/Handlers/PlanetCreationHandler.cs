@@ -246,7 +246,14 @@ namespace NewHorizons.Handlers
                     {
                         NHLogger.Log($"Creating [{body.Config.name}]");
                         var planetObject = GenerateBody(body, defaultPrimaryToSun);
-                        planetObject?.SetActive(true);
+                        try
+                        {
+                            planetObject?.SetActive(true);
+                        }
+                        catch (Exception e)
+                        {
+                            NHLogger.LogError($"Error when activating new planet [{body.Config.name}] - {e}");
+                        }
                         if (planetObject == null) 
                         { 
                             body.UnloadCache(); 

@@ -1,4 +1,5 @@
 using NewHorizons.Builder.General;
+using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OWML;
 using UnityEngine;
@@ -113,10 +114,8 @@ namespace NewHorizons.Components.Ship
         public void WarpIn(bool wearingSuit)
         {
             NHLogger.LogVerbose("Starting warp-in");
-            // Trying really hard to stop the player from dying while warping in
-            _impactDeathSpeed = Locator.GetDeathManager()._impactDeathSpeed;
-            Locator.GetDeathManager()._impactDeathSpeed = Mathf.Infinity;
-            Locator.GetDeathManager()._invincible = true;
+
+            InvulnerabilityHandler.MakeInvulnerable(true);
 
             _isWarpingIn = true;
             _wearingSuit = wearingSuit;
@@ -191,10 +190,7 @@ namespace NewHorizons.Components.Ship
             Delay.FireInNUpdates(() => _whitehole.Collapse(), 30);
 
             var resources = Locator.GetPlayerTransform().GetComponent<PlayerResources>();
-
-            Locator.GetDeathManager()._impactDeathSpeed = _impactDeathSpeed;
-            resources._currentHealth = 100f;
-            Locator.GetDeathManager()._invincible = false;
+            InvulnerabilityHandler.MakeInvulnerable(false);
 
             // For some reason warping into the ship makes you suffocate while in the ship
             if (_wearingSuit) resources.OnSuitUp();

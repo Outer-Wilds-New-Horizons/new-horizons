@@ -385,6 +385,9 @@ namespace NewHorizons
 
             if (isSolarSystem || isEyeOfTheUniverse)
             {
+                // Stop dying while spawning please
+                InvulnerabilityHandler.MakeInvulnerable(true);
+
                 IsSystemReady = false;
 
                 NewHorizonsData.Load();
@@ -564,6 +567,10 @@ namespace NewHorizons
         // Had a bunch of separate unity things firing stuff when the system is ready so I moved it all to here
         private void OnSystemReady(bool shouldWarpInFromShip, bool shouldWarpInFromVessel)
         {
+            // ShipWarpController will handle the invulnerability otherwise
+            if (!shouldWarpInFromShip)
+                Delay.FireOnNextUpdate(() => InvulnerabilityHandler.MakeInvulnerable(false));
+
             Locator.GetPlayerBody().gameObject.AddComponent<DebugRaycaster>();
             Locator.GetPlayerBody().gameObject.AddComponent<DebugPropPlacer>();
             Locator.GetPlayerBody().gameObject.AddComponent<DebugMenu>();
@@ -814,47 +821,50 @@ namespace NewHorizons
                 return;
             }
 
-            if (LoadManager.GetCurrentScene() == OWScene.SolarSystem || LoadManager.GetCurrentScene() == OWScene.EyeOfTheUniverse)
-            {
-                // Slide reel unloading is tied to being removed from the sector, so we do that here to prevent a softlock
-                Locator.GetPlayerSectorDetector().RemoveFromAllSectors();
-            }
-
             if (IsChangingStarSystem) return;
 
-            IsWarpingFromShip = warp;
-            IsWarpingFromVessel = vessel;
-            DidWarpFromVessel = false;
-            OnChangeStarSystem?.Invoke(newStarSystem);
-
-            NHLogger.Log($"Warping to {newStarSystem}");
-            if (warp && ShipWarpController) ShipWarpController.WarpOut();
-            IsChangingStarSystem = true;
-            WearingSuit = PlayerState.IsWearingSuit();
-
-            OWScene sceneToLoad;
-
-            if (newStarSystem == "EyeOfTheUniverse")
+            if (LoadManager.GetCurrentScene() == OWScene.SolarSystem || LoadManager.GetCurrentScene() == OWScene.EyeOfTheUniverse)
             {
-                PlayerData.SaveWarpedToTheEye(TimeLoopUtilities.GetVanillaSecondsRemaining());
-                sceneToLoad = OWScene.EyeOfTheUniverse;
+                IsWarpingFromShip = warp;
+                IsWarpingFromVessel = vessel;
+                DidWarpFromVessel = false;
+                OnChangeStarSystem?.Invoke(newStarSystem);
+
+                NHLogger.Log($"Warping to {newStarSystem}");
+                if (warp && ShipWarpController) ShipWarpController.WarpOut();
+                IsChangingStarSystem = true;
+                WearingSuit = PlayerState.IsWearingSuit();
+
+                OWScene sceneToLoad;
+
+                if (newStarSystem == "EyeOfTheUniverse")
+                {
+                    PlayerData.SaveWarpedToTheEye(TimeLoopUtilities.GetVanillaSecondsRemaining());
+                    sceneToLoad = OWScene.EyeOfTheUniverse;
+                }
+                else
+                {
+                    PlayerData.SaveEyeCompletion(); // So that the title screen doesn't keep warping you back to eye
+
+                    if (SystemDict[_currentStarSystem].Config.enableTimeLoop) SecondsElapsedInLoop = TimeLoop.GetSecondsElapsed();
+                    else SecondsElapsedInLoop = -1;
+
+                    sceneToLoad = OWScene.SolarSystem;
+                }
+
+                _currentStarSystem = newStarSystem;
+
+                // Freeze player inputs
+                OWInput.ChangeInputMode(InputMode.None);
+
+                // Hide unloading
+                FadeHandler.FadeThen(1f, () =>
+                {
+                    // Slide reel unloading is tied to being removed from the sector, so we do that here to prevent a softlock
+                    Locator.GetPlayerSectorDetector().RemoveFromAllSectors();
+                    LoadManager.LoadSceneImmediate(sceneToLoad);
+                });
             }
-            else
-            {
-                PlayerData.SaveEyeCompletion(); // So that the title screen doesn't keep warping you back to eye
-
-                if (SystemDict[_currentStarSystem].Config.enableTimeLoop) SecondsElapsedInLoop = TimeLoop.GetSecondsElapsed();
-                else SecondsElapsedInLoop = -1;
-
-                sceneToLoad = OWScene.SolarSystem;
-            }
-
-            _currentStarSystem = newStarSystem;
-
-            // Freeze player inputs
-            OWInput.ChangeInputMode(InputMode.None);
-
-            LoadManager.LoadSceneAsync(sceneToLoad, !vessel, LoadManager.FadeType.ToBlack, vessel ? 1 : 0.1f, true);
         }
 
         void OnDeath(DeathType _)
