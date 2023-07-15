@@ -102,7 +102,6 @@ namespace NewHorizons.Builder.Props
                 StreamingHandler.SetUpStreaming(prop, detail.keepLoaded ? null : sector);
 
                 // Could check this in the for loop but I'm not sure what order we need to know about this in
-                var isTorch = prop.GetComponent<VisionTorchItem>() != null;
                 isItem = false;
 
                 foreach (var component in prop.GetComponentsInChildren<Component>(true))
@@ -120,7 +119,7 @@ namespace NewHorizons.Builder.Props
                     {
                         if (FixUnsectoredComponent(component)) continue;
                     }
-                    else FixSectoredComponent(component, sector, isTorch, detail.keepLoaded);
+                    else FixSectoredComponent(component, sector, detail.keepLoaded);
 
                     FixComponent(component, go, detail.ignoreSun);
                 }
@@ -219,7 +218,7 @@ namespace NewHorizons.Builder.Props
         /// <summary>
         /// Fix components that have sectors. Has a specific fix if there is a VisionTorchItem on the object.
         /// </summary>
-        private static void FixSectoredComponent(Component component, Sector sector, bool isTorch, bool keepLoaded)
+        private static void FixSectoredComponent(Component component, Sector sector, bool keepLoaded)
         {
             // keepLoaded should remove existing groups
             // renderers/colliders get enabled later so we dont have to do that here
@@ -265,10 +264,10 @@ namespace NewHorizons.Builder.Props
                 socket._sector = sector;
             }
 
-            // Fix slide reel - Softlocks if this object is a vision torch
-            else if(!isTorch && component is SlideCollectionContainer container)
+            // TODO: Fix low res reels (probably in VanillaFix since its a vanilla bug)
+            else if(component is SlideReelItem)
             {
-                sector.OnOccupantEnterSector.AddListener(_ => container.LoadStreamingTextures());
+
             }
 
             else if(component is NomaiRemoteCameraPlatform remoteCameraPlatform)

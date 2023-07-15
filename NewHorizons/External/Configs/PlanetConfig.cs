@@ -217,7 +217,7 @@ namespace NewHorizons.External.Configs
             if (Base.centerOfSolarSystem) Orbit.isStatic = true;
             if (Atmosphere?.clouds?.lightningGradient != null) Atmosphere.clouds.hasLightning = true;
             if (Bramble?.dimension != null && Orbit?.staticPosition == null) throw new Exception($"Dimension {name} must have Orbit.staticPosition defined.");
-            if (Bramble?.dimension != null) canShowOnTitle = false; 
+            if (Bramble?.dimension != null) canShowOnTitle = false;
             if (Orbit?.staticPosition != null) Orbit.isStatic = true;
 
             // For each quantum group, verify the following:
@@ -463,7 +463,7 @@ namespace NewHorizons.External.Configs
                     if (ring.curve != null) ring.scaleCurve = ring.curve;
                 }
             }
-            
+
             if (Base.zeroGravityRadius != 0f)
             {
                 Volumes ??= new VolumesModule();
@@ -614,6 +614,14 @@ namespace NewHorizons.External.Configs
                 if (Base.cometTailRotation != null)
                 {
                     CometTail.rotationOverride = Base.cometTailRotation;
+                }
+            }
+
+            if (Volumes?.destructionVolumes != null)
+            {
+                foreach (var destructionVolume in Volumes.destructionVolumes)
+                {
+                    if (destructionVolume.onlyAffectsPlayerAndShip) destructionVolume.onlyAffectsPlayerRelatedBodies = true;
                 }
             }
         }

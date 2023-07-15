@@ -13,6 +13,7 @@ namespace NewHorizons.External.Modules.Volumes
 
         /// <summary>
         /// Add destruction volumes to this planet.
+        /// Destroys bodies if they enter this volume. Can kill the player and recall the scout probe.
         /// </summary>
         public DestructionVolumeInfo[] destructionVolumes;
 
@@ -23,31 +24,38 @@ namespace NewHorizons.External.Modules.Volumes
 
         /// <summary>
         /// Add hazard volumes to this planet.
+        /// Causes damage to player when inside this volume.
         /// </summary>
         public HazardVolumeInfo[] hazardVolumes;
 
         /// <summary>
         /// Add interference volumes to this planet.
+        /// Hides HUD markers of ship scout/probe and prevents scout photos if you are not inside the volume together with ship or scout probe.
         /// </summary>
         public VolumeInfo[] interferenceVolumes;
 
         /// <summary>
-        /// Add insulating volumes to this planet. These will stop electricty hazard volumes from affecting you (just like the jellyfish).
+        /// Add insulating volumes to this planet.
+        /// These will stop electricty hazard volumes from affecting you (just like the jellyfish).
         /// </summary>
         public VolumeInfo[] insulatingVolumes;
 
         /// <summary>
-        /// Add light source volumes to this planet. These will activate rafts and other light detectors.
+        /// Add light source volumes to this planet.
+        /// These will activate rafts and other light detectors.
         /// </summary>
         public VolumeInfo[] lightSourceVolumes;
 
         /// <summary>
         /// Add map restriction volumes to this planet.
+        /// The map will be disabled when inside this volume.
         /// </summary>
         public VolumeInfo[] mapRestrictionVolumes;
 
         /// <summary>
         /// Add notification volumes to this planet.
+        /// Sends a notification to the player just like ghost matter does when you get too close
+        /// and also to the ship just like when you damage a component on the ship.
         /// </summary>
         public NotificationVolumeInfo[] notificationVolumes;
 
@@ -62,7 +70,8 @@ namespace NewHorizons.External.Modules.Volumes
         public ProbeModule probe;
 
         /// <summary>
-        /// Add reference frame blocker volumes to this planet. These will stop the player from seeing/targeting any reference frames.
+        /// Add reference frame blocker volumes to this planet.
+        /// These will stop the player from seeing/targeting any reference frames.
         /// </summary>
         public VolumeInfo[] referenceFrameBlockerVolumes;
 
@@ -82,7 +91,8 @@ namespace NewHorizons.External.Modules.Volumes
         public RulesetModule rulesets;
 
         /// <summary>
-        /// Add speed trap volumes to this planet. Slows down the player when they enter this volume.
+        /// Add speed trap volumes to this planet.
+        /// Slows down the player when they enter this volume.
         /// </summary>
         public SpeedTrapVolumeInfo[] speedTrapVolumes;
 

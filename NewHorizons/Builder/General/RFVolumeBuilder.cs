@@ -8,7 +8,13 @@ namespace NewHorizons.Builder.General
     {
         public static GameObject Make(GameObject planetGO, OWRigidbody owrb, float sphereOfInfluence, ReferenceFrameModule module)
         {
-            if (!module.enabled) return null;
+            if (!module.enabled)
+            {
+                // We can't not build a reference frame volume, Cloak requires one to be there
+                module.maxTargetDistance = 0f;
+                module.hideInMap = true;
+                owrb.SetIsTargetable(false);
+            }
             
             var rfGO = new GameObject("RFVolume");
             rfGO.transform.parent = planetGO.transform;

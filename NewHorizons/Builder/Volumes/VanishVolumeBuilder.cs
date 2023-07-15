@@ -26,7 +26,7 @@ namespace NewHorizons.Builder.Volumes
 
             volume._collider = collider;
             volume._shrinkBodies = info.shrinkBodies;
-            volume._onlyAffectsPlayerAndShip = info.onlyAffectsPlayerAndShip;
+            volume._onlyAffectsPlayerAndShip = info.onlyAffectsPlayerRelatedBodies;
 
             go.SetActive(true);
 

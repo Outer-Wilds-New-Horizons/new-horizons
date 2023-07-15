@@ -403,6 +403,7 @@ namespace NewHorizons
                 SingularityBuilder.Init();
                 AtmosphereBuilder.Init();
                 BrambleNodeBuilder.Init(BodyDict[CurrentStarSystem].Select(x => x.Config).Where(x => x.Bramble?.dimension != null).ToArray());
+                CloakHandler.Init();
 
                 if (isSolarSystem)
                 {
@@ -570,6 +571,8 @@ namespace NewHorizons
             PlayerSpawnHandler.OnSystemReady(shouldWarpInFromShip, shouldWarpInFromVessel);
 
             VesselCoordinatePromptHandler.RegisterPrompts(SystemDict.Where(system => system.Value.Config.Vessel?.coords != null).Select(x => x.Value).ToList());
+
+            CloakHandler.OnSystemReady();
         }
 
         public void EnableWarpDrive()
@@ -809,6 +812,12 @@ namespace NewHorizons
                 if (resumeGame != null) resumeGame._sceneToLoad = loadableScene;
 
                 return;
+            }
+
+            if (LoadManager.GetCurrentScene() == OWScene.SolarSystem || LoadManager.GetCurrentScene() == OWScene.EyeOfTheUniverse)
+            {
+                // Slide reel unloading is tied to being removed from the sector, so we do that here to prevent a softlock
+                Locator.GetPlayerSectorDetector().RemoveFromAllSectors();
             }
 
             if (IsChangingStarSystem) return;
