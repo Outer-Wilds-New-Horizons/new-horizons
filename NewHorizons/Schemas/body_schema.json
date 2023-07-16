@@ -320,8 +320,25 @@
           "type": "number",
           "format": "float",
           "minimum": 0.0
+        },
+        "material": {
+          "$ref": "#/definitions/Material"
         }
       }
+    },
+    "Material": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Default",
+        "Ice",
+        "Quantum"
+      ],
+      "enum": [
+        "default",
+        "ice",
+        "quantum"
+      ]
     },
     "AtmosphereModule": {
       "type": "object",
