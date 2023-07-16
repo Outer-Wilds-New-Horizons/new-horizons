@@ -1,6 +1,5 @@
 using NewHorizons.Utility;
 using NewHorizons.Utility.OWML;
-using System;
 using System.Collections;
 using UnityEngine;
 
@@ -8,10 +7,6 @@ namespace NewHorizons.Handlers
 {
     public static class PlayerSpawnHandler
     {
-        private static bool _wasInvincible;
-        private static bool _wasDeathManagerInvincible;
-        private static float _impactDeathSpeed;
-
         public static void SetUpPlayerSpawn()
         {
             var spawnPoint = Main.SystemDict[Main.Instance.CurrentStarSystem].SpawnPoint;
@@ -41,22 +36,18 @@ namespace NewHorizons.Handlers
             {
                 InvulnerabilityHandler.MakeInvulnerable(true);
 
-                var player = SearchUtilities.Find("Player_Body").GetAttachedOWRigidbody();
-                var spawn = GetDefaultSpawn();
-
                 // Idk why but these just don't work?
-                var matchInitialMotion = player.GetComponent<MatchInitialMotion>();
+                var matchInitialMotion = SearchUtilities.Find("Player_Body").GetComponent<MatchInitialMotion>();
                 if (matchInitialMotion != null) UnityEngine.Object.Destroy(matchInitialMotion);
 
-                Main.Instance.StartCoroutine(SpawnCoroutine(player, spawn, 5));
+                Main.Instance.StartCoroutine(SpawnCoroutine(2));
             }
         }
 
-        private static IEnumerator SpawnCoroutine(OWRigidbody playerBody, SpawnPoint spawn, int length)
+        private static IEnumerator SpawnCoroutine(int length)
         {
             for(int i = 0; i < length; i++) 
             {
-                playerBody.WarpToPositionRotation(spawn.transform.position, spawn.transform.rotation);
                 FixVelocity();
                 yield return new WaitForEndOfFrame();
             }
@@ -66,15 +57,11 @@ namespace NewHorizons.Handlers
 
         private static void FixVelocity()
         {
-            var player = SearchUtilities.Find("Player_Body");
-            var playerBody = player.GetAttachedOWRigidbody();
+            var playerBody = SearchUtilities.Find("Player_Body").GetAttachedOWRigidbody();
             var spawn = GetDefaultSpawn();
+            var resources = playerBody.GetComponent<PlayerResources>();
 
             playerBody.WarpToPositionRotation(spawn.transform.position, spawn.transform.rotation);
-
-            // Player dies during the teleport sometimes so we prevent that
-            var resources = player.GetComponent<PlayerResources>();
-            var deathManager = Locator.GetDeathManager();
 
             var spawnVelocity = spawn._attachedBody.GetVelocity();
             var spawnAngularVelocity = spawn._attachedBody.GetPointTangentialVelocity(playerBody.transform.position);
@@ -84,10 +71,6 @@ namespace NewHorizons.Handlers
             NHLogger.LogVerbose($"Player spawn velocity {velocity} Player velocity {playerBody.GetVelocity()} spawn body {spawnVelocity} spawn angular vel {spawnAngularVelocity}");
 
             resources._currentHealth = 100f;
-
-            resources._invincible = _wasInvincible;
-            deathManager._invincible = _wasDeathManagerInvincible;
-            deathManager._impactDeathSpeed = _impactDeathSpeed;
         }
 
         private static Vector3 CalculateMatchVelocity(OWRigidbody owRigidbody, OWRigidbody bodyToMatch, bool ignoreAngularVelocity)

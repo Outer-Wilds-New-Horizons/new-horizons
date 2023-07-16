@@ -65,6 +65,7 @@ namespace NewHorizons
         public bool IsWarpingFromShip { get; private set; } = false;
         public bool IsWarpingFromVessel { get; private set; } = false;
         public bool IsWarpingBackToEye { get; internal set; } = false;
+        public bool DidWarpFromShip { get; private set; } = false;
         public bool DidWarpFromVessel { get; private set; } = false;
         public bool WearingSuit { get; private set; } = false;
 
@@ -75,6 +76,10 @@ namespace NewHorizons
         private string _defaultStarSystem = "SolarSystem";
         internal string _currentStarSystem = "SolarSystem";
         private bool _firstLoad = true;
+
+        private bool _playerAwake;
+        public bool PlayerSpawned { get; set; }
+
         public ShipWarpController ShipWarpController { get; private set; }
 
         // API events
@@ -196,7 +201,6 @@ namespace NewHorizons
             SceneManager.sceneUnloaded += OnSceneUnloaded;
 
             GlobalMessenger<DeathType>.AddListener("PlayerDeath", OnDeath);
-
             GlobalMessenger.AddListener("WakeUp", OnWakeUp);
 
             NHAssetBundle = ModHelper.Assets.LoadBundle("Assets/newhorizons_public");
@@ -245,15 +249,12 @@ namespace NewHorizons
             NHLogger.Log($"Destroying NewHorizons");
             SceneManager.sceneLoaded -= OnSceneLoaded;
             GlobalMessenger<DeathType>.RemoveListener("PlayerDeath", OnDeath);
-            GlobalMessenger.RemoveListener("WakeUp", new Callback(OnWakeUp));
+            GlobalMessenger.RemoveListener("WakeUp", OnWakeUp);
 
             AchievementHandler.OnDestroy();
         }
 
-        private static void OnWakeUp()
-        {
-            IsSystemReady = true;
-        }
+        private void OnWakeUp() => _playerAwake = true;
 
         private void OnSceneUnloaded(Scene scene)
         {
@@ -268,6 +269,8 @@ namespace NewHorizons
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
             NHLogger.Log($"Scene Loaded: {scene.name} {mode} OWScene.{LoadManager.NameToScene(scene.name)}");
+
+            PlayerSpawned = false;
 
             var isTitleScreen = scene.name == LoadManager.SceneToName(OWScene.TitleScreen);
             var isSolarSystem = scene.name == LoadManager.SceneToName(OWScene.SolarSystem);
@@ -380,6 +383,7 @@ namespace NewHorizons
             // EOTU fixes
             if (isEyeOfTheUniverse)
             {
+                _playerAwake = true;
                 EyeSceneHandler.OnSceneLoad();
             }
 
@@ -438,10 +442,10 @@ namespace NewHorizons
 
                     var shouldWarpInFromShip = IsWarpingFromShip && ShipWarpController != null;
                     var shouldWarpInFromVessel = IsWarpingFromVessel && VesselWarpHandler.VesselSpawnPoint != null;
-                    Delay.RunWhen(() => IsSystemReady, () => OnSystemReady(shouldWarpInFromShip, shouldWarpInFromVessel));
 
                     IsWarpingFromShip = false;
                     IsWarpingFromVessel = false;
+                    DidWarpFromShip = shouldWarpInFromShip;
                     DidWarpFromVessel = shouldWarpInFromVessel;
 
                     var map = FindObjectOfType<MapController>();
@@ -500,16 +504,10 @@ namespace NewHorizons
                 }
                 else if (isEyeOfTheUniverse)
                 {
-                    // There is no wake up in eye scene
-                    Delay.FireOnNextUpdate(() =>
-                    {
-                        IsSystemReady = true;
-                        OnSystemReady(false, false);
-                    });
-
                     IsWarpingFromShip = false;
                     IsWarpingFromVessel = false;
                     DidWarpFromVessel = false;
+                    DidWarpFromShip = false;
                 }
 
                 //Stop starfield from disappearing when there is no lights
@@ -562,11 +560,16 @@ namespace NewHorizons
                     _currentStarSystem = _defaultStarSystem;
                 }
             }
+
+            // Wait for player to be awake and also for frames to pass
+            Delay.RunWhenAndInNUpdates(() => OnSystemReady(DidWarpFromShip, DidWarpFromVessel), () => _playerAwake && PlayerSpawned, 30);
         }
 
         // Had a bunch of separate unity things firing stuff when the system is ready so I moved it all to here
         private void OnSystemReady(bool shouldWarpInFromShip, bool shouldWarpInFromVessel)
         {
+            IsSystemReady = true;
+
             // ShipWarpController will handle the invulnerability otherwise
             if (!shouldWarpInFromShip)
                 Delay.FireOnNextUpdate(() => InvulnerabilityHandler.MakeInvulnerable(false));
