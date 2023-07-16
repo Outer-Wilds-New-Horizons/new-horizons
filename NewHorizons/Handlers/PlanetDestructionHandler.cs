@@ -86,7 +86,7 @@ namespace NewHorizons.Handlers
             if (ao.GetAstroObjectName() == AstroObject.Name.RingWorld)
             {
                 CloakHandler.FlagStrangerDisabled = true;
-                if (Locator._cloakFieldController.GetComponentInParent<AstroObject>() == ao) Locator._cloakFieldController = null;
+                if (Locator._cloakFieldController?.GetComponentInParent<AstroObject>() == ao) Locator._cloakFieldController = null;
             }
 
             if (ao.gameObject == null || !ao.gameObject.activeInHierarchy)
