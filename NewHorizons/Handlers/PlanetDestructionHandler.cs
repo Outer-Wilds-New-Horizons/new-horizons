@@ -54,12 +54,19 @@ namespace NewHorizons.Handlers
 
         public static void RemoveSolarSystem()
         {
+            // Stop the sun from killing the player
+            var sunVolumes = SearchUtilities.Find("Sun_Body/Sector_SUN/Volumes_SUN");
+            sunVolumes.SetActive(false);
+
             foreach (var name in _solarSystemBodies)
             {
                 var ao = AstroObjectLocator.GetAstroObject(name);
-                if (ao != null) RemoveBody(ao, false);
+                if (ao != null) Delay.FireInNUpdates(() => RemoveBody(ao, false), 2);
                 else NHLogger.LogError($"Couldn't find [{name}]");
             }
+
+            // Bring the sun back because why not
+            Delay.FireInNUpdates(() => { if (Locator.GetAstroObject(AstroObject.Name.Sun).gameObject.activeInHierarchy) { sunVolumes.SetActive(true); } }, 3);
         }
 
         public static void RemoveEyeOfTheUniverse()
