@@ -80,7 +80,7 @@ namespace NewHorizons.Builder.Orbital
             }
             else
             {
-                NHLogger.LogError($"No primary gravity or focal point for {primaryBody}");
+                NHLogger.LogError($"Trying to put {secondaryBody.name} around {primaryBody.name} but found no primary gravity or focal point.");
             }
         }
 

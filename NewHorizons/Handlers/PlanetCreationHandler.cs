@@ -245,20 +245,10 @@ namespace NewHorizons.Handlers
                     try
                     {
                         NHLogger.Log($"Creating [{body.Config.name}]");
-                        var planetObject = GenerateBody(body, defaultPrimaryToSun);
-                        try
-                        {
-                            planetObject?.SetActive(true);
-                        }
-                        catch (Exception e)
-                        {
-                            NHLogger.LogError($"Error when activating new planet [{body.Config.name}] - {e}");
-                        }
-                        if (planetObject == null) 
-                        { 
-                            body.UnloadCache(); 
-                            return false; 
-                        }
+                        var planetObject = GenerateBody(body, defaultPrimaryToSun) 
+                            ?? throw new NullReferenceException("Something went wrong when generating the body but no errors were logged.");
+                        
+                        planetObject.SetActive(true);
 
                         var ao = planetObject.GetComponent<NHAstroObject>();
 

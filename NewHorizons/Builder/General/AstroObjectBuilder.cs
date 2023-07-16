@@ -1,3 +1,4 @@
+using NewHorizons.Components;
 using NewHorizons.Components.Orbital;
 using NewHorizons.External.Configs;
 using NewHorizons.Utility.OWML;
@@ -61,7 +62,9 @@ namespace NewHorizons.Builder.General
                 Delay.RunWhen(
                     () => Locator._centerOfTheUniverse != null,
                     () => Locator._centerOfTheUniverse._staticReferenceFrame = astroObject.GetComponent<OWRigidbody>()
-                    );
+                );
+
+                PreserveActiveCenterOfTheUniverse.Apply(astroObject.gameObject);
             }
 
             return astroObject;
