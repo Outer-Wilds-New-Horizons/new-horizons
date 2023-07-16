@@ -60,11 +60,24 @@ namespace NewHorizons.Builder.General
 
                 Delay.RunWhen(
                     () => Locator._centerOfTheUniverse != null,
-                    () => Locator._centerOfTheUniverse._staticReferenceFrame = astroObject.GetComponent<OWRigidbody>()
+                    () => {
+                            Locator._centerOfTheUniverse._staticReferenceFrame = astroObject.GetComponent<OWRigidbody>();
+                        }
                     );
+
+                NeverDeactivateCenterOfTheUniverse(astroObject.gameObject);
             }
 
             return astroObject;
+        }
+
+        private static void NeverDeactivateCenterOfTheUniverse(GameObject centerOfTheUniverse)
+        {
+            NHLogger.LogVerbose("Center of the universe cannot be inactive.");
+            centerOfTheUniverse.SetActive(true);
+            Delay.RunWhen(() => !centerOfTheUniverse.activeInHierarchy, () => {
+                NeverDeactivateCenterOfTheUniverse(centerOfTheUniverse);
+            });
         }
     }
 }
