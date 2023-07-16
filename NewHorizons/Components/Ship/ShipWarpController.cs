@@ -17,8 +17,6 @@ namespace NewHorizons.Components.Ship
         private bool _waitingToBeSeated;
         private bool _eyesOpen = false;
 
-        private float _impactDeathSpeed;
-
         private const float size = 14f;
 
         private readonly string _blackHolePath = "TowerTwin_Body/Sector_TowerTwin/Sector_Tower_HGT/Interactables_Tower_HGT/Interactables_Tower_TT/Prefab_NOM_WarpTransmitter (1)/BlackHole/BlackHoleSingularity";
