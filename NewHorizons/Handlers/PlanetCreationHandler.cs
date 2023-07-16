@@ -32,6 +32,8 @@ namespace NewHorizons.Handlers
 
         public static void Init(List<NewHorizonsBody> bodies)
         {
+            if (Main.SystemDict[Main.Instance.CurrentStarSystem].Config.destroyStockPlanets) PlanetDestructionHandler.RemoveStockPlanets();
+
             Main.FurthestOrbit = 30000;
 
             _existingBodyDict = new();
@@ -135,8 +137,6 @@ namespace NewHorizons.Handlers
             SingularityBuilder.PairAllSingularities();
 
             // Events.FireOnNextUpdate(PlanetDestroyer.RemoveAllProxies);
-
-            if (Main.SystemDict[Main.Instance.CurrentStarSystem].Config.destroyStockPlanets) PlanetDestructionHandler.RemoveStockPlanets();
         }
 
         public static bool LoadBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)
