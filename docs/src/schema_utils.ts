@@ -123,7 +123,18 @@ export const SchemaTools = {
     getAdditionalBadges: (schema: Schema) => {
         switch (schema.internalSchema.type) {
             case "JSON":
-                return [];
+                const internalSchema = schema.internalSchema.val;
+                const badges = [];
+                if (internalSchema.minimum !== undefined) {
+                    badges.push(`Minimum: ${internalSchema.minimum}`);
+                }
+                if (internalSchema.maximum !== undefined) {
+                    badges.push(`Maximum: ${internalSchema.maximum}`);
+                }
+                if (internalSchema.default !== undefined) {
+                    badges.push(`Default: ${internalSchema.default}`);
+                }
+                return badges;
             case "XML":
                 const node = schema.internalSchema.val;
                 if (node.name === "xs:complexType") return [];
