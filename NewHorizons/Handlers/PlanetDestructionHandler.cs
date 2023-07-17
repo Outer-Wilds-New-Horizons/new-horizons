@@ -54,10 +54,11 @@ namespace NewHorizons.Handlers
 
         public static void RemoveSolarSystem()
         {
-            // Stop the sun from killing the player
+            // Stop the sun from killing the player if they spawn at the center of the solar system
             var sunVolumes = SearchUtilities.Find("Sun_Body/Sector_SUN/Volumes_SUN");
             sunVolumes.SetActive(false);
 
+            // Random shit breaks if we don't wait idk why
             foreach (var name in _solarSystemBodies)
             {
                 var ao = AstroObjectLocator.GetAstroObject(name);
@@ -65,7 +66,7 @@ namespace NewHorizons.Handlers
                 else NHLogger.LogError($"Couldn't find [{name}]");
             }
 
-            // Bring the sun back because why not
+            // Bring the sun back
             Delay.FireInNUpdates(() => { if (Locator.GetAstroObject(AstroObject.Name.Sun).gameObject.activeInHierarchy) { sunVolumes.SetActive(true); } }, 3);
         }
 

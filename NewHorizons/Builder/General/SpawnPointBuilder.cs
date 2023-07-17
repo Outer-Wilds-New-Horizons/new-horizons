@@ -65,6 +65,9 @@ namespace NewHorizons.Builder.General
                     ship.GetRequiredComponent<MatchInitialMotion>().SetBodyToMatch(owRigidBody);
                 }
                 spawnGO.SetActive(true);
+
+                // Ship doesn't get activated sometimes
+                Delay.RunWhen(() => Main.IsSystemReady, () => ship.gameObject.SetActive(true));
             }
 
             if ((Main.Instance.IsWarpingFromVessel || (!Main.Instance.IsWarpingFromShip && (module.playerSpawn?.startWithSuit ?? false))) && !suitUpQueued)

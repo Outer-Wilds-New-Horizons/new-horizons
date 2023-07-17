@@ -49,6 +49,8 @@ namespace NewHorizons.Components.Stars
 
         public static void RemoveStar(StarController star)
         {
+            if (Instance == null) return;
+
             NHLogger.LogVerbose($"Removing star from list: {star?.gameObject?.name}");
             if (Instance._stars.Contains(star))
             {
@@ -74,7 +76,7 @@ namespace NewHorizons.Components.Stars
 
         public static void RemoveStarLight(Light light)
         {
-            if (light != null && Instance._lights.Contains(light))
+            if (Instance != null && light != null && Instance._lights.Contains(light))
             {
                 Instance._lights.Remove(light);
             }
