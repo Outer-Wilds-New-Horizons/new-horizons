@@ -40,6 +40,7 @@ namespace NewHorizons.Handlers
                 var matchInitialMotion = SearchUtilities.Find("Player_Body").GetComponent<MatchInitialMotion>();
                 if (matchInitialMotion != null) UnityEngine.Object.Destroy(matchInitialMotion);
 
+                // Arbitrary number, depending on the machine some people die, some people fall through the floor, its very inconsistent
                 Main.Instance.StartCoroutine(SpawnCoroutine(10));
             }
         }
