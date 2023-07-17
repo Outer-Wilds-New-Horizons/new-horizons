@@ -21,7 +21,6 @@ namespace NewHorizons.Builder.General
             if (module.playerSpawn != null)
             {
                 GameObject spawnGO = GeneralPropBuilder.MakeNew("PlayerSpawnPoint", planetGO, null, module.playerSpawn);
-                spawnGO.SetActive(false);
                 spawnGO.layer = Layer.PlayerSafetyCollider;
 
                 playerSpawn = spawnGO.AddComponent<SpawnPoint>();
@@ -31,8 +30,7 @@ namespace NewHorizons.Builder.General
                 playerSpawn._triggerVolumes = new OWTriggerVolume[0];
 
                 // This was a stupid hack to stop players getting stuck in the ground and now we have to keep it forever
-                spawnGO.transform.position += 4f * spawnGO.transform.up;
-                spawnGO.SetActive(true);
+                spawnGO.transform.position += spawnGO.transform.TransformDirection(module.playerSpawn.offset ?? Vector3.up * 4f);
             }
 
             if (module.shipSpawn != null)
@@ -57,7 +55,11 @@ namespace NewHorizons.Builder.General
                     ship.transform.rotation = spawnGO.transform.rotation;
 
                     // Move it up a bit more when aligning to surface
-                    if (module.shipSpawn.alignRadial.GetValueOrDefault())
+                    if (module.shipSpawn.offset != null)
+                    {
+                        ship.transform.position += spawnGO.transform.TransformDirection(module.shipSpawn.offset);
+                    }
+                    else if (module.shipSpawn.alignRadial.GetValueOrDefault())
                     {
                         ship.transform.position += ship.transform.up * 4f;
                     }

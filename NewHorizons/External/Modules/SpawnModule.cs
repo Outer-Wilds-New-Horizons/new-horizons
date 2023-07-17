@@ -24,7 +24,17 @@ namespace NewHorizons.External.Modules
         [Obsolete("startWithSuit is deprecated. Use playerSpawn.startWithSuit instead")] public bool startWithSuit;
 
         [JsonObject]
-        public class PlayerSpawnPoint : GeneralPropInfo {
+        public class SpawnPoint : GeneralPropInfo
+        {
+            /// <summary>
+            /// Offsets the player/ship by this local vector when spawning. Used to prevent spawning in the floor. Optional: defaults to (0, 4, 0).
+            /// </summary>
+            public MVector3? offset;
+        }
+
+        [JsonObject]
+        public class PlayerSpawnPoint : SpawnPoint
+        {
             /// <summary>
             /// If you spawn on a planet with no oxygen, you probably want to set this to true ;;)
             /// </summary>
@@ -33,10 +43,13 @@ namespace NewHorizons.External.Modules
             /// Whether this planet's spawn point is the one the player will initially spawn at, if multiple spawn points exist.
             /// </summary>
             public bool isDefault;
+
+
         }
 
         [JsonObject]
-        public class ShipSpawnPoint : GeneralPropInfo {
+        public class ShipSpawnPoint : SpawnPoint
+        {
         
         }
     }
