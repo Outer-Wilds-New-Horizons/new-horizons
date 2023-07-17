@@ -40,7 +40,7 @@ namespace NewHorizons.Handlers
                 var matchInitialMotion = SearchUtilities.Find("Player_Body").GetComponent<MatchInitialMotion>();
                 if (matchInitialMotion != null) UnityEngine.Object.Destroy(matchInitialMotion);
 
-                Main.Instance.StartCoroutine(SpawnCoroutine(2));
+                Main.Instance.StartCoroutine(SpawnCoroutine(10));
             }
         }
 
