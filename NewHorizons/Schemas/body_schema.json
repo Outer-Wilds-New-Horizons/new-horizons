@@ -1034,6 +1034,13 @@
           "description": "Rotation period in minutes.",
           "format": "float"
         },
+        "initialRotation": {
+          "type": "number",
+          "description": "Offsets the planet's starting sidereal rotation. In degrees.",
+          "format": "float",
+          "maximum": 360.0,
+          "minimum": 0.0
+        },
         "isTidallyLocked": {
           "type": "boolean",
           "description": "Should the body always have one side facing its primary?"
@@ -3206,6 +3213,10 @@
           "description": "The type of stellar remnant your star will leave behind.",
           "default": "default",
           "$ref": "#/definitions/StellarRemnantType"
+        },
+        "solarFlareSettings": {
+          "description": "Allows overriding solar flare graphical settings.",
+          "$ref": "#/definitions/SolarFlareModule"
         }
       }
     },
@@ -3244,6 +3255,36 @@
         "blackHole",
         "custom"
       ]
+    },
+    "SolarFlareModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "scaleFactor": {
+          "type": "number",
+          "description": "Size multiuplier for solar flares. Defaults to 1.",
+          "format": "float",
+          "default": 1
+        },
+        "lifeLength": {
+          "type": "number",
+          "description": "How long a solar flare is visible for. Defaults to 15.",
+          "format": "float",
+          "default": 15.0
+        },
+        "minTimeBetweenFlares": {
+          "type": "number",
+          "description": "Solar flares are emitted randomly. This is the minimum ammount of time between solar flares.",
+          "format": "float",
+          "default": 5.0
+        },
+        "maxTimeBetweenFlares": {
+          "type": "number",
+          "description": "Solar flares are emitted randomly. This is the maximum ammount of time between solar flares.",
+          "format": "float",
+          "default": 30.0
+        }
+      }
     },
     "WaterModule": {
       "type": "object",

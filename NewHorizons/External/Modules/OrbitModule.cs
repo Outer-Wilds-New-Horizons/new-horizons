@@ -35,6 +35,12 @@ namespace NewHorizons.External.Modules
         public float siderealPeriod;
 
         /// <summary>
+        /// Offsets the planet's starting sidereal rotation. In degrees.
+        /// </summary>
+        [Range(0f, 360f)]
+        public float initialRotation;
+
+        /// <summary>
         /// Should the body always have one side facing its primary?
         /// </summary>
         public bool isTidallyLocked;

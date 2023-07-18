@@ -24,10 +24,12 @@ namespace NewHorizons.Builder.Orbital
             initialMotion._initAngularSpeed = orbit.siderealPeriod == 0 ? 0f : 2f * Mathf.PI / (orbit.siderealPeriod * 60f);
             var rotationAxis = Quaternion.AngleAxis(orbit.axialTilt, Vector3.right) * Vector3.up;
 
-            // For things with children this is broken
+            // For stock planets with unsuspended rigidbody children this is broken
+            // For planets with rafts this is broken
             if (AstroObjectLocator.GetChildren(secondaryBody).Length == 0)
             {
                 secondaryBody.transform.rotation = Quaternion.FromToRotation(Vector3.up, rotationAxis);
+                secondaryBody.transform.Rotate(rotationAxis, orbit.initialRotation);
             }
 
             if (!orbit.isStatic && primaryBody != null)

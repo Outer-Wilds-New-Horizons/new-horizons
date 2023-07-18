@@ -1,5 +1,6 @@
 using NewHorizons.External.SerializableEnums;
 using NewHorizons.Handlers;
+using NewHorizons.Utility;
 using NewHorizons.Utility.OWML;
 using System.Collections;
 using UnityEngine;
@@ -28,7 +29,7 @@ namespace NewHorizons.Components.Volumes
             if (hitObj.CompareTag("PlayerDetector") && enabled)
             {
                 // Have to run it off the mod behaviour since the game over controller disables everything
-                Main.Instance.StartCoroutine(GameOver());
+                Delay.StartCoroutine(GameOver());
             }
         }
 
