@@ -363,6 +363,7 @@ namespace NewHorizons.Builder.Body
                     controller.GetComponent<MeshRenderer>().sharedMaterial = material;
                     controller._color = Color.white;
                     controller._tint = flareTint;
+                    controller._scaleFactor = Vector3.one * starModule.solarFlareScaleFactor;
                 }
             }
 

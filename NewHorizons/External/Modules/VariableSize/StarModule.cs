@@ -104,6 +104,11 @@ namespace NewHorizons.External.Modules.VariableSize
         /// The type of stellar remnant your star will leave behind.
         /// </summary>
         [DefaultValue("default")] public StellarRemnantType stellarRemnantType = StellarRemnantType.Default;
+
+        /// <summary>
+        /// Size multiuplier for solar flares. Defaults to 1.
+        /// </summary>
+        public float solarFlareScaleFactor = 1f;
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
