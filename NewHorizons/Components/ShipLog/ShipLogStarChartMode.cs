@@ -134,9 +134,18 @@ namespace NewHorizons.Components.ShipLog
                 }
                 else
                 {
-                    var path = Path.Combine("planets", uniqueID + ".png");
+                    var mod = Main.SystemDict[uniqueID].Mod;
+
+                    var path = Path.Combine("systems", uniqueID + ".png");
+
+                    // Else check the old location
+                    if (!File.Exists(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, path)))
+                    {
+                        path = Path.Combine("planets", uniqueID + ".png");
+                    }
+
                     NHLogger.LogVerbose($"ShipLogStarChartManager - Trying to load {path}");
-                    texture = ImageUtilities.GetTexture(Main.SystemDict[uniqueID].Mod, path);
+                    texture = ImageUtilities.GetTexture(mod, path);
                 }
             }
             catch (Exception) { }
