@@ -349,6 +349,13 @@ namespace NewHorizons.Handlers
             BrambleDimensionBuilder.Make(body, go, ao, sector, owRigidBody);
 
             go = SharedGenerateBody(body, go, sector, owRigidBody);
+            
+            // Not included in SharedGenerate to not mess up gravity on base game planets
+            if (body.Config.Base.surfaceGravity != 0)
+            {
+                GravityBuilder.Make(go, ao, owRigidBody, body.Config);
+            }
+
             body.Object = go;
 
             AstroObjectLocator.RegisterCustomAstroObject(ao);

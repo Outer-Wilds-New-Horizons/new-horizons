@@ -41,7 +41,7 @@ namespace NewHorizons.Handlers
                 if (matchInitialMotion != null) UnityEngine.Object.Destroy(matchInitialMotion);
 
                 // Arbitrary number, depending on the machine some people die, some people fall through the floor, its very inconsistent
-                Main.Instance.StartCoroutine(SpawnCoroutine(10));
+                Delay.StartCoroutine(SpawnCoroutine(10));
             }
         }
 

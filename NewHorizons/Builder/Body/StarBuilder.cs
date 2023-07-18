@@ -7,6 +7,7 @@ using System.Linq;
 using NewHorizons.Components.Stars;
 using NewHorizons.Utility.OuterWilds;
 using NewHorizons.Utility.Files;
+using NewHorizons.Utility.OWML;
 
 namespace NewHorizons.Builder.Body
 {
@@ -348,28 +349,42 @@ namespace NewHorizons.Builder.Body
             solarFlareEmitter.name = "SolarFlareEmitter";
             solarFlareEmitter.SetActive(true);
 
+            var emitter = solarFlareEmitter.GetComponent<SolarFlareEmitter>();
+
+            if (starModule.solarFlareSettings != null)
+            {
+                emitter._minTimeBetweenFlares = starModule.solarFlareSettings.minTimeBetweenFlares;
+                emitter._maxTimeBetweenFlares = starModule.solarFlareSettings.maxTimeBetweenFlares;
+                emitter._lifeLength = starModule.solarFlareSettings.lifeLength;
+            }
+
             if (starModule.tint != null)
             {
-                var flareTint = starModule.tint.ToColor();
-                var emitter = solarFlareEmitter.GetComponent<SolarFlareEmitter>();
-                emitter.tint = flareTint;
+                emitter.tint = starModule.tint.ToColor();
+            }
 
-                var material = new Material(_flareMaterial);
-                // Since the star isn't awake yet the controllers haven't been made 
-                foreach (var prefab in new GameObject[] { emitter.domePrefab, emitter.loopPrefab, emitter.streamerPrefab })
+            var material = new Material(_flareMaterial);
+            // Since the star isn't awake yet the controllers haven't been made 
+            foreach (var prefab in new GameObject[] { emitter.domePrefab, emitter.loopPrefab, emitter.streamerPrefab })
+            {
+                var controller = prefab.GetComponent<SolarFlareController>();
+                // controller._meshRenderer doesn't exist yet since Awake hasn't been called
+                if (starModule.tint != null)
                 {
-                    var controller = prefab.GetComponent<SolarFlareController>();
-                    // controller._meshRenderer doesn't exist yet since Awake hasn't been called
                     controller.GetComponent<MeshRenderer>().sharedMaterial = material;
                     controller._color = Color.white;
-                    controller._tint = flareTint;
+                    controller._tint = starModule.tint.ToColor();
+                }
+                if (starModule.solarFlareSettings != null)
+                {
+                    controller._scaleFactor = Vector3.one * starModule.solarFlareSettings.scaleFactor;
                 }
             }
 
             starGO.transform.position = rootObject.transform.position;
             starGO.transform.localScale = starModule.size * Vector3.one;
 
-            TessellatedSphereRenderer surface = sunSurface.GetComponent<TessellatedSphereRenderer>();
+            var surface = sunSurface.GetComponent<TessellatedSphereRenderer>();
 
             if (starModule.tint != null)
             {
