@@ -230,6 +230,7 @@ namespace NewHorizons
                 NHLogger.LogWarning("Couldn't find planets folder");
             }
 
+            // Call this from the menu since we hadn't hooked onto the event yet
             Delay.FireOnNextUpdate(() => OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single));
             Delay.FireOnNextUpdate(() => _firstLoad = false);
             Instance.ModHelper.Menus.PauseMenu.OnInit += DebugReload.InitializePauseMenu;
@@ -545,6 +546,9 @@ namespace NewHorizons
                 {
                     NHLogger.LogError($"Exception thrown when invoking star system loaded event with parameter [{Instance.CurrentStarSystem}]:\n{e}");
                 }
+
+                // Wait for player to be awake and also for frames to pass
+                Delay.RunWhenAndInNUpdates(() => OnSystemReady(DidWarpFromShip, DidWarpFromVessel), () => _playerAwake && PlayerSpawned, 30);
             }
             else
             {
@@ -560,29 +564,33 @@ namespace NewHorizons
                     _currentStarSystem = _defaultStarSystem;
                 }
             }
-
-            // Wait for player to be awake and also for frames to pass
-            Delay.RunWhenAndInNUpdates(() => OnSystemReady(DidWarpFromShip, DidWarpFromVessel), () => _playerAwake && PlayerSpawned, 30);
         }
 
         // Had a bunch of separate unity things firing stuff when the system is ready so I moved it all to here
         private void OnSystemReady(bool shouldWarpInFromShip, bool shouldWarpInFromVessel)
         {
-            IsSystemReady = true;
+            if (IsSystemReady)
+            {
+                NHLogger.LogWarning("OnSystemReady was called twice.");
+            }
+            else
+            {
+                IsSystemReady = true;
 
-            // ShipWarpController will handle the invulnerability otherwise
-            if (!shouldWarpInFromShip)
-                Delay.FireOnNextUpdate(() => InvulnerabilityHandler.MakeInvulnerable(false));
+                // ShipWarpController will handle the invulnerability otherwise
+                if (!shouldWarpInFromShip)
+                    Delay.FireOnNextUpdate(() => InvulnerabilityHandler.MakeInvulnerable(false));
 
-            Locator.GetPlayerBody().gameObject.AddComponent<DebugRaycaster>();
-            Locator.GetPlayerBody().gameObject.AddComponent<DebugPropPlacer>();
-            Locator.GetPlayerBody().gameObject.AddComponent<DebugMenu>();
+                Locator.GetPlayerBody().gameObject.AddComponent<DebugRaycaster>();
+                Locator.GetPlayerBody().gameObject.AddComponent<DebugPropPlacer>();
+                Locator.GetPlayerBody().gameObject.AddComponent<DebugMenu>();
 
-            PlayerSpawnHandler.OnSystemReady(shouldWarpInFromShip, shouldWarpInFromVessel);
+                PlayerSpawnHandler.OnSystemReady(shouldWarpInFromShip, shouldWarpInFromVessel);
 
-            VesselCoordinatePromptHandler.RegisterPrompts(SystemDict.Where(system => system.Value.Config.Vessel?.coords != null).Select(x => x.Value).ToList());
+                VesselCoordinatePromptHandler.RegisterPrompts(SystemDict.Where(system => system.Value.Config.Vessel?.coords != null).Select(x => x.Value).ToList());
 
-            CloakHandler.OnSystemReady();
+                CloakHandler.OnSystemReady();
+            }
         }
 
         public void EnableWarpDrive()
