@@ -3213,6 +3213,11 @@
           "description": "The type of stellar remnant your star will leave behind.",
           "default": "default",
           "$ref": "#/definitions/StellarRemnantType"
+        },
+        "solarFlareScaleFactor": {
+          "type": "number",
+          "description": "Size multiuplier for solar flares. Defaults to 1.",
+          "format": "float"
         }
       }
     },
