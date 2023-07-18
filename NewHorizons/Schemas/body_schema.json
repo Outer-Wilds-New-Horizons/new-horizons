@@ -1034,6 +1034,13 @@
           "description": "Rotation period in minutes.",
           "format": "float"
         },
+        "initialRotation": {
+          "type": "number",
+          "description": "Offsets the planet's starting sidereal rotation. In degrees.",
+          "format": "float",
+          "maximum": 360.0,
+          "minimum": 0.0
+        },
         "isTidallyLocked": {
           "type": "boolean",
           "description": "Should the body always have one side facing its primary?"
