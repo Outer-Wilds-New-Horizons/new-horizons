@@ -41,9 +41,6 @@ namespace NewHorizons.Builder.General
                 var alignmentAxis = config.Orbit.alignmentAxis ?? new Vector3(0, -1, 0);
 
                 // Start it off facing the right way
-                var facing = body.transform.TransformDirection(alignmentAxis);
-                body.transform.rotation = Quaternion.FromToRotation(facing, alignmentAxis) * body.transform.rotation;
-
                 var alignment = body.AddComponent<AlignWithTargetBody>();
                 alignment.SetTargetBody(primaryBody?.GetAttachedOWRigidbody());
                 alignment._localAlignmentAxis = alignmentAxis;
@@ -52,7 +49,7 @@ namespace NewHorizons.Builder.General
                 // Have it face the right way
                 var currentDirection = alignment.transform.TransformDirection(alignment._localAlignmentAxis);
                 var targetDirection = alignment.GetAlignmentDirection();
-                alignment.transform.rotation = Quaternion.FromToRotation(currentDirection, targetDirection);
+                alignment.transform.rotation = Quaternion.FromToRotation(currentDirection, targetDirection) * alignment.transform.rotation;
                 alignment._owRigidbody.SetAngularVelocity(Vector3.zero);
 
                 // Static bodies won't update rotation with physics for some reason
