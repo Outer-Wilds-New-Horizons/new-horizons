@@ -1,5 +1,6 @@
 using NewHorizons.Components.EOTE;
 using NewHorizons.OtherMods.VoiceActing;
+using NewHorizons.Utility;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -81,7 +82,8 @@ namespace NewHorizons.Handlers
 
             if (!_cloaks.Any())
             {
-                Locator.RegisterCloakFieldController(null);
+                // For some reason ship/scout HUD markers break if this isn't set to the Stranger when it is disabled #647
+                Locator.RegisterCloakFieldController(GameObject.FindObjectOfType<CloakFieldController>());
                 Shader.DisableKeyword("_CLOAKINGFIELDENABLED");
                 _cloakLocator.SetCurrentCloak(null);
                 _cloakLocator.enabled = false;
