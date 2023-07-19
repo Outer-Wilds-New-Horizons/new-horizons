@@ -107,5 +107,7 @@ namespace NewHorizons.Handlers
             _starSystemToFactID.Add(system, factID);
             _factIDToStarSystem.Add(factID, system);
         }
+
+        public static bool IsWarpDriveLockedOn() => StarChartHandler.ShipLogStarChartMode.GetTargetStarSystem() != null;
     }
 }

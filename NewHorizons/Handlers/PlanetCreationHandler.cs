@@ -30,9 +30,14 @@ namespace NewHorizons.Handlers
         // Custom bodies being created
         private static Dictionary<NHAstroObject, NewHorizonsBody> _customBodyDict;
 
+        // Farthest distance from the center of the solar system
+        public static float FurthestOrbit { get; private set; }
+        public static float DefaultFurthestOrbit => 30000f;
+
         public static void Init(List<NewHorizonsBody> bodies)
         {
-            Main.FurthestOrbit = 30000;
+            // Base game value
+            FurthestOrbit = DefaultFurthestOrbit;
 
             _existingBodyDict = new();
             _customBodyDict = new();
@@ -848,9 +853,10 @@ namespace NewHorizons.Handlers
                 go.transform.position = position;
             }
 
-            if (go.transform.position.magnitude > Main.FurthestOrbit)
+            var distanceToCenter = go.transform.position.magnitude;
+            if (distanceToCenter > FurthestOrbit)
             {
-                Main.FurthestOrbit = go.transform.position.magnitude + 30000f;
+                FurthestOrbit = distanceToCenter;
             }
         }
 
