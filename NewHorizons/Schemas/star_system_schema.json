@@ -5,6 +5,10 @@
   "description": "Configuration for a specific star system",
   "additionalProperties": false,
   "properties": {
+    "freeMapAngle": {
+      "type": "boolean",
+      "description": "In this system should the player be able to rotate their map camera freely or be stuck above the plane of the solar system?"
+    },
     "farClipPlaneOverride": {
       "type": "number",
       "description": "An override value for the far clip plane. Allows you to see farther.",
