@@ -57,7 +57,6 @@ namespace NewHorizons
         public static float SecondsElapsedInLoop = -1;
 
         public static bool IsSystemReady { get; private set; }
-        public static float FurthestOrbit { get; set; } = 50000f;
 
         public string DefaultStarSystem => SystemDict.ContainsKey(_defaultSystemOverride) ? _defaultSystemOverride : _defaultStarSystem;
         public string CurrentStarSystem => _currentStarSystem;
@@ -449,9 +448,6 @@ namespace NewHorizons
                     DidWarpFromShip = shouldWarpInFromShip;
                     DidWarpFromVessel = shouldWarpInFromVessel;
 
-                    var map = FindObjectOfType<MapController>();
-                    if (map != null) map._maxPanDistance = FurthestOrbit * 1.5f;
-
                     // Fix the map satellite
                     SearchUtilities.Find("HearthianMapSatellite_Body", false).AddComponent<MapSatelliteOrbitFix>();
 
@@ -524,7 +520,7 @@ namespace NewHorizons
                 var ssrLight = solarSystemRoot.AddComponent<Light>();
                 ssrLight.innerSpotAngle = 0;
                 ssrLight.spotAngle = 179;
-                ssrLight.range = FurthestOrbit * (4f / 3f);
+                ssrLight.range = PlanetCreationHandler.FurthestOrbit * (4f / 3f);
                 ssrLight.intensity = 0.001f;
 
                 var fluid = playerBody.FindChild("PlayerDetector").GetComponent<DynamicFluidDetector>();
