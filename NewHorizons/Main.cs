@@ -522,7 +522,7 @@ namespace NewHorizons
                 var ssrLight = solarSystemRoot.AddComponent<Light>();
                 ssrLight.innerSpotAngle = 0;
                 ssrLight.spotAngle = 179;
-                ssrLight.range = PlanetCreationHandler.FurthestOrbit * (4f / 3f);
+                ssrLight.range = PlanetCreationHandler.SolarSystemRadius * (4f / 3f);
                 ssrLight.intensity = 0.001f;
 
                 var fluid = playerBody.FindChild("PlayerDetector").GetComponent<DynamicFluidDetector>();

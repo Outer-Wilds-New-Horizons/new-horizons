@@ -12,7 +12,7 @@ namespace NewHorizons.Patches.MapPatches
         [HarmonyPatch(nameof(MapController.Start))]
         public static void MapController_Start(MapController __instance)
         {
-            var modifier = Mathf.Max(1f, PlanetCreationHandler.FurthestOrbit / PlanetCreationHandler.DefaultFurthestOrbit);
+            var modifier = Mathf.Max(1f, PlanetCreationHandler.SolarSystemRadius / PlanetCreationHandler.DefaultFurthestOrbit);
 
             __instance._maxPanDistance *= modifier;
             __instance._maxZoomDistance *= modifier;

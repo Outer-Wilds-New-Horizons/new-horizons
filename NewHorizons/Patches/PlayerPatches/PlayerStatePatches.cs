@@ -16,7 +16,7 @@ namespace NewHorizons.Patches.PlayerPatches
 
             var centerTransform = Locator.GetCenterOfTheUniverse().GetStaticReferenceFrame().transform;
             var shipBody = Locator.GetShipBody();
-            var maxDist = Mathf.Max(PlanetCreationHandler.DefaultFurthestOrbit, PlanetCreationHandler.FurthestOrbit);
+            var maxDist = Mathf.Max(PlanetCreationHandler.DefaultFurthestOrbit, PlanetCreationHandler.SolarSystemRadius);
             __result = centerTransform != null && shipBody != null && (shipBody.transform.position - centerTransform.position).sqrMagnitude > maxDist * maxDist;
             return false;
         }

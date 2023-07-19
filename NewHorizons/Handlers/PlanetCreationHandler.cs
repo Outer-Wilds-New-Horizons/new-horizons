@@ -31,13 +31,13 @@ namespace NewHorizons.Handlers
         private static Dictionary<NHAstroObject, NewHorizonsBody> _customBodyDict;
 
         // Farthest distance from the center of the solar system
-        public static float FurthestOrbit { get; private set; }
+        public static float SolarSystemRadius { get; private set; }
         public static float DefaultFurthestOrbit => 30000f;
 
         public static void Init(List<NewHorizonsBody> bodies)
         {
             // Base game value
-            FurthestOrbit = DefaultFurthestOrbit;
+            SolarSystemRadius = DefaultFurthestOrbit;
 
             _existingBodyDict = new();
             _customBodyDict = new();
@@ -853,10 +853,11 @@ namespace NewHorizons.Handlers
                 go.transform.position = position;
             }
 
-            var distanceToCenter = go.transform.position.magnitude;
-            if (distanceToCenter > FurthestOrbit)
+            // Uses the ratio of the interlopers furthest point to what the base game considers the edge of the solar system
+            var distanceToCenter = go.transform.position.magnitude * (24000 / 30000f);
+            if (distanceToCenter > SolarSystemRadius)
             {
-                FurthestOrbit = distanceToCenter;
+                SolarSystemRadius = distanceToCenter;
             }
         }
 
