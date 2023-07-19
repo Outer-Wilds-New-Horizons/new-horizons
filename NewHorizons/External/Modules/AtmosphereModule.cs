@@ -46,7 +46,7 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// How dense the fog is, if you put fog.
         /// </summary>
-        [Range(0f, 1f)] public float fogDensity;
+        [Range(0f, double.MaxValue)] public float fogDensity;
 
         /// <summary>
         /// Radius of fog sphere, independent of the atmosphere. This has to be set for there to be fog.
@@ -57,6 +57,12 @@ namespace NewHorizons.External.Modules
         /// Colour of fog on the planet, if you put fog.
         /// </summary>
         public MColor fogTint;
+        
+        /// <summary>
+        /// Relative filepath to the fog color ramp texture, if you put fog.
+        /// x axis is angle to sun (left at midnight, right at noon), y axis is distance to camera (close at bottom, far at top).
+        /// </summary>
+        public string fogRampPath;
 
         /// <summary>
         /// Lets you survive on the planet without a suit.
