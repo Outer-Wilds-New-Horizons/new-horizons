@@ -65,13 +65,6 @@ namespace NewHorizons.Builder.General
                     }
 
                     ship.GetRequiredComponent<MatchInitialMotion>().SetBodyToMatch(owRigidBody);
-
-                    // Might fix #648
-                    var fogWarpVolume = planetGO.GetComponentInChildren<OuterFogWarpVolume>();
-                    if (fogWarpVolume != null)
-                    {
-                        ship.GetComponentInChildren<FogWarpDetector>().TrackFogWarpVolume(fogWarpVolume);
-                    }
                 }
                 spawnGO.SetActive(true);
 
