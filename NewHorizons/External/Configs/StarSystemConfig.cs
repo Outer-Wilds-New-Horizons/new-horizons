@@ -21,6 +21,12 @@ namespace NewHorizons.External.Configs
         public bool freeMapAngle;
 
         /// <summary>
+        /// When well past the furthest orbit, should the player be summoned back to the star?
+        /// </summary>
+        [DefaultValue(true)]
+        public bool returnToSolarSystemWhenTooFar = true;
+
+        /// <summary>
         /// An override value for the far clip plane. Allows you to see farther.
         /// </summary>
         public float farClipPlaneOverride;

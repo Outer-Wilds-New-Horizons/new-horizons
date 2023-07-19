@@ -89,6 +89,8 @@ namespace NewHorizons
 
         public static bool HasDLC { get => EntitlementsManager.IsDlcOwned() == EntitlementsManager.AsyncOwnershipStatus.Owned; }
 
+        public static StarSystemConfig GetCurrentSystemConfig => SystemDict[Instance.CurrentStarSystem].Config;
+
         public override object GetApi()
         {
             return new NewHorizonsApi();

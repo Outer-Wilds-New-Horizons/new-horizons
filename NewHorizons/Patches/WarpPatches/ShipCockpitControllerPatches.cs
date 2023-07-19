@@ -50,14 +50,19 @@ namespace NewHorizons.Patches.WarpPatches
             .RemoveInstructions(2)
             .Insert(
                 // First do an if statement to see if the warp drive is locked on
-                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(StarChartHandler), nameof(StarChartHandler.IsWarpDriveLockedOn))),
-                new CodeInstruction(OpCodes.Brtrue_S, returnLabel),
+                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ShipCockpitControllerPatches), nameof(ShipCockpitControllerPatches.ShouldReturn))),
+                new CodeInstruction(OpCodes.Brfalse_S, returnLabel),
 
                 // Then get the center of the universe and its reference frame
                 new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Locator), nameof(Locator.GetCenterOfTheUniverse))),
                 new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(CenterOfTheUniverse), nameof(CenterOfTheUniverse.GetStaticReferenceFrame)))
             )
             .InstructionEnumeration();
+        }
+
+        private static bool ShouldReturn()
+        {
+            return !StarChartHandler.IsWarpDriveLockedOn() && Main.GetCurrentSystemConfig.returnToSolarSystemWhenTooFar;
         }
     }
 }
