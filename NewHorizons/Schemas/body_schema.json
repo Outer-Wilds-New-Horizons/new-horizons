@@ -345,7 +345,6 @@
           "type": "number",
           "description": "How dense the fog is, if you put fog.",
           "format": "float",
-          "maximum": 1.0,
           "minimum": 0.0
         },
         "fogSize": {
@@ -357,6 +356,10 @@
         "fogTint": {
           "description": "Colour of fog on the planet, if you put fog.",
           "$ref": "#/definitions/MColor"
+        },
+        "fogRampPath": {
+          "type": "string",
+          "description": "Relative filepath to the fog color ramp texture, if you put fog.\nx axis is angle to sun (left at midnight, right at noon), y axis is distance to camera (close at bottom, far at top)."
         },
         "hasOxygen": {
           "type": "boolean",
@@ -3050,14 +3053,7 @@
       "properties": {
         "offset": {
           "description": "Offsets the player/ship by this local vector when spawning. Used to prevent spawning in the floor. Optional: defaults to (0, 4, 0).",
-          "oneOf": [
-            {
-              "type": "null"
-            },
-            {
-              "$ref": "#/definitions/MVector3"
-            }
-          ]
+          "$ref": "#/definitions/MVector3"
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -3102,14 +3098,7 @@
       "properties": {
         "offset": {
           "description": "Offsets the player/ship by this local vector when spawning. Used to prevent spawning in the floor. Optional: defaults to (0, 4, 0).",
-          "oneOf": [
-            {
-              "type": "null"
-            },
-            {
-              "$ref": "#/definitions/MVector3"
-            }
-          ]
+          "$ref": "#/definitions/MVector3"
         },
         "rotation": {
           "description": "Rotation of the object",

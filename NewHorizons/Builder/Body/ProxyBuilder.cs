@@ -120,7 +120,7 @@ namespace NewHorizons.Builder.Body
 
                     if (body.Config.Atmosphere.fogSize != 0)
                     {
-                        fog = FogBuilder.MakeProxy(proxy, body.Config.Atmosphere);
+                        fog = FogBuilder.MakeProxy(proxy, body.Config.Atmosphere, body.Mod);
                         fogCurveMaxVal = body.Config.Atmosphere.fogDensity;
                     }
 

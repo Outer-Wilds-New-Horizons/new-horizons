@@ -652,7 +652,7 @@ namespace NewHorizons.Handlers
 
                 if (body.Config.Atmosphere.fogSize != 0)
                 {
-                    fog = FogBuilder.Make(go, sector, body.Config.Atmosphere);
+                    fog = FogBuilder.Make(go, sector, body.Config.Atmosphere, body.Mod);
                 }
 
                 atmosphere = AtmosphereBuilder.Make(go, sector, body.Config.Atmosphere, surfaceSize).GetComponentInChildren<LODGroup>();
