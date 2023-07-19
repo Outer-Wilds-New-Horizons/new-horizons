@@ -3053,14 +3053,7 @@
       "properties": {
         "offset": {
           "description": "Offsets the player/ship by this local vector when spawning. Used to prevent spawning in the floor. Optional: defaults to (0, 4, 0).",
-          "oneOf": [
-            {
-              "type": "null"
-            },
-            {
-              "$ref": "#/definitions/MVector3"
-            }
-          ]
+          "$ref": "#/definitions/MVector3"
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -3105,14 +3098,7 @@
       "properties": {
         "offset": {
           "description": "Offsets the player/ship by this local vector when spawning. Used to prevent spawning in the floor. Optional: defaults to (0, 4, 0).",
-          "oneOf": [
-            {
-              "type": "null"
-            },
-            {
-              "$ref": "#/definitions/MVector3"
-            }
-          ]
+          "$ref": "#/definitions/MVector3"
         },
         "rotation": {
           "description": "Rotation of the object",
