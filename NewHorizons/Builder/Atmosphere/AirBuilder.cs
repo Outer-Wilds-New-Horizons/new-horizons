@@ -16,9 +16,10 @@ namespace NewHorizons.Builder.Atmosphere
             sc.isTrigger = true;
             sc.radius = config.Atmosphere.size;
 
+            // copied from gd
             var sfv = airGO.AddComponent<SimpleFluidVolume>();
             sfv._layer = 5;
-            sfv._priority = 1;
+            sfv._priority = 0;
             sfv._density = 1.2f;
             sfv._fluidType = FluidVolume.Type.AIR;
             sfv._allowShipAutoroll = true;

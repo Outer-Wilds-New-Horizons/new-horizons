@@ -104,7 +104,7 @@ namespace NewHorizons.Builder.Body
             buoyancyObject.layer = Layer.BasicEffectVolume;
 
             var sphereCollider = buoyancyObject.AddComponent<SphereCollider>();
-            sphereCollider.radius = 1;
+            sphereCollider.radius = 1; // scaled by localScale
             sphereCollider.isTrigger = true;
 
             var owCollider = buoyancyObject.AddComponent<OWCollider>();
@@ -114,6 +114,7 @@ namespace NewHorizons.Builder.Body
             var buoyancyTriggerVolume = buoyancyObject.AddComponent<OWTriggerVolume>();
             buoyancyTriggerVolume._owCollider = owCollider;
 
+            // copied from gd
             var fluidVolume = buoyancyObject.AddComponent<RadialFluidVolume>();
             fluidVolume._fluidType = FluidVolume.Type.WATER;
             fluidVolume._attachedBody = rb;
@@ -121,9 +122,12 @@ namespace NewHorizons.Builder.Body
             fluidVolume._radius = waterSize;
             fluidVolume._buoyancyDensity = module.buoyancy;
             fluidVolume._density = module.density;
-            fluidVolume._layer = LayerMask.NameToLayer("BasicEffectVolume");
+            fluidVolume._layer = 5;
+            fluidVolume._priority = 3;
+            fluidVolume._allowShipAutoroll = true;
+            fluidVolume._disableOnStart = false;
 
-            var fogGO = GameObject.Instantiate(_oceanFog, waterGO.transform);
+            var fogGO = Object.Instantiate(_oceanFog, waterGO.transform);
             fogGO.name = "OceanFog";
             fogGO.transform.localPosition = Vector3.zero;
             fogGO.transform.localScale = Vector3.one;

@@ -206,11 +206,11 @@ namespace NewHorizons
                 radius = radius,
                 range = range,
                 xmlFile = xmlFile,
-                remoteTrigger = new RemoteTriggerInfo()
+                remoteTrigger = remoteTriggerRadius > 0f ? new RemoteTriggerInfo()
                 {
                     position = null,
                     radius = remoteTriggerRadius,
-                },
+                } : null,
             };
 
             return DialogueBuilder.Make(root, null, info, mod);

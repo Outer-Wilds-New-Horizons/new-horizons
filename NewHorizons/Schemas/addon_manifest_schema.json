@@ -23,6 +23,10 @@
       "type": "string",
       "description": "A pop-up message for the first time a user runs the add-on"
     },
+    "repeatPopup": {
+      "type": "boolean",
+      "description": "If popupMessage is set, should it repeat every time the game starts or only once"
+    },
     "$schema": {
       "type": "string",
       "description": "The schema to validate with"

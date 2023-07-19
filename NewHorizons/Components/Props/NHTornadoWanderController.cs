@@ -1,6 +1,6 @@
 using UnityEngine;
 using Random = UnityEngine.Random;
-namespace NewHorizons.Components
+namespace NewHorizons.Components.Props
 {
     public class NHTornadoWanderController : MonoBehaviour
     {

@@ -30,9 +30,14 @@ namespace NewHorizons.Handlers
         // Custom bodies being created
         private static Dictionary<NHAstroObject, NewHorizonsBody> _customBodyDict;
 
+        // Farthest distance from the center of the solar system
+        public static float SolarSystemRadius { get; private set; }
+        public static float DefaultFurthestOrbit => 30000f;
+
         public static void Init(List<NewHorizonsBody> bodies)
         {
-            Main.FurthestOrbit = 30000;
+            // Base game value
+            SolarSystemRadius = DefaultFurthestOrbit;
 
             _existingBodyDict = new();
             _customBodyDict = new();
@@ -52,15 +57,15 @@ namespace NewHorizons.Handlers
                 starController.Intensity = 0.9859f;
                 starController.SunColor = new Color(1f, 0.8845f, 0.6677f, 1f);
 
-                var starLightGO = GameObject.Instantiate(sun.GetComponentInChildren<SunLightController>().gameObject);
+                var starLightGO = UnityEngine.Object.Instantiate(sun.GetComponentInChildren<SunLightController>().gameObject);
                 foreach (var comp in starLightGO.GetComponents<Component>())
                 {
                     if (!(comp is SunLightController) && !(comp is SunLightParamUpdater) && !(comp is Light) && !(comp is Transform))
                     {
-                        GameObject.Destroy(comp);
+                        UnityEngine.Object.Destroy(comp);
                     }
                 }
-                GameObject.Destroy(starLightGO.GetComponent<Light>());
+                UnityEngine.Object.Destroy(starLightGO.GetComponent<Light>());
                 starLightGO.name = "StarLightController";
 
                 starLightGO.AddComponent<SunLightEffectsController>();
@@ -245,13 +250,10 @@ namespace NewHorizons.Handlers
                     try
                     {
                         NHLogger.Log($"Creating [{body.Config.name}]");
-                        var planetObject = GenerateBody(body, defaultPrimaryToSun);
-                        planetObject?.SetActive(true);
-                        if (planetObject == null) 
-                        { 
-                            body.UnloadCache(); 
-                            return false; 
-                        }
+                        var planetObject = GenerateBody(body, defaultPrimaryToSun) 
+                            ?? throw new NullReferenceException("Something went wrong when generating the body but no errors were logged.");
+                        
+                        planetObject.SetActive(true);
 
                         var ao = planetObject.GetComponent<NHAstroObject>();
 
@@ -343,7 +345,7 @@ namespace NewHorizons.Handlers
             body.Config.Base.hasMapMarker = false;
 
             var owRigidBody = RigidBodyBuilder.Make(go, body.Config);
-            var ao = AstroObjectBuilder.Make(go, null, body.Config);
+            var ao = AstroObjectBuilder.Make(go, null, body.Config, false);
 
             var sector = SectorBuilder.Make(go, owRigidBody, 2000f);
             ao._rootSector = sector;
@@ -352,6 +354,13 @@ namespace NewHorizons.Handlers
             BrambleDimensionBuilder.Make(body, go, ao, sector, owRigidBody);
 
             go = SharedGenerateBody(body, go, sector, owRigidBody);
+            
+            // Not included in SharedGenerate to not mess up gravity on base game planets
+            if (body.Config.Base.surfaceGravity != 0)
+            {
+                GravityBuilder.Make(go, ao, owRigidBody, body.Config);
+            }
+
             body.Object = go;
 
             AstroObjectLocator.RegisterCustomAstroObject(ao);
@@ -409,7 +418,7 @@ namespace NewHorizons.Handlers
             }
 
             var owRigidBody = RigidBodyBuilder.Make(go, body.Config);
-            var ao = AstroObjectBuilder.Make(go, primaryBody, body.Config);
+            var ao = AstroObjectBuilder.Make(go, primaryBody, body.Config, false);
 
             var sphereOfInfluence = GetSphereOfInfluence(body);
 
@@ -456,9 +465,12 @@ namespace NewHorizons.Handlers
             // Spawning on other planets is a bit hacky so we do it last
             if (body.Config.Spawn != null)
             {
-                NHLogger.LogVerbose("Making spawn point");
+                NHLogger.LogVerbose($"Making spawn point on {body.Config.name}");
                 var spawnPoint = SpawnPointBuilder.Make(go, body.Config.Spawn, owRigidBody);
-                if (Main.SystemDict[body.Config.starSystem].SpawnPoint == null || (body.Config.Spawn.playerSpawn?.isDefault ?? false))
+                var isVanillaSystem = body.Config.starSystem == "SolarSystem" || body.Config.starSystem == "EyeOfTheUniverse";
+                var needsSpawnPoint = Main.SystemDict[body.Config.starSystem].SpawnPoint == null || isVanillaSystem;
+                var isDefaultSpawn = body.Config.Spawn.playerSpawn?.isDefault ?? true; // Backwards compat
+                if (needsSpawnPoint || isDefaultSpawn)
                 {
                     Main.SystemDict[body.Config.starSystem].SpawnPoint = spawnPoint;
                 }
@@ -599,9 +611,9 @@ namespace NewHorizons.Handlers
                 AsteroidBeltBuilder.Make(body.Config.name, body.Config, body.Mod);
             }
 
-            if (body.Config.Base.hasCometTail)
+            if (body.Config.CometTail != null)
             {
-                CometTailBuilder.Make(go, sector, body.Config);
+                CometTailBuilder.Make(go, sector, body.Config.CometTail, body.Config);
             }
 
             if (body.Config.Lava != null)
@@ -702,7 +714,7 @@ namespace NewHorizons.Handlers
                 }
 
                 // Just destroy the existing AO after copying everything over
-                var newAO = AstroObjectBuilder.Make(go, primary, body.Config);
+                var newAO = AstroObjectBuilder.Make(go, primary, body.Config, true);
                 newAO._gravityVolume = ao._gravityVolume;
                 newAO._moon = ao._moon;
                 newAO._name = ao._name;
@@ -715,7 +727,7 @@ namespace NewHorizons.Handlers
                 // We need these for later
                 var children = AstroObjectLocator.GetChildren(ao).Concat(AstroObjectLocator.GetMoons(ao)).ToArray();
                 AstroObjectLocator.DeregisterCustomAstroObject(ao);
-                GameObject.Destroy(ao);
+                UnityEngine.Object.Destroy(ao);
                 Locator.RegisterAstroObject(newAO);
                 AstroObjectLocator.RegisterCustomAstroObject(newAO);
 
@@ -727,7 +739,7 @@ namespace NewHorizons.Handlers
 
                 // QM and stuff don't have orbit lines
                 var orbitLine = go.GetComponentInChildren<OrbitLine>()?.gameObject;
-                if (orbitLine != null) GameObject.Destroy(orbitLine);
+                if (orbitLine != null) UnityEngine.Object.Destroy(orbitLine);
 
                 var isMoon = newAO.GetAstroObjectType() is AstroObject.Type.Moon or AstroObject.Type.Satellite or AstroObject.Type.SpaceStation;
                 if (body.Config.Orbit.showOrbitLine) OrbitlineBuilder.Make(go, newAO, isMoon, body.Config);
@@ -841,9 +853,11 @@ namespace NewHorizons.Handlers
                 go.transform.position = position;
             }
 
-            if (go.transform.position.magnitude > Main.FurthestOrbit)
+            // Uses the ratio of the interlopers furthest point to what the base game considers the edge of the solar system
+            var distanceToCenter = go.transform.position.magnitude * (24000 / 30000f);
+            if (distanceToCenter > SolarSystemRadius)
             {
-                Main.FurthestOrbit = go.transform.position.magnitude + 30000f;
+                SolarSystemRadius = distanceToCenter;
             }
         }
 

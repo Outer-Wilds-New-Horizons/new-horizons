@@ -6,6 +6,7 @@ using NewHorizons.Utility.OuterWilds;
 using System;
 using System.Reflection;
 using UnityEngine;
+using Steamworks;
 
 namespace NewHorizons.Builder.General
 {
@@ -16,25 +17,37 @@ namespace NewHorizons.Builder.General
         {
             SpawnPoint playerSpawn = null;
 
-            if (!Main.Instance.IsWarpingFromVessel && !Main.Instance.IsWarpingFromShip && module.playerSpawn != null)
+            // Make the spawn point even if it won't be used this loop
+            if (module.playerSpawn != null)
             {
                 GameObject spawnGO = GeneralPropBuilder.MakeNew("PlayerSpawnPoint", planetGO, null, module.playerSpawn);
                 spawnGO.layer = Layer.PlayerSafetyCollider;
 
                 playerSpawn = spawnGO.AddComponent<SpawnPoint>();
+                playerSpawn._attachedBody = owRigidBody;
+                playerSpawn._spawnLocation = SpawnLocation.None;
+                // #601 we need to actually set the right trigger volumes here
                 playerSpawn._triggerVolumes = new OWTriggerVolume[0];
 
-                spawnGO.transform.position += spawnGO.transform.up * 4f;
+                // This was a stupid hack to stop players getting stuck in the ground and now we have to keep it forever
+                spawnGO.transform.position += spawnGO.transform.TransformDirection(module.playerSpawn.offset ?? Vector3.up * 4f);
             }
+
             if (module.shipSpawn != null)
             {
                 GameObject spawnGO = GeneralPropBuilder.MakeNew("ShipSpawnPoint", planetGO, null, module.shipSpawn);
+                spawnGO.SetActive(false);
                 spawnGO.layer = Layer.PlayerSafetyCollider;
 
-                var spawnPoint = spawnGO.AddComponent<SpawnPoint>();
-                spawnPoint._isShipSpawn = true;
-                spawnPoint._triggerVolumes = new OWTriggerVolume[0];
+                var shipSpawn = spawnGO.AddComponent<SpawnPoint>();
+                shipSpawn._isShipSpawn = true;
+                shipSpawn._attachedBody = owRigidBody;
+                shipSpawn._spawnLocation = SpawnLocation.None;
 
+                // #601 we need to actually set the right trigger volumes here
+                shipSpawn._triggerVolumes = new OWTriggerVolume[0];
+
+                // TODO: this should happen elsewhere
                 var ship = SearchUtilities.Find("Ship_Body");
                 if (ship != null)
                 {
@@ -42,33 +55,27 @@ namespace NewHorizons.Builder.General
                     ship.transform.rotation = spawnGO.transform.rotation;
 
                     // Move it up a bit more when aligning to surface
-                    if (module.shipSpawn.alignRadial.GetValueOrDefault())
+                    if (module.shipSpawn.offset != null)
+                    {
+                        ship.transform.position += spawnGO.transform.TransformDirection(module.shipSpawn.offset);
+                    }
+                    else if (module.shipSpawn.alignRadial.GetValueOrDefault())
                     {
                         ship.transform.position += ship.transform.up * 4f;
                     }
 
                     ship.GetRequiredComponent<MatchInitialMotion>().SetBodyToMatch(owRigidBody);
-
-                    if (Main.Instance.IsWarpingFromShip)
-                    {
-                        NHLogger.LogVerbose("Overriding player spawn to be inside ship");
-                        GameObject playerSpawnGO = new GameObject("PlayerSpawnPoint");
-                        playerSpawnGO.transform.parent = ship.transform;
-                        playerSpawnGO.layer = Layer.PlayerSafetyCollider;
-
-                        playerSpawnGO.transform.localPosition = new Vector3(0, 0, 0);
-
-                        playerSpawn = playerSpawnGO.AddComponent<SpawnPoint>();
-                        playerSpawn._triggerVolumes = new OWTriggerVolume[0];
-                        playerSpawnGO.transform.localRotation = Quaternion.Euler(0, 0, 0);
-                    }
                 }
+                spawnGO.SetActive(true);
+
+                // Ship doesn't get activated sometimes
+                Delay.RunWhen(() => Main.IsSystemReady, () => ship.gameObject.SetActive(true));
             }
 
             if ((Main.Instance.IsWarpingFromVessel || (!Main.Instance.IsWarpingFromShip && (module.playerSpawn?.startWithSuit ?? false))) && !suitUpQueued)
             {
                 suitUpQueued = true;
-                Delay.RunWhen(() => Main.IsSystemReady, () => SuitUp());
+                Delay.RunWhen(() => Main.IsSystemReady, SuitUp);
             }
 
             NHLogger.Log($"Made spawnpoint on [{planetGO.name}]");

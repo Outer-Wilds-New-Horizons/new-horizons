@@ -1,4 +1,5 @@
 using HarmonyLib;
+using NewHorizons.Handlers;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -8,14 +9,20 @@ namespace NewHorizons.Patches.MapPatches
     public static class MapControllerPatches
     {
         [HarmonyPostfix]
-        [HarmonyPatch(nameof(MapController.Awake))]
-        public static void MapController_Awake(MapController __instance)
+        [HarmonyPatch(nameof(MapController.Start))]
+        public static void MapController_Start(MapController __instance)
         {
-            __instance._maxPanDistance = Mathf.Max(__instance._maxPanDistance, Main.FurthestOrbit * 1.5f);
-            __instance._maxZoomDistance *= 6f;
-            __instance._minPitchAngle = -90f;
-            __instance._zoomSpeed *= 4f;
-            __instance._mapCamera.farClipPlane = Mathf.Max(__instance._mapCamera.farClipPlane, Main.FurthestOrbit * 10f);
+            var modifier = Mathf.Max(1f, PlanetCreationHandler.SolarSystemRadius / PlanetCreationHandler.DefaultFurthestOrbit);
+
+            __instance._maxPanDistance *= modifier;
+            __instance._maxZoomDistance *= modifier;
+            __instance._zoomSpeed *= modifier;
+            __instance._mapCamera.farClipPlane *= modifier * 4f;
+
+            if (Main.SystemDict[Main.Instance.CurrentStarSystem].Config.freeMapAngle)
+            {
+                __instance._minPitchAngle = -90f;
+            }
         }
 
         [HarmonyPostfix]

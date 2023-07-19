@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace NewHorizons.Components
+namespace NewHorizons.Components.Sectored
 {
     public class BrambleSectorController : MonoBehaviour, ISectorGroup
     {

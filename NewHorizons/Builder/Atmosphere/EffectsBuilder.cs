@@ -50,7 +50,7 @@ namespace NewHorizons.Builder.Atmosphere
 
             if (config.Atmosphere.hasRain)
             {
-                var rainGO = GameObject.Instantiate(_rainEmitterPrefab, effectsGO.transform);
+                var rainGO = Object.Instantiate(_rainEmitterPrefab, effectsGO.transform);
                 rainGO.name = "RainEmitter";
                 rainGO.transform.position = planetGO.transform.position;
 
@@ -74,7 +74,7 @@ namespace NewHorizons.Builder.Atmosphere
                 snowGO.transform.position = planetGO.transform.position;
                 for (int i = 0; i < 5; i++)
                 {
-                    var snowEmitter = GameObject.Instantiate(_snowEmitterPrefab, snowGO.transform);
+                    var snowEmitter = Object.Instantiate(_snowEmitterPrefab, snowGO.transform);
                     snowEmitter.name = "SnowEmitter";
                     snowEmitter.transform.position = planetGO.transform.position;
 

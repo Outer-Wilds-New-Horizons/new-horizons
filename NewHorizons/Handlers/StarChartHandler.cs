@@ -35,7 +35,7 @@ namespace NewHorizons.Handlers
 
                 ShipLogStarChartMode = starChartLog.AddComponent<ShipLogStarChartMode>();
 
-                GameObject.Instantiate(reticleImage, starChartLog.transform);
+                Object.Instantiate(reticleImage, starChartLog.transform);
 
                 var scaleRoot = new GameObject("ScaleRoot");
                 scaleRoot.transform.parent = starChartLog.transform;
@@ -107,5 +107,7 @@ namespace NewHorizons.Handlers
             _starSystemToFactID.Add(system, factID);
             _factIDToStarSystem.Add(factID, system);
         }
+
+        public static bool IsWarpDriveLockedOn() => StarChartHandler.ShipLogStarChartMode.GetTargetStarSystem() != null;
     }
 }

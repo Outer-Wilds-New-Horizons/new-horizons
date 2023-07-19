@@ -1,5 +1,6 @@
-using NewHorizons.Components;
+using NewHorizons.Components.Sectored;
 using NewHorizons.External.Modules;
+using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using NewHorizons.Utility.Files;
 using NewHorizons.Utility.OWML;
@@ -36,26 +37,34 @@ namespace NewHorizons.Builder.Body
 
             var radius = module.radius;
 
-            var newCloak = GameObject.Instantiate(_prefab, sector?.transform ?? planetGO.transform);
+            var newCloak = _prefab.InstantiateInactive();
+            newCloak.transform.parent = sector?.transform ?? planetGO.transform;
             newCloak.transform.position = planetGO.transform.position;
             newCloak.transform.name = "CloakingField";
             newCloak.transform.localScale = Vector3.one * radius;
 
-            GameObject.Destroy(newCloak.GetComponent<PlayerCloakEntryRedirector>());
+            Object.Destroy(newCloak.GetComponent<PlayerCloakEntryRedirector>());
 
             var cloakFieldController = newCloak.GetComponent<CloakFieldController>();
-            cloakFieldController._cloakScaleDist = radius * 2000 / 3000f;
-            cloakFieldController._farCloakRadius = radius * 500 / 3000f;
-            cloakFieldController._innerCloakRadius = radius * 900 / 3000f;
-            cloakFieldController._nearCloakRadius = radius * 800 / 3000f;
+            cloakFieldController._cloakScaleDist = module.cloakScaleDist ?? (radius * 2000 / 3000f);
+            cloakFieldController._farCloakRadius = module.farCloakRadius ?? (radius * 500 / 3000f);
+            cloakFieldController._innerCloakRadius = module.innerCloakRadius ?? (radius * 900 / 3000f);
+            cloakFieldController._nearCloakRadius = module.nearCloakRadius ?? (radius * 800 / 3000f);
 
             cloakFieldController._referenceFrameVolume = OWRB._attachedRFVolume;
             cloakFieldController._exclusionSector = null;
-            cloakFieldController._cloakSphereVolume = (sector?.transform ?? planetGO.transform).GetComponentInChildren<OWTriggerVolume>();
+
+            var cloakVolumeObj = new GameObject("CloakVolume");
+            cloakVolumeObj.transform.parent = planetGO.transform;
+            cloakVolumeObj.transform.localPosition = Vector3.zero;
+            var cloakVolume = cloakVolumeObj.AddComponent<SphereShape>();
+            cloakVolume.radius = module.farCloakRadius ?? (radius * 500 / 3000f);
+
+            cloakFieldController._cloakSphereVolume = cloakVolumeObj.AddComponent<OWTriggerVolume>();
             cloakFieldController._ringworldFadeRenderers = new OWRenderer[0];
 
             var cloakSectorController = newCloak.AddComponent<CloakSectorController>();
-            cloakSectorController.Init(newCloak.GetComponent<CloakFieldController>(), planetGO);
+            cloakSectorController.Init(cloakFieldController, planetGO);
 
             var cloakAudioSource = newCloak.GetComponentInChildren<OWAudioSource>();
             cloakAudioSource._audioSource = cloakAudioSource.GetComponent<AudioSource>();
@@ -66,6 +75,8 @@ namespace NewHorizons.Builder.Body
             cloakFieldController.enabled = true;
 
             cloakSectorController.EnableCloak();
+
+            CloakHandler.RegisterCloak(cloakFieldController);
 
             // To cloak from the start
             Delay.FireOnNextUpdate(cloakSectorController.OnPlayerExit);

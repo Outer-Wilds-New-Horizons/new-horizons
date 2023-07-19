@@ -1,4 +1,4 @@
-namespace NewHorizons.Components
+namespace NewHorizons.Components.EyeOfTheUniverse
 {
     public class EyeAstroObject : AstroObject
     {

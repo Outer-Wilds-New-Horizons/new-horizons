@@ -71,6 +71,8 @@ namespace NewHorizons.Components.SizeControllers
 
         public void SetScaleCurve(TimeValuePair[] curve)
         {
+            if (curve == null) return;
+
             scaleCurve = new AnimationCurve();
             foreach (var pair in curve)
             {

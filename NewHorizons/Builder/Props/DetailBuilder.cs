@@ -29,7 +29,7 @@ namespace NewHorizons.Builder.Props
         {
             foreach (var prefab in _fixedPrefabCache.Values)
             {
-                GameObject.Destroy(prefab.prefab);
+                UnityEngine.Object.Destroy(prefab.prefab);
             }
             _fixedPrefabCache.Clear();
             _detailInfoToCorrespondingSpawnedGameObject.Clear();
@@ -102,7 +102,6 @@ namespace NewHorizons.Builder.Props
                 StreamingHandler.SetUpStreaming(prop, detail.keepLoaded ? null : sector);
 
                 // Could check this in the for loop but I'm not sure what order we need to know about this in
-                var isTorch = prop.GetComponent<VisionTorchItem>() != null;
                 isItem = false;
 
                 foreach (var component in prop.GetComponentsInChildren<Component>(true))
@@ -120,7 +119,7 @@ namespace NewHorizons.Builder.Props
                     {
                         if (FixUnsectoredComponent(component)) continue;
                     }
-                    else FixSectoredComponent(component, sector, isTorch, detail.keepLoaded);
+                    else FixSectoredComponent(component, sector, detail.keepLoaded);
 
                     FixComponent(component, go, detail.ignoreSun);
                 }
@@ -189,7 +188,7 @@ namespace NewHorizons.Builder.Props
                     child.parent = newDetailGO.transform;
                 }
                 // Have to destroy it right away, else parented props might get attached to the old one
-                GameObject.DestroyImmediate(prop);
+                UnityEngine.Object.DestroyImmediate(prop);
                 prop = newDetailGO;
             }
             
@@ -219,13 +218,13 @@ namespace NewHorizons.Builder.Props
         /// <summary>
         /// Fix components that have sectors. Has a specific fix if there is a VisionTorchItem on the object.
         /// </summary>
-        private static void FixSectoredComponent(Component component, Sector sector, bool isTorch, bool keepLoaded)
+        private static void FixSectoredComponent(Component component, Sector sector, bool keepLoaded)
         {
             // keepLoaded should remove existing groups
             // renderers/colliders get enabled later so we dont have to do that here
             if (keepLoaded && component is SectorCullGroup or SectorCollisionGroup or SectorLightsCullGroup)
             {
-                Component.DestroyImmediate(component);
+                UnityEngine.Object.DestroyImmediate(component);
                 return;
             }
 
@@ -255,7 +254,9 @@ namespace NewHorizons.Builder.Props
 
             else if(component is SectoredMonoBehaviour behaviour)
             {
-                behaviour.SetSector(sector);
+                // not using SetSector here because it registers the events twice
+                // perhaps this happens with ISectorGroup.SetSector or Sector.SetParentSector too? idk and nothing seems to break because of it yet
+                behaviour._sector = sector;
             }
 
             else if(component is OWItemSocket socket)
@@ -263,10 +264,10 @@ namespace NewHorizons.Builder.Props
                 socket._sector = sector;
             }
 
-            // Fix slide reel - Softlocks if this object is a vision torch
-            else if(!isTorch && component is SlideCollectionContainer container)
+            // TODO: Fix low res reels (probably in VanillaFix since its a vanilla bug)
+            else if(component is SlideReelItem)
             {
-                sector.OnOccupantEnterSector.AddListener(_ => container.LoadStreamingTextures());
+
             }
 
             else if(component is NomaiRemoteCameraPlatform remoteCameraPlatform)
@@ -283,7 +284,7 @@ namespace NewHorizons.Builder.Props
         {
             if (component is FogLight or SectoredMonoBehaviour or ISectorGroup)
             {
-                GameObject.DestroyImmediate(component);
+                UnityEngine.Object.DestroyImmediate(component);
                 return true;
             }
             return false;
@@ -306,7 +307,7 @@ namespace NewHorizons.Builder.Props
             // I forget why this is here
             else if (component is GhostIK or GhostEffects)
             {
-                Component.DestroyImmediate(component);
+                UnityEngine.Object.DestroyImmediate(component);
                 return;
             }
             else if (component is DarkMatterVolume)
@@ -345,8 +346,9 @@ namespace NewHorizons.Builder.Props
 
             else if (component is NomaiInterfaceOrb orb)
             {
-                orb._parentAstroObject = planetGO.GetComponent<AstroObject>();
-                orb._parentBody = planetGO.GetComponent<OWRigidbody>();
+                // detect planet gravity
+                var gravityVolume = planetGO.GetAttachedOWRigidbody().GetAttachedGravityVolume();
+                orb.GetComponent<ConstantForceDetector>()._detectableFields = gravityVolume ? new ForceVolume[] { gravityVolume } : new ForceVolume[] { };
             }
 
             else if (component is VisionTorchItem torchItem)
@@ -363,7 +365,7 @@ namespace NewHorizons.Builder.Props
             else if(component is Shape shape) shape.enabled = true;
 
             // If it's not a moving anglerfish make sure the anim controller is regular
-            else if(component is AnglerfishAnimController && component.GetComponentInParent<AnglerfishController>() == null)
+            else if(component is AnglerfishAnimController && component.transform.parent.GetComponent<AnglerfishController>() == null) //Manual parent chain so we can find inactive
             {
                 component.gameObject.AddComponent<AnglerAnimFixer>();
             }
@@ -380,7 +382,7 @@ namespace NewHorizons.Builder.Props
             public void Start()
             {
                 var angler = GetComponent<AnglerfishAnimController>();
-                
+
                 NHLogger.LogVerbose("Fixing anglerfish animation");
 
                 // Remove any event reference to its angler

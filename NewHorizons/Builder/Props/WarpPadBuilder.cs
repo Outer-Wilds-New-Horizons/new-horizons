@@ -1,4 +1,5 @@
 using NewHorizons.Builder.Props.TranslatorText;
+using NewHorizons.Components;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.WarpPad;
 using NewHorizons.Utility;
@@ -52,7 +53,7 @@ namespace NewHorizons.Builder.Props
 
                 _detailedReceiverPrefab.DontDestroyOnLoad();
 
-                GameObject.Destroy(_detailedReceiverPrefab.GetComponentInChildren<NomaiWarpStreaming>().gameObject);
+                Object.Destroy(_detailedReceiverPrefab.GetComponentInChildren<NomaiWarpStreaming>().gameObject);
             }
 
             if (_receiverPrefab == null)
@@ -60,7 +61,7 @@ namespace NewHorizons.Builder.Props
                 _receiverPrefab = SearchUtilities.Find("SunStation_Body/Sector_SunStation/Sector_WarpModule/Interactables_WarpModule/Prefab_NOM_WarpReceiver")
                     .InstantiateInactive()
                     .DontDestroyOnLoad();
-                GameObject.Destroy(_receiverPrefab.GetComponentInChildren<NomaiWarpStreaming>().gameObject);
+                Object.Destroy(_receiverPrefab.GetComponentInChildren<NomaiWarpStreaming>().gameObject);
 
                 var structure = _platformContainerPrefab.Instantiate();
                 structure.transform.parent = _receiverPrefab.transform;
@@ -74,7 +75,7 @@ namespace NewHorizons.Builder.Props
                 _transmitterPrefab = SearchUtilities.Find("TowerTwin_Body/Sector_TowerTwin/Sector_Tower_SS/Interactables_Tower_SS/Tower_SS_VisibleFrom_TowerTwin/Prefab_NOM_WarpTransmitter")
                     .InstantiateInactive()
                     .DontDestroyOnLoad();
-                GameObject.Destroy(_transmitterPrefab.GetComponentInChildren<NomaiWarpStreaming>().gameObject);
+                Object.Destroy(_transmitterPrefab.GetComponentInChildren<NomaiWarpStreaming>().gameObject);
 
                 var structure = _platformContainerPrefab.Instantiate();
                 structure.transform.parent = _transmitterPrefab.transform;
@@ -136,6 +137,9 @@ namespace NewHorizons.Builder.Props
             transmitter._upsideDown = info.flipAlignment;
 
             transmitter.GetComponent<BoxShape>().enabled = true;
+
+            // Prevents the transmitter from sending you straight back if you use the return function of the receiver #563
+            transmitterObject.AddComponent<NomaiWarpTransmitterCooldown>();
 
             transmitterObject.SetActive(true);
         }

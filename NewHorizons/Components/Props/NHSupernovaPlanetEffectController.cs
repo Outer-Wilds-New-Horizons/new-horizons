@@ -3,7 +3,7 @@ using NewHorizons.Handlers;
 using UnityEngine;
 using static SupernovaPlanetEffectController;
 
-namespace NewHorizons.Components
+namespace NewHorizons.Components.Props
 {
     public class NHSupernovaPlanetEffectController : MonoBehaviour
     {

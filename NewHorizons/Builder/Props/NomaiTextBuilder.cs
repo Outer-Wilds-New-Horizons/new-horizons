@@ -24,12 +24,14 @@ namespace NewHorizons.Builder.Props
     {
         private static List<GameObject> _arcPrefabs;
         private static List<GameObject> _childArcPrefabs;
+        private static GameObject _teenagerArcPrefab;
         private static List<GameObject> _ghostArcPrefabs;
         private static GameObject _scrollPrefab;
         private static GameObject _computerPrefab;
         private static GameObject _preCrashComputerPrefab;
-        private static GameObject _cairnPrefab;
-        private static GameObject _cairnVariantPrefab;
+        private static GameObject _cairnBHPrefab;
+        private static GameObject _cairnTHPrefab;
+        private static GameObject _cairnCTPrefab;
         private static GameObject _recorderPrefab;
         private static GameObject _preCrashRecorderPrefab;
         private static GameObject _trailmarkerPrefab;
@@ -52,6 +54,7 @@ namespace NewHorizons.Builder.Props
 
         public static List<GameObject> GetArcPrefabs() { return _arcPrefabs; }
         public static List<GameObject> GetChildArcPrefabs() { return _childArcPrefabs; }
+        public static GameObject GetTeenagerArcPrefab() { return _teenagerArcPrefab; }
         public static List<GameObject> GetGhostArcPrefabs() { return _ghostArcPrefabs; }
 
         private static bool _isInit;
@@ -65,7 +68,7 @@ namespace NewHorizons.Builder.Props
             if (_arcPrefabs == null || _childArcPrefabs == null)
             {
                 // Just take every scroll and get the first arc
-                var existingArcs = GameObject.FindObjectsOfType<ScrollItem>()
+                var existingArcs = UnityEngine.Object.FindObjectsOfType<ScrollItem>()
                     .Select(x => x?._nomaiWallText?.gameObject?.transform?.Find("Arc 1")?.gameObject)
                     .Where(x => x != null)
                     .OrderBy(x => x.transform.GetPath()) // order by path so game updates dont break things
@@ -85,9 +88,15 @@ namespace NewHorizons.Builder.Props
                 }
             }
 
+            if (_teenagerArcPrefab == null)
+            {
+                _teenagerArcPrefab = GameObject.FindObjectsOfType<NomaiWallText>().FirstOrDefault(x => x.name.Equals("Arc_GD_StatueIsland_WindowNote"))
+                    ?.gameObject?.transform?.Find("Arc 1")?.gameObject.InstantiateInactive().Rename("Arc (Teenager)").DontDestroyOnLoad();
+            }
+
             if (_ghostArcPrefabs == null)
             {
-                var existingGhostArcs = GameObject.FindObjectsOfType<GhostWallText>()
+                var existingGhostArcs = UnityEngine.Object.FindObjectsOfType<GhostWallText>()
                     .Select(x => x?._textLine?.gameObject)
                     .Where(x => x != null)
                     .OrderBy(x => x.transform.GetPath()) // order by path so game updates dont break things
@@ -113,16 +122,22 @@ namespace NewHorizons.Builder.Props
                 _preCrashComputerPrefab.transform.rotation = Quaternion.identity;
             }
 
-            if (_cairnPrefab == null)
+            if (_cairnBHPrefab == null)
             {
-                _cairnPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_Crossroads/Interactables_Crossroads/Trailmarkers/Prefab_NOM_BH_Cairn_Arc (1)").InstantiateInactive().Rename("Prefab_NOM_Cairn").DontDestroyOnLoad();
-                _cairnPrefab.transform.rotation = Quaternion.identity;
+                _cairnBHPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_Crossroads/Interactables_Crossroads/Trailmarkers/Prefab_NOM_BH_Cairn_Arc (1)").InstantiateInactive().Rename("Prefab_NOM_BH_Cairn").DontDestroyOnLoad();
+                _cairnBHPrefab.transform.rotation = Quaternion.identity;
             }
 
-            if (_cairnVariantPrefab == null)
+            if (_cairnTHPrefab == null)
             {
-                _cairnVariantPrefab = SearchUtilities.Find("TimberHearth_Body/Sector_TH/Sector_NomaiMines/Interactables_NomaiMines/Prefab_NOM_TH_Cairn_Arc").InstantiateInactive().Rename("Prefab_NOM_Cairn").DontDestroyOnLoad();
-                _cairnVariantPrefab.transform.rotation = Quaternion.identity;
+                _cairnTHPrefab = SearchUtilities.Find("TimberHearth_Body/Sector_TH/Sector_NomaiMines/Interactables_NomaiMines/Prefab_NOM_TH_Cairn_Arc").InstantiateInactive().Rename("Prefab_NOM_TH_Cairn").DontDestroyOnLoad();
+                _cairnTHPrefab.transform.rotation = Quaternion.identity;
+            }
+
+            if (_cairnCTPrefab == null)
+            {
+                _cairnCTPrefab = SearchUtilities.Find("CaveTwin_Body/Sector_CaveTwin/Sector_NorthHemisphere/Sector_NorthSurface/Sector_TimeLoopExperiment/Interactables_TimeLoopExperiment/Prefab_NOM_CT_Cairn_Arc").InstantiateInactive().Rename("Prefab_NOM_CT_Cairn").DontDestroyOnLoad();
+                _cairnCTPrefab.transform.rotation = Quaternion.identity;
             }
 
             if (_recorderPrefab == null)
@@ -245,7 +260,7 @@ namespace NewHorizons.Builder.Props
                         var scrollItem = customScroll.GetComponent<ScrollItem>();
 
                         // Idk why this thing is always around
-                        GameObject.Destroy(customScroll.transform.Find("Arc_BH_City_Forum_2").gameObject);
+                        UnityEngine.Object.Destroy(customScroll.transform.Find("Arc_BH_City_Forum_2").gameObject);
 
                         // This variable is the bane of my existence i dont get it
                         scrollItem._nomaiWallText = nomaiWallText;
@@ -402,18 +417,15 @@ namespace NewHorizons.Builder.Props
                         
                         return computerObject;
                     }
-                case NomaiTextType.Cairn:
-                case NomaiTextType.CairnVariant:
+                case NomaiTextType.CairnBrittleHollow:
+                case NomaiTextType.CairnTimberHearth:
+                case NomaiTextType.CairnEmberTwin:
                     {
-                        var cairnObject = (info.type == NomaiTextType.CairnVariant ? _cairnVariantPrefab : _cairnPrefab).InstantiateInactive();
+                        var cairnObject = (info.type == NomaiTextType.CairnTimberHearth ? _cairnTHPrefab : (info.type == NomaiTextType.CairnEmberTwin ? _cairnCTPrefab : _cairnBHPrefab)).InstantiateInactive();
 
                         if (!string.IsNullOrEmpty(info.rename))
                         {
                             cairnObject.name = info.rename;
-                        }
-                        else
-                        {
-                            cairnObject.name = _cairnPrefab.name;
                         }
 
                         cairnObject.transform.parent = sector?.transform ?? planetGO.transform;
@@ -666,6 +678,9 @@ namespace NewHorizons.Builder.Props
                         ? Random.Range(0, _childArcPrefabs.Count())
                         : (variation % _childArcPrefabs.Count());
                     arc = _childArcPrefabs[variation].InstantiateInactive();
+                    break;
+                case NomaiTextArcInfo.NomaiTextArcType.Teenager:
+                    arc = _teenagerArcPrefab.InstantiateInactive();
                     break;
                 case NomaiTextArcInfo.NomaiTextArcType.Stranger when _ghostArcPrefabs.Any():
                     variation = variation < 0
