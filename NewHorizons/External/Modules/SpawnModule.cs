@@ -29,7 +29,7 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// Offsets the player/ship by this local vector when spawning. Used to prevent spawning in the floor. Optional: defaults to (0, 4, 0).
             /// </summary>
-            public MVector3? offset;
+            public MVector3 offset;
         }
 
         [JsonObject]
