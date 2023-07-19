@@ -345,7 +345,6 @@
           "type": "number",
           "description": "How dense the fog is, if you put fog.",
           "format": "float",
-          "maximum": 1.0,
           "minimum": 0.0
         },
         "fogSize": {
@@ -357,6 +356,10 @@
         "fogTint": {
           "description": "Colour of fog on the planet, if you put fog.",
           "$ref": "#/definitions/MColor"
+        },
+        "fogRampPath": {
+          "type": "string",
+          "description": "Relative filepath to the fog color ramp texture, if you put fog.\nx axis is angle to sun (left at midnight, right at noon), y axis is distance to camera (close at bottom, far at top)."
         },
         "hasOxygen": {
           "type": "boolean",
@@ -1033,6 +1036,13 @@
           "type": "number",
           "description": "Rotation period in minutes.",
           "format": "float"
+        },
+        "initialRotation": {
+          "type": "number",
+          "description": "Offsets the planet's starting sidereal rotation. In degrees.",
+          "format": "float",
+          "maximum": 360.0,
+          "minimum": 0.0
         },
         "isTidallyLocked": {
           "type": "boolean",
@@ -3041,6 +3051,10 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "offset": {
+          "description": "Offsets the player/ship by this local vector when spawning. Used to prevent spawning in the floor. Optional: defaults to (0, 4, 0).",
+          "$ref": "#/definitions/MVector3"
+        },
         "rotation": {
           "description": "Rotation of the object",
           "$ref": "#/definitions/MVector3"
@@ -3082,6 +3096,10 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "offset": {
+          "description": "Offsets the player/ship by this local vector when spawning. Used to prevent spawning in the floor. Optional: defaults to (0, 4, 0).",
+          "$ref": "#/definitions/MVector3"
+        },
         "rotation": {
           "description": "Rotation of the object",
           "$ref": "#/definitions/MVector3"
@@ -3206,6 +3224,10 @@
           "description": "The type of stellar remnant your star will leave behind.",
           "default": "default",
           "$ref": "#/definitions/StellarRemnantType"
+        },
+        "solarFlareSettings": {
+          "description": "Allows overriding solar flare graphical settings.",
+          "$ref": "#/definitions/SolarFlareModule"
         }
       }
     },
@@ -3244,6 +3266,36 @@
         "blackHole",
         "custom"
       ]
+    },
+    "SolarFlareModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "scaleFactor": {
+          "type": "number",
+          "description": "Size multiuplier for solar flares. Defaults to 1.",
+          "format": "float",
+          "default": 1
+        },
+        "lifeLength": {
+          "type": "number",
+          "description": "How long a solar flare is visible for. Defaults to 15.",
+          "format": "float",
+          "default": 15.0
+        },
+        "minTimeBetweenFlares": {
+          "type": "number",
+          "description": "Solar flares are emitted randomly. This is the minimum ammount of time between solar flares.",
+          "format": "float",
+          "default": 5.0
+        },
+        "maxTimeBetweenFlares": {
+          "type": "number",
+          "description": "Solar flares are emitted randomly. This is the maximum ammount of time between solar flares.",
+          "format": "float",
+          "default": 30.0
+        }
+      }
     },
     "WaterModule": {
       "type": "object",

@@ -30,9 +30,14 @@ namespace NewHorizons.Handlers
         // Custom bodies being created
         private static Dictionary<NHAstroObject, NewHorizonsBody> _customBodyDict;
 
+        // Farthest distance from the center of the solar system
+        public static float SolarSystemRadius { get; private set; }
+        public static float DefaultFurthestOrbit => 30000f;
+
         public static void Init(List<NewHorizonsBody> bodies)
         {
-            Main.FurthestOrbit = 30000;
+            // Base game value
+            SolarSystemRadius = DefaultFurthestOrbit;
 
             _existingBodyDict = new();
             _customBodyDict = new();
@@ -349,6 +354,13 @@ namespace NewHorizons.Handlers
             BrambleDimensionBuilder.Make(body, go, ao, sector, owRigidBody);
 
             go = SharedGenerateBody(body, go, sector, owRigidBody);
+            
+            // Not included in SharedGenerate to not mess up gravity on base game planets
+            if (body.Config.Base.surfaceGravity != 0)
+            {
+                GravityBuilder.Make(go, ao, owRigidBody, body.Config);
+            }
+
             body.Object = go;
 
             AstroObjectLocator.RegisterCustomAstroObject(ao);
@@ -640,7 +652,7 @@ namespace NewHorizons.Handlers
 
                 if (body.Config.Atmosphere.fogSize != 0)
                 {
-                    fog = FogBuilder.Make(go, sector, body.Config.Atmosphere);
+                    fog = FogBuilder.Make(go, sector, body.Config.Atmosphere, body.Mod);
                 }
 
                 atmosphere = AtmosphereBuilder.Make(go, sector, body.Config.Atmosphere, surfaceSize).GetComponentInChildren<LODGroup>();
@@ -841,9 +853,11 @@ namespace NewHorizons.Handlers
                 go.transform.position = position;
             }
 
-            if (go.transform.position.magnitude > Main.FurthestOrbit)
+            // Uses the ratio of the interlopers furthest point to what the base game considers the edge of the solar system
+            var distanceToCenter = go.transform.position.magnitude * (24000 / 30000f);
+            if (distanceToCenter > SolarSystemRadius)
             {
-                Main.FurthestOrbit = go.transform.position.magnitude + 30000f;
+                SolarSystemRadius = distanceToCenter;
             }
         }
 

@@ -57,7 +57,6 @@ namespace NewHorizons
         public static float SecondsElapsedInLoop = -1;
 
         public static bool IsSystemReady { get; private set; }
-        public static float FurthestOrbit { get; set; } = 50000f;
 
         public string DefaultStarSystem => SystemDict.ContainsKey(_defaultSystemOverride) ? _defaultSystemOverride : _defaultStarSystem;
         public string CurrentStarSystem => _currentStarSystem;
@@ -89,6 +88,8 @@ namespace NewHorizons
         public StarSystemEvent OnPlanetLoaded = new();
 
         public static bool HasDLC { get => EntitlementsManager.IsDlcOwned() == EntitlementsManager.AsyncOwnershipStatus.Owned; }
+
+        public static StarSystemConfig GetCurrentSystemConfig => SystemDict[Instance.CurrentStarSystem].Config;
 
         public override object GetApi()
         {
@@ -230,6 +231,7 @@ namespace NewHorizons
                 NHLogger.LogWarning("Couldn't find planets folder");
             }
 
+            // Call this from the menu since we hadn't hooked onto the event yet
             Delay.FireOnNextUpdate(() => OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single));
             Delay.FireOnNextUpdate(() => _firstLoad = false);
             Instance.ModHelper.Menus.PauseMenu.OnInit += DebugReload.InitializePauseMenu;
@@ -448,9 +450,6 @@ namespace NewHorizons
                     DidWarpFromShip = shouldWarpInFromShip;
                     DidWarpFromVessel = shouldWarpInFromVessel;
 
-                    var map = FindObjectOfType<MapController>();
-                    if (map != null) map._maxPanDistance = FurthestOrbit * 1.5f;
-
                     // Fix the map satellite
                     SearchUtilities.Find("HearthianMapSatellite_Body", false).AddComponent<MapSatelliteOrbitFix>();
 
@@ -523,7 +522,7 @@ namespace NewHorizons
                 var ssrLight = solarSystemRoot.AddComponent<Light>();
                 ssrLight.innerSpotAngle = 0;
                 ssrLight.spotAngle = 179;
-                ssrLight.range = FurthestOrbit * (4f / 3f);
+                ssrLight.range = PlanetCreationHandler.SolarSystemRadius * (4f / 3f);
                 ssrLight.intensity = 0.001f;
 
                 var fluid = playerBody.FindChild("PlayerDetector").GetComponent<DynamicFluidDetector>();
@@ -545,6 +544,9 @@ namespace NewHorizons
                 {
                     NHLogger.LogError($"Exception thrown when invoking star system loaded event with parameter [{Instance.CurrentStarSystem}]:\n{e}");
                 }
+
+                // Wait for player to be awake and also for frames to pass
+                Delay.RunWhenAndInNUpdates(() => OnSystemReady(DidWarpFromShip, DidWarpFromVessel), () => _playerAwake && PlayerSpawned, 30);
             }
             else
             {
@@ -560,29 +562,33 @@ namespace NewHorizons
                     _currentStarSystem = _defaultStarSystem;
                 }
             }
-
-            // Wait for player to be awake and also for frames to pass
-            Delay.RunWhenAndInNUpdates(() => OnSystemReady(DidWarpFromShip, DidWarpFromVessel), () => _playerAwake && PlayerSpawned, 30);
         }
 
         // Had a bunch of separate unity things firing stuff when the system is ready so I moved it all to here
         private void OnSystemReady(bool shouldWarpInFromShip, bool shouldWarpInFromVessel)
         {
-            IsSystemReady = true;
+            if (IsSystemReady)
+            {
+                NHLogger.LogWarning("OnSystemReady was called twice.");
+            }
+            else
+            {
+                IsSystemReady = true;
 
-            // ShipWarpController will handle the invulnerability otherwise
-            if (!shouldWarpInFromShip)
-                Delay.FireOnNextUpdate(() => InvulnerabilityHandler.MakeInvulnerable(false));
+                // ShipWarpController will handle the invulnerability otherwise
+                if (!shouldWarpInFromShip)
+                    Delay.FireOnNextUpdate(() => InvulnerabilityHandler.MakeInvulnerable(false));
 
-            Locator.GetPlayerBody().gameObject.AddComponent<DebugRaycaster>();
-            Locator.GetPlayerBody().gameObject.AddComponent<DebugPropPlacer>();
-            Locator.GetPlayerBody().gameObject.AddComponent<DebugMenu>();
+                Locator.GetPlayerBody().gameObject.AddComponent<DebugRaycaster>();
+                Locator.GetPlayerBody().gameObject.AddComponent<DebugPropPlacer>();
+                Locator.GetPlayerBody().gameObject.AddComponent<DebugMenu>();
 
-            PlayerSpawnHandler.OnSystemReady(shouldWarpInFromShip, shouldWarpInFromVessel);
+                PlayerSpawnHandler.OnSystemReady(shouldWarpInFromShip, shouldWarpInFromVessel);
 
-            VesselCoordinatePromptHandler.RegisterPrompts(SystemDict.Where(system => system.Value.Config.Vessel?.coords != null).Select(x => x.Value).ToList());
+                VesselCoordinatePromptHandler.RegisterPrompts(SystemDict.Where(system => system.Value.Config.Vessel?.coords != null).Select(x => x.Value).ToList());
 
-            CloakHandler.OnSystemReady();
+                CloakHandler.OnSystemReady();
+            }
         }
 
         public void EnableWarpDrive()

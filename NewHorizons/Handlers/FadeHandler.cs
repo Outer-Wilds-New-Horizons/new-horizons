@@ -1,3 +1,4 @@
+using NewHorizons.Utility.OWML;
 using System;
 using System.Collections;
 using UnityEngine;
@@ -6,7 +7,7 @@ namespace NewHorizons.Handlers
 {
     public static class FadeHandler
     {
-        public static void FadeOut(float length) => Main.Instance.StartCoroutine(FadeOutCoroutine(length));
+        public static void FadeOut(float length) => Delay.StartCoroutine(FadeOutCoroutine(length));
 
         private static IEnumerator FadeOutCoroutine(float length)
         {
@@ -24,7 +25,7 @@ namespace NewHorizons.Handlers
             yield return new WaitForEndOfFrame();
         }
 
-        public static void FadeThen(float length, Action action) => Main.Instance.StartCoroutine(FadeThenCoroutine(length, action));
+        public static void FadeThen(float length, Action action) => Delay.StartCoroutine(FadeThenCoroutine(length, action));
 
         private static IEnumerator FadeThenCoroutine(float length, Action action)
         {
