@@ -197,7 +197,15 @@ namespace NewHorizons.Builder.Body
                     sphereCollider.isTrigger = true;
                     if (sizeController != null) sizeController.sphereCollider = sphereCollider;
 
-                    if (hasDestructionVolume) destructionVolumeGO.AddComponent<BlackHoleDestructionVolume>();
+                    var audio = destructionVolumeGO.AddComponent<AudioSource>();
+                    audio.spatialBlend = 1f;
+                    audio.maxDistance = distort * 2.5f;
+                    destructionVolumeGO.AddComponent<OWAudioSource>();
+
+                    if (hasDestructionVolume)
+                    {
+                        destructionVolumeGO.AddComponent<BlackHoleDestructionVolume>();
+                    }
                     else if (targetStarSystem != null)
                     {
                         var wormholeVolume = destructionVolumeGO.AddComponent<BlackHoleWarpVolume>();
