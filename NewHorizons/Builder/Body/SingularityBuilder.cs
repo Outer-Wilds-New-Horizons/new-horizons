@@ -175,6 +175,10 @@ namespace NewHorizons.Builder.Body
             var singularityAudioSource = singularityAmbience.GetComponent<AudioSource>();
             singularityAudioSource.maxDistance = distort * 2.5f;
             singularityAudioSource.minDistance = horizon;
+
+            // Sounds really weird on large black holes but isn't noticeable on small ones. #226
+            singularityAudioSource.dopplerLevel = 0;
+
             singularityAmbience.transform.localPosition = Vector3.zero;
             if (sizeController != null) sizeController.audioSource = singularityAudioSource;
 
