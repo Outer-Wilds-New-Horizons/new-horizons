@@ -1,3 +1,4 @@
+using NewHorizons.Builder.Volumes;
 using NewHorizons.Components.Props;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.Handlers;
@@ -169,6 +170,11 @@ namespace NewHorizons.Builder.Props
                 ApplyWanderer(tornadoGO, planetGO, info);
             }
 
+            if (info.hazardType != null || info.firstContactDamageType != null)
+            {
+                HazardVolumeBuilder.AddHazardVolume(fluidGO.gameObject, sector, planetGO.GetAttachedOWRigidbody(), info.hazardType, info.firstContactDamageType, info.firstContactDamage, info.damagePerSecond);
+            }
+
             soundGO.SetActive(true);
             tornadoGO.SetActive(true);
         }
@@ -226,6 +232,11 @@ namespace NewHorizons.Builder.Props
             if (info.wanderRate != 0)
             {
                 ApplyWanderer(hurricaneGO, planetGO, info);
+            }
+
+            if (info.hazardType != null || info.firstContactDamageType != null)
+            {
+                HazardVolumeBuilder.AddHazardVolume(fluidVolume.gameObject, sector, planetGO.GetAttachedOWRigidbody(), info.hazardType, info.firstContactDamageType, info.firstContactDamage, info.damagePerSecond);
             }
 
             hurricaneGO.SetActive(true);
