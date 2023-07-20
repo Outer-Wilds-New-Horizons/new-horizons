@@ -3355,6 +3355,13 @@
             "$ref": "#/definitions/AudioVolumeInfo"
           }
         },
+        "dayNightAudioVolumes": {
+          "type": "array",
+          "description": "Add day night audio volumes to this planet. These volumes play a different clip depending on the time of day.",
+          "items": {
+            "$ref": "#/definitions/DayNightAudioVolumeInfo"
+          }
+        },
         "destructionVolumes": {
           "type": "array",
           "description": "Add destruction volumes to this planet.\nDestroys bodies if they enter this volume. Can kill the player and recall the scout probe.",
@@ -3578,6 +3585,74 @@
         "sequential",
         "manual"
       ]
+    },
+    "DayNightAudioVolumeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "layer": {
+          "type": "integer",
+          "description": "The layer of this volume.\n\nLayers separate the priority system. The priority of volumes in one layer will not affect or override volumes in another. The highest priority volume in each layer will stack like normal.\nThe exception is layer 0. A higher-priority volume in layer 0 will override lower-priority volumes in ALL other layers. A lower-priority volume in layer 0 will stack with other layers like normal.\n            \nEx: A player could be affected by the sun on layer 9 priority 0 and planet gravity on layer 3 priority 2. They would experience the gravity of both volumes since they are on different layers.\nIf there was a zero-g volume on layer 0 priority 1, since it is on layer 0 it will override the gravity from the sun (priority 0 which is less than 1) but they will still feel the \ngravity of the planet (priority 2 is greater than 1). The zero-g volume will also still be applied because it is on a different layer.\n            \nDefault value here is 0 which means this volume's priority will be evaluated against all other priority volumes regardless of their layer.",
+          "format": "int32",
+          "default": 0
+        },
+        "priority": {
+          "type": "integer",
+          "description": "The priority of this volume.\n\nVolumes of higher priority will override volumes of lower priority. Volumes of the same priority will stack like normal.\nEx: A player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.\n            \nDefault value here is 1 instead of 0 so it automatically overrides planet gravity, which is 0 by default. ",
+          "format": "int32",
+          "default": 1
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume.",
+          "format": "float",
+          "default": 1.0
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "dayAudio": {
+          "type": "string",
+          "description": "The audio to use during the day. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list. Leave empty for no daytime audio."
+        },
+        "nightAudio": {
+          "type": "string",
+          "description": "The audio to use during the day. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list. Leave empty for no nightime audio."
+        },
+        "sun": {
+          "type": "string",
+          "description": "The name of the astro object used to determine if it is day or night."
+        },
+        "dayWindow": {
+          "type": "number",
+          "description": "Angle in degrees defining daytime. Inside this window it will be day and outside it will be night.",
+          "format": "float",
+          "default": 180.0,
+          "maximum": 360.0,
+          "minimum": 0.0
+        },
+        "volume": {
+          "type": "number",
+          "description": "The loudness of the audio",
+          "format": "float",
+          "default": 1.0,
+          "maximum": 1.0,
+          "minimum": 0.0
+        }
+      }
     },
     "DestructionVolumeInfo": {
       "type": "object",
