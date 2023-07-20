@@ -79,6 +79,21 @@ namespace NewHorizons.External.Modules.Props
         /// </summary>
         public bool ignoreSun;
 
+        /// <summary>
+        /// Activates this game object when the dialogue condition is met
+        /// </summary>
+        public string activationCondition;
+
+        /// <summary>
+        /// Deactivates this game object when the dialogue condition is met
+        /// </summary>
+        public string deactivationCondition;
+
+        /// <summary>
+        /// Should the player close their eyes while the activation state changes. Only relevant if activationCondition or deactivationCondition are set.
+        /// </summary>
+        [DefaultValue(true)] public bool blinkWhenActiveChanged = true;
+
         [Obsolete("alignToNormal is deprecated. Use alignRadial instead")] public bool alignToNormal;
     }
 
