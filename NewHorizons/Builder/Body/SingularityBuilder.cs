@@ -213,8 +213,19 @@ namespace NewHorizons.Builder.Body
 
                     var blackHoleVolume = Object.Instantiate(_blackHoleVolume, singularity.transform);
                     blackHoleVolume.name = "BlackHoleVolume";
-                    blackHoleVolume.SetActive(true);
+
+                    // Scale vanish effect to black hole size
                     var bhVolume = blackHoleVolume.GetComponent<BlackHoleVolume>();
+                    foreach (var ps in bhVolume._vanishEffectPrefab.GetComponentsInChildren<ParticleSystem>())
+                    {
+#pragma warning disable CS0618 // Type or member is obsolete - It tells you to use some readonly shit instead
+                        ps.scalingMode = ParticleSystemScalingMode.Hierarchy;
+#pragma warning restore CS0618 // Type or member is obsolete
+                    }
+                    bhVolume._vanishEffectPrefab.transform.localScale = Vector3.one * horizon / 100f;
+
+                    blackHoleVolume.SetActive(true);
+
                     bhVolume._audioSector = sector;
                     bhVolume._emissionSource = oneShotOWAudioSource;
                     var blackHoleSphereCollider = blackHoleVolume.GetComponent<SphereCollider>();
