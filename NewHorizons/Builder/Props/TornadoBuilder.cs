@@ -202,10 +202,6 @@ namespace NewHorizons.Builder.Props
                         child.localPosition = new Vector3(0, 60, 0);
                         child.localScale = Vector3.one * 1.1f;
                     }
-                    if (child.name.Equals("Effects_GD_HurricaneCycloneExterior"))
-                    {
-                        child.localScale = new Vector3(0.88f, 1f, 0.88f);
-                    }
                 }
             }
 
