@@ -17,6 +17,7 @@ namespace NewHorizons.Components.Volumes
 
         public override void VanishPlayer(OWRigidbody playerBody, RelativeLocationData entryLocation)
         {
+            Locator.GetPlayerAudioController().PlayOneShotInternal(AudioType.BH_BlackHoleEmission);
             Main.Instance.ChangeCurrentStarSystem(TargetSolarSystem, PlayerState.AtFlightConsole());
         }
     }

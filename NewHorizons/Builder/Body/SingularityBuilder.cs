@@ -175,6 +175,10 @@ namespace NewHorizons.Builder.Body
             var singularityAudioSource = singularityAmbience.GetComponent<AudioSource>();
             singularityAudioSource.maxDistance = distort * 2.5f;
             singularityAudioSource.minDistance = horizon;
+
+            // Sounds really weird on large black holes but isn't noticeable on small ones. #226
+            singularityAudioSource.dopplerLevel = 0;
+
             singularityAmbience.transform.localPosition = Vector3.zero;
             if (sizeController != null) sizeController.audioSource = singularityAudioSource;
 
@@ -193,7 +197,15 @@ namespace NewHorizons.Builder.Body
                     sphereCollider.isTrigger = true;
                     if (sizeController != null) sizeController.sphereCollider = sphereCollider;
 
-                    if (hasDestructionVolume) destructionVolumeGO.AddComponent<BlackHoleDestructionVolume>();
+                    var audio = destructionVolumeGO.AddComponent<AudioSource>();
+                    audio.spatialBlend = 1f;
+                    audio.maxDistance = distort * 2.5f;
+                    destructionVolumeGO.AddComponent<OWAudioSource>();
+
+                    if (hasDestructionVolume)
+                    {
+                        destructionVolumeGO.AddComponent<BlackHoleDestructionVolume>();
+                    }
                     else if (targetStarSystem != null)
                     {
                         var wormholeVolume = destructionVolumeGO.AddComponent<BlackHoleWarpVolume>();
@@ -213,8 +225,19 @@ namespace NewHorizons.Builder.Body
 
                     var blackHoleVolume = Object.Instantiate(_blackHoleVolume, singularity.transform);
                     blackHoleVolume.name = "BlackHoleVolume";
-                    blackHoleVolume.SetActive(true);
+
+                    // Scale vanish effect to black hole size
                     var bhVolume = blackHoleVolume.GetComponent<BlackHoleVolume>();
+                    foreach (var ps in bhVolume._vanishEffectPrefab.GetComponentsInChildren<ParticleSystem>())
+                    {
+#pragma warning disable CS0618 // Type or member is obsolete - It tells you to use some readonly shit instead
+                        ps.scalingMode = ParticleSystemScalingMode.Hierarchy;
+#pragma warning restore CS0618 // Type or member is obsolete
+                    }
+                    bhVolume._vanishEffectPrefab.transform.localScale = Vector3.one * horizon / 100f;
+
+                    blackHoleVolume.SetActive(true);
+
                     bhVolume._audioSector = sector;
                     bhVolume._emissionSource = oneShotOWAudioSource;
                     var blackHoleSphereCollider = blackHoleVolume.GetComponent<SphereCollider>();
