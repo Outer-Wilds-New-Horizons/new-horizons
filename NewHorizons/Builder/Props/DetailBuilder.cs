@@ -70,7 +70,7 @@ namespace NewHorizons.Builder.Props
         /// </summary>
         public static GameObject Make(GameObject planetGO, Sector sector, DetailInfo info)
         {
-            _emptyPrefab ??= new GameObject("Empty");
+            if (_emptyPrefab == null) _emptyPrefab = new GameObject("Empty");
 
             // Allow for empty game objects so you can set up conditional activation on them and parent other props to them
             var prefab = string.IsNullOrEmpty(info.path) ? _emptyPrefab : SearchUtilities.Find(info.path);
