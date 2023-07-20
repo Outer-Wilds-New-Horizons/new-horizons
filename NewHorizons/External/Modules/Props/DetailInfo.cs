@@ -21,7 +21,8 @@ namespace NewHorizons.External.Modules.Props
         public string assetBundle;
 
         /// <summary>
-        /// Either the path in the scene hierarchy of the item to copy or the path to the object in the supplied asset bundle
+        /// Either the path in the scene hierarchy of the item to copy or the path to the object in the supplied asset bundle. 
+        /// If empty, will make an empty game object. This can be useful for adding other props to it as its children.
         /// </summary>
         public string path;
 
@@ -78,6 +79,21 @@ namespace NewHorizons.External.Modules.Props
         /// Set to true if this object's lighting should ignore the effects of sunlight
         /// </summary>
         public bool ignoreSun;
+
+        /// <summary>
+        /// Activates this game object when the dialogue condition is met
+        /// </summary>
+        public string activationCondition;
+
+        /// <summary>
+        /// Deactivates this game object when the dialogue condition is met
+        /// </summary>
+        public string deactivationCondition;
+
+        /// <summary>
+        /// Should the player close their eyes while the activation state changes. Only relevant if activationCondition or deactivationCondition are set.
+        /// </summary>
+        [DefaultValue(true)] public bool blinkWhenActiveChanged = true;
 
         [Obsolete("alignToNormal is deprecated. Use alignRadial instead")] public bool alignToNormal;
     }

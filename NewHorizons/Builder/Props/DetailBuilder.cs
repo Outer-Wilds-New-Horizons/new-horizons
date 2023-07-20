@@ -1,5 +1,6 @@
 using NewHorizons.Builder.General;
 using NewHorizons.Components;
+using NewHorizons.Components.Props;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
@@ -19,6 +20,7 @@ namespace NewHorizons.Builder.Props
     {
         private static readonly Dictionary<DetailInfo, GameObject> _detailInfoToCorrespondingSpawnedGameObject = new();
         private static readonly Dictionary<(Sector, string), (GameObject prefab, bool isItem)> _fixedPrefabCache = new();
+        private static GameObject _emptyPrefab;
 
         static DetailBuilder()
         {
@@ -68,14 +70,20 @@ namespace NewHorizons.Builder.Props
         /// </summary>
         public static GameObject Make(GameObject planetGO, Sector sector, DetailInfo info)
         {
-            var prefab = SearchUtilities.Find(info.path);
+            _emptyPrefab ??= new GameObject("Empty");
+
+            // Allow for empty game objects so you can set up conditional activation on them and parent other props to them
+            var prefab = string.IsNullOrEmpty(info.path) ? _emptyPrefab : SearchUtilities.Find(info.path);
+
             if (prefab == null)
             {
                 NHLogger.LogError($"Couldn't find detail {info.path}");
                 return null;
             }
             else
+            {
                 return Make(planetGO, sector, prefab, info);
+            }
         }
 
         /// <summary>
@@ -208,6 +216,15 @@ namespace NewHorizons.Builder.Props
                 addPhysics.Sector = sector;
                 addPhysics.Mass = detail.physicsMass;
                 addPhysics.Radius = detail.physicsRadius;
+            }
+
+            if (!string.IsNullOrEmpty(detail.activationCondition))
+            {
+                ConditionalObjectActivation.SetUp(prop, detail.activationCondition, detail.blinkWhenActiveChanged, true);   
+            }
+            if (!string.IsNullOrEmpty(detail.deactivationCondition))
+            {
+                ConditionalObjectActivation.SetUp(prop, detail.deactivationCondition, detail.blinkWhenActiveChanged, false);
             }
 
             _detailInfoToCorrespondingSpawnedGameObject[detail] = prop;

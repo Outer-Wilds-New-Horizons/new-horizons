@@ -12,6 +12,11 @@ namespace NewHorizons.External.Modules.Volumes
         public AudioVolumeInfo[] audioVolumes;
 
         /// <summary>
+        /// Add day night audio volumes to this planet. These volumes play a different clip depending on the time of day.
+        /// </summary>
+        public DayNightAudioVolumeInfo[] dayNightAudioVolumes;
+
+        /// <summary>
         /// Add destruction volumes to this planet.
         /// Destroys bodies if they enter this volume. Can kill the player and recall the scout probe.
         /// </summary>
