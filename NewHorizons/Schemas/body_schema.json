@@ -1328,6 +1328,19 @@
         "ignoreSun": {
           "type": "boolean",
           "description": "Set to true if this object's lighting should ignore the effects of sunlight"
+        },
+        "activationCondition": {
+          "type": "string",
+          "description": "Activates this game object when the dialogue condition is met"
+        },
+        "deactivationCondition": {
+          "type": "string",
+          "description": "Deactivates this game object when the dialogue condition is met"
+        },
+        "blinkWhenActiveChanged": {
+          "type": "boolean",
+          "description": "Should the player close their eyes while the activation state changes. Only relevant if activationCondition or deactivationCondition are set.",
+          "default": true
         }
       }
     },
