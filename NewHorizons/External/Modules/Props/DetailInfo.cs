@@ -21,7 +21,8 @@ namespace NewHorizons.External.Modules.Props
         public string assetBundle;
 
         /// <summary>
-        /// Either the path in the scene hierarchy of the item to copy or the path to the object in the supplied asset bundle
+        /// Either the path in the scene hierarchy of the item to copy or the path to the object in the supplied asset bundle. 
+        /// If empty, will make an empty game object. This can be useful for adding other props to it as its children.
         /// </summary>
         public string path;
 
