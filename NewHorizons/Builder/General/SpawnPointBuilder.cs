@@ -1,12 +1,11 @@
 using NewHorizons.Builder.Props;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
-using NewHorizons.Utility.OWML;
 using NewHorizons.Utility.OuterWilds;
+using NewHorizons.Utility.OWML;
 using System;
 using System.Reflection;
 using UnityEngine;
-using Steamworks;
 
 namespace NewHorizons.Builder.General
 {

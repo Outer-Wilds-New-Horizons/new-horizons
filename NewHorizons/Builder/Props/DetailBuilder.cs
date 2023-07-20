@@ -1,5 +1,6 @@
 using NewHorizons.Builder.General;
 using NewHorizons.Components;
+using NewHorizons.Components.Props;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
@@ -208,6 +209,15 @@ namespace NewHorizons.Builder.Props
                 addPhysics.Sector = sector;
                 addPhysics.Mass = detail.physicsMass;
                 addPhysics.Radius = detail.physicsRadius;
+            }
+
+            if (!string.IsNullOrEmpty(detail.activationCondition))
+            {
+                ConditionalObjectActivation.SetUp(prop, detail.activationCondition, detail.blinkWhenActiveChanged, true);   
+            }
+            if (!string.IsNullOrEmpty(detail.deactivationCondition))
+            {
+                ConditionalObjectActivation.SetUp(prop, detail.deactivationCondition, detail.blinkWhenActiveChanged, false);
             }
 
             _detailInfoToCorrespondingSpawnedGameObject[detail] = prop;
