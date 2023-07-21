@@ -5,6 +5,7 @@ using NewHorizons.Utility.OWML;
 using OWML.Common;
 using OWML.Utils;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -134,6 +135,9 @@ namespace NewHorizons.Builder.Props.Audio
 
         public static GameObject Make(GameObject planetGO, Sector sector, SignalInfo info, IModBehaviour mod)
         {
+            if (string.IsNullOrEmpty(info.frequency)) throw new System.Exception("Cannot make a signal without a frequency");
+            if (string.IsNullOrEmpty(info.name)) throw new System.Exception("Cannot make a signal without a name");
+
             var owAudioSource = GeneralAudioBuilder.Make(planetGO, sector, info, mod);
             var signalGO = owAudioSource.gameObject;
 

@@ -225,7 +225,14 @@ namespace NewHorizons.Builder.Props
             {
                 foreach (var signal in config.Props.signals)
                 {
-                    SignalBuilder.Make(go, sector, signal, mod);
+                    try
+                    {
+                        SignalBuilder.Make(go, sector, signal, mod);
+                    }
+                    catch (Exception ex)
+                    {
+                        NHLogger.LogError($"Couldn't make signal on planet [{config.name}] - {ex}");
+                    }
                 }
             }
             if (config.Props.remotes != null)
