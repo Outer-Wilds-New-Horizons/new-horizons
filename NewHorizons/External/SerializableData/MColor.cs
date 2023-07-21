@@ -14,12 +14,9 @@ namespace NewHorizons.External.SerializableData
             this.a = a;
         }
 
-        public MColor(Color color)
+        public static MColor FromColor(Color color)
         {
-            r = (int)(color.r * 255);
-            g = (int)(color.g * 255);
-            b = (int)(color.b * 255);
-            a = (int)(color.a * 255);
+            return new MColor((int)(color.r * 255), (int)(color.g * 255), (int)(color.b * 255), (int)(color.a * 255));
         }
 
         /// <summary>

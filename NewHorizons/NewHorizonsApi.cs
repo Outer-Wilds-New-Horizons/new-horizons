@@ -107,7 +107,7 @@ namespace NewHorizons
                     .Select((pair) => new EntryPositionInfo() { id = pair.Key, position = pair.Value })
                     .ToArray(),
                 curiosities = curiousityColours
-                    .Select((pair) => new CuriosityColorInfo() { id = pair.Key, color = new MColor(pair.Value.colour), highlightColor = new MColor(pair.Value.highlight) })
+                    .Select((pair) => new CuriosityColorInfo() { id = pair.Key, color = MColor.FromColor(pair.Value.colour), highlightColor = MColor.FromColor(pair.Value.highlight) })
                     .ToArray()
             };
 
