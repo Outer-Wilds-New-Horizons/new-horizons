@@ -1,6 +1,8 @@
 using NewHorizons.Builder.Props;
 using NewHorizons.Builder.Props.Audio;
+using NewHorizons.Builder.ShipLog;
 using NewHorizons.External;
+using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.Props.Audio;
@@ -15,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Xml.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -60,6 +63,31 @@ namespace NewHorizons
             {
                 NHLogger.LogError($"Error in Create API:\n{ex}");
             }
+        }
+
+        public void AddShipLogXML(IModBehaviour mod, ShipLogManager manager, XElement xml, string planetName)
+        {
+            var body = new NewHorizonsBody(new PlanetConfig() { name = planetName, starSystem = Main.Instance.CurrentStarSystem }, mod);
+
+            if (!Main.BodyDict.ContainsKey(Main.Instance.CurrentStarSystem))
+            {
+                Main.BodyDict.Add(Main.Instance.CurrentStarSystem, new List<NewHorizonsBody>());
+                Main.BodyDict[Main.Instance.CurrentStarSystem].Add(body);
+            }
+            else
+            {
+                var existingBody = Main.BodyDict[Main.Instance.CurrentStarSystem].FirstOrDefault(x => x.Config.name == planetName);
+                if (existingBody != null)
+                {
+                    body = existingBody;
+                }
+                else
+                {
+                    Main.BodyDict[Main.Instance.CurrentStarSystem].Add(body);
+                }
+            }
+
+            RumorModeBuilder.AddShipLogXML(manager, xml, body);
         }
 
         public void LoadConfigs(IModBehaviour mod)

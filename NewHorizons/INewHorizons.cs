@@ -1,6 +1,7 @@
 using OWML.Common;
 using System;
 using System.Collections.Generic;
+using System.Xml.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -13,6 +14,15 @@ namespace NewHorizons
 
         [Obsolete("Create(Dictionary<string, object> config) is deprecated, please use LoadConfigs(IModBehaviour mod) instead")]
         void Create(Dictionary<string, object> config, IModBehaviour mod);
+
+        /// <summary>
+        /// Directly add ship logs from XML. Call this method right before ShipLogManager awake.
+        /// </summary>
+        /// <param name="mod"></param>
+        /// <param name="manager"></param>
+        /// <param name="xml"></param>
+        /// <param name="planetName"></param>
+        void AddShipLogXML(IModBehaviour mod, ShipLogManager manager, XElement xml, string planetName);
 
         /// <summary>
         /// Will load all configs in the regular folders (planets, systems, translations, etc) for this mod.
