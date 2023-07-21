@@ -14,6 +14,14 @@ namespace NewHorizons.External.SerializableData
             this.a = a;
         }
 
+        public MColor(Color color)
+        {
+            r = (int)(color.r * 255);
+            g = (int)(color.g * 255);
+            b = (int)(color.b * 255);
+            a = (int)(color.a * 255);
+        }
+
         /// <summary>
         /// The red component of this colour from 0-255, higher values will make the colour glow if applicable.
         /// </summary>

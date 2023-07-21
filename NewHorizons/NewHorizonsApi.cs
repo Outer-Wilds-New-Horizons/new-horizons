@@ -7,6 +7,7 @@ using NewHorizons.External.Modules;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.Props.Audio;
 using NewHorizons.External.Modules.Props.Dialogue;
+using NewHorizons.External.SerializableData;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OWML;
 using Newtonsoft.Json;
@@ -66,9 +67,17 @@ namespace NewHorizons
             }
         }
 
-        public void AddShipLogXML(IModBehaviour mod, ShipLogManager manager, XElement xml, string planetName, Dictionary<string, Vector2> entryPositions)
+        public void AddShipLogXML(IModBehaviour mod, XElement xml, string planetName, string imageFolder, Dictionary<string, Vector2> entryPositions, Dictionary<string, (Color colour, Color highlight)> curiousityColours)
         {
-            var body = new NewHorizonsBody(new PlanetConfig() { name = planetName, starSystem = Main.Instance.CurrentStarSystem }, mod);
+            var body = new NewHorizonsBody(new PlanetConfig() 
+            { 
+                name = planetName, 
+                starSystem = Main.Instance.CurrentStarSystem, 
+                ShipLog = new ShipLogModule() 
+                { 
+                    spriteFolder = imageFolder 
+                } 
+            }, mod);
 
             if (!Main.BodyDict.ContainsKey(Main.Instance.CurrentStarSystem))
             {
@@ -77,7 +86,8 @@ namespace NewHorizons
             }
             else
             {
-                var existingBody = Main.BodyDict[Main.Instance.CurrentStarSystem].FirstOrDefault(x => x.Config.name == planetName);
+                var existingBody = Main.BodyDict[Main.Instance.CurrentStarSystem]
+                    .FirstOrDefault(x => x.Config.name == planetName && x.Mod.ModHelper.Manifest.UniqueName == mod.ModHelper.Manifest.UniqueName);
                 if (existingBody != null)
                 {
                     body = existingBody;
@@ -88,10 +98,19 @@ namespace NewHorizons
                 }
             }
 
-            var system = new StarSystemConfig() { entryPositions = entryPositions.Select((pair) => new EntryPositionInfo() { id = pair.Key, position = pair.Value }).ToArray() };
+            var system = new StarSystemConfig()
+            {
+                entryPositions = entryPositions
+                    .Select((pair) => new EntryPositionInfo() { id = pair.Key, position = pair.Value })
+                    .ToArray(),
+                curiosities = curiousityColours
+                    .Select((pair) => new CuriosityColorInfo() { id = pair.Key, color = new MColor(pair.Value.colour), highlightColor = new MColor(pair.Value.highlight) })
+                    .ToArray()
+            };
+
             Main.Instance.LoadStarSystemConfig(system, null, mod);
 
-            RumorModeBuilder.AddShipLogXML(manager, xml, body);
+            RumorModeBuilder.AddShipLogXML(GameObject.FindObjectOfType<ShipLogManager>(), xml, body);
         }
 
         public void LoadConfigs(IModBehaviour mod)

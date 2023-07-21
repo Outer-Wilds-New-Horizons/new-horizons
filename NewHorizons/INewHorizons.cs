@@ -18,12 +18,13 @@ namespace NewHorizons
         /// <summary>
         /// Directly add ship logs from XML. Call this method right before ShipLogManager awake.
         /// </summary>
-        /// <param name="mod"></param>
-        /// <param name="manager"></param>
-        /// <param name="xml"></param>
-        /// <param name="planetName"></param>
-        /// <param name="entryPositions"></param>
-        void AddShipLogXML(IModBehaviour mod, ShipLogManager manager, XElement xml, string planetName, Dictionary<string, Vector2> entryPositions);
+        /// <param name="mod">The mod this method is being called from. This is required for loading files.</param>
+        /// <param name="xml">The ship log xml contents</param>
+        /// <param name="planetName">The planet that these ship logs correspond to in the map mode</param>
+        /// <param name="imageFolder">The relative path from your mod manifest.json where the ship log images are located. The filename must be the same as the fact id. Optional.</param>
+        /// <param name="entryPositions">A dictionary of each fact id to its 2D position in the ship log. Optional.</param>
+        /// <param name="curiousityColours">A dictionary of each curiousity ID to its colour and highlight colour in the ship log. Optional.</param>
+        void AddShipLogXML(IModBehaviour mod, XElement xml, string planetName, string imageFolder = null, Dictionary<string, Vector2> entryPositions = null, Dictionary<string, (Color colour, Color highlight)> curiousityColours = null);
 
         /// <summary>
         /// Will load all configs in the regular folders (planets, systems, translations, etc) for this mod.
