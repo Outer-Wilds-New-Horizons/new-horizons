@@ -600,7 +600,7 @@ namespace NewHorizons
 
 
         #region Load
-        public void LoadStarSystemConfig(StarSystemConfig starSystemConfig, string relativePath, IModBehaviour mod)
+        public void LoadStarSystemConfig(string starSystemName, StarSystemConfig starSystemConfig, string relativePath, IModBehaviour mod)
         {
             starSystemConfig.Migrate();
             starSystemConfig.FixCoordinates();
@@ -608,22 +608,22 @@ namespace NewHorizons
             if (starSystemConfig.startHere)
             {
                 // We always want to allow mods to overwrite setting the main SolarSystem as default but not the other way around
-                if (name != "SolarSystem")
+                if (starSystemName != "SolarSystem")
                 {
-                    SetDefaultSystem(name);
-                    _currentStarSystem = name;
+                    SetDefaultSystem(starSystemName);
+                    _currentStarSystem = starSystemName;
                 }
             }
 
-            if (SystemDict.ContainsKey(name))
+            if (SystemDict.ContainsKey(starSystemName))
             {
-                if (string.IsNullOrEmpty(SystemDict[name].Config.travelAudio) && SystemDict[name].Config.Skybox == null)
-                    SystemDict[name].Mod = mod;
-                SystemDict[name].Config.Merge(starSystemConfig);
+                if (string.IsNullOrEmpty(SystemDict[starSystemName].Config.travelAudio) && SystemDict[starSystemName].Config.Skybox == null)
+                    SystemDict[starSystemName].Mod = mod;
+                SystemDict[starSystemName].Config.Merge(starSystemConfig);
             }
             else
             {
-                SystemDict[name] = new NewHorizonsSystem(name, starSystemConfig, relativePath, mod);
+                SystemDict[starSystemName] = new NewHorizonsSystem(starSystemName, starSystemConfig, relativePath, mod);
             }
         }
 
@@ -654,13 +654,13 @@ namespace NewHorizons
 
                     foreach (var file in systemFiles)
                     {
-                        var name = Path.GetFileNameWithoutExtension(file);
+                        var starSystemName = Path.GetFileNameWithoutExtension(file);
 
-                        NHLogger.LogVerbose($"Loading system {name}");
+                        NHLogger.LogVerbose($"Loading system {starSystemName}");
 
                         var relativePath = file.Replace(folder, "");
                         var starSystemConfig = mod.ModHelper.Storage.Load<StarSystemConfig>(relativePath, false);
-                        LoadStarSystemConfig(starSystemConfig, relativePath, mod);
+                        LoadStarSystemConfig(starSystemName, starSystemConfig, relativePath, mod);
                     }
                 }
                 if (Directory.Exists(planetsFolder))

@@ -69,24 +69,27 @@ namespace NewHorizons
 
         public void AddShipLogXML(IModBehaviour mod, XElement xml, string planetName, string imageFolder, Dictionary<string, Vector2> entryPositions, Dictionary<string, (Color colour, Color highlight)> curiousityColours)
         {
+            // This method has to be called each time the ship log manager is created, i.e. each time a system loads so it will only ever be relevant to the current one.
+            var starSystem = Main.Instance.CurrentStarSystem;
+
             var body = new NewHorizonsBody(new PlanetConfig() 
             { 
                 name = planetName, 
-                starSystem = Main.Instance.CurrentStarSystem, 
+                starSystem = starSystem, 
                 ShipLog = new ShipLogModule() 
                 { 
                     spriteFolder = imageFolder 
                 } 
             }, mod);
 
-            if (!Main.BodyDict.ContainsKey(Main.Instance.CurrentStarSystem))
+            if (!Main.BodyDict.ContainsKey(starSystem))
             {
-                Main.BodyDict.Add(Main.Instance.CurrentStarSystem, new List<NewHorizonsBody>());
-                Main.BodyDict[Main.Instance.CurrentStarSystem].Add(body);
+                Main.BodyDict.Add(starSystem, new List<NewHorizonsBody>());
+                Main.BodyDict[starSystem].Add(body);
             }
             else
             {
-                var existingBody = Main.BodyDict[Main.Instance.CurrentStarSystem]
+                var existingBody = Main.BodyDict[starSystem]
                     .FirstOrDefault(x => x.Config.name == planetName && x.Mod.ModHelper.Manifest.UniqueName == mod.ModHelper.Manifest.UniqueName);
                 if (existingBody != null)
                 {
@@ -94,7 +97,7 @@ namespace NewHorizons
                 }
                 else
                 {
-                    Main.BodyDict[Main.Instance.CurrentStarSystem].Add(body);
+                    Main.BodyDict[starSystem].Add(body);
                 }
             }
 
@@ -108,7 +111,7 @@ namespace NewHorizons
                     .ToArray()
             };
 
-            Main.Instance.LoadStarSystemConfig(system, null, mod);
+            Main.Instance.LoadStarSystemConfig(starSystem, system, null, mod);
 
             RumorModeBuilder.AddShipLogXML(GameObject.FindObjectOfType<ShipLogManager>(), xml, body);
         }
