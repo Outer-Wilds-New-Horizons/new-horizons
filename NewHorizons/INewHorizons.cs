@@ -22,7 +22,8 @@ namespace NewHorizons
         /// <param name="manager"></param>
         /// <param name="xml"></param>
         /// <param name="planetName"></param>
-        void AddShipLogXML(IModBehaviour mod, ShipLogManager manager, XElement xml, string planetName);
+        /// <param name="entryPositions"></param>
+        void AddShipLogXML(IModBehaviour mod, ShipLogManager manager, XElement xml, string planetName, Dictionary<string, Vector2> entryPositions);
 
         /// <summary>
         /// Will load all configs in the regular folders (planets, systems, translations, etc) for this mod.

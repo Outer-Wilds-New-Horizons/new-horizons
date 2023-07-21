@@ -20,6 +20,7 @@ using System.Linq;
 using System.Xml.Linq;
 using UnityEngine;
 using UnityEngine.Events;
+using static NewHorizons.External.Modules.ShipLogModule;
 
 namespace NewHorizons
 {
@@ -65,7 +66,7 @@ namespace NewHorizons
             }
         }
 
-        public void AddShipLogXML(IModBehaviour mod, ShipLogManager manager, XElement xml, string planetName)
+        public void AddShipLogXML(IModBehaviour mod, ShipLogManager manager, XElement xml, string planetName, Dictionary<string, Vector2> entryPositions)
         {
             var body = new NewHorizonsBody(new PlanetConfig() { name = planetName, starSystem = Main.Instance.CurrentStarSystem }, mod);
 
@@ -86,6 +87,9 @@ namespace NewHorizons
                     Main.BodyDict[Main.Instance.CurrentStarSystem].Add(body);
                 }
             }
+
+            var system = new StarSystemConfig() { entryPositions = entryPositions.Select((pair) => new EntryPositionInfo() { id = pair.Key, position = pair.Value }).ToArray() };
+            Main.Instance.LoadStarSystemConfig(system, null, mod);
 
             RumorModeBuilder.AddShipLogXML(manager, xml, body);
         }

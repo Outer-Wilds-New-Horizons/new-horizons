@@ -600,6 +600,33 @@ namespace NewHorizons
 
 
         #region Load
+        public void LoadStarSystemConfig(StarSystemConfig starSystemConfig, string relativePath, IModBehaviour mod)
+        {
+            starSystemConfig.Migrate();
+            starSystemConfig.FixCoordinates();
+
+            if (starSystemConfig.startHere)
+            {
+                // We always want to allow mods to overwrite setting the main SolarSystem as default but not the other way around
+                if (name != "SolarSystem")
+                {
+                    SetDefaultSystem(name);
+                    _currentStarSystem = name;
+                }
+            }
+
+            if (SystemDict.ContainsKey(name))
+            {
+                if (string.IsNullOrEmpty(SystemDict[name].Config.travelAudio) && SystemDict[name].Config.Skybox == null)
+                    SystemDict[name].Mod = mod;
+                SystemDict[name].Config.Merge(starSystemConfig);
+            }
+            else
+            {
+                SystemDict[name] = new NewHorizonsSystem(name, starSystemConfig, relativePath, mod);
+            }
+        }
+
         public void LoadConfigs(IModBehaviour mod)
         {
             try
@@ -633,29 +660,7 @@ namespace NewHorizons
 
                         var relativePath = file.Replace(folder, "");
                         var starSystemConfig = mod.ModHelper.Storage.Load<StarSystemConfig>(relativePath, false);
-                        starSystemConfig.Migrate();
-                        starSystemConfig.FixCoordinates();
-
-                        if (starSystemConfig.startHere)
-                        {
-                            // We always want to allow mods to overwrite setting the main SolarSystem as default but not the other way around
-                            if (name != "SolarSystem")
-                            {
-                                SetDefaultSystem(name);
-                                _currentStarSystem = name;
-                            }
-                        }
-
-                        if (SystemDict.ContainsKey(name))
-                        {
-                            if (string.IsNullOrEmpty(SystemDict[name].Config.travelAudio) && SystemDict[name].Config.Skybox == null)
-                                SystemDict[name].Mod = mod;
-                            SystemDict[name].Config.Merge(starSystemConfig);
-                        }
-                        else
-                        {
-                            SystemDict[name] = new NewHorizonsSystem(name, starSystemConfig, relativePath, mod);
-                        }
+                        LoadStarSystemConfig(starSystemConfig, relativePath, mod);
                     }
                 }
                 if (Directory.Exists(planetsFolder))
