@@ -172,7 +172,7 @@ namespace NewHorizons.Builder.Props
 
             if (info.hazardType != null || info.firstContactDamageType != null)
             {
-                HazardVolumeBuilder.AddHazardVolume(fluidGO.gameObject, sector, planetGO.GetAttachedOWRigidbody(), info.hazardType, info.firstContactDamageType, info.firstContactDamage, info.damagePerSecond);
+                HazardVolumeBuilder.AddHazardVolume(fluidGO.gameObject, sector, planetGO.GetComponent<OWRigidbody>(), info.hazardType, info.firstContactDamageType, info.firstContactDamage, info.damagePerSecond);
             }
 
             soundGO.SetActive(true);
@@ -232,7 +232,7 @@ namespace NewHorizons.Builder.Props
 
             if (info.hazardType != null || info.firstContactDamageType != null)
             {
-                HazardVolumeBuilder.AddHazardVolume(fluidVolume.gameObject, sector, planetGO.GetAttachedOWRigidbody(), info.hazardType, info.firstContactDamageType, info.firstContactDamage, info.damagePerSecond);
+                HazardVolumeBuilder.AddHazardVolume(fluidVolume.gameObject, sector, planetGO.GetComponent<OWRigidbody>(), info.hazardType, info.firstContactDamageType, info.firstContactDamage, info.damagePerSecond);
             }
 
             hurricaneGO.SetActive(true);
