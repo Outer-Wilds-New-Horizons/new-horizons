@@ -292,10 +292,10 @@ namespace NewHorizons
 
             var system = new StarSystemConfig()
             {
-                entryPositions = entryPositions
+                entryPositions = entryPositions?
                     .Select((pair) => new EntryPositionInfo() { id = pair.Key, position = pair.Value })
                     .ToArray(),
-                curiosities = curiousityColours
+                curiosities = curiousityColours?
                     .Select((pair) => new CuriosityColorInfo() { id = pair.Key, color = MColor.FromColor(pair.Value.colour), highlightColor = MColor.FromColor(pair.Value.highlight) })
                     .ToArray()
             };
