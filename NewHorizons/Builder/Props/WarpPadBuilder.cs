@@ -1,5 +1,6 @@
 using NewHorizons.Builder.Props.TranslatorText;
 using NewHorizons.Components;
+using NewHorizons.External.Modules;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.WarpPad;
 using NewHorizons.Utility;
@@ -144,16 +145,9 @@ namespace NewHorizons.Builder.Props
             transmitterObject.SetActive(true);
         }
 
-        private static void CreateComputer(GameObject planetGO, Sector sector, NomaiComputerInfo computerInfo, NomaiWarpReceiver receiver)
+        private static void CreateComputer(GameObject planetGO, Sector sector, GeneralPropInfo computerInfo, NomaiWarpReceiver receiver)
         {
-            var prefab = computerInfo.type switch
-            {
-                NomaiComputerType.NORMAL => TranslatorTextBuilder.ComputerPrefab,
-                NomaiComputerType.PRECRASH => TranslatorTextBuilder.PreCrashComputerPrefab,
-                _ => throw new System.NotImplementedException()
-            };
-
-            var computerObject = DetailBuilder.Make(planetGO, sector, prefab, new DetailInfo(computerInfo));
+            var computerObject = DetailBuilder.Make(planetGO, sector, TranslatorTextBuilder.ComputerPrefab, new DetailInfo(computerInfo));
 
             var computer = computerObject.GetComponentInChildren<NomaiComputer>();
             computer.SetSector(sector);

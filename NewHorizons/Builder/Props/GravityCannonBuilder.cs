@@ -1,4 +1,5 @@
 using NewHorizons.Builder.Props.TranslatorText;
+using NewHorizons.External.Modules;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.Props.Shuttle;
 using NewHorizons.Handlers;
@@ -63,16 +64,9 @@ namespace NewHorizons.Builder.Props
             return gravityCannonObject;
         }
 
-        private static NomaiComputer CreateComputer(GameObject planetGO, Sector sector, NomaiComputerInfo computerInfo)
+        private static NomaiComputer CreateComputer(GameObject planetGO, Sector sector, GeneralPropInfo computerInfo)
         {
-            var prefab = computerInfo.type switch
-            {
-                NomaiComputerType.NORMAL => TranslatorTextBuilder.ComputerPrefab,
-                NomaiComputerType.PRECRASH => TranslatorTextBuilder.PreCrashComputerPrefab,
-                _ => throw new System.NotImplementedException()
-            };
-
-            var computerObject = DetailBuilder.Make(planetGO, sector, prefab, new DetailInfo(computerInfo));
+            var computerObject = DetailBuilder.Make(planetGO, sector, TranslatorTextBuilder.ComputerPrefab, new DetailInfo(computerInfo));
 
             var computer = computerObject.GetComponentInChildren<NomaiComputer>();
             computer.SetSector(sector);
