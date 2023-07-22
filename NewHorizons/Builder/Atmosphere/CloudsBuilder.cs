@@ -168,12 +168,19 @@ namespace NewHorizons.Builder.Atmosphere
             lightning.transform.localPosition = Vector3.zero;
 
             var lightningGenerator = lightning.GetComponent<CloudLightningGenerator>();
-            lightningGenerator._altitude = atmo.clouds.cloudsPrefab != CloudPrefabType.Transparent ? (atmo.clouds.outerCloudRadius + atmo.clouds.innerCloudRadius) / 2f : atmo.clouds.outerCloudRadius;
+
+            lightningGenerator._altitude = atmo.clouds.cloudsPrefab switch
+            {
+                CloudPrefabType.GiantsDeep or CloudPrefabType.QuantumMoon => (atmo.clouds.outerCloudRadius + atmo.clouds.innerCloudRadius) / 2f,
+                _ => atmo.clouds.outerCloudRadius,
+            };
+
             if (noAudio)
             {
                 lightningGenerator._audioPrefab = null;
                 lightningGenerator._audioSourcePool = null;
             }
+
             lightningGenerator._audioSector = sector;
             if (atmo.clouds.lightningGradient != null)
             {
@@ -188,6 +195,7 @@ namespace NewHorizons.Builder.Atmosphere
                 lightningGenerator._lightColor.colorKeys = gradient;
             }
             lightning.SetActive(true);
+
             return lightningGenerator;
         }
 
