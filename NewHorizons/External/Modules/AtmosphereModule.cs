@@ -75,16 +75,6 @@ namespace NewHorizons.External.Modules
         public bool hasTrees;
 
         /// <summary>
-        /// Does this planet have rain?
-        /// </summary>
-        public bool hasRain;
-
-        /// <summary>
-        /// Does this planet have snow?
-        /// </summary>
-        public bool hasSnow;
-
-        /// <summary>
         /// Scale height of the atmosphere
         /// </summary>
         public float size;
@@ -189,6 +179,12 @@ namespace NewHorizons.External.Modules
 
 
         #region Obsolete
+
+        [Obsolete("HasRain is deprecated, please use VectionFields instead")]
+        public bool hasRain;
+
+        [Obsolete("HasSnow is deprecated, please use VectionFields instead")]
+        public bool hasSnow;
 
         [Obsolete("CloudTint is deprecated, please use CloudInfo instead")]
         public MColor cloudTint;

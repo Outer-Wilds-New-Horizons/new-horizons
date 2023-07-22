@@ -650,15 +650,17 @@ namespace NewHorizons.Handlers
                     }
                 }
 
-                if (body.Config.Atmosphere.hasRain || body.Config.Atmosphere.hasSnow)
-                    EffectsBuilder.Make(go, sector, body.Config, surfaceSize);
-
                 if (body.Config.Atmosphere.fogSize != 0)
                 {
                     fog = FogBuilder.Make(go, sector, body.Config.Atmosphere, body.Mod);
                 }
 
                 atmosphere = AtmosphereBuilder.Make(go, sector, body.Config.Atmosphere, surfaceSize).GetComponentInChildren<LODGroup>();
+            }
+
+            if (body.Config.VectionFields != null)
+            {
+                EffectsBuilder.Make(go, sector, body.Config);
             }
 
             if (body.Config.Props != null)

@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using UnityEngine;
 
 namespace NewHorizons.External.Configs
 {
@@ -166,6 +167,11 @@ namespace NewHorizons.External.Configs
         /// Add water to this planet
         /// </summary>
         public WaterModule Water;
+
+        /// <summary>
+        /// Add particle effects to the planet
+        /// </summary>
+        public VectionFieldModule[] VectionFields;
 
         /// <summary>
         /// Add various volumes on this body
@@ -341,6 +347,29 @@ namespace NewHorizons.External.Configs
                 // useBasicCloudShader is obsolete
                 if (Atmosphere.clouds != null && Atmosphere.clouds.useBasicCloudShader)
                     Atmosphere.clouds.cloudsPrefab = CloudPrefabType.Basic;
+
+                if (Atmosphere.hasRain)
+                {
+                    if (VectionFields == null) VectionFields = new VectionFieldModule[0];
+                    VectionFields = VectionFields.Append(new VectionFieldModule
+                    {
+                        type = VectionFieldModule.VectionFieldType.Rain,
+                        rename = "RainEmitter"
+                    }).ToArray();
+                }
+
+                if (Atmosphere.hasSnow)
+                {
+                    if (VectionFields == null) VectionFields = new VectionFieldModule[0];
+                    for (int i = 0; i < 5; i++)
+                    {
+                        VectionFields = VectionFields.Append(new VectionFieldModule
+                        {
+                            type = VectionFieldModule.VectionFieldType.SnowflakesHeavy,
+                            rename = "SnowEmitter"
+                        }).ToArray();
+                    }
+                }
             }
 
             if (Props?.tornados != null)
