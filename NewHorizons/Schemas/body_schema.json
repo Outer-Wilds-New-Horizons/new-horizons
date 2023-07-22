@@ -132,6 +132,13 @@
       "description": "Add water to this planet",
       "$ref": "#/definitions/WaterModule"
     },
+    "VectionFields": {
+      "type": "array",
+      "description": "Add particle effects to the planet",
+      "items": {
+        "$ref": "#/definitions/VectionFieldModule"
+      }
+    },
     "Volumes": {
       "description": "Add various volumes on this body",
       "$ref": "#/definitions/VolumesModule"
@@ -368,14 +375,6 @@
         "hasTrees": {
           "type": "boolean",
           "description": "Does this planet have trees? This will change the notification from \"Oxygen tank refilled\" to \"Trees detected, oxygen tank refilled\"."
-        },
-        "hasRain": {
-          "type": "boolean",
-          "description": "Does this planet have rain?"
-        },
-        "hasSnow": {
-          "type": "boolean",
-          "description": "Does this planet have snow?"
         },
         "size": {
           "type": "number",
@@ -3415,6 +3414,102 @@
         "tint": {
           "description": "Tint of the water",
           "$ref": "#/definitions/MColor"
+        }
+      }
+    },
+    "VectionFieldModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "description": "Particle type for this vection field.",
+          "$ref": "#/definitions/VectionFieldType"
+        },
+        "followTarget": {
+          "description": "What the vection field activates based on.",
+          "default": "player",
+          "$ref": "#/definitions/FollowTarget"
+        },
+        "densityByHeightCurve": {
+          "type": "array",
+          "description": "Density by height curve. Determines how many particles are emitted at different heights.\nDefaults to a curve based on minimum and maximum heights of various other modules.",
+          "items": {
+            "$ref": "#/definitions/HeightDensityPair"
+          }
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        }
+      }
+    },
+    "VectionFieldType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Rain",
+        "SnowflakesHeavy",
+        "SnowflakesLight",
+        "Embers",
+        "Clouds",
+        "Leaves",
+        "Bubbles",
+        "Fog",
+        "CrystalMotes",
+        "RockMotes",
+        "IceMotes",
+        "SandMotes",
+        "Crawlies",
+        "Fireflies",
+        "Plankton",
+        "Pollen",
+        "Current"
+      ],
+      "enum": [
+        "rain",
+        "snowflakesHeavy",
+        "snowflakesLight",
+        "embers",
+        "clouds",
+        "leaves",
+        "bubbles",
+        "fog",
+        "crystalMotes",
+        "rockMotes",
+        "iceMotes",
+        "sandMotes",
+        "crawlies",
+        "fireflies",
+        "plankton",
+        "pollen",
+        "current"
+      ]
+    },
+    "FollowTarget": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Player",
+        "Probe"
+      ],
+      "enum": [
+        "player",
+        "probe"
+      ]
+    },
+    "HeightDensityPair": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "height": {
+          "type": "number",
+          "description": "A specific radius",
+          "format": "float"
+        },
+        "density": {
+          "type": "number",
+          "description": "The particle count for this radius.",
+          "format": "float"
         }
       }
     },
