@@ -62,7 +62,7 @@ Join the [Outer Wilds Modding Discord](https://discord.gg/MvbCbBz6Q6) if you hav
 Main authors:
 - xen (New Horizons v0.1.0 onwards)
 - [Bwc9876](https://github.com/Bwc9876) (New Horizons v0.9.0 onwards)
-- [Mister_Nebula](https://github.com/misternebula) ([Marshmallow](https://github.com/misternebula/Marshmallow) v0.1 to v1.1.0)
+- [_nebula](https://github.com/misternebula) ([Marshmallow](https://github.com/misternebula/Marshmallow) v0.1 to v1.1.0)
 
 New Horizons was made with help from:
 - [FreezeDriedMangos](https://github.com/FreezeDriedMangos)

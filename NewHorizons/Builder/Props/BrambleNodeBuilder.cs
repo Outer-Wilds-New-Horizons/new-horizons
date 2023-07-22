@@ -1,15 +1,17 @@
 using NewHorizons.Builder.Body;
-using NewHorizons.Components;
+using NewHorizons.Builder.Props.Audio;
 using NewHorizons.External.Configs;
+using NewHorizons.External.Modules.Props.Audio;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OuterWilds;
+using NewHorizons.Utility.OWML;
 using OWML.Common;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using static NewHorizons.External.Modules.BrambleModule;
 using static NewHorizons.External.Modules.SignalModule;
-using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Props
 {
@@ -55,12 +57,12 @@ namespace NewHorizons.Builder.Props
 
         public static void FinishPairingNodesForDimension(string dimensionName, AstroObject dimensionAO = null)
         {
-            Logger.LogVerbose($"Pairing missed for {dimensionName}");
+            NHLogger.LogVerbose($"Pairing missed for {dimensionName}");
             if (!_unpairedNodes.ContainsKey(dimensionName)) return;
 
             foreach (var nodeWarpController in _unpairedNodes[dimensionName])
             {
-                Logger.LogVerbose($"Pairing node {nodeWarpController.gameObject.name} links to {dimensionName}");
+                NHLogger.LogVerbose($"Pairing node {nodeWarpController.gameObject.name} links to {dimensionName}");
                 PairEntrance(nodeWarpController, dimensionName, dimensionAO);
             }
 
@@ -71,7 +73,7 @@ namespace NewHorizons.Builder.Props
         {
             if (!_unpairedNodes.ContainsKey(linksTo)) _unpairedNodes[linksTo] = new();
 
-            Logger.LogVerbose($"Recording node {warpVolume.gameObject.name} links to {linksTo}");
+            NHLogger.LogVerbose($"Recording node {warpVolume.gameObject.name} links to {linksTo}");
 
             _unpairedNodes[linksTo].Add(warpVolume);
         }
@@ -148,18 +150,18 @@ namespace NewHorizons.Builder.Props
         // Returns ture or false depending on if it succeeds 
         private static bool PairEntrance(InnerFogWarpVolume nodeWarp, string destinationName, AstroObject dimensionAO = null)
         {
-            Logger.LogVerbose($"Pairing node {nodeWarp.gameObject.name} to {destinationName}");
+            NHLogger.LogVerbose($"Pairing node {nodeWarp.gameObject.name} to {destinationName}");
 
             var destinationAO = dimensionAO ?? AstroObjectLocator.GetAstroObject(destinationName);
             if (destinationAO == null) return false;
 
-            Logger.LogVerbose($"Found {destinationName} as gameobject {destinationAO.gameObject.name} (was passed in: {dimensionAO != null})");
+            NHLogger.LogVerbose($"Found {destinationName} as gameobject {destinationAO.gameObject.name} (was passed in: {dimensionAO != null})");
 
             // link the node's warp volume to the destination's
             var destination = GetOuterFogWarpVolumeFromAstroObject(destinationAO.gameObject);
             if (destination == null) return false;
 
-            Logger.LogVerbose($"Proceeding with pairing node {nodeWarp.gameObject.name} to {destinationName}. Path to outer fog warp volume: {destination.transform.GetPath()}");
+            NHLogger.LogVerbose($"Proceeding with pairing node {nodeWarp.gameObject.name} to {destinationName}. Path to outer fog warp volume: {destination.transform.GetPath()}");
 
             nodeWarp._linkedOuterWarpVolume = destination;
             destination.RegisterSenderWarp(nodeWarp);
@@ -182,7 +184,7 @@ namespace NewHorizons.Builder.Props
             var prefab = config.isSeed ? _brambleSeedPrefab : _brambleNodePrefab;
 
             // Spawn the bramble node
-            var brambleNode = prefab.InstantiateInactive();
+            var brambleNode = GeneralPropBuilder.MakeFromPrefab(prefab, config.name ?? "Bramble Node to " + config.linksTo, go, sector, config);
             foreach (var collider in brambleNode.GetComponentsInChildren<Collider>(true))
             {
                 collider.enabled = true; 
@@ -192,13 +194,8 @@ namespace NewHorizons.Builder.Props
             var outerFogWarpVolume = GetOuterFogWarpVolumeFromAstroObject(go);
             var fogLight = brambleNode.GetComponent<FogLight>();
 
-            brambleNode.transform.parent = sector.transform;
-            brambleNode.transform.position = go.transform.TransformPoint(config.position ?? Vector3.zero);
-            brambleNode.transform.rotation = go.transform.TransformRotation(Quaternion.Euler(config.rotation ?? Vector3.zero));
-            brambleNode.name = "Bramble Node to " + config.linksTo;
-
             // This node comes with Feldspar's signal, we don't want that though
-            GameObject.Destroy(brambleNode.FindChild("Signal_Harmonica"));
+            Object.Destroy(brambleNode.FindChild("Signal_Harmonica"));
 
             // Fix some components
             fogLight._parentBody = go.GetComponent<OWRigidbody>();
@@ -245,17 +242,18 @@ namespace NewHorizons.Builder.Props
             // Set the seed/node specific scales and other stuff
             if (config.isSeed)
             {
-                innerFogWarpVolume._exitRadius /= 1.8f;
+                //innerFogWarpVolume._exitRadius /= 1.8f;
                 brambleNode.FindChild("PointLight_DB_FogLight").GetComponent<Light>().range *= config.scale;
                 brambleNode.FindChild("Prefab_SeedPunctureVolume (2)").GetComponent<CompoundShape>().enabled = true;
                 fogLight._maxVisibleDistance = float.PositiveInfinity; // Prefab does have working foglight aside from this
                 fogLight._minVisibleDistance *= config.scale / 15f;
+                fogLight._occlusionRange = 175f;
             }
             else
             {
                 brambleNode.FindChild("Effects/PointLight_DB_FogLight").GetComponent<Light>().range *= config.scale;
                 brambleNode.FindChild("Effects/FogOverrideVolume").GetComponent<FogOverrideVolume>().blendDistance *= config.scale;
-                fogLight._minVisibleDistance *= config.scale;
+                //fogLight._minVisibleDistance *= config.scale;
 
                 // Seed fog works differently, so it doesn't need to be fixed
                 // (it's also located on a different child path, so the below FindChild calls wouldn't work)
@@ -333,6 +331,24 @@ namespace NewHorizons.Builder.Props
 
                     SetNodeColors(brambleNode, fogTint, farFogTint, fogLightTint, lightTint, lightShaftTint, glowTint, fogOverrideTint);
                 }
+
+                // Redo the foglight data after everything is colored
+                if (fogLight._linkedFogLights != null)
+                {
+                    Delay.FireOnNextUpdate(() =>
+                    {
+                        FogLightManager fogLightManager = Locator.GetFogLightManager();
+                        fogLight._linkedLightData.Clear();
+                        for (int i = 0; i < fogLight._linkedFogLights.Count; i++)
+                        {
+                            FogLight.LightData lightData = new FogLight.LightData();
+                            lightData.color = fogLight._linkedFogLights[i].GetTint();
+                            lightData.maxAlpha = fogLight._linkedFogLights[i]._maxAlpha;
+                            fogLight._linkedLightData.Add(lightData);
+                            fogLightManager.RegisterLightData(lightData);
+                        }
+                    });
+                }
             });
 
             // Set up warps
@@ -345,6 +361,15 @@ namespace NewHorizons.Builder.Props
 
             var success = PairEntrance(innerFogWarpVolume, config.linksTo);
             if (!success) RecordUnpairedNode(innerFogWarpVolume, config.linksTo);
+
+            if (config.preventRecursionCrash)
+            {
+                Delay.FireOnNextUpdate(() =>
+                {
+                    var destination = GetOuterFogWarpVolumeFromAstroObject(AstroObjectLocator.GetAstroObject(config.linksTo).gameObject);
+                    if (destination != null) destination._senderWarps.Remove(innerFogWarpVolume);
+                });
+            }
 
             // Cleanup for dimension exits
             if (config.name != null)
@@ -365,6 +390,8 @@ namespace NewHorizons.Builder.Props
                     signalGO.transform.parent = brambleNode.transform;
                 }
             }
+
+            StreamingHandler.SetUpStreaming(brambleNode, sector);
 
             // Done!
             brambleNode.SetActive(true);

@@ -1,15 +1,13 @@
 using System;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
-using NewHorizons.Utility;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
 namespace NewHorizons.External.Modules.VariableSize
 {
     [JsonObject]
-    public class SingularityModule : VariableSizeModule
+    public class SingularityModule : GeneralPropInfo
     {
         [JsonConverter(typeof(StringEnumConverter))]
         public enum SingularityType
@@ -18,6 +16,11 @@ namespace NewHorizons.External.Modules.VariableSize
 
             [EnumMember(Value = @"whiteHole")] WhiteHole = 1
         }
+
+        /// <summary>
+        /// Scale this object over time
+        /// </summary>
+        public TimeValuePair[] curve;
 
         /// <summary>
         /// The uniqueID of the white hole or black hole that is paired to this one. If you don't set a value, entering will kill
@@ -29,16 +32,6 @@ namespace NewHorizons.External.Modules.VariableSize
         /// The uniqueID of this white hole or black hole. If not set it will default to the name of the planet
         /// </summary>
         public string uniqueID;
-
-        /// <summary>
-        /// Position of the singularity
-        /// </summary>
-        public MVector3 position;
-
-        /// <summary>
-        /// Rotation of the singularity. Determines the direction you come out of a white hole
-        /// </summary>
-        public MVector3 rotation;
 
         /// <summary>
         /// Radius of the singularity. Note that this isn't the same as the event horizon, but includes the entire volume that

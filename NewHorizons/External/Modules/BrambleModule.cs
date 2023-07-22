@@ -1,15 +1,26 @@
-using NewHorizons.Utility;
+using NewHorizons.External.SerializableData;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.Serialization;
 
 namespace NewHorizons.External.Modules
 {
-    
+    [JsonConverter(typeof(StringEnumConverter))]
+    public enum VinePrefabType
+    {
+        [EnumMember(Value = @"none")] None = 0,
+
+        [EnumMember(Value = @"hub")] Hub = 1,
+
+        [EnumMember(Value = @"cluster")] Cluster = 2,
+
+        [EnumMember(Value = @"smallNest")] SmallNest = 3,
+
+        [EnumMember(Value = @"exitOnly")] ExitOnly = 4
+    }
+
     [JsonObject]
     public class BrambleModule
     {
@@ -50,6 +61,12 @@ namespace NewHorizons.External.Modules
             [DefaultValue(750f)] public float radius = 750f;
 
             /// <summary>
+            /// The dimension the vines will be copied from.
+            /// Only a handful are available due to batched colliders.
+            /// </summary>
+            [DefaultValue("hub")] public VinePrefabType vinePrefab = VinePrefabType.Hub;
+
+            /// <summary>
             /// An array of integers from 0-5. By default, all entrances are allowed. To force this dimension to warp players in from only one point (like the anglerfish nest dimension in the base game) set this value to [3], [5], or similar. Values of 0-5 only.
             /// </summary>
             public int[] allowedEntrances;
@@ -57,18 +74,8 @@ namespace NewHorizons.External.Modules
 
         
         [JsonObject]
-        public class BrambleNodeInfo
+        public class BrambleNodeInfo : GeneralPropInfo
         {
-            /// <summary>
-            /// The physical position of the node
-            /// </summary>
-            public MVector3 position;
-            
-            /// <summary>
-            /// The physical rotation of the node
-            /// </summary>
-            public MVector3 rotation;
-
             /// <summary>
             /// The physical scale of the node, as a multiplier of the original size. 
             /// Nodes are 150m across, seeds are 10m across.
@@ -112,6 +119,12 @@ namespace NewHorizons.External.Modules
             /// An array of integers from 0-5. By default, all exits are allowed. To force this node to warp players out from only one hole set this value to [3], [5], or similar. Values of 0-5 only.
             /// </summary>
             public int[] possibleExits;
+
+            /// <summary>
+            /// If your game hard crashes upon entering bramble, it's most likely because you have indirectly recursive dimensions, i.e. one leads to another that leads back to the first one.
+            /// Set this to true for one of the nodes in the recursion to fix this, at the cost of it no longer showing markers for the scout, ship, etc.
+            /// </summary>
+            [DefaultValue(false)] public bool preventRecursionCrash = false;
 
             #region Obsolete
 

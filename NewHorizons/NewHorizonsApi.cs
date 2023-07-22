@@ -1,17 +1,22 @@
 using NewHorizons.Builder.Props;
+using NewHorizons.Builder.Props.Audio;
+using NewHorizons.External;
 using NewHorizons.External.Modules;
+using NewHorizons.External.Modules.Props;
+using NewHorizons.External.Modules.Props.Audio;
+using NewHorizons.External.Modules.Props.Dialogue;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWML;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using OWML.Common;
 using OWML.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.Events;
-using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons
 {
@@ -31,7 +36,7 @@ namespace NewHorizons
             {
                 var name = (string)config["Name"];
 
-                Logger.LogWarning($"Recieved API request to create planet [{name}]");
+                NHLogger.LogWarning($"Recieved API request to create planet [{name}]");
 
                 if (name == null) return;
 
@@ -53,7 +58,7 @@ namespace NewHorizons
             }
             catch(Exception ex)
             {
-                Logger.LogError($"Error in Create API:\n{ex}");
+                NHLogger.LogError($"Error in Create API:\n{ex}");
             }
         }
 
@@ -96,7 +101,7 @@ namespace NewHorizons
             }
             catch (Exception ex)
             {
-                Logger.LogError($"Couldn't get installed addons:\n{ex}");
+                NHLogger.LogError($"Couldn't get installed addons:\n{ex}");
                 return new string[] { };
             }
         }
@@ -116,7 +121,7 @@ namespace NewHorizons
             }
             catch (JsonException e)
             {
-                Logger.LogError(e.ToString());
+                NHLogger.LogError(e.ToString());
                 return null;
             }
         }
@@ -155,14 +160,14 @@ namespace NewHorizons
         }
 
         public GameObject SpawnObject(GameObject planet, Sector sector, string propToCopyPath, Vector3 position, Vector3 eulerAngles,
-            float scale, bool alignWithNormal)
+            float scale, bool alignRadial)
         {
             var prefab = SearchUtilities.Find(propToCopyPath);
-            var detailInfo = new PropModule.DetailInfo() {
+            var detailInfo = new DetailInfo() {
                 position = position,
                 rotation = eulerAngles,
                 scale = scale,
-                alignToNormal = alignWithNormal
+                alignRadial = alignRadial
             };
             return DetailBuilder.Make(planet, sector, prefab, detailInfo);
         }
@@ -171,7 +176,7 @@ namespace NewHorizons
             float sourceRadius = 1f, float detectionRadius = 20f, float identificationRadius = 10f, bool insideCloak = false,
             bool onlyAudibleToScope = true, string reveals = "")
         {
-            var info = new SignalModule.SignalInfo()
+            var info = new SignalInfo()
             {
                 audio = audio,
                 detectionRadius = detectionRadius,
@@ -192,17 +197,20 @@ namespace NewHorizons
             float range = 1f, string blockAfterPersistentCondition = null, float lookAtRadius = 1f, string pathToAnimController = null, 
             float remoteTriggerRadius = 0f)
         {
-            var info = new PropModule.DialogueInfo()
+            var info = new DialogueInfo()
             {
                 blockAfterPersistentCondition = blockAfterPersistentCondition,
                 lookAtRadius = lookAtRadius,
                 pathToAnimController = pathToAnimController,
                 position = Vector3.zero,
                 radius = radius,
-                remoteTriggerPosition = null,
                 range = range,
-                remoteTriggerRadius = remoteTriggerRadius,
-                xmlFile = xmlFile
+                xmlFile = xmlFile,
+                remoteTrigger = remoteTriggerRadius > 0f ? new RemoteTriggerInfo()
+                {
+                    position = null,
+                    radius = remoteTriggerRadius,
+                } : null,
             };
 
             return DialogueBuilder.Make(root, null, info, mod);

@@ -2,26 +2,13 @@ using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
-using NewHorizons.Utility;
+using NewHorizons.External.SerializableData;
+using NewHorizons.External.SerializableEnums;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
 namespace NewHorizons.External.Modules
 {
-    [JsonConverter(typeof(StringEnumConverter))]
-    public enum FluidType
-    {
-        [EnumMember(Value = @"none")] None = 0,
-
-        [EnumMember(Value = @"water")] Water = 1,
-
-        [EnumMember(Value = @"cloud")] Cloud = 2,
-
-        [EnumMember(Value = @"sand")] Sand = 3,
-
-        [EnumMember(Value = @"plasma")] Plasma = 4
-    }
-
     [JsonConverter(typeof(StringEnumConverter))]
     public enum CloudPrefabType
     {
@@ -59,7 +46,7 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// How dense the fog is, if you put fog.
         /// </summary>
-        [Range(0f, 1f)] public float fogDensity;
+        [Range(0f, double.MaxValue)] public float fogDensity;
 
         /// <summary>
         /// Radius of fog sphere, independent of the atmosphere. This has to be set for there to be fog.
@@ -70,6 +57,12 @@ namespace NewHorizons.External.Modules
         /// Colour of fog on the planet, if you put fog.
         /// </summary>
         public MColor fogTint;
+        
+        /// <summary>
+        /// Relative filepath to the fog color ramp texture, if you put fog.
+        /// x axis is angle to sun (left at midnight, right at noon), y axis is distance to camera (close at bottom, far at top).
+        /// </summary>
+        public string fogRampPath;
 
         /// <summary>
         /// Lets you survive on the planet without a suit.
@@ -77,7 +70,7 @@ namespace NewHorizons.External.Modules
         public bool hasOxygen;
 
         /// <summary>
-        /// Does this planet have trees? This will change the "Oxygen tank refilled" to "Trees detected, oxygen tank refilled".
+        /// Does this planet have trees? This will change the notification from "Oxygen tank refilled" to "Trees detected, oxygen tank refilled".
         /// </summary>
         public bool hasTrees;
 
@@ -133,7 +126,7 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// Fluid type for sounds/effects when colliding with this cloud.
             /// </summary>
-            [DefaultValue("cloud")] public FluidType fluidType = FluidType.Cloud;
+            [DefaultValue("cloud")] public NHFluidType fluidType = NHFluidType.CLOUD;
 
             /// <summary>
             /// Add lightning to this planet like on Giant's Deep.
@@ -210,7 +203,7 @@ namespace NewHorizons.External.Modules
         public string cloudRamp;
 
         [Obsolete("FluidType is deprecated, please use CloudInfo instead")]
-        public FluidType fluidType;
+        public NHFluidType fluidType;
 
         [Obsolete("UseBasicCloudShader is deprecated, please use CloudInfo instead")]
         public bool useBasicCloudShader;

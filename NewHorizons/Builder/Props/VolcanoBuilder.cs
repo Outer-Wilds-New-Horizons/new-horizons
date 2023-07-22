@@ -1,6 +1,8 @@
-using NewHorizons.External.Modules;
+using NewHorizons.External.Modules.Props;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWML;
 using UnityEngine;
+
 namespace NewHorizons.Builder.Props
 {
     public static class VolcanoBuilder
@@ -26,7 +28,7 @@ namespace NewHorizons.Builder.Props
                 meteorLauncher._dynamicProbability = 0f;
                 var meteorPrefab = meteorLauncher._meteorPrefab.InstantiateInactive().Rename("Prefab_VM_MoltenMeteor").DontDestroyOnLoad();
                 var meteor = meteorPrefab.GetComponent<MeteorController>();
-                GameObject.DestroyImmediate(meteorPrefab.FindChild("ConstantDetectors"));
+                Object.DestroyImmediate(meteorPrefab.FindChild("ConstantDetectors"));
                 var detectors = meteorPrefab.FindChild("DynamicDetector");
                 var rigidbody = meteor.GetComponent<OWRigidbody>();
                 meteor._owRigidbody = rigidbody;
@@ -39,15 +41,11 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        public static void Make(GameObject planetGO, Sector sector, PropModule.VolcanoInfo info)
+        public static void Make(GameObject planetGO, Sector sector, VolcanoInfo info)
         {
             InitPrefab();
 
-            var launcherGO = _meteorLauncherPrefab.InstantiateInactive();
-            launcherGO.transform.parent = sector.transform;
-            launcherGO.transform.position = planetGO.transform.TransformPoint(info.position == null ? Vector3.zero : (Vector3)info.position);
-            launcherGO.transform.rotation = Quaternion.FromToRotation(launcherGO.transform.TransformDirection(Vector3.up), ((Vector3)info.position).normalized).normalized;
-            launcherGO.name = "MeteorLauncher";
+            var launcherGO = GeneralPropBuilder.MakeFromPrefab(_meteorLauncherPrefab, "MeteorLauncher", planetGO, sector, info);
 
             var meteorLauncher = launcherGO.GetComponent<MeteorLauncher>();
             meteorLauncher._audioSector = sector;
@@ -74,7 +72,7 @@ namespace NewHorizons.Builder.Props
             });
         }
 
-        private static void FixMeteor(MeteorController meteor, PropModule.VolcanoInfo info)
+        private static void FixMeteor(MeteorController meteor, VolcanoInfo info)
         {
             meteor.transform.localScale = Vector3.one * info.scale;
 

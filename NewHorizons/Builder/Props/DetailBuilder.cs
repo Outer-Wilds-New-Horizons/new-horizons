@@ -1,21 +1,26 @@
 using NewHorizons.Builder.General;
-using NewHorizons.External.Modules;
+using NewHorizons.Components;
+using NewHorizons.Components.Props;
+using NewHorizons.External.Modules.Props;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
+using NewHorizons.Utility.Files;
+using NewHorizons.Utility.OuterWilds;
+using NewHorizons.Utility.OWML;
 using OWML.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Props
 {
     public static class DetailBuilder
     {
-        private static readonly Dictionary<PropModule.DetailInfo, GameObject> _detailInfoToCorrespondingSpawnedGameObject = new();
+        private static readonly Dictionary<DetailInfo, GameObject> _detailInfoToCorrespondingSpawnedGameObject = new();
         private static readonly Dictionary<(Sector, string), (GameObject prefab, bool isItem)> _fixedPrefabCache = new();
+        private static GameObject _emptyPrefab;
 
         static DetailBuilder()
         {
@@ -24,11 +29,15 @@ namespace NewHorizons.Builder.Props
 
         private static void SceneManager_sceneUnloaded(Scene scene)
         {
+            foreach (var prefab in _fixedPrefabCache.Values)
+            {
+                UnityEngine.Object.Destroy(prefab.prefab);
+            }
             _fixedPrefabCache.Clear();
             _detailInfoToCorrespondingSpawnedGameObject.Clear();
         }
 
-        public static GameObject GetSpawnedGameObjectByDetailInfo(PropModule.DetailInfo detail)
+        public static GameObject GetSpawnedGameObjectByDetailInfo(DetailInfo detail)
         {
             if (!_detailInfoToCorrespondingSpawnedGameObject.ContainsKey(detail))
             {
@@ -43,7 +52,7 @@ namespace NewHorizons.Builder.Props
         /// <summary>
         /// Create a detail using an asset bundle or a path in the scene hierarchy of the item to copy.
         /// </summary>
-        public static GameObject Make(GameObject go, Sector sector, IModBehaviour mod, PropModule.DetailInfo detail)
+        public static GameObject Make(GameObject go, Sector sector, IModBehaviour mod, DetailInfo detail)
         {
             if (detail.assetBundle != null)
             {
@@ -59,85 +68,90 @@ namespace NewHorizons.Builder.Props
         /// <summary>
         /// Create a detail using a path in the scene hierarchy of the item to copy.
         /// </summary>
-        public static GameObject Make(GameObject planetGO, Sector sector, PropModule.DetailInfo info)
+        public static GameObject Make(GameObject planetGO, Sector sector, DetailInfo info)
         {
-            var prefab = SearchUtilities.Find(info.path);
+            if (_emptyPrefab == null) _emptyPrefab = new GameObject("Empty");
+
+            // Allow for empty game objects so you can set up conditional activation on them and parent other props to them
+            var prefab = string.IsNullOrEmpty(info.path) ? _emptyPrefab : SearchUtilities.Find(info.path);
+
             if (prefab == null)
             {
-                Logger.LogError($"Couldn't find detail {info.path}");
+                NHLogger.LogError($"Couldn't find detail {info.path}");
                 return null;
             }
             else
+            {
                 return Make(planetGO, sector, prefab, info);
+            }
         }
 
         /// <summary>
         /// Create a detail using a prefab.
         /// </summary>
-        public static GameObject Make(GameObject go, Sector sector, GameObject prefab, PropModule.DetailInfo detail)
+        public static GameObject Make(GameObject go, Sector sector, GameObject prefab, DetailInfo detail)
         {
             if (prefab == null) return null;
 
             GameObject prop;
             bool isItem;
+            bool invalidComponentFound = false;
 
             // We save copies with all their components fixed, good if the user is placing the same detail more than once
             if (detail?.path != null && _fixedPrefabCache.TryGetValue((sector, detail.path), out var storedPrefab))
             {
-                prop = storedPrefab.prefab.InstantiateInactive();
-                prop.name = prefab.name;
+                prop = GeneralPropBuilder.MakeFromPrefab(storedPrefab.prefab, prefab.name, go, sector, detail);
                 isItem = storedPrefab.isItem;
             }
             else
             {
-                prop = prefab.InstantiateInactive();
-                prop.name = prefab.name;
+                prop = GeneralPropBuilder.MakeFromPrefab(prefab, prefab.name, go, sector, detail);
 
-                StreamingHandler.SetUpStreaming(prop, sector);
+                StreamingHandler.SetUpStreaming(prop, detail.keepLoaded ? null : sector);
 
                 // Could check this in the for loop but I'm not sure what order we need to know about this in
-                var isTorch = prop.GetComponent<VisionTorchItem>() != null;
                 isItem = false;
 
                 foreach (var component in prop.GetComponentsInChildren<Component>(true))
                 {
+                    // Components can come through as null here (yes, really),
+                    // Usually if a script was added to a prefab in an asset bundle but isn't present in the loaded mod DLLs
+                    if (component == null)
+                    {
+                        invalidComponentFound = true;
+                        continue;
+                    }
                     if (component.gameObject == prop && component is OWItem) isItem = true;
 
                     if (sector == null)
                     {
                         if (FixUnsectoredComponent(component)) continue;
                     }
-                    else FixSectoredComponent(component, sector, isTorch);
+                    else FixSectoredComponent(component, sector, detail.keepLoaded);
 
-                    FixComponent(component, go);
+                    FixComponent(component, go, detail.ignoreSun);
                 }
 
                 if (detail.path != null)
                 {
-                    _fixedPrefabCache.Add((sector, detail.path), (prop.InstantiateInactive(), isItem));
+                    // We put these in DontDestroyOnLoad so that QSB will ignore them and so they don't clutter up the scene.
+                    _fixedPrefabCache.Add((sector, detail.path), (prop.InstantiateInactive().DontDestroyOnLoad(), isItem));
                 }
             }
 
-            prop.transform.parent = sector?.transform ?? go.transform;
+            if (invalidComponentFound)
+            {
+                foreach (Transform t in prop.GetComponentsInChildren<Transform>(true))
+                {
+                    if (t.GetComponents<Component>().Any(c => c == null))
+                    {
+                        NHLogger.LogError($"Failed to instantiate component at {t.GetPath()}. This usually means there's a missing script.");
+                    }
+                }
+            }
 
             // Items shouldn't use these else they get weird
             if (isItem) detail.keepLoaded = true;
-
-            prop.transform.position = detail.position == null ? go.transform.position : go.transform.TransformPoint(detail.position);
-
-            Quaternion rot = detail.rotation == null ? Quaternion.identity : Quaternion.Euler(detail.rotation);
-
-            if (detail.alignToNormal)
-            {
-                // Apply the rotation after aligning it with normal
-                var up = (prop.transform.position - go.transform.position).normalized;
-                prop.transform.rotation = Quaternion.FromToRotation(Vector3.up, up);
-                prop.transform.rotation *= rot;
-            }
-            else
-            {
-                prop.transform.rotation = go.transform.TransformRotation(rot);
-            }
 
             prop.transform.localScale = detail.stretch ?? (detail.scale != 0 ? Vector3.one * detail.scale : prefab.transform.localScale);
 
@@ -157,14 +171,17 @@ namespace NewHorizons.Builder.Props
                         childObj.gameObject.SetActive(false);
                     }
 
-                    if (flag) Logger.LogWarning($"Couldn't find \"{childPath}\".");
+                    if (flag) NHLogger.LogWarning($"Couldn't find \"{childPath}\".");
                 }
             }
 
             if (detail.removeComponents)
             {
+                NHLogger.LogVerbose($"Removing all components from [{prop.name}]");
+
                 // Just swap all the children to a new game object
                 var newDetailGO = new GameObject(prop.name);
+                newDetailGO.SetActive(false);
                 newDetailGO.transform.position = prop.transform.position;
                 newDetailGO.transform.parent = prop.transform.parent;
 
@@ -178,38 +195,9 @@ namespace NewHorizons.Builder.Props
                 {
                     child.parent = newDetailGO.transform;
                 }
-                GameObject.Destroy(prop);
+                // Have to destroy it right away, else parented props might get attached to the old one
+                UnityEngine.Object.DestroyImmediate(prop);
                 prop = newDetailGO;
-            }
-
-            if (detail.rename != null)
-            {
-                prop.name = detail.rename;
-            }
-
-            if (!string.IsNullOrEmpty(detail.parentPath))
-            {
-                var newParent = go.transform.Find(detail.parentPath);
-                if (newParent != null)
-                {
-                    prop.transform.parent = newParent.transform;
-                }
-            }
-
-            if (detail.isRelativeToParent)
-            {
-                prop.transform.localPosition = detail.position == null ? Vector3.zero : detail.position;
-                if (detail.alignToNormal)
-                {
-                    // Apply the rotation after aligning it with normal
-                    var up = (prop.transform.position - go.transform.position).normalized;
-                    prop.transform.rotation = Quaternion.FromToRotation(Vector3.up, up);
-                    prop.transform.rotation *= rot;
-                }
-                else
-                {
-                    prop.transform.localRotation = rot;
-                }
             }
             
             if (isItem)
@@ -222,6 +210,23 @@ namespace NewHorizons.Builder.Props
             if (!detail.keepLoaded) GroupsBuilder.Make(prop, sector);
             prop.SetActive(true);
 
+            if (detail.hasPhysics)
+            {
+                var addPhysics = prop.AddComponent<AddPhysics>();
+                addPhysics.Sector = sector;
+                addPhysics.Mass = detail.physicsMass;
+                addPhysics.Radius = detail.physicsRadius;
+            }
+
+            if (!string.IsNullOrEmpty(detail.activationCondition))
+            {
+                ConditionalObjectActivation.SetUp(prop, detail.activationCondition, detail.blinkWhenActiveChanged, true);   
+            }
+            if (!string.IsNullOrEmpty(detail.deactivationCondition))
+            {
+                ConditionalObjectActivation.SetUp(prop, detail.deactivationCondition, detail.blinkWhenActiveChanged, false);
+            }
+
             _detailInfoToCorrespondingSpawnedGameObject[detail] = prop;
 
             return prop;
@@ -230,19 +235,14 @@ namespace NewHorizons.Builder.Props
         /// <summary>
         /// Fix components that have sectors. Has a specific fix if there is a VisionTorchItem on the object.
         /// </summary>
-        /// <param name="component"></param>
-        /// <param name="sector"></param>
-        /// <param name="isTorch"></param>
-        private static void FixSectoredComponent(Component component, Sector sector, bool isTorch = false)
+        private static void FixSectoredComponent(Component component, Sector sector, bool keepLoaded)
         {
-            if (component is Sector s)
+            // keepLoaded should remove existing groups
+            // renderers/colliders get enabled later so we dont have to do that here
+            if (keepLoaded && component is SectorCullGroup or SectorCollisionGroup or SectorLightsCullGroup)
             {
-                s.SetParentSector(sector);
-            }
-
-            if (component is SectorCullGroup sectorCullGroup)
-            {
-                sectorCullGroup._controllingProxy = null;
+                UnityEngine.Object.DestroyImmediate(component);
+                return;
             }
 
             // fix Sector stuff, eg SectorCullGroup (without this, props that have a SectorCullGroup component will become invisible inappropriately)
@@ -251,23 +251,43 @@ namespace NewHorizons.Builder.Props
                 sectorGroup.SetSector(sector);
             }
 
-            if (component is SectoredMonoBehaviour behaviour)
+            // Not doing else if here because idk if any of the classes below implement ISectorGroup
+
+            if (component is Sector s)
             {
-                behaviour.SetSector(sector);
+                s.SetParentSector(sector);
             }
 
-            if (component is OWItemSocket socket)
+            else if (component is SectorCullGroup sectorCullGroup)
+            {
+                sectorCullGroup._controllingProxy = null;
+                
+                // fixes sector cull group deactivating renderers on map view enter and fast foward
+                // TODO: does this actually work? what? how?
+                sectorCullGroup._inMapView = false;
+                sectorCullGroup._isFastForwarding = false;
+                sectorCullGroup.SetVisible(sectorCullGroup.ShouldBeVisible(), true, false);
+            }
+
+            else if(component is SectoredMonoBehaviour behaviour)
+            {
+                // not using SetSector here because it registers the events twice
+                // perhaps this happens with ISectorGroup.SetSector or Sector.SetParentSector too? idk and nothing seems to break because of it yet
+                behaviour._sector = sector;
+            }
+
+            else if(component is OWItemSocket socket)
             {
                 socket._sector = sector;
             }
 
-            // Fix slide reel - Softlocks if this object is a vision torch
-            if (!isTorch && component is SlideCollectionContainer container)
+            // TODO: Fix low res reels (probably in VanillaFix since its a vanilla bug)
+            else if(component is SlideReelItem)
             {
-                sector.OnOccupantEnterSector.AddListener(_ => container.LoadStreamingTextures());
+
             }
 
-            if (component is NomaiRemoteCameraPlatform remoteCameraPlatform)
+            else if(component is NomaiRemoteCameraPlatform remoteCameraPlatform)
             {
                 remoteCameraPlatform._visualSector = sector;
             }
@@ -279,32 +299,47 @@ namespace NewHorizons.Builder.Props
         /// </summary>
         private static bool FixUnsectoredComponent(Component component)
         {
-            if (component is FogLight or SectoredMonoBehaviour)
+            if (component is FogLight or SectoredMonoBehaviour or ISectorGroup)
             {
-                GameObject.DestroyImmediate(component);
+                UnityEngine.Object.DestroyImmediate(component);
                 return true;
             }
             return false;
         }
 
-        private static void FixComponent(Component component, GameObject planetGO)
+        private static void FixComponent(Component component, GameObject planetGO, bool ignoreSun)
         {
             // Fix other components
-            // I forget why this is here
-            if (component is GhostIK or GhostEffects)
+            if (component is Transform)
             {
-                Component.DestroyImmediate(component);
+                if (!ignoreSun && component.gameObject.layer == Layer.IgnoreSun)
+                {
+                    component.gameObject.layer = Layer.Default;
+                }
+                else if (ignoreSun && component.gameObject.layer == Layer.Default)
+                {
+                    component.gameObject.layer = Layer.IgnoreSun;
+                }
+            }
+            // I forget why this is here
+            else if (component is GhostIK or GhostEffects)
+            {
+                UnityEngine.Object.DestroyImmediate(component);
                 return;
             }
-
-            if (component is DarkMatterVolume)
+            else if (component is DarkMatterVolume)
             {
                 var probeVisuals = component.gameObject.transform.Find("ProbeVisuals");
                 if (probeVisuals != null) probeVisuals.gameObject.SetActive(true);
             }
-
+            else if (component is DarkMatterSubmergeController submergeController)
+            {
+                var water = planetGO.GetComponentsInChildren<RadialFluidVolume>().FirstOrDefault(x => x._fluidType == FluidVolume.Type.WATER);
+                if (submergeController._fluidDetector)
+                    submergeController._fluidDetector._onlyDetectableFluid = water;
+            }
             // Fix anglerfish speed on orbiting planets
-            if (component is AnglerfishController angler)
+            else if (component is AnglerfishController angler)
             {
                 try
                 {
@@ -312,54 +347,45 @@ namespace NewHorizons.Builder.Props
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError($"Couldn't update AnglerFish chase speed:\n{e}");
+                    NHLogger.LogError($"Couldn't update AnglerFish chase speed:\n{e}");
                 }
             }
 
             // fix campfires
-            if (component is InteractVolume interactVolume)
+            else if (component is InteractVolume)
             {
-                interactVolume._playerCam = GameObject.Find("Player_Body/PlayerCamera").GetComponent<OWCamera>();
+                component.gameObject.AddComponent<InteractVolumeFixer>();
             }
-            if (component is PlayerAttachPoint playerAttachPoint)
+            else if (component is PlayerAttachPoint)
             {
-                var playerBody = GameObject.Find("Player_Body");
-                playerAttachPoint._playerController = playerBody.GetComponent<PlayerCharacterController>();
-                playerAttachPoint._playerOWRigidbody = playerBody.GetComponent<OWRigidbody>();
-                playerAttachPoint._playerTransform = playerBody.transform;
-                playerAttachPoint._fpsCamController = GameObject.Find("Player_Body/PlayerCamera").GetComponent<PlayerCameraController>();
+                component.gameObject.AddComponent<PlayerAttachPointFixer>();
             }
 
-            if (component is NomaiInterfaceOrb orb)
+            else if (component is NomaiInterfaceOrb orb)
             {
-                orb._parentAstroObject = planetGO.GetComponent<AstroObject>();
-                orb._parentBody = planetGO.GetComponent<OWRigidbody>();
+                // detect planet gravity
+                var gravityVolume = planetGO.GetAttachedOWRigidbody().GetAttachedGravityVolume();
+                orb.GetComponent<ConstantForceDetector>()._detectableFields = gravityVolume ? new ForceVolume[] { gravityVolume } : new ForceVolume[] { };
             }
 
-            if (component is VisionTorchItem torchItem)
+            else if (component is VisionTorchItem torchItem)
             {
                 torchItem.enabled = true;
                 torchItem.mindProjectorTrigger.enabled = true;
-                torchItem.mindSlideProjector._mindProjectorImageEffect = SearchUtilities.Find("Player_Body/PlayerCamera").GetComponent<MindProjectorImageEffect>();
+                torchItem.gameObject.AddComponent<VisionTorchItemFixer>();
             }
 
-            if (component is Animator animator) animator.enabled = true;
-            if (component is Collider collider) collider.enabled = true;
-            if (component is Renderer renderer) renderer.enabled = true;
-            if (component is Shape shape) shape.enabled = true;
-            
-            // fixes sector cull group deactivating renderers on map view enter and fast foward
-            // TODO: does this actually work? what? how?
-            if (component is SectorCullGroup sectorCullGroup)
-            {
-                sectorCullGroup._inMapView = false;
-                sectorCullGroup._isFastForwarding = false;
-                sectorCullGroup.SetVisible(sectorCullGroup.ShouldBeVisible(), true, false);
-            }
-            
+            else if (component is Animator animator) animator.enabled = true;
+            else if(component is Collider collider) collider.enabled = true;
+            // Bug 533 - Don't show the electricity effect renderers
+            else if (component is Renderer renderer && component.gameObject.GetComponent<ElectricityEffect>() == null) renderer.enabled = true;
+            else if(component is Shape shape) shape.enabled = true;
+
             // If it's not a moving anglerfish make sure the anim controller is regular
-            if (component is AnglerfishAnimController && component.GetComponentInParent<AnglerfishController>() == null)
+            else if(component is AnglerfishAnimController && component.transform.parent.GetComponent<AnglerfishController>() == null) //Manual parent chain so we can find inactive
+            {
                 component.gameObject.AddComponent<AnglerAnimFixer>();
+            }
         }
 
         /// <summary>
@@ -373,8 +399,8 @@ namespace NewHorizons.Builder.Props
             public void Start()
             {
                 var angler = GetComponent<AnglerfishAnimController>();
-                
-                Logger.LogVerbose("Fixing anglerfish animation");
+
+                NHLogger.LogVerbose("Fixing anglerfish animation");
 
                 // Remove any event reference to its angler
                 if (angler._anglerfishController)
@@ -387,6 +413,54 @@ namespace NewHorizons.Builder.Props
                 angler.enabled = true;
                 angler.OnChangeAnglerState(AnglerfishController.AnglerState.Lurking);
                 
+                Destroy(this);
+            }
+        }
+
+        /// <summary>
+        /// Has to happen after 1 frame to work with VR
+        /// </summary>
+        [RequireComponent(typeof(InteractVolume))]
+        private class InteractVolumeFixer : MonoBehaviour
+        {
+            public void Start()
+            {
+                var interactVolume = GetComponent<InteractVolume>();
+                interactVolume._playerCam = Locator.GetPlayerCamera();
+
+                Destroy(this);
+            }
+        }
+
+        /// <summary>
+        /// Has to happen after 1 frame to work with VR
+        /// </summary>
+        [RequireComponent(typeof(PlayerAttachPoint))]
+        private class PlayerAttachPointFixer : MonoBehaviour
+        {
+            public void Start()
+            {
+                var playerAttachPoint = GetComponent<PlayerAttachPoint>();
+                playerAttachPoint._playerController = Locator.GetPlayerController();
+                playerAttachPoint._playerOWRigidbody = Locator.GetPlayerBody();
+                playerAttachPoint._playerTransform = Locator.GetPlayerTransform();
+                playerAttachPoint._fpsCamController = Locator.GetPlayerCameraController();
+
+                Destroy(this);
+            }
+        }
+
+        /// <summary>
+        /// Has to happen after 1 frame to work with VR
+        /// </summary>
+        [RequireComponent(typeof(VisionTorchItem))]
+        private class VisionTorchItemFixer : MonoBehaviour
+        {
+            public void Start()
+            {
+                var torchItem = GetComponent<VisionTorchItem>();
+                torchItem.mindSlideProjector._mindProjectorImageEffect = Locator.GetPlayerCamera().GetComponent<MindProjectorImageEffect>();
+
                 Destroy(this);
             }
         }

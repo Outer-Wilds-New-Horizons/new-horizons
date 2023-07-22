@@ -1,4 +1,5 @@
 using NewHorizons.External.Configs;
+using NewHorizons.Utility.OuterWilds;
 using UnityEngine;
 namespace NewHorizons.Builder.Atmosphere
 {
@@ -8,16 +9,17 @@ namespace NewHorizons.Builder.Atmosphere
         {
             var airGO = new GameObject("Air");
             airGO.SetActive(false);
-            airGO.layer = 17;
-            airGO.transform.parent = sector?.transform ? sector.transform : planetGO.transform;
+            airGO.layer = Layer.BasicEffectVolume;
+            airGO.transform.parent = sector?.transform ?? planetGO.transform;
 
             var sc = airGO.AddComponent<SphereCollider>();
             sc.isTrigger = true;
             sc.radius = config.Atmosphere.size;
 
+            // copied from gd
             var sfv = airGO.AddComponent<SimpleFluidVolume>();
             sfv._layer = 5;
-            sfv._priority = 1;
+            sfv._priority = 0;
             sfv._density = 1.2f;
             sfv._fluidType = FluidVolume.Type.AIR;
             sfv._allowShipAutoroll = true;

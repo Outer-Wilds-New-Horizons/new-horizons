@@ -1,9 +1,5 @@
 using NewHorizons.OtherMods.AchievementsPlus;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using NewHorizons.Utility.OuterWilds;
 using UnityEngine;
 
 namespace NewHorizons.Components.Achievement
@@ -20,7 +16,7 @@ namespace NewHorizons.Components.Achievement
 
         private void Reset()
         {
-            gameObject.layer = LayerMask.NameToLayer("Interactible");
+            gameObject.layer = Layer.Interactible;
         }
 
         private void Awake()

@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
+using NewHorizons.Utility.OWML;
+
 namespace NewHorizons.Components.Orbital
 {
     public class TrackingOrbitLine : OrbitLine
@@ -33,7 +34,7 @@ namespace NewHorizons.Components.Orbital
             base.Start();
             _vertices = new Vector3[_numVerts];
 
-            base.enabled = true;
+            enabled = true;
             _lineRenderer.enabled = false;
         }
 
@@ -74,8 +75,8 @@ namespace NewHorizons.Components.Orbital
                 _vertices[0] = transform.parent.position - origin;
                 _lineRenderer.SetPositions(_vertices);
 
-                base.transform.position = origin;
-                base.transform.rotation = Quaternion.AngleAxis(0f, Vector3.up);
+                transform.position = origin;
+                transform.rotation = Quaternion.AngleAxis(0f, Vector3.up);
 
                 float num2 = DistanceToTrackingOrbitLine(Locator.GetActiveCamera().transform.position);
                 float widthMultiplier = Mathf.Min(num2 * (_lineWidth / 1000f), _maxLineWidth);
@@ -85,7 +86,7 @@ namespace NewHorizons.Components.Orbital
             }
             catch (Exception ex)
             {
-                Logger.LogError($"Exception in OrbitLine for [{_astroObject?.name}]:\n{ex}");
+                NHLogger.LogError($"Exception in OrbitLine for [{_astroObject?.name}]:\n{ex}");
                 enabled = false;
             }
         }
@@ -107,8 +108,8 @@ namespace NewHorizons.Components.Orbital
             var primary = _astroObject.GetPrimaryBody();
             Vector3 origin = primary == null ? Locator.GetRootTransform().position : primary.transform.position;
 
-            base.transform.position = origin;
-            base.transform.rotation = Quaternion.AngleAxis(0f, Vector3.up);
+            transform.position = origin;
+            transform.rotation = Quaternion.AngleAxis(0f, Vector3.up);
 
             for (int i = _numVerts - 1; i > 0; i--)
             {

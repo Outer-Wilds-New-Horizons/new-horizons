@@ -1,10 +1,10 @@
 using UnityEngine;
 using NewHorizons.Utility;
 using NewHorizons.External.Configs;
-using NewHorizons.Components;
 using System.Linq;
-using NewHorizons.Handlers;
 using OWML.Common;
+using NewHorizons.Utility.Files;
+using NewHorizons.Components.Props;
 
 namespace NewHorizons.Builder.Body
 {
@@ -25,7 +25,7 @@ namespace NewHorizons.Builder.Body
             if (_shockLayerMaterial == null) _shockLayerMaterial = new Material(SearchUtilities.Find("GiantsDeep_Body/Shocklayer_GD").GetComponent<MeshRenderer>().sharedMaterial).Rename("ShockLayer_mat").DontDestroyOnLoad();
         }
 
-        public static NHSupernovaPlanetEffectController Make(GameObject planetGO, Sector sector, PlanetConfig config, IModBehaviour mod, GameObject procGen, Light ambientLight, PlanetaryFogController fog, LODGroup atmosphere, Renderer atmosphereRenderer, Renderer fogImpostor)
+        public static NHSupernovaPlanetEffectController Make(GameObject planetGO, Sector sector, PlanetConfig config, IModBehaviour mod, GameObject procGen, Light[] ambientLight, PlanetaryFogController fog, LODGroup atmosphere, Renderer atmosphereRenderer, Renderer fogImpostor)
         {
             InitPrefabs();
 
@@ -41,7 +41,8 @@ namespace NewHorizons.Builder.Body
                 if (currentController._ambientLight == null && ambientLight != null)
                 {
                     currentController._ambientLight = ambientLight;
-                    currentController._ambientLightOrigIntensity = config.Base.ambientLight;
+                    currentController._ambientLightOrigIntensity = new float[ambientLight.Length];
+                    for (int i = 0; i < ambientLight.Length; i++) currentController._ambientLightOrigIntensity[i] = ambientLight[i].intensity;
                 }
 
                 if (currentController._atmosphere == null && atmosphere != null) currentController._atmosphere = atmosphere;
@@ -57,8 +58,12 @@ namespace NewHorizons.Builder.Body
                 var supernovaController = new GameObject("SupernovaController");
                 supernovaController.transform.SetParent(sector?.transform ?? planetGO.transform, false);
                 var supernovaEffectController = supernovaController.AddComponent<NHSupernovaPlanetEffectController>();
-                supernovaEffectController._ambientLight = ambientLight;
-                supernovaEffectController._ambientLightOrigIntensity = config.Base.ambientLight;
+                if (ambientLight != null)
+                {
+                    supernovaEffectController._ambientLight = ambientLight;
+                    supernovaEffectController._ambientLightOrigIntensity = new float[ambientLight.Length];
+                    for (int i = 0; i < ambientLight.Length; i++) supernovaEffectController._ambientLightOrigIntensity[i] = ambientLight[i].intensity;
+                }
                 if (config.Atmosphere != null && config.Atmosphere.atmosphereSunIntensity != 0) supernovaEffectController._atmosphereOrigSunIntensity = config.Atmosphere.atmosphereSunIntensity;
                 supernovaEffectController._atmosphere = atmosphere;
                 supernovaEffectController._atmosphereRenderer = atmosphereRenderer;
@@ -180,8 +185,8 @@ namespace NewHorizons.Builder.Body
             if (vanillaController._shockLayer != null) vanillaController._shockLayer.gameObject.SetActive(true);
             var supernovaEffectController = vanillaController.gameObject.GetAddComponent<NHSupernovaPlanetEffectController>();
             supernovaEffectController._atmosphere = vanillaController._atmosphere;
-            supernovaEffectController._ambientLight = vanillaController._ambientLight;
-            supernovaEffectController._ambientLightOrigIntensity = vanillaController._ambientLightOrigIntensity;
+            supernovaEffectController._ambientLight = new Light[] { vanillaController._ambientLight };
+            supernovaEffectController._ambientLightOrigIntensity = new float[] { vanillaController._ambientLightOrigIntensity };
             supernovaEffectController._atmosphere = vanillaController._atmosphere;
             supernovaEffectController._fog = vanillaController._fog;
             supernovaEffectController._fogOrigTint = vanillaController._fogOrigTint;

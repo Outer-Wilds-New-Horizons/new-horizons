@@ -1,7 +1,7 @@
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
+using NewHorizons.Utility.OuterWilds;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Builder.General
 {
     public static class GravityBuilder
@@ -23,7 +23,7 @@ namespace NewHorizons.Builder.General
             var gravityGO = new GameObject("GravityWell");
             gravityGO.transform.parent = planetGO.transform;
             gravityGO.transform.localPosition = Vector3.zero;
-            gravityGO.layer = 17;
+            gravityGO.layer = Layer.BasicEffectVolume;
             gravityGO.SetActive(false);
 
             var SC = gravityGO.AddComponent<SphereCollider>();
@@ -35,8 +35,9 @@ namespace NewHorizons.Builder.General
 
             var owTriggerVolume = gravityGO.AddComponent<OWTriggerVolume>();
 
+            // copied from th and qm
             var gravityVolume = gravityGO.AddComponent<GravityVolume>();
-            gravityVolume._cutoffAcceleration = 0.1f;
+            gravityVolume._cutoffAcceleration = 0f;
 
             var falloff = config.Base.gravityFallOff == GravityFallOff.Linear? GravityVolume.FalloffType.linear : GravityVolume.FalloffType.inverseSquared;
             

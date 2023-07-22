@@ -1,4 +1,4 @@
-﻿using NewHorizons.Utility;
+﻿using NewHorizons.External.SerializableData;
 
 namespace NewHorizons.External.Modules.VariableSize
 {

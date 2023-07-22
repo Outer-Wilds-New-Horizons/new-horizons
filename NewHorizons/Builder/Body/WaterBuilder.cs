@@ -3,6 +3,8 @@ using NewHorizons.Utility;
 using UnityEngine;
 using NewHorizons.External.Modules.VariableSize;
 using Tessellation;
+using NewHorizons.Utility.OWML;
+using NewHorizons.Utility.OuterWilds;
 
 namespace NewHorizons.Builder.Body
 {
@@ -39,7 +41,7 @@ namespace NewHorizons.Builder.Body
             if (_oceanAmbientLight == null) _oceanAmbientLight = SearchUtilities.Find("Ocean_GD").GetComponent<OceanLODController>()._ambientLight.gameObject.InstantiateInactive().Rename("OceanAmbientLight").DontDestroyOnLoad();
         }
 
-        public static void Make(GameObject planetGO, Sector sector, OWRigidbody rb, WaterModule module)
+        public static RadialFluidVolume Make(GameObject planetGO, Sector sector, OWRigidbody rb, WaterModule module)
         {
             InitPrefabs();
 
@@ -47,9 +49,12 @@ namespace NewHorizons.Builder.Body
 
             GameObject waterGO = new GameObject("Water");
             waterGO.SetActive(false);
-            waterGO.layer = 15;
             waterGO.transform.parent = sector?.transform ?? planetGO.transform;
             waterGO.transform.localScale = new Vector3(waterSize, waterSize, waterSize);
+
+            // Don't ignore sun when not under clouds
+            waterGO.layer = Layer.Default;
+            Delay.FireOnNextUpdate(() => { if (planetGO.FindChild("Sector/SunOverride") != null) waterGO.layer = Layer.IgnoreSun; });
 
             TessellatedSphereRenderer TSR = waterGO.AddComponent<TessellatedSphereRenderer>();
             TSR.tessellationMeshGroup = ScriptableObject.CreateInstance<MeshGroup>();
@@ -96,10 +101,10 @@ namespace NewHorizons.Builder.Body
             var buoyancyObject = new GameObject("WaterVolume");
             buoyancyObject.transform.parent = waterGO.transform;
             buoyancyObject.transform.localScale = Vector3.one;
-            buoyancyObject.layer = LayerMask.NameToLayer("BasicEffectVolume");
+            buoyancyObject.layer = Layer.BasicEffectVolume;
 
             var sphereCollider = buoyancyObject.AddComponent<SphereCollider>();
-            sphereCollider.radius = 1;
+            sphereCollider.radius = 1; // scaled by localScale
             sphereCollider.isTrigger = true;
 
             var owCollider = buoyancyObject.AddComponent<OWCollider>();
@@ -109,14 +114,20 @@ namespace NewHorizons.Builder.Body
             var buoyancyTriggerVolume = buoyancyObject.AddComponent<OWTriggerVolume>();
             buoyancyTriggerVolume._owCollider = owCollider;
 
+            // copied from gd
             var fluidVolume = buoyancyObject.AddComponent<RadialFluidVolume>();
             fluidVolume._fluidType = FluidVolume.Type.WATER;
             fluidVolume._attachedBody = rb;
             fluidVolume._triggerVolume = buoyancyTriggerVolume;
             fluidVolume._radius = waterSize;
-            fluidVolume._layer = LayerMask.NameToLayer("BasicEffectVolume");
+            fluidVolume._buoyancyDensity = module.buoyancy;
+            fluidVolume._density = module.density;
+            fluidVolume._layer = 5;
+            fluidVolume._priority = 3;
+            fluidVolume._allowShipAutoroll = true;
+            fluidVolume._disableOnStart = false;
 
-            var fogGO = GameObject.Instantiate(_oceanFog, waterGO.transform);
+            var fogGO = Object.Instantiate(_oceanFog, waterGO.transform);
             fogGO.name = "OceanFog";
             fogGO.transform.localPosition = Vector3.zero;
             fogGO.transform.localScale = Vector3.one;
@@ -134,6 +145,7 @@ namespace NewHorizons.Builder.Body
                 var sizeController = waterGO.AddComponent<WaterSizeController>();
                 sizeController.SetScaleCurve(module.curve);
                 sizeController.oceanFogMaterial = fogGO.GetComponent<MeshRenderer>().material;
+                sizeController.fluidVolume = fluidVolume;
                 sizeController.size = module.size;
             }
             else
@@ -146,6 +158,8 @@ namespace NewHorizons.Builder.Body
 
             waterGO.transform.position = planetGO.transform.position;
             waterGO.SetActive(true);
+
+            return fluidVolume;
         }
     }
 }

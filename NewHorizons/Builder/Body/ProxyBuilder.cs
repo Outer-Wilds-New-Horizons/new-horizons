@@ -1,13 +1,15 @@
 using NewHorizons.Builder.Atmosphere;
 using NewHorizons.Builder.Props;
 using NewHorizons.Components;
+using NewHorizons.Components.Props;
 using NewHorizons.Components.SizeControllers;
+using NewHorizons.External;
 using NewHorizons.External.Modules.VariableSize;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWML;
 using System;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Body
 {
@@ -52,7 +54,7 @@ namespace NewHorizons.Builder.Body
             var success = SharedMake(planetGO, rootProxy, proxyController, body);
             if (!success)
             {
-                GameObject.Destroy(proxy);
+                UnityEngine.Object.Destroy(proxy);
                 return;
             }
 
@@ -61,7 +63,7 @@ namespace NewHorizons.Builder.Body
             // Add remnants
             if (remnant != null)
             {
-                Logger.LogVerbose($"Making custom remnant proxy");
+                NHLogger.LogVerbose($"Making custom remnant proxy");
 
                 var remnantGO = new GameObject("Remnant");
                 remnantGO.transform.parent = proxy.transform;
@@ -73,7 +75,7 @@ namespace NewHorizons.Builder.Body
             }
             else if (body.Config.Star != null && StellarRemnantBuilder.HasRemnant(body.Config.Star))
             {
-                Logger.LogVerbose($"Making remnant proxy");
+                NHLogger.LogVerbose($"Making remnant proxy");
 
                 var remnantGO = new GameObject("Remnant");
                 remnantGO.transform.parent = proxy.transform;
@@ -118,7 +120,7 @@ namespace NewHorizons.Builder.Body
 
                     if (body.Config.Atmosphere.fogSize != 0)
                     {
-                        fog = FogBuilder.MakeProxy(proxy, body.Config.Atmosphere);
+                        fog = FogBuilder.MakeProxy(proxy, body.Config.Atmosphere, body.Mod);
                         fogCurveMaxVal = body.Config.Atmosphere.fogDensity;
                     }
 
@@ -193,9 +195,9 @@ namespace NewHorizons.Builder.Body
                     }
                 }
 
-                if (body.Config.Base.hasCometTail)
+                if (body.Config.CometTail != null)
                 {
-                    CometTailBuilder.Make(proxy, null, body.Config);
+                    CometTailBuilder.Make(proxy, null, body.Config.CometTail, body.Config);
                 }
 
                 if (body.Config.Props?.proxyDetails != null)
@@ -213,8 +215,8 @@ namespace NewHorizons.Builder.Body
                 }
 
                 // Remove all collisions if there are any
-                foreach (var col in proxy.GetComponentsInChildren<Collider>()) GameObject.Destroy(col);
-                foreach (var col in proxy.GetComponentsInChildren<OWCollider>()) GameObject.Destroy(col);
+                foreach (var col in proxy.GetComponentsInChildren<Collider>()) UnityEngine.Object.Destroy(col);
+                foreach (var col in proxy.GetComponentsInChildren<OWCollider>()) UnityEngine.Object.Destroy(col);
 
                 foreach (var renderer in proxy.GetComponentsInChildren<Renderer>())
                 {
@@ -251,7 +253,7 @@ namespace NewHorizons.Builder.Body
             }
             catch (Exception ex)
             {
-                Logger.LogError($"Exception thrown when generating proxy for [{body.Config.name}]:\n{ex}");
+                NHLogger.LogError($"Exception thrown when generating proxy for [{body.Config.name}]:\n{ex}");
                 return false;
             }
         }
@@ -265,7 +267,7 @@ namespace NewHorizons.Builder.Body
             sphereGO.transform.localScale = Vector3.one * size;
             sphereGO.transform.position = rootObj.transform.position;
 
-            GameObject.Destroy(sphereGO.GetComponent<Collider>());
+            UnityEngine.Object.Destroy(sphereGO.GetComponent<Collider>());
 
             sphereGO.GetComponent<MeshRenderer>().material.color = color;
 

@@ -1,6 +1,8 @@
-using NewHorizons.External.Modules;
+using NewHorizons.External.Modules.Props;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWML;
 using UnityEngine;
+
 namespace NewHorizons.Builder.Props
 {
     public static class GeyserBuilder
@@ -12,26 +14,15 @@ namespace NewHorizons.Builder.Props
             if (_geyserPrefab == null) _geyserPrefab = SearchUtilities.Find("TimberHearth_Body/Sector_TH/Interactables_TH/Geysers/Geyser_Village").InstantiateInactive().Rename("Prefab_TH_Geyser").DontDestroyOnLoad();
         }
 
-        public static void Make(GameObject planetGO, Sector sector, PropModule.GeyserInfo info)
+        public static void Make(GameObject planetGO, Sector sector, GeyserInfo info)
         {
             InitPrefab();
 
-            var geyserGO = _geyserPrefab.InstantiateInactive();
-            geyserGO.transform.parent = sector?.transform ?? planetGO.transform;
-            geyserGO.name = "Geyser";
+            var geyserGO = GeneralPropBuilder.MakeFromPrefab(_geyserPrefab, "Geyser", planetGO, sector, info);
 
-            var pos = (Vector3)info.position;
-
-            // Offset height, default -97.5 pushes it underground so the spout is at the surface
-            var length = pos.magnitude + info.offset;
-
-            // About 130 high, bubbles start at 10, shaft starts at 67, spout starts at 97.5
-            geyserGO.transform.position = planetGO.transform.TransformPoint(pos.normalized * length);
+            geyserGO.transform.position += geyserGO.transform.up * info.offset;
 
             geyserGO.transform.localScale = Vector3.one;
-
-            var up = planetGO.transform.TransformPoint(pos) - planetGO.transform.position;
-            geyserGO.transform.rotation = Quaternion.FromToRotation(geyserGO.transform.up, up) * geyserGO.transform.rotation;
 
             var bubbles = geyserGO.FindChild("GeyserParticles/GeyserBubbles");
             var shaft = geyserGO.FindChild("GeyserParticles/GeyserShaft");

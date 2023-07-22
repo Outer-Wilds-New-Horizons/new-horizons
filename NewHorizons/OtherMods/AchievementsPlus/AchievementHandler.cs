@@ -1,5 +1,5 @@
 using NewHorizons.External.Configs;
-using NewHorizons.Utility;
+using NewHorizons.Utility.OWML;
 using OWML.ModHelper;
 using System;
 using System.Collections.Generic;
@@ -23,7 +23,7 @@ namespace NewHorizons.OtherMods.AchievementsPlus
 
                 if (API == null)
                 {
-                    Logger.LogVerbose("Achievements+ isn't installed");
+                    NHLogger.LogVerbose("Achievements+ isn't installed");
                     Enabled = false;
                     return;
                 }
@@ -39,6 +39,9 @@ namespace NewHorizons.OtherMods.AchievementsPlus
                 NH.EatenOutsideBrambleAchievement.Init();
                 NH.NewFrequencyAchievement.Init();
                 NH.ProbeLostAchievement.Init();
+                NH.RaftingAchievement.Init();
+                NH.TalkToFiveCharactersAchievement.Init();
+                NH.SuckedIntoLavaByTornadoAchievement.Init();
 
                 API.RegisterTranslationsFromFiles(Main.Instance, "Assets/translations");
 
@@ -46,7 +49,7 @@ namespace NewHorizons.OtherMods.AchievementsPlus
             }
             catch(Exception ex)
             {
-                Logger.LogError($"Achievements+ handler failed to initialize: {ex}");
+                NHLogger.LogError($"Achievements+ handler failed to initialize: {ex}");
             }
         }
 
@@ -85,6 +88,27 @@ namespace NewHorizons.OtherMods.AchievementsPlus
             if (!Enabled) return;
 
             API.RegisterAchievement(unique_id, secret, mod);
+        }
+
+        public static bool HasAchievement(string unique_id)
+        {
+            if (!Enabled) return false;
+
+            return API.HasAchievement(unique_id);
+        }
+
+        public static void UpdateProgess(string unique_id, int current, int final, bool showPopup)
+        {
+            if (!Enabled) return;
+
+            API.UpdateProgress(unique_id, current, final, showPopup);
+        }
+
+        public static int GetProgress(string unique_id)
+        {
+            if (!Enabled) return 0;
+
+            return API.GetProgress(unique_id);
         }
 
         public static void OnLearnSignal()

@@ -2,7 +2,8 @@ using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using NewHorizons.Utility;
+using NewHorizons.External.Modules;
+using NewHorizons.External.SerializableData;
 using Newtonsoft.Json;
 using static NewHorizons.External.Modules.ShipLogModule;
 
@@ -14,6 +15,16 @@ namespace NewHorizons.External.Configs
     [JsonObject]
     public class StarSystemConfig
     {
+        /// <summary>
+        /// In this system should the player be able to rotate their map camera freely or be stuck above the plane of the solar system?
+        /// </summary>
+        public bool freeMapAngle;
+
+        /// <summary>
+        /// When well past the furthest orbit, should the player be summoned back to the star?
+        /// </summary>
+        public bool returnToSolarSystemWhenTooFar;
+
         /// <summary>
         /// An override value for the far clip plane. Allows you to see farther.
         /// </summary>
@@ -56,10 +67,14 @@ namespace NewHorizons.External.Configs
         public SkyboxModule Skybox;
 
         /// <summary>
-        /// Set to `true` if you want to spawn here after dying, not Timber Hearth. You can still warp back to the main star
-        /// system.
+        /// Set to `true` if you want to spawn here after dying, not Timber Hearth. You can still warp back to the main star system.
         /// </summary>
         public bool startHere;
+
+        /// <summary>
+        /// Set to `true` if you want the player to stay in this star system if they die in it.
+        /// </summary>
+        public bool respawnHere;
 
         [Obsolete("travelAudioClip is deprecated, please use travelAudio instead")]
         public string travelAudioClip;
@@ -80,16 +95,16 @@ namespace NewHorizons.External.Configs
         [Obsolete("coords is deprecated, please use Vessel.coords instead")]
         public NomaiCoordinates coords;
 
-        [Obsolete("vesselPosition is deprecated, please use Vessel.vesselPosition instead")]
+        [Obsolete("vesselPosition is deprecated, please use Vessel.vesselSpawn.position instead")]
         public MVector3 vesselPosition;
 
-        [Obsolete("vesselRotation is deprecated, please use Vessel.vesselRotation instead")]
+        [Obsolete("vesselRotation is deprecated, please use Vessel.vesselSpawn.rotation instead")]
         public MVector3 vesselRotation;
 
-        [Obsolete("warpExitPosition is deprecated, please use Vessel.warpExitPosition instead")]
+        [Obsolete("warpExitPosition is deprecated, please use Vessel.warpExit.position instead")]
         public MVector3 warpExitPosition;
 
-        [Obsolete("warpExitRotation is deprecated, please use Vessel.warpExitRotation instead")]
+        [Obsolete("warpExitRotation is deprecated, please use Vessel.warpExit.rotation instead")]
         public MVector3 warpExitRotation;
 
         /// <summary>
@@ -181,29 +196,58 @@ namespace NewHorizons.External.Configs
             public NomaiCoordinates coords;
 
             /// <summary>
-            /// The position in the solar system the vessel will warp to.
-            /// </summary>
-            public MVector3 vesselPosition;
-
-            /// <summary>
-            /// Euler angles by which the vessel will be oriented.
-            /// </summary>
-            public MVector3 vesselRotation;
-
-            /// <summary>
-            /// The relative position to the vessel that you will be teleported to when you exit the vessel through the black hole.
-            /// </summary>
-            public MVector3 warpExitPosition;
-
-            /// <summary>
-            /// Euler angles by which the warp exit will be oriented.
-            /// </summary>
-            public MVector3 warpExitRotation;
-
-            /// <summary>
             /// A ship log fact which will make a prompt appear showing the coordinates when you're in the Vessel.
             /// </summary>
             public string promptFact;
+
+            /// <summary>
+            /// Whether the vessel should spawn in this system even if it wasn't used to warp to it. This will automatically power on the vessel.
+            /// </summary>
+            public bool alwaysPresent;
+
+            /// <summary>
+            /// Whether to always spawn the player on the vessel, even if it wasn't used to warp to the system.
+            /// </summary>
+            public bool spawnOnVessel;
+
+            /// <summary>
+            /// Whether the vessel should have physics enabled. Defaults to false if parentBody is set, and true otherwise.
+            /// </summary>
+            public bool? hasPhysics;
+
+            /// <summary>
+            /// Whether the vessel should have a zero-gravity volume around it. Defaults to false if parentBody is set, and true otherwise.
+            /// </summary>
+            public bool? hasZeroGravityVolume;
+
+            /// <summary>
+            /// The location that the vessel will warp to.
+            /// </summary>
+            public VesselInfo vesselSpawn;
+
+            /// <summary>
+            /// The location that you will be teleported to when you exit the vessel through the black hole.
+            /// </summary>
+            public WarpExitInfo warpExit;
+
+            [Obsolete("vesselPosition is deprecated, use vesselSpawn.position instead")] public MVector3 vesselPosition;
+            [Obsolete("vesselRotation is deprecated, use vesselSpawn.rotation instead")] public MVector3 vesselRotation;
+            [Obsolete("warpExitPosition is deprecated, use vesselSpawn.position instead")] public MVector3 warpExitPosition;
+            [Obsolete("warpExitRotation is deprecated, use vesselSpawn.rotation instead")] public MVector3 warpExitRotation;
+
+            [JsonObject]
+            public class VesselInfo : GeneralSolarSystemPropInfo
+            {
+            }
+
+            [JsonObject]
+            public class WarpExitInfo : GeneralSolarSystemPropInfo
+            {
+                /// <summary>
+                /// If set, keeps the warp exit attached to the vessel. Overrides `parentPath`.
+                /// </summary>
+                public bool attachToVessel;
+            }
         }
 
         /// <summary>
@@ -238,10 +282,20 @@ namespace NewHorizons.External.Configs
 
             // False by default so if one is true go true
             mapRestricted = mapRestricted || otherConfig.mapRestricted;
-            mapRestricted = mapRestricted || otherConfig.mapRestricted;
+            respawnHere = respawnHere || otherConfig.respawnHere;
             startHere = startHere || otherConfig.startHere;
 
-            Vessel = Vessel == null ? otherConfig.Vessel : Vessel;
+            if (Vessel != null && otherConfig.Vessel != null)
+            {
+                Vessel.spawnOnVessel = Vessel.spawnOnVessel || otherConfig.Vessel.spawnOnVessel;
+                Vessel.alwaysPresent = Vessel.alwaysPresent || otherConfig.Vessel.alwaysPresent;
+                Vessel.hasPhysics = Vessel.hasPhysics ?? otherConfig.Vessel.hasPhysics;
+                Vessel.hasZeroGravityVolume = Vessel.hasZeroGravityVolume ?? otherConfig.Vessel.hasZeroGravityVolume;
+            }
+            else
+            {
+                Vessel ??= otherConfig.Vessel;
+            }
 
             entryPositions = Concatenate(entryPositions, otherConfig.entryPositions);
             curiosities = Concatenate(curiosities, otherConfig.curiosities);
@@ -266,11 +320,33 @@ namespace NewHorizons.External.Configs
                 {
                     Vessel = new VesselModule();
                 }
-                Vessel.coords = Vessel.coords ?? coords;
-                Vessel.vesselPosition = Vessel.vesselPosition ?? vesselPosition;
-                Vessel.vesselRotation = Vessel.vesselRotation ?? vesselRotation;
-                Vessel.warpExitPosition = Vessel.warpExitPosition ?? warpExitPosition;
-                Vessel.warpExitRotation = Vessel.warpExitRotation ?? warpExitRotation;
+                Vessel.coords ??= coords;
+                Vessel.vesselPosition ??= vesselPosition;
+                Vessel.vesselRotation ??= vesselRotation;
+                Vessel.warpExitPosition ??= warpExitPosition;
+                Vessel.warpExitRotation ??= warpExitRotation;
+            }
+            if (Vessel != null)
+            {
+                if (Vessel.vesselPosition != null || Vessel.vesselRotation != null)
+                {
+                    if (Vessel.vesselSpawn == null)
+                    {
+                        Vessel.vesselSpawn = new VesselModule.VesselInfo();
+                    }
+                    Vessel.vesselSpawn.position ??= Vessel.vesselPosition;
+                    Vessel.vesselSpawn.rotation ??= Vessel.vesselRotation;
+                }
+                if (Vessel.warpExitPosition != null || Vessel.warpExitRotation != null)
+                {
+                    if (Vessel.warpExit == null)
+                    {
+                        Vessel.warpExit = new VesselModule.WarpExitInfo();
+                    }
+                    Vessel.warpExit.position ??= Vessel.warpExitPosition;
+                    Vessel.warpExit.rotation ??= Vessel.warpExitRotation;
+                    Vessel.warpExit.attachToVessel = true;
+                }
             }
         }
     }

@@ -1,9 +1,11 @@
+using NewHorizons.Components.Props;
 using NewHorizons.Components.SizeControllers;
 using NewHorizons.Handlers;
-using NewHorizons.Utility;
+using NewHorizons.Utility.OuterWilds;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+
 namespace NewHorizons.Components
 {
     public class NHProxy : ProxyPlanet

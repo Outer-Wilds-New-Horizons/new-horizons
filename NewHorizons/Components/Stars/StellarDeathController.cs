@@ -84,6 +84,7 @@ namespace NewHorizons.Components.Stars
             {
                 float dt = Mathf.InverseLerp(12000f, 0.0f, distanceToPlayer);
                 audioSource.SetLocalVolume(Mathf.Lerp(0.0f, 1f, dt * dt) * Mathf.InverseLerp(0.0f, 5f, _time));
+                audioSource.maxDistance = shockwaveScale.Evaluate(shockwaveTime);
             }
 
             RumbleManager.UpdateSupernova(distanceToPlayer);
@@ -97,7 +98,10 @@ namespace NewHorizons.Components.Stars
 
         public void SetParticlesVisibility(bool visible)
         {
-            foreach (var particleRenderer in _cachedParticleRenderers) particleRenderer.enabled = visible;
+            foreach (var particleRenderer in _cachedParticleRenderers)
+            {
+                particleRenderer.enabled = visible;
+            }
         }
 
         public void SetRenderingEnabled(bool renderingEnabled)

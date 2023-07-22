@@ -1,14 +1,16 @@
 using NewHorizons.Builder.Body;
 using NewHorizons.Components.Orbital;
 using NewHorizons.Components.Stars;
+using NewHorizons.External.SerializableData;
 using NewHorizons.External.Modules.VariableSize;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWML;
 using System;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
-using Logger = NewHorizons.Utility.Logger;
+
 
 namespace NewHorizons.Components.SizeControllers
 {
@@ -250,7 +252,10 @@ namespace NewHorizons.Components.SizeControllers
                 _surface._materials[0].SetFloat(ColorTime, 0);
             }
 
-            if (_flareEmitter != null) _flareEmitter._tint = _currentColour;
+            if (_flareEmitter != null)
+            {
+                _flareEmitter.tint = _currentColour;
+            }
         }
 
         private void UpdateCollapse()
@@ -350,7 +355,7 @@ namespace NewHorizons.Components.SizeControllers
         {
             if (_isCollapsing) return;
 
-            Logger.LogVerbose($"{gameObject.transform.root.name} started collapse");
+            NHLogger.LogVerbose($"{gameObject.transform.root.name} started collapse");
 
             CollapseStart.Invoke();
             _isCollapsing = true;
@@ -359,14 +364,17 @@ namespace NewHorizons.Components.SizeControllers
             _surface._materials[0].CopyPropertiesFromMaterial(_collapseStartSurfaceMaterial);
             if (oneShotSource != null && !PlayerState.IsSleepingAtCampfire() && !PlayerState.InDreamWorld()) oneShotSource.PlayOneShot(AudioType.Sun_Collapse);
 
-            if (_proxy != null) _proxy.StartCollapse();
+            if (_proxy != null)
+            {
+                _proxy.StartCollapse();
+            }
         }
 
         public void StopCollapse()
         {
             if (!_isCollapsing) return;
 
-            Logger.LogVerbose($"{gameObject.transform.root.name} stopped collapse");
+            NHLogger.LogVerbose($"{gameObject.transform.root.name} stopped collapse");
 
             CollapseStop.Invoke();
             _isCollapsing = false;
@@ -380,7 +388,7 @@ namespace NewHorizons.Components.SizeControllers
             if (supernova == null) return;
             if (_isSupernova) return;
 
-            Logger.LogVerbose($"{gameObject.transform.root.name} started supernova");
+            NHLogger.LogVerbose($"{gameObject.transform.root.name} started supernova");
 
             SupernovaStart.Invoke();
             supernova.Activate();
@@ -391,14 +399,21 @@ namespace NewHorizons.Components.SizeControllers
             if (planetDestructionVolume != null) planetDestructionVolume._deathType = DeathType.Supernova;
             if (oneShotSource != null && !PlayerState.IsSleepingAtCampfire() && !PlayerState.InDreamWorld()) oneShotSource.PlayOneShot(AudioType.Sun_Explosion);
 
-            if (_proxy != null) _proxy.StartSupernova();
+            if (_proxy != null)
+            {
+                _proxy.StartSupernova();
+
+                // When the supernova starts some effects start on, we have to refresh their states
+                var nhproxy = _proxy.GetComponentInParent<NHProxy>();
+                nhproxy.ToggleRendering(!nhproxy._outOfRange);
+            }
         }
 
         public void StopSupernova()
         {
             if (!_isSupernova) return;
 
-            Logger.LogVerbose($"{gameObject.transform.root.name} stopped supernova");
+            NHLogger.LogVerbose($"{gameObject.transform.root.name} stopped supernova");
 
             SupernovaStop.Invoke();
             if (supernova != null) supernova.Deactivate();

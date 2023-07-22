@@ -1,15 +1,17 @@
+using NewHorizons.Components;
 using NewHorizons.Components.Orbital;
 using NewHorizons.External.Configs;
-using NewHorizons.Utility;
+using NewHorizons.Utility.OWML;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Builder.General
 {
     public static class AstroObjectBuilder
     {
-        public static NHAstroObject Make(GameObject body, AstroObject primaryBody, PlanetConfig config)
+        public static NHAstroObject Make(GameObject body, AstroObject primaryBody, PlanetConfig config, bool isVanilla)
         {
             NHAstroObject astroObject = body.AddComponent<NHAstroObject>();
+            astroObject.isVanilla = isVanilla;
             astroObject.HideDisplayName = !config.Base.hasMapMarker;
             astroObject.invulnerableToSun = config.Base.invulnerableToSun;
 
@@ -18,7 +20,7 @@ namespace NewHorizons.Builder.General
             var type = AstroObject.Type.Planet;
             if (config.Orbit.isMoon) type = AstroObject.Type.Moon;
             // else if (config.Base.IsSatellite) type = AstroObject.Type.Satellite;
-            else if (config.Base.hasCometTail) type = AstroObject.Type.Comet;
+            else if (config.CometTail != null) type = AstroObject.Type.Comet;
             else if (config.Star != null) type = AstroObject.Type.Star;
             else if (config.FocalPoint != null) type = AstroObject.Type.None;
             astroObject._type = type;
@@ -39,27 +41,31 @@ namespace NewHorizons.Builder.General
                 var alignmentAxis = config.Orbit.alignmentAxis ?? new Vector3(0, -1, 0);
 
                 // Start it off facing the right way
-                var facing = body.transform.TransformDirection(alignmentAxis);
-                body.transform.rotation = Quaternion.FromToRotation(facing, alignmentAxis) * body.transform.rotation;
-
                 var alignment = body.AddComponent<AlignWithTargetBody>();
                 alignment.SetTargetBody(primaryBody?.GetAttachedOWRigidbody());
-                alignment._usePhysicsToRotate = false;
                 alignment._localAlignmentAxis = alignmentAxis;
+                alignment._owRigidbody = body.GetComponent<OWRigidbody>();
+
+                // Have it face the right way
+                var currentDirection = alignment.transform.TransformDirection(alignment._localAlignmentAxis);
+                var targetDirection = alignment.GetAlignmentDirection();
+                alignment.transform.rotation = Quaternion.FromToRotation(currentDirection, targetDirection) * alignment.transform.rotation;
+                alignment._owRigidbody.SetAngularVelocity(Vector3.zero);
 
                 // Static bodies won't update rotation with physics for some reason
-                // Have to set it next tick else it flings the player into deep space on spawn (#171)
-                if (!config.Orbit.isStatic) Delay.FireOnNextUpdate(() => alignment._usePhysicsToRotate = true);
+                alignment._usePhysicsToRotate = !config.Orbit.isStatic;
             }
 
             if (config.Base.centerOfSolarSystem)
             {
-                Logger.Log($"Setting center of universe to {config.name}");
+                NHLogger.Log($"Setting center of universe to {config.name}");
 
                 Delay.RunWhen(
                     () => Locator._centerOfTheUniverse != null,
                     () => Locator._centerOfTheUniverse._staticReferenceFrame = astroObject.GetComponent<OWRigidbody>()
-                    );
+                );
+
+                PreserveActiveCenterOfTheUniverse.Apply(astroObject.gameObject);
             }
 
             return astroObject;

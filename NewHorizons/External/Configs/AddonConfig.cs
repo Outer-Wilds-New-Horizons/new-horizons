@@ -1,11 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using NewHorizons.OtherMods.AchievementsPlus;
-using NewHorizons.External.Modules;
-using NewHorizons.External.Modules.VariableSize;
 using Newtonsoft.Json;
 
 namespace NewHorizons.External.Configs
@@ -33,5 +26,10 @@ namespace NewHorizons.External.Configs
         /// A pop-up message for the first time a user runs the add-on
         /// </summary>
         public string popupMessage;
+
+        /// <summary>
+        /// If popupMessage is set, should it repeat every time the game starts or only once
+        /// </summary>
+        public bool repeatPopup;
     }
 }

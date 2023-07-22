@@ -1,11 +1,13 @@
 using NewHorizons.Builder.General;
+using NewHorizons.External;
+using NewHorizons.External.SerializableData;
 using NewHorizons.External.Modules.VariableSize;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWML;
 using OWML.Common;
 using System;
 using UnityEngine;
 using Color = UnityEngine.Color;
-using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Body
 {
@@ -21,7 +23,7 @@ namespace NewHorizons.Builder.Body
 
             try
             {
-                Logger.Log($"Creating stellar remnant for [{star.Config.name}]");
+                NHLogger.Log($"Creating stellar remnant for [{star.Config.name}]");
 
                 var sector = SectorBuilder.Make(go, rb, soi);
                 sector.name = "StellarRemnant";
@@ -58,7 +60,7 @@ namespace NewHorizons.Builder.Body
             }
             catch (Exception ex)
             {
-                Logger.LogError($"Couldn't make stellar remnant for [{star.Config.name}]:\n{ex}");
+                NHLogger.LogError($"Couldn't make stellar remnant for [{star.Config.name}]:\n{ex}");
                 return null;
             }
         }
@@ -149,7 +151,7 @@ namespace NewHorizons.Builder.Body
                 case StellarRemnantType.BlackHole:
                     return MakeBlackhole(planet, null, progenitor, proxy);
                 default:
-                    Logger.LogError($"Couldn't make proxy remnant for {planet.name}");
+                    NHLogger.LogError($"Couldn't make proxy remnant for {planet.name}");
                     return null;
             }
         }

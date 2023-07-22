@@ -1,14 +1,17 @@
+using NewHorizons.Components.ShipLog;
+using NewHorizons.External;
 using NewHorizons.External.Modules;
+using NewHorizons.External.Modules.VariableSize;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
+using NewHorizons.Utility.Files;
+using NewHorizons.Utility.OuterWilds;
+using NewHorizons.Utility.OWML;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using NewHorizons.External.Modules.VariableSize;
 using UnityEngine;
 using UnityEngine.UI;
-using Logger = NewHorizons.Utility.Logger;
-using NewHorizons.Components.ShipLog;
 
 namespace NewHorizons.Builder.ShipLog
 {
@@ -36,7 +39,7 @@ namespace NewHorizons.Builder.ShipLog
                     flagManualPositionUsed = true;
                     if (body.Config.ShipLog?.mapMode?.manualNavigationPosition == null)
                     {
-                        Logger.LogError("Navigation position is missing for: " + body.Config.name);
+                        NHLogger.LogError("Navigation position is missing for: " + body.Config.name);
                         return null;
                     }
                 }
@@ -45,7 +48,7 @@ namespace NewHorizons.Builder.ShipLog
             if (flagManualPositionUsed)
             {
                 if (flagAutoPositionUsed && flagManualPositionUsed)
-                    Logger.LogWarning("Can't mix manual and automatic layout of ship log map mode, defaulting to manual");
+                    NHLogger.LogWarning("Can't mix manual and automatic layout of ship log map mode, defaulting to manual");
                 return ConstructMapModeManual(bodies, transformParent, greyScaleMaterial, currentNav, layer);
             }
             else if (flagAutoPositionUsed)
@@ -100,7 +103,7 @@ namespace NewHorizons.Builder.ShipLog
         {
             const float unviewedIconOffset = 15;
 
-            Logger.LogVerbose($"Adding ship log astro object for {body.Config.name}");
+            NHLogger.LogVerbose($"Adding ship log astro object for {body.Config.name}");
 
             GameObject unviewedReference = SearchUtilities.Find(ShipLogHandler.PAN_ROOT_PATH + "/TimberHearth/UnviewedIcon");
 
@@ -130,7 +133,7 @@ namespace NewHorizons.Builder.ShipLog
                 astroObject._image = revealedImage;
             }
 
-            astroObject._unviewedObj = GameObject.Instantiate(unviewedReference, gameObject.transform, false);
+            astroObject._unviewedObj = UnityEngine.Object.Instantiate(unviewedReference, gameObject.transform, false);
             astroObject._invisibleWhenHidden = body.Config.ShipLog?.mapMode?.invisibleWhenHidden ?? false;
 
             Rect imageRect = astroObject._imageObj.GetComponent<RectTransform>().rect;
@@ -147,9 +150,9 @@ namespace NewHorizons.Builder.ShipLog
             detailGameObject.SetActive(false);
 
             RectTransform detailTransform = detailGameObject.AddComponent<RectTransform>();
-            detailTransform.localPosition = (Vector2)(info.position ?? new MVector2(0, 0));
+            detailTransform.localPosition = (Vector2)(info.position ?? Vector2.zero);
             detailTransform.localRotation = Quaternion.Euler(0f, 0f, info.rotation);
-            detailTransform.localScale = (Vector2)(info.scale ?? new MVector2(0, 0));
+            detailTransform.localScale = (Vector2)(info.scale ?? Vector2.zero);
 
             Texture2D image;
             Texture2D outline;
@@ -386,7 +389,7 @@ namespace NewHorizons.Builder.ShipLog
                 newNode.children = ConstructChildrenNodes(newNode, bodies);
                 return newNode;
             }
-            Logger.LogError("Couldn't find center of system!");
+            NHLogger.LogError("Couldn't find center of system!");
             return new MapModeObject();
         }
 
@@ -560,7 +563,7 @@ namespace NewHorizons.Builder.ShipLog
             }
             catch (Exception)
             {
-                Logger.LogWarning($"Something went wrong trying to pick the colour for {body.Config.name} but I'm too lazy to fix it.");
+                NHLogger.LogWarning($"Something went wrong trying to pick the colour for {body.Config.name} but I'm too lazy to fix it.");
             }
 
             return Color.white;

@@ -1,12 +1,18 @@
 using NewHorizons.External.Modules;
+using NewHorizons.External.Modules.Props;
+using NewHorizons.External.Modules.Props.Audio;
+using NewHorizons.External.Modules.Props.Dialogue;
+using NewHorizons.External.Modules.Props.Quantum;
 using NewHorizons.External.Modules.VariableSize;
+using NewHorizons.External.Modules.Volumes;
+using NewHorizons.External.Modules.Volumes.VolumeInfos;
+using NewHorizons.Utility.OWML;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.External.Configs
 {
@@ -16,6 +22,7 @@ namespace NewHorizons.External.Configs
     [JsonObject(Title = "Celestial Body")]
     public class PlanetConfig
     {
+        #region Fields
         /// <summary>
         /// Unique name of your planet
         /// </summary>
@@ -26,6 +33,39 @@ namespace NewHorizons.External.Configs
         /// Unique star system containing your planet. If you set this to be a custom solar system remember to add a Spawn module to one of the bodies, or else you can't get to the system.
         /// </summary>
         [DefaultValue("SolarSystem")] public string starSystem = "SolarSystem";
+
+        /// <summary>
+        /// Does this config describe a quantum state of a custom planet defined in another file?
+        /// </summary>
+        public bool isQuantumState;
+
+        /// <summary>
+        /// Does this config describe a stellar remnant of a custom star defined in another file?
+        /// </summary>
+        public bool isStellarRemnant;
+
+        /// <summary>
+        /// Should this planet ever be shown on the title screen?
+        /// </summary>
+        [DefaultValue(true)] public bool canShowOnTitle = true;
+
+        /// <summary>
+        /// `true` if you want to delete this planet
+        /// </summary>
+        public bool destroy;
+
+        /// <summary>
+        /// A list of paths to child GameObjects to destroy on this planet
+        /// </summary>
+        public string[] removeChildren;
+
+        #endregion
+
+        #region Modules
+        /// <summary>
+        /// Add ambient lights to this body
+        /// </summary>
+        public AmbientLightModule[] AmbientLights;
 
         /// <summary>
         /// Generate asteroids around this body
@@ -48,35 +88,9 @@ namespace NewHorizons.External.Configs
         public BrambleModule Bramble;
 
         /// <summary>
-        /// Should this planet ever be shown on the title screen?
-        /// </summary>
-        [DefaultValue(true)] public bool canShowOnTitle = true;
-
-        #region Obsolete
-
-        [Obsolete("ChildrenToDestroy is deprecated, please use RemoveChildren instead")]
-        public string[] childrenToDestroy;
-
-        [Obsolete("Singularity is deprecated, please use Props->singularities")]
-        public SingularityModule Singularity;
-
-        [Obsolete("Signal is deprecated, please use Props->signals")]
-        public SignalModule Signal;
-
-        [Obsolete("Ring is deprecated, please use Rings")]
-        public RingModule Ring;
-
-        #endregion Obsolete
-
-        /// <summary>
         /// Add a cloaking field to this planet
         /// </summary>
         public CloakModule Cloak;
-
-        /// <summary>
-        /// `true` if you want to delete this planet
-        /// </summary>
-        public bool destroy;
 
         /// <summary>
         /// Make this body into a focal point (barycenter)
@@ -92,16 +106,6 @@ namespace NewHorizons.External.Configs
         /// Generate the surface of this planet using a heightmap
         /// </summary>
         public HeightMapModule HeightMap;
-
-        /// <summary>
-        /// Does this config describe a quantum state of a custom planet defined in another file?
-        /// </summary>
-        public bool isQuantumState;
-
-        /// <summary>
-        /// Does this config describe a stellar remnant of a custom star defined in another file?
-        /// </summary>
-        public bool isStellarRemnant;
 
         /// <summary>
         /// Add lava to this planet
@@ -127,11 +131,6 @@ namespace NewHorizons.External.Configs
         /// Reference frame properties of this body
         /// </summary>
         public ReferenceFrameModule ReferenceFrame;
-
-        /// <summary>
-        /// A list of paths to child GameObjects to destroy on this planet
-        /// </summary>
-        public string[] removeChildren;
 
         /// <summary>
         /// Create rings around the planet
@@ -174,10 +173,34 @@ namespace NewHorizons.External.Configs
         public VolumesModule Volumes;
 
         /// <summary>
+        /// Add a comet tail to this body, like the Interloper
+        /// </summary>
+        public CometTailModule CometTail;
+
+        /// <summary>
         /// Extra data that may be used by extension mods
         /// </summary>
         public object extras;
 
+        #endregion
+
+        #region Obsolete
+
+        [Obsolete("ChildrenToDestroy is deprecated, please use RemoveChildren instead")]
+        public string[] childrenToDestroy;
+
+        [Obsolete("Singularity is deprecated, please use Props->singularities")]
+        public SingularityModule Singularity;
+
+        [Obsolete("Signal is deprecated, please use Props->signals")]
+        public SignalModule Signal;
+
+        [Obsolete("Ring is deprecated, please use Rings")]
+        public RingModule Ring;
+
+        #endregion Obsolete
+
+        #region ctor validation and migration
         public PlanetConfig()
         {
             // Always have to have a base module
@@ -194,7 +217,7 @@ namespace NewHorizons.External.Configs
             if (Base.centerOfSolarSystem) Orbit.isStatic = true;
             if (Atmosphere?.clouds?.lightningGradient != null) Atmosphere.clouds.hasLightning = true;
             if (Bramble?.dimension != null && Orbit?.staticPosition == null) throw new Exception($"Dimension {name} must have Orbit.staticPosition defined.");
-            if (Bramble?.dimension != null) canShowOnTitle = false; 
+            if (Bramble?.dimension != null) canShowOnTitle = false;
             if (Orbit?.staticPosition != null) Orbit.isStatic = true;
 
             // For each quantum group, verify the following:
@@ -207,21 +230,21 @@ namespace NewHorizons.External.Configs
             //      if detail.quantumGroupID != null, there exists a quantum group with that id
             if (Props?.quantumGroups != null && Props?.details != null)
             {
-                Dictionary<string, PropModule.QuantumGroupInfo> existingGroups = new Dictionary<string, PropModule.QuantumGroupInfo>();
+                Dictionary<string, QuantumGroupInfo> existingGroups = new Dictionary<string, QuantumGroupInfo>();
                 foreach (var quantumGroup in Props.quantumGroups)
                 {
-                    if (existingGroups.ContainsKey(quantumGroup.id)) { Logger.LogWarning($"Duplicate quantumGroup id found: {quantumGroup.id}"); quantumGroup.type = PropModule.QuantumGroupType.FailedValidation; }
+                    if (existingGroups.ContainsKey(quantumGroup.id)) { NHLogger.LogWarning($"Duplicate quantumGroup id found: {quantumGroup.id}"); quantumGroup.type = QuantumGroupType.FailedValidation; }
 
                     existingGroups[quantumGroup.id] = quantumGroup;
-                    if (quantumGroup.type == PropModule.QuantumGroupType.Sockets)
+                    if (quantumGroup.type == QuantumGroupType.Sockets)
                     {
-                        if (quantumGroup.sockets?.Length == 0) { Logger.LogError($"quantumGroup {quantumGroup.id} is of type \"sockets\" but has no defined sockets."); quantumGroup.type = PropModule.QuantumGroupType.FailedValidation; }
+                        if (quantumGroup.sockets?.Length == 0) { NHLogger.LogError($"quantumGroup {quantumGroup.id} is of type \"sockets\" but has no defined sockets."); quantumGroup.type = QuantumGroupType.FailedValidation; }
                         else
                         {
                             foreach (var socket in quantumGroup.sockets)
                             {
                                 if (socket.rotation == null) socket.rotation = UnityEngine.Vector3.zero;
-                                if (socket.position == null) { Logger.LogError($"quantumGroup {quantumGroup.id} has a socket without a position."); quantumGroup.type = PropModule.QuantumGroupType.FailedValidation; }
+                                if (socket.position == null) { NHLogger.LogError($"quantumGroup {quantumGroup.id} has a socket without a position."); quantumGroup.type = QuantumGroupType.FailedValidation; }
                             }
                         }
                     }
@@ -231,16 +254,16 @@ namespace NewHorizons.External.Configs
                 foreach (var prop in Props?.details)
                 {
                     if (prop.quantumGroupID == null) continue;
-                    if (!existingGroups.ContainsKey(prop.quantumGroupID)) Logger.LogWarning($"A prop wants to be a part of quantum group {prop.quantumGroupID}, but this group does not exist.");
+                    if (!existingGroups.ContainsKey(prop.quantumGroupID)) NHLogger.LogWarning($"A prop wants to be a part of quantum group {prop.quantumGroupID}, but this group does not exist.");
                     else existingGroupsPropCounts[prop.quantumGroupID] = existingGroupsPropCounts.GetValueOrDefault(prop.quantumGroupID) + 1;
                 }
 
                 foreach (var quantumGroup in Props.quantumGroups)
                 {
-                    if (quantumGroup.type == PropModule.QuantumGroupType.Sockets && existingGroupsPropCounts.GetValueOrDefault(quantumGroup.id) >= quantumGroup.sockets?.Length)
+                    if (quantumGroup.type == QuantumGroupType.Sockets && existingGroupsPropCounts.GetValueOrDefault(quantumGroup.id) >= quantumGroup.sockets?.Length)
                     {
-                        Logger.LogError($"quantumGroup {quantumGroup.id} is of type \"sockets\" and has more props than sockets.");
-                        quantumGroup.type = PropModule.QuantumGroupType.FailedValidation;
+                        NHLogger.LogError($"quantumGroup {quantumGroup.id} is of type \"sockets\" and has more props than sockets.");
+                        quantumGroup.type = QuantumGroupType.FailedValidation;
                     }
                 }
             }
@@ -286,7 +309,11 @@ namespace NewHorizons.External.Configs
                     radius = Base.cloakRadius
                 };
 
-            if (Base.hasAmbientLight) Base.ambientLight = 0.5f;
+            if (Base.hasAmbientLight || Base.ambientLight != 0)
+            {
+                if (AmbientLights == null) AmbientLights = new AmbientLightModule[0];
+                AmbientLights = AmbientLights.Append(new AmbientLightModule { intensity = Base.ambientLight != 0 ? Base.ambientLight : 0.5f }).ToArray();
+            }
 
             if (Atmosphere != null)
             {
@@ -319,19 +346,19 @@ namespace NewHorizons.External.Configs
             if (Props?.tornados != null)
                 foreach (var tornado in Props.tornados)
                     if (tornado.downwards)
-                        tornado.type = PropModule.TornadoInfo.TornadoType.Downwards;
+                        tornado.type = TornadoInfo.TornadoType.Downwards;
 
             if (Props?.audioVolumes != null)
             {
                 if (Volumes == null) Volumes = new VolumesModule();
-                if (Volumes.audioVolumes == null) Volumes.audioVolumes = new VolumesModule.AudioVolumeInfo[0];
+                if (Volumes.audioVolumes == null) Volumes.audioVolumes = new AudioVolumeInfo[0];
                 Volumes.audioVolumes = Volumes.audioVolumes.Concat(Props.audioVolumes).ToArray();
             }
 
             if (Props?.reveal != null)
             {
                 if (Volumes == null) Volumes = new VolumesModule();
-                if (Volumes.revealVolumes == null) Volumes.revealVolumes = new VolumesModule.RevealVolumeInfo[0];
+                if (Volumes.revealVolumes == null) Volumes.revealVolumes = new RevealVolumeInfo[0];
                 Volumes.revealVolumes = Volumes.revealVolumes.Concat(Props.reveal).ToArray();
             }
 
@@ -394,7 +421,7 @@ namespace NewHorizons.External.Configs
             if (Signal?.signals != null)
             {
                 if (Props == null) Props = new PropModule();
-                if (Props.signals == null) Props.signals = new SignalModule.SignalInfo[0];
+                if (Props.signals == null) Props.signals = new SignalInfo[0];
                 Props.signals = Props.signals.Concat(Signal.signals).ToArray();
             }
 
@@ -436,13 +463,13 @@ namespace NewHorizons.External.Configs
                     if (ring.curve != null) ring.scaleCurve = ring.curve;
                 }
             }
-            
+
             if (Base.zeroGravityRadius != 0f)
             {
                 Volumes ??= new VolumesModule();
-                Volumes.zeroGravityVolumes ??= new VolumesModule.PriorityVolumeInfo[0];
+                Volumes.zeroGravityVolumes ??= new PriorityVolumeInfo[0];
 
-                Volumes.zeroGravityVolumes = Volumes.zeroGravityVolumes.Append(new VolumesModule.PriorityVolumeInfo()
+                Volumes.zeroGravityVolumes = Volumes.zeroGravityVolumes.Append(new PriorityVolumeInfo()
                 {
                     priority = 1,
                     rename = "ZeroGVolume",
@@ -456,6 +483,148 @@ namespace NewHorizons.External.Configs
             {
                 ShockEffect = new ShockEffectModule() { hasSupernovaShockEffect = true };
             }
+
+            // Spawn points reorganized to use GeneralPointPropInfo
+            if (Spawn != null && Spawn.playerSpawn == null && Spawn.playerSpawnPoint != null)
+            {
+                Spawn.playerSpawn = new SpawnModule.PlayerSpawnPoint()
+                {
+                    position = Spawn.playerSpawnPoint,
+                    rotation = Spawn.playerSpawnRotation,
+                    startWithSuit = Spawn.startWithSuit,
+                };
+            }
+            if (Spawn != null && Spawn.shipSpawn == null && Spawn.shipSpawnPoint != null)
+            {
+                Spawn.shipSpawn = new SpawnModule.ShipSpawnPoint()
+                {
+                    position = Spawn.shipSpawnPoint,
+                    rotation = Spawn.shipSpawnRotation,
+                };
+            }
+
+            // Remote dialogue trigger reorganized to use GeneralPointPropInfo
+            if (Props?.dialogue != null)
+            {
+                foreach (var dialogue in Props.dialogue)
+                {
+                    if (dialogue.remoteTrigger == null && (dialogue.remoteTriggerPosition != null || dialogue.remoteTriggerRadius != 0))
+                    {
+                        dialogue.remoteTrigger = new RemoteTriggerInfo
+                        {
+                            position = dialogue.remoteTriggerPosition,
+                            radius = dialogue.remoteTriggerRadius,
+                            prereqCondition = dialogue.remoteTriggerPrereqCondition,
+                        };
+                    }
+                }
+            }
+
+            // alignRadial added to all props with rotation; default behavior varies
+            if (Spawn?.playerSpawn != null && Spawn.playerSpawn.rotation == null && !Spawn.playerSpawn.alignRadial.HasValue)
+            {
+                Spawn.playerSpawn.alignRadial = true;
+            }
+            if (Spawn?.shipSpawn != null && Spawn.shipSpawn.rotation == null && !Spawn.shipSpawn.alignRadial.HasValue)
+            {
+                Spawn.shipSpawn.alignRadial = true;
+            }
+            if (Props?.details != null)
+            {
+                foreach (var detail in Props.details)
+                {
+                    if (!detail.alignRadial.HasValue)
+                    {
+                        detail.alignRadial = detail.alignToNormal;
+                    }
+                }
+            }
+            if (Props?.proxyDetails != null)
+            {
+                foreach (var detail in Props.proxyDetails)
+                {
+                    if (!detail.alignRadial.HasValue)
+                    {
+                        detail.alignRadial = detail.alignToNormal;
+                    }
+                }
+            }
+            if (Props?.geysers != null)
+            {
+                foreach (var geyser in Props.geysers)
+                {
+                    if (!geyser.alignRadial.HasValue && geyser.rotation == null)
+                    {
+                        geyser.alignRadial = true;
+                    }
+                }
+            }
+            if (Props?.tornados != null)
+            {
+                foreach (var tornado in Props.tornados)
+                {
+                    if (!tornado.alignRadial.HasValue && tornado.rotation == null)
+                    {
+                        tornado.alignRadial = true;
+                    }
+                }
+            }
+            if (Props?.volcanoes != null)
+            {
+                foreach (var volcano in Props.volcanoes)
+                {
+                    if (!volcano.alignRadial.HasValue && volcano.rotation == null)
+                    {
+                        volcano.alignRadial = true;
+                    }
+                }
+            }
+            if (Props?.nomaiText != null)
+            {
+                foreach (var nomaiText in Props.nomaiText)
+                {
+                    if (nomaiText.type == Modules.TranslatorText.NomaiTextType.Cairn)
+                    {
+                        nomaiText.type = Modules.TranslatorText.NomaiTextType.CairnBrittleHollow;
+                    }
+                    else if (nomaiText.type == Modules.TranslatorText.NomaiTextType.CairnVariant)
+                    {
+                        nomaiText.type = Modules.TranslatorText.NomaiTextType.CairnTimberHearth;
+                    }
+                }
+            }
+            if (Props?.translatorText != null)
+            {
+                foreach (var translatorText in Props.translatorText)
+                {
+                    if (translatorText.type == Modules.TranslatorText.NomaiTextType.Cairn)
+                    {
+                        translatorText.type = Modules.TranslatorText.NomaiTextType.CairnBrittleHollow;
+                    }
+                    else if (translatorText.type == Modules.TranslatorText.NomaiTextType.CairnVariant)
+                    {
+                        translatorText.type = Modules.TranslatorText.NomaiTextType.CairnTimberHearth;
+                    }
+                }
+            }
+
+            if (Base.hasCometTail)
+            {
+                CometTail ??= new();
+                if (Base.cometTailRotation != null)
+                {
+                    CometTail.rotationOverride = Base.cometTailRotation;
+                }
+            }
+
+            if (Volumes?.destructionVolumes != null)
+            {
+                foreach (var destructionVolume in Volumes.destructionVolumes)
+                {
+                    if (destructionVolume.onlyAffectsPlayerAndShip) destructionVolume.onlyAffectsPlayerRelatedBodies = true;
+                }
+            }
         }
+        #endregion
     }
 }

@@ -2,7 +2,7 @@ using HarmonyLib;
 
 namespace NewHorizons.Patches
 {
-    [HarmonyPatch]
+    [HarmonyPatch(typeof(Locator))]
     public static class LocatorPatches
     {
         public static AstroObject _attlerock;
@@ -13,7 +13,7 @@ namespace NewHorizons.Patches
         public static AstroObject _sunStation;
 
         [HarmonyPrefix]
-        [HarmonyPatch(typeof(Locator), nameof(Locator.RegisterCloakFieldController))]
+        [HarmonyPatch(nameof(Locator.RegisterCloakFieldController))]
         public static bool Locator_RegisterCloakFieldController()
         {
             return Locator._cloakFieldController == null;
@@ -22,7 +22,7 @@ namespace NewHorizons.Patches
         // Locator Fixes
         // Vanilla doesn't register these AstroObjects for some reason. So here is a fix.
         [HarmonyPrefix]
-        [HarmonyPatch(typeof(Locator), nameof(Locator.GetAstroObject))]
+        [HarmonyPatch(nameof(Locator.GetAstroObject))]
         public static bool Locator_GetAstroObject(AstroObject.Name astroObjectName, ref AstroObject __result)
         {
             switch (astroObjectName)
@@ -52,7 +52,7 @@ namespace NewHorizons.Patches
         }
 
         [HarmonyPrefix]
-        [HarmonyPatch(typeof(Locator), nameof(Locator.RegisterAstroObject))]
+        [HarmonyPatch(nameof(Locator.RegisterAstroObject))]
         public static bool Locator_RegisterAstroObject(AstroObject astroObject)
         {
             if (astroObject.GetAstroObjectName() == AstroObject.Name.None) return false;
@@ -98,7 +98,7 @@ namespace NewHorizons.Patches
         }
 
         [HarmonyPostfix]
-        [HarmonyPatch(typeof(Locator), nameof(Locator.ClearReferences))]
+        [HarmonyPatch(nameof(Locator.ClearReferences))]
         public static void Locator_ClearReferences()
         {
             _attlerock = null;

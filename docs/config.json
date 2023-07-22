@@ -11,7 +11,7 @@
     "base": "styles/nh_base.css"
   },
   "search": {
-    "enabled": true,
+    "enabled": false,
     "site": "nh.outerwildsmods.com"
   },
   "brand": {

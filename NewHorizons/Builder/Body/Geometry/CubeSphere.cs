@@ -1,6 +1,5 @@
-using NewHorizons.Utility;
+using NewHorizons.Utility.Geometry;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Builder.Body.Geometry
 {
     static class CubeSphere
@@ -9,22 +8,6 @@ namespace NewHorizons.Builder.Body.Geometry
         {
             Mesh mesh = new Mesh();
             mesh.name = "CubeSphere";
-
-            float max = 1;
-            if (stretch.x > stretch.y && stretch.x > stretch.z)
-                max = stretch.x;
-            else if (stretch.y > stretch.x && stretch.y > stretch.z)
-                max = stretch.y;
-            else if (stretch.z > stretch.x && stretch.z > stretch.y)
-                max = stretch.z;
-            else if (stretch.y == stretch.z && stretch.x > stretch.y)
-                max = stretch.x;
-            else if (stretch.x == stretch.z && stretch.y > stretch.x)
-                max = stretch.y;
-            else if (stretch.x == stretch.y && stretch.z > stretch.x)
-                max = stretch.z;
-            minHeight /= max;
-            maxHeight /= max;
 
             CreateVertices(mesh, resolution, heightMap, minHeight, maxHeight);
             StretchVertices(mesh, stretch);
@@ -125,8 +108,7 @@ namespace NewHorizons.Builder.Body.Geometry
             v.y = v2.y * Mathf.Sqrt(1f - x2 / 2f - z2 / 2f + x2 * z2 / 3f);
             v.z = v2.z * Mathf.Sqrt(1f - x2 / 2f - y2 / 2f + x2 * y2 / 3f);
 
-            // The shader uses real coords
-            var sphericals = CoordinateUtilities.CartesianToSpherical(v, false);
+            var sphericals = CoordinateUtilities.CartesianToSpherical(v, true);
             float longitude = sphericals.x;
             float latitude = sphericals.y;
 

@@ -1,7 +1,7 @@
+using NewHorizons.Utility.OWML;
 using System.Collections.Generic;
 using System.Xml;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Handlers
 {
@@ -13,14 +13,14 @@ namespace NewHorizons.Handlers
         {
             if (_creditsInfo == null) _creditsInfo = new();
 
-            Logger.LogVerbose($"Registering credits for {sectionName}");
+            NHLogger.LogVerbose($"Registering credits for {sectionName}");
 
             _creditsInfo[sectionName] = entries;
         }
 
         public static void AddCredits(Credits credits)
         {
-            Logger.LogVerbose($"Adding to credits");
+            NHLogger.LogVerbose($"Adding to credits");
 
             var creditsAsset = credits._creditsAsset;
 

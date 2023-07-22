@@ -1,10 +1,11 @@
 using NewHorizons.Builder.Body;
+using NewHorizons.External;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWML;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Handlers
 {
@@ -16,7 +17,7 @@ namespace NewHorizons.Handlers
             
             if (subtitleContainer == null)
             {
-                Logger.LogError("No subtitle container found! Failed to load subtitles.");
+                NHLogger.LogError("No subtitle container found! Failed to load subtitles.");
                 return;
             }
 
@@ -35,7 +36,7 @@ namespace NewHorizons.Handlers
             var selectionCount = Mathf.Min(eligibleCount, 3);
             var indices = RandomUtility.GetUniqueRandomArray(0, eligible.Count(), selectionCount);
 
-            Logger.LogVerbose($"Displaying {selectionCount} bodies on the title screen");
+            NHLogger.LogVerbose($"Displaying {selectionCount} bodies on the title screen");
 
             GameObject body1, body2, body3;
 
@@ -65,6 +66,7 @@ namespace NewHorizons.Handlers
             var lightGO = new GameObject("Light");
             lightGO.transform.parent = SearchUtilities.Find("Scene/Background").transform;
             lightGO.transform.localPosition = new Vector3(-47.9203f, 145.7596f, 43.1802f);
+            lightGO.transform.localRotation = Quaternion.Euler(13.1412f, 122.8785f, 169.4302f);
             var light = lightGO.AddComponent<Light>();
             light.type = LightType.Directional;
             light.color = Color.white;
@@ -74,36 +76,91 @@ namespace NewHorizons.Handlers
 
         private static GameObject LoadTitleScreenBody(NewHorizonsBody body)
         {
-            Logger.LogVerbose($"Displaying {body.Config.name} on the title screen");
-            GameObject titleScreenGO = new GameObject(body.Config.name + "_TitleScreen");
-            HeightMapModule heightMap = new HeightMapModule();
-            var minSize = 15;
-            var maxSize = 30;
-            float size = minSize;
+            NHLogger.LogVerbose($"Displaying {body.Config.name} on the title screen");
+            var titleScreenGO = new GameObject(body.Config.name + "_TitleScreen");
+
+            var maxSize = -1f;
+
             if (body.Config.HeightMap != null)
             {
-                size = Mathf.Clamp(body.Config.HeightMap.maxHeight / 10, minSize, maxSize);
-                heightMap.textureMap = body.Config.HeightMap.textureMap;
-                heightMap.heightMap = body.Config.HeightMap.heightMap;
-                heightMap.maxHeight = size;
-                heightMap.minHeight = body.Config.HeightMap.minHeight * size / body.Config.HeightMap.maxHeight;
-                heightMap.stretch = body.Config.HeightMap.stretch;
+                HeightMapBuilder.Make(titleScreenGO, null, body.Config.HeightMap, body.Mod, 30);
+                maxSize = Mathf.Max(maxSize, body.Config.HeightMap.maxHeight, body.Config.HeightMap.minHeight);
             }
             if (body.Config.Atmosphere?.clouds?.texturePath != null && body.Config.Atmosphere?.clouds?.cloudsPrefab != CloudPrefabType.Transparent)
             {
                 // Hacky but whatever I just want a sphere
-                size = Mathf.Clamp(body.Config.Atmosphere.size / 10, minSize, maxSize);
-                heightMap.maxHeight = heightMap.minHeight = size + 1;
-                heightMap.textureMap = body.Config.Atmosphere.clouds.texturePath;
+                var cloudTextureMap = new HeightMapModule();
+                cloudTextureMap.maxHeight = cloudTextureMap.minHeight = body.Config.Atmosphere.size;
+                cloudTextureMap.textureMap = body.Config.Atmosphere.clouds.texturePath;
+                HeightMapBuilder.Make(titleScreenGO, null, cloudTextureMap, body.Mod, 30);
+                maxSize = Mathf.Max(maxSize, cloudTextureMap.maxHeight);
+            }
+            else
+            {
+                if (body.Config.Water != null)
+                {
+                    var waterGO = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                    var size = 2f * body.Config.Water.size * (body.Config.Water.curve?.FirstOrDefault()?.value ?? 1f);
+
+                    waterGO.transform.localScale = Vector3.one * size;
+
+                    var mr = waterGO.GetComponent<MeshRenderer>();
+                    var colour = body.Config.Water.tint?.ToColor() ?? Color.blue;
+                    mr.material.color = new Color(colour.r, colour.g, colour.b, 0.9f);
+
+                    // Make it transparent!
+                    mr.material.SetOverrideTag("RenderType", "Transparent");
+                    mr.material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+                    mr.material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                    mr.material.SetInt("_ZWrite", 0);
+                    mr.material.DisableKeyword("_ALPHATEST_ON");
+                    mr.material.DisableKeyword("_ALPHABLEND_ON");
+                    mr.material.EnableKeyword("_ALPHAPREMULTIPLY_ON");
+                    mr.material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+
+                    waterGO.transform.parent = titleScreenGO.transform;
+                    waterGO.transform.localPosition = Vector3.zero;
+
+                    maxSize = Mathf.Max(maxSize, size);
+                }
+                if (body.Config.Lava != null)
+                {
+                    var lavaGO = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                    var size = 2f * body.Config.Lava.size * (body.Config.Lava.curve?.FirstOrDefault()?.value ?? 1f);
+
+                    lavaGO.transform.localScale = Vector3.one * size;
+
+                    var mr = lavaGO.GetComponent<MeshRenderer>();
+                    mr.material.color = body.Config.Lava.tint?.ToColor() ?? Color.red;
+                    mr.material.SetColor("_EmissionColor", mr.material.color * 2f);
+
+                    lavaGO.transform.parent = titleScreenGO.transform;
+                    lavaGO.transform.localPosition = Vector3.zero;
+
+                    maxSize = Mathf.Max(maxSize, size);
+                }
+                if (body.Config.Sand != null)
+                {
+                    var sandGO = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                    var size = 2f * body.Config.Sand.size * (body.Config.Sand.curve?.FirstOrDefault()?.value ?? 1f);
+
+                    sandGO.transform.localScale = Vector3.one * size;
+                    var mr = sandGO.GetComponent<MeshRenderer>();
+                    mr.material.color = body.Config.Sand.tint?.ToColor() ?? Color.yellow;
+                    mr.material.SetFloat("_Glossiness", 0);
+
+                    sandGO.transform.parent = titleScreenGO.transform;
+                    sandGO.transform.localPosition = Vector3.zero;
+
+                    maxSize = Mathf.Max(maxSize, size);
+                }
             }
 
-            HeightMapBuilder.Make(titleScreenGO, null, heightMap, body.Mod, 30);
-
-            GameObject pivot = GameObject.Instantiate(SearchUtilities.Find("Scene/Background/PlanetPivot"), SearchUtilities.Find("Scene/Background").transform);
+            var pivot = Object.Instantiate(SearchUtilities.Find("Scene/Background/PlanetPivot"), SearchUtilities.Find("Scene/Background").transform);
             pivot.GetComponent<RotateTransform>()._degreesPerSecond = 10f;
             foreach (Transform child in pivot.transform)
             {
-                GameObject.Destroy(child.gameObject);
+                Object.Destroy(child.gameObject);
             }
             pivot.name = "Pivot";
 
@@ -111,17 +168,15 @@ namespace NewHorizons.Handlers
             {
                 foreach (var ring in body.Config.Rings)
                 {
-                    RingModule newRing = new RingModule();
-                    newRing.innerRadius = size * 1.2f;
-                    newRing.outerRadius = size * 2f;
-                    newRing.texture = ring.texture;
-                    RingBuilder.Make(titleScreenGO, null, newRing, body.Mod);
+                    RingBuilder.Make(titleScreenGO, null, ring, body.Mod);
+
+                    maxSize = Mathf.Max(maxSize, ring.outerRadius);
                 }
-                titleScreenGO.transform.localScale = Vector3.one * 0.8f;
             }
 
             titleScreenGO.transform.parent = pivot.transform;
             titleScreenGO.transform.localPosition = Vector3.zero;
+            titleScreenGO.transform.localScale = Vector3.one * 30f / maxSize;
 
             return titleScreenGO;
         }

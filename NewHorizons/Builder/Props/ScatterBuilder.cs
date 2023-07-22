@@ -1,6 +1,8 @@
 using NewHorizons.External.Configs;
-using NewHorizons.External.Modules;
+using NewHorizons.External.Modules.Props;
 using NewHorizons.Utility;
+using NewHorizons.Utility.Files;
+using NewHorizons.Utility.Geometry;
 using OWML.Common;
 using System;
 using System.Collections.Generic;
@@ -8,6 +10,7 @@ using System.Linq;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
+
 namespace NewHorizons.Builder.Props
 {
     public static class ScatterBuilder
@@ -17,9 +20,10 @@ namespace NewHorizons.Builder.Props
             MakeScatter(go, config.Props.scatter, config.Base.surfaceSize, sector, mod, config);
         }
 
-        private static void MakeScatter(GameObject go, PropModule.ScatterInfo[] scatterInfo, float radius, Sector sector, IModBehaviour mod, PlanetConfig config)
+        private static void MakeScatter(GameObject go, ScatterInfo[] scatterInfo, float radius, Sector sector, IModBehaviour mod, PlanetConfig config)
         {
             var heightMap = config.HeightMap;
+            var deleteHeightmapFlag = false;
 
             var makeFibonacciSphere = scatterInfo.Any(x => x.preventOverlap);
 
@@ -41,10 +45,11 @@ namespace NewHorizons.Builder.Props
             {
                 try
                 {
-                    // TODO copy what heightmap builder does eventually 
-                    heightMapTexture = ImageUtilities.GetTexture(mod, heightMap.heightMap);
-                    // defer remove texture to next frame
-                    Delay.FireOnNextUpdate(() => Object.Destroy(heightMapTexture));
+                    if (!string.IsNullOrEmpty(heightMap.heightMap))
+                    {
+                        deleteHeightmapFlag = !ImageUtilities.IsTextureLoaded(mod, heightMap.heightMap);
+                        heightMapTexture = ImageUtilities.GetTexture(mod, heightMap.heightMap);
+                    }
                 }
                 catch (Exception) { }
                 if (heightMapTexture == null)
@@ -57,7 +62,7 @@ namespace NewHorizons.Builder.Props
             {
                 Random.InitState(propInfo.seed);
 
-                // By default don't put underwater more than a mater
+                // By default don't put underwater more than a meter
                 // this is a backward compat thing lol
                 if (config.Water != null && propInfo.minHeight == null) propInfo.minHeight = config.Water.size - 1f;
 
@@ -66,7 +71,7 @@ namespace NewHorizons.Builder.Props
                 else prefab = SearchUtilities.Find(propInfo.path);
 
                 // Run all the make detail stuff on it early and just copy it over and over instead
-                var detailInfo = new PropModule.DetailInfo()
+                var detailInfo = new DetailInfo()
                 {
                     scale = propInfo.scale,
                     stretch = propInfo.stretch,
@@ -92,7 +97,7 @@ namespace NewHorizons.Builder.Props
                     var height = radius;
                     if (heightMapTexture != null)
                     {
-                        var sphericals = CoordinateUtilities.CartesianToSpherical(point, false);
+                        var sphericals = CoordinateUtilities.CartesianToSpherical(point, true);
                         float longitude = sphericals.x;
                         float latitude = sphericals.y;
 
@@ -113,9 +118,6 @@ namespace NewHorizons.Builder.Props
                             i--;
                             continue;
                         }
-
-                        // Because heightmaps are dumb gotta rotate it 90 degrees around the x axis bc UHHHHHHHHHHHHH
-                        point = Quaternion.Euler(90, 0, 0) * point;
                     }
 
                     var prop = scatterPrefab.InstantiateInactive();
@@ -133,7 +135,12 @@ namespace NewHorizons.Builder.Props
                     prop.SetActive(true);
                 }
 
-                GameObject.Destroy(scatterPrefab);
+                Object.Destroy(scatterPrefab);
+
+                if (deleteHeightmapFlag && heightMapTexture != null)
+                {
+                    ImageUtilities.DeleteTexture(mod, heightMap.heightMap, heightMapTexture);
+                }
             }
         }
     }

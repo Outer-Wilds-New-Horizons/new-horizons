@@ -1,10 +1,9 @@
-using NewHorizons.Components;
-using NewHorizons.Components.Volumes;
-using NewHorizons.External.Modules;
+using NewHorizons.External.Modules.Props.EchoesOfTheEye;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWML;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Builder.Props
 {
     public static class RaftBuilder
@@ -15,10 +14,10 @@ namespace NewHorizons.Builder.Props
         {
             if (_prefab == null)
             {
-                _prefab = GameObject.FindObjectOfType<RaftController>()?.gameObject?.InstantiateInactive()?.Rename("Raft_Body_Prefab")?.DontDestroyOnLoad();
+                _prefab = Object.FindObjectOfType<RaftController>()?.gameObject?.InstantiateInactive()?.Rename("Raft_Body_Prefab")?.DontDestroyOnLoad();
                 if (_prefab == null)
                 {
-                    Logger.LogWarning($"Tried to make a raft but couldn't. Do you have the DLC installed?");
+                    NHLogger.LogWarning($"Tried to make a raft but couldn't. Do you have the DLC installed?");
                     return;
                 }
                 else
@@ -45,17 +44,13 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        public static GameObject Make(GameObject planetGO, Sector sector, PropModule.RaftInfo info, OWRigidbody planetBody)
+        public static GameObject Make(GameObject planetGO, Sector sector, RaftInfo info, OWRigidbody planetBody)
         {
             InitPrefab();
 
             if (_prefab == null || sector == null) return null;
 
-            GameObject raftObject = _prefab.InstantiateInactive();
-            raftObject.name = "Raft_Body";
-            raftObject.transform.parent = sector?.transform ?? planetGO.transform;
-            raftObject.transform.position = planetGO.transform.TransformPoint(info?.position ?? Vector3.zero);
-            raftObject.transform.rotation = planetGO.transform.TransformRotation(Quaternion.identity);
+            GameObject raftObject = GeneralPropBuilder.MakeFromPrefab(_prefab, "Raft_Body", planetGO, sector, info);
 
             StreamingHandler.SetUpStreaming(raftObject, sector);
 
@@ -77,6 +72,16 @@ namespace NewHorizons.Builder.Props
                 lightSensor._sector = sector;
                 sector.OnSectorOccupantsUpdated += lightSensor.OnSectorOccupantsUpdated;
             }
+
+            var achievementObject = new GameObject("AchievementVolume");
+            achievementObject.transform.SetParent(raftObject.transform, false);
+
+            var shape = achievementObject.AddComponent<SphereShape>();
+            shape.radius = 3;
+            shape.SetCollisionMode(Shape.CollisionMode.Volume);
+
+            achievementObject.AddComponent<OWTriggerVolume>()._shape = shape;
+            achievementObject.AddComponent<OtherMods.AchievementsPlus.NH.RaftingAchievement>();
 
             raftObject.SetActive(true);
 
