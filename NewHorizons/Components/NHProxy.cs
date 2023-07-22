@@ -5,6 +5,7 @@ using NewHorizons.Utility.OuterWilds;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+
 namespace NewHorizons.Components
 {
     public class NHProxy : ProxyPlanet
