@@ -2132,6 +2132,40 @@
           "description": "Fluid type for sounds/effects when colliding with this tornado.",
           "default": "cloud",
           "$ref": "#/definitions/NHFluidType"
+        },
+        "hazardType": {
+          "description": "The type of hazard for this volume. Leave empty for this tornado to not be hazardous.",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/HazardType"
+            }
+          ]
+        },
+        "damagePerSecond": {
+          "type": "number",
+          "description": "The amount of damage you will take per second while inside this tornado. Only used it hazardType is set.",
+          "format": "float",
+          "default": 10.0
+        },
+        "firstContactDamageType": {
+          "description": "The type of damage you will take when you first touch this volume. Leave empty for this tornado to not cause damage on first contact.",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/InstantDamageType"
+            }
+          ]
+        },
+        "firstContactDamage": {
+          "type": "number",
+          "description": "The amount of damage you will take when you first touch this volume. Only relevant if firstContactDamageType is set.",
+          "format": "float",
+          "default": 10.0
         }
       }
     },
@@ -2147,6 +2181,46 @@
         "upwards",
         "downwards",
         "hurricane"
+      ]
+    },
+    "HazardType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "NONE",
+        "GENERAL",
+        "DARKMATTER",
+        "HEAT",
+        "FIRE",
+        "SANDFALL",
+        "ELECTRICITY",
+        "RAPIDS",
+        "RIVERHEAT"
+      ],
+      "enum": [
+        "none",
+        "general",
+        "ghostMatter",
+        "heat",
+        "fire",
+        "sandfall",
+        "electricity",
+        "rapids",
+        "riverHeat"
+      ]
+    },
+    "InstantDamageType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Impact",
+        "Puncture",
+        "Electrical"
+      ],
+      "enum": [
+        "impact",
+        "puncture",
+        "electrical"
       ]
     },
     "VolcanoInfo": {
@@ -3845,46 +3919,6 @@
           "format": "float"
         }
       }
-    },
-    "HazardType": {
-      "type": "string",
-      "description": "",
-      "x-enumNames": [
-        "NONE",
-        "GENERAL",
-        "DARKMATTER",
-        "HEAT",
-        "FIRE",
-        "SANDFALL",
-        "ELECTRICITY",
-        "RAPIDS",
-        "RIVERHEAT"
-      ],
-      "enum": [
-        "none",
-        "general",
-        "ghostMatter",
-        "heat",
-        "fire",
-        "sandfall",
-        "electricity",
-        "rapids",
-        "riverHeat"
-      ]
-    },
-    "InstantDamageType": {
-      "type": "string",
-      "description": "",
-      "x-enumNames": [
-        "Impact",
-        "Puncture",
-        "Electrical"
-      ],
-      "enum": [
-        "impact",
-        "puncture",
-        "electrical"
-      ]
     },
     "VolumeInfo": {
       "type": "object",

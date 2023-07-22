@@ -4,6 +4,7 @@ using NewHorizons.Utility;
 using NewHorizons.Utility.OuterWilds;
 using NewHorizons.Utility.OWML;
 using System;
+using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
@@ -102,6 +103,7 @@ namespace NewHorizons.Builder.General
                     {
                         handler.Method.Invoke(handler.Target, new object[] { command });
                     }
+                    spv._interactVolume._listInteractions.First(x => x.promptText == UITextType.SuitUpPrompt).interactionEnabled = true;
                 }
             }
         }

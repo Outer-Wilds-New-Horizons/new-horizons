@@ -192,6 +192,9 @@ namespace NewHorizons.Components.Stars
             // For the param thing to work it wants this to be on the star idk
             transform.parent = star.transform;
             transform.localPosition = Vector3.zero;
+
+            // Some effects use Locator.GetSunTransform so hopefully its fine to change it
+            Locator._sunTransform = transform;
         }
     }
 }
