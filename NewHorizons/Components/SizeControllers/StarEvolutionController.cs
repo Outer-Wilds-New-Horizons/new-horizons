@@ -364,7 +364,10 @@ namespace NewHorizons.Components.SizeControllers
             _surface._materials[0].CopyPropertiesFromMaterial(_collapseStartSurfaceMaterial);
             if (oneShotSource != null && !PlayerState.IsSleepingAtCampfire() && !PlayerState.InDreamWorld()) oneShotSource.PlayOneShot(AudioType.Sun_Collapse);
 
-            if (_proxy != null) _proxy.StartCollapse();
+            if (_proxy != null)
+            {
+                _proxy.StartCollapse();
+            }
         }
 
         public void StopCollapse()
@@ -396,7 +399,14 @@ namespace NewHorizons.Components.SizeControllers
             if (planetDestructionVolume != null) planetDestructionVolume._deathType = DeathType.Supernova;
             if (oneShotSource != null && !PlayerState.IsSleepingAtCampfire() && !PlayerState.InDreamWorld()) oneShotSource.PlayOneShot(AudioType.Sun_Explosion);
 
-            if (_proxy != null) _proxy.StartSupernova();
+            if (_proxy != null)
+            {
+                _proxy.StartSupernova();
+
+                // When the supernova starts some effects start on, we have to refresh their states
+                var nhproxy = _proxy.GetComponentInParent<NHProxy>();
+                nhproxy.ToggleRendering(!nhproxy._outOfRange);
+            }
         }
 
         public void StopSupernova()

@@ -98,7 +98,10 @@ namespace NewHorizons.Components.Stars
 
         public void SetParticlesVisibility(bool visible)
         {
-            foreach (var particleRenderer in _cachedParticleRenderers) particleRenderer.enabled = visible;
+            foreach (var particleRenderer in _cachedParticleRenderers)
+            {
+                particleRenderer.enabled = visible;
+            }
         }
 
         public void SetRenderingEnabled(bool renderingEnabled)
