@@ -1,7 +1,9 @@
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -29,5 +31,10 @@ namespace NewHorizons.External.Modules.Props.Shuttle
         /// Will create a modern Nomai computer linked to this gravity cannon.
         /// </summary>
         public NomaiComputerInfo computer;
+
+        /// <summary>
+        /// Position of the interface used to launc the shuttle
+        /// </summary>
+        public GeneralPropInfo controls;
     }
 }

@@ -6,37 +6,47 @@ using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OWML;
 using OWML.Common;
-using System;
 using UnityEngine;
-using UnityEngine.InputSystem.XR;
 
 namespace NewHorizons.Builder.Props
 {
     public static class GravityCannonBuilder
     {
-        private static GameObject _prefab;
-        private static GameObject _orb;
+        private static GameObject _interfacePrefab;
+        private static GameObject _platformPrefab;
+        private static GameObject _orbPrefab;
 
         internal static void InitPrefab()
         {
-            if (_prefab == null)
+            if (_interfacePrefab == null)
             {
-                var original = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_GravityCannon/Interactables_GravityCannon/Prefab_NOM_GravityCannonInterface");
-                _prefab = original?.InstantiateInactive()?.Rename("Prefab_GravityCannon")?.DontDestroyOnLoad();
-                _prefab.transform.position = original.transform.position;
-                _prefab.transform.rotation = original.transform.rotation;
-                var gravityCannonController = _prefab.GetComponent<GravityCannonController>();
-                gravityCannonController._shuttleID = NomaiShuttleController.ShuttleID.HourglassShuttle;
-                gravityCannonController._shuttleSocket = GameObject.Instantiate(SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_GravityCannon/Interactables_GravityCannon/Prefab_NOM_ShuttleSocket"), _prefab.transform, true).Rename("ShuttleSocket").transform;
-                gravityCannonController._warpEffect = gravityCannonController._shuttleSocket.GetComponentInChildren<SingularityWarpEffect>();
-                gravityCannonController._recallProxyGeometry = gravityCannonController._shuttleSocket.gameObject.FindChild("ShuttleRecallProxy");
-                gravityCannonController._forceVolume = GameObject.Instantiate(SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_GravityCannon/Interactables_GravityCannon/CannonForceVolume"), _prefab.transform, true).Rename("ForceVolume").GetComponent<DirectionalForceVolume>();
-                gravityCannonController._platformTrigger = GameObject.Instantiate(SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_GravityCannon/Volumes_GravityCannon/CannonPlatformTrigger"), _prefab.transform, true).Rename("PlatformTrigger").GetComponent<OWTriggerVolume>();
-                gravityCannonController._nomaiComputer = null;
+                _interfacePrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_GravityCannon/Interactables_GravityCannon/Prefab_NOM_GravityCannonInterface")
+                    .InstantiateInactive()
+                    .Rename("Prefab_GravityCannon")
+                    .DontDestroyOnLoad();
             }
-            if (_orb == null)
+            if (_platformPrefab == null)
             {
-                _orb = SearchUtilities.Find("Prefab_NOM_InterfaceOrb")
+                // Creating it in the original position so we can instantiate the other parts in the right relative positions
+                var original = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_GravityCannon/Geometry_GravityCannon/ControlledByProxy_OPC/Structure_NOM_GravityCannon_BH");
+                _platformPrefab = original
+                    .InstantiateInactive()
+                    .Rename("Prefab_GravityCannonPlatform")
+                    .DontDestroyOnLoad();
+                _platformPrefab.transform.position = original.transform.position;
+                _platformPrefab.transform.rotation = original.transform.rotation;
+
+                GameObject.Instantiate(SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_GravityCannon/Interactables_GravityCannon/Prefab_NOM_ShuttleSocket"), _platformPrefab.transform, true)
+                    .Rename("ShuttleSocket");
+                GameObject.Instantiate(SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_GravityCannon/Interactables_GravityCannon/CannonForceVolume"), _platformPrefab.transform, true)
+                    .Rename("ForceVolume");
+                GameObject.Instantiate(SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_GravityCannon/Volumes_GravityCannon/CannonPlatformTrigger"), _platformPrefab.transform, true)
+                    .Rename("PlatformTrigger");
+            }
+
+            if (_orbPrefab == null)
+            {
+                _orbPrefab = SearchUtilities.Find("Prefab_NOM_InterfaceOrb")
                     .InstantiateInactive()
                     .Rename("Prefab_NOM_InterfaceOrb")
                     .DontDestroyOnLoad();
@@ -47,10 +57,10 @@ namespace NewHorizons.Builder.Props
         {
             InitPrefab();
 
-            if (_prefab == null || planetGO == null || sector == null) return null;
+            if (_interfacePrefab == null || planetGO == null || sector == null || _platformPrefab == null || _orbPrefab == null) return null;
 
-            var detailInfo = new DetailInfo(info) { keepLoaded = true };
-            var gravityCannonObject = DetailBuilder.Make(planetGO, sector, _prefab, detailInfo);
+            var detailInfo = new DetailInfo(info.controls) { keepLoaded = true };
+            var gravityCannonObject = DetailBuilder.Make(planetGO, sector, _interfacePrefab, detailInfo);
             gravityCannonObject.SetActive(false);
 
             var gravityCannonController = gravityCannonObject.GetComponent<GravityCannonController>();
@@ -59,6 +69,8 @@ namespace NewHorizons.Builder.Props
             // Gravity controller checks string length instead of isnullorempty
             gravityCannonController._retrieveShipLogFact = info.retrieveReveal ?? string.Empty;
             gravityCannonController._launchShipLogFact = info.launchReveal ?? string.Empty;
+
+            CreatePlatform(planetGO, sector, gravityCannonController, info);
 
             if (info.computer != null)
             {
@@ -78,7 +90,7 @@ namespace NewHorizons.Builder.Props
 
         private static void CreateOrb(GameObject planetGO, GravityCannonController gravityCannonController)
         {
-            var orb = _orb.InstantiateInactive().Rename(_orb.name);
+            var orb = _orbPrefab.InstantiateInactive().Rename(_orbPrefab.name);
             orb.transform.parent = gravityCannonController.transform;
             orb.transform.localPosition = new Vector3(0f, 0.9673f, 0f);
             orb.transform.localScale = Vector3.one;
@@ -128,6 +140,19 @@ namespace NewHorizons.Builder.Props
             computerObject.SetActive(true);
 
             return computer;
+        }
+
+        private static GameObject CreatePlatform(GameObject planetGO, Sector sector, GravityCannonController gravityCannonController, GeneralPropInfo platformInfo)
+        {
+            var platform = DetailBuilder.Make(planetGO, sector, _platformPrefab, new DetailInfo(platformInfo) { keepLoaded = true });
+
+            gravityCannonController._forceVolume = platform.FindChild("ForceVolume").GetComponent<DirectionalForceVolume>();
+            gravityCannonController._platformTrigger = platform.FindChild("PlatformTrigger").GetComponent<OWTriggerVolume>();
+            gravityCannonController._shuttleSocket = platform.FindChild("ShuttleSocket").transform;
+            gravityCannonController._warpEffect = gravityCannonController._shuttleSocket.GetComponentInChildren<SingularityWarpEffect>();
+            gravityCannonController._recallProxyGeometry = gravityCannonController._shuttleSocket.gameObject.FindChild("ShuttleRecallProxy");
+
+            return platform;
         }
     }
 }
