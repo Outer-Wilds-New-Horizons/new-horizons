@@ -2748,25 +2748,8 @@
         "rename": {
           "type": "string",
           "description": "An optional rename of this object"
-        },
-        "type": {
-          "description": "What design the computer will use.",
-          "default": "NORMAL",
-          "$ref": "#/definitions/NomaiComputerType"
         }
       }
-    },
-    "NomaiComputerType": {
-      "type": "string",
-      "description": "",
-      "x-enumNames": [
-        "NORMAL",
-        "PRECRASH"
-      ],
-      "enum": [
-        "normal",
-        "precrash"
-      ]
     },
     "NomaiWarpTransmitterInfo": {
       "type": "object",
