@@ -1,6 +1,4 @@
 using HarmonyLib;
-using NewHorizons.Patches.WarpPatches;
-using NewHorizons.Utility.OWML;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using UnityEngine;
@@ -37,8 +35,8 @@ public static class GlobalMusicControllerPatches
         )
         // Insert a new check to it pointing to the same label as the others
         .Insert(
-            new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(GlobalMusicControllerPatches), nameof(GlobalMusicControllerPatches.IsPlayerInNoAudioVolumes))),
-            new CodeInstruction(OpCodes.Brfalse_S, label)
+            new CodeMatch(OpCodes.Call, AccessTools.Method(typeof(GlobalMusicControllerPatches), nameof(GlobalMusicControllerPatches.IsPlayerInNoAudioVolumes))),
+            new CodeMatch(OpCodes.Brfalse_S, label)
         )
         .InstructionEnumeration();
 	}
