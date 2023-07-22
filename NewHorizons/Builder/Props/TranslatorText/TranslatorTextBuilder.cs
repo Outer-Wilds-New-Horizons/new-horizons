@@ -26,7 +26,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
         private static Material _childArcMaterial;
         private static GameObject _scrollPrefab;
         public static GameObject ComputerPrefab { get; private set; }
-        private static GameObject _preCrashComputerPrefab;
+        public static GameObject PreCrashComputerPrefab { get; private set; }
         private static GameObject _cairnBHPrefab;
         private static GameObject _cairnTHPrefab;
         private static GameObject _cairnCTPrefab;
@@ -89,9 +89,9 @@ namespace NewHorizons.Builder.Props.TranslatorText
                 ComputerPrefab = SearchUtilities.Find("VolcanicMoon_Body/Sector_VM/Interactables_VM/Prefab_NOM_Computer").InstantiateInactive().Rename("Prefab_NOM_Computer").DontDestroyOnLoad();
             }
 
-            if (_preCrashComputerPrefab == null)
+            if (PreCrashComputerPrefab == null)
             {
-                _preCrashComputerPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_EscapePodCrashSite/Sector_CrashFragment/EscapePod_Socket/Interactibles_EscapePod/Prefab_NOM_Vessel_Computer").InstantiateInactive().Rename("Prefab_NOM_Vessel_Computer").DontDestroyOnLoad();
+                PreCrashComputerPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_EscapePodCrashSite/Sector_CrashFragment/EscapePod_Socket/Interactibles_EscapePod/Prefab_NOM_Vessel_Computer").InstantiateInactive().Rename("Prefab_NOM_Vessel_Computer").DontDestroyOnLoad();
             }
 
             if (_cairnBHPrefab == null)
@@ -238,7 +238,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
                     }
                 case NomaiTextType.PreCrashComputer:
                     {
-                        var computerObject = DetailBuilder.Make(planetGO, sector, _preCrashComputerPrefab, new DetailInfo(info));
+                        var computerObject = DetailBuilder.Make(planetGO, sector, PreCrashComputerPrefab, new DetailInfo(info));
                         computerObject.SetActive(false);
 
                         var computer = computerObject.GetComponent<NomaiVesselComputer>();

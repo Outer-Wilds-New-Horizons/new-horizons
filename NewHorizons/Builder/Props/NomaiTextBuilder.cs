@@ -747,7 +747,7 @@ namespace NewHorizons.Builder.Props
             
             if (rootNode == null)
             {
-                Logger.LogError($"Couldn't find NomaiObject in [{xmlPath}]");
+                NHLogger.LogError($"Couldn't find NomaiObject in [{xmlPath}]");
                 return dict;
             }
 

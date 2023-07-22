@@ -29,7 +29,7 @@ namespace NewHorizons.Builder.Props
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError($"Couldn't make gravity cannon [{gravityCannonInfo.shuttleID}] for [{go.name}]:\n{ex}");
+                        NHLogger.LogError($"Couldn't make gravity cannon [{gravityCannonInfo.shuttleID}] for [{go.name}]:\n{ex}");
                     }
                 }
             }
@@ -43,7 +43,7 @@ namespace NewHorizons.Builder.Props
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError($"Couldn't make shuttle [{shuttleInfo.id}] for [{go.name}]:\n{ex}");
+                        NHLogger.LogError($"Couldn't make shuttle [{shuttleInfo.id}] for [{go.name}]:\n{ex}");
                     }
                 }
             }

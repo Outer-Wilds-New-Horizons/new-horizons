@@ -144,9 +144,16 @@ namespace NewHorizons.Builder.Props
             transmitterObject.SetActive(true);
         }
 
-        private static void CreateComputer(GameObject planetGO, Sector sector, NomaiWarpComputerLoggerInfo computerInfo, NomaiWarpReceiver receiver)
+        private static void CreateComputer(GameObject planetGO, Sector sector, NomaiComputerInfo computerInfo, NomaiWarpReceiver receiver)
         {
-            var computerObject = DetailBuilder.Make(planetGO, sector, TranslatorTextBuilder.ComputerPrefab, new DetailInfo(computerInfo));
+            var prefab = computerInfo.type switch
+            {
+                NomaiComputerType.NORMAL => TranslatorTextBuilder.ComputerPrefab,
+                NomaiComputerType.PRECRASH => TranslatorTextBuilder.PreCrashComputerPrefab,
+                _ => throw new System.NotImplementedException()
+            };
+
+            var computerObject = DetailBuilder.Make(planetGO, sector, prefab, new DetailInfo(computerInfo));
 
             var computer = computerObject.GetComponentInChildren<NomaiComputer>();
             computer.SetSector(sector);

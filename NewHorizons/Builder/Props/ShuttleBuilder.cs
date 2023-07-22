@@ -1,10 +1,9 @@
 using NewHorizons.Components;
-using NewHorizons.Components.Volumes;
-using NewHorizons.External.Modules;
+using NewHorizons.External.Modules.Props;
+using NewHorizons.External.Modules.Props.Shuttle;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Props
 {
@@ -66,20 +65,13 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        public static GameObject Make(GameObject planetGO, Sector sector, PropModule.ShuttleInfo info)
+        public static GameObject Make(GameObject planetGO, Sector sector, ShuttleInfo info)
         {
             InitPrefab();
 
             if (_prefab == null || planetGO == null || sector == null) return null;
 
-            var detailInfo = new PropModule.DetailInfo()
-            {
-                position = info.position,
-                rotation = info.rotation,
-                parentPath = info.parentPath,
-                isRelativeToParent = info.isRelativeToParent,
-                rename = info.rename
-            };
+            var detailInfo = new DetailInfo(info);
             var shuttleObject = DetailBuilder.Make(planetGO, sector, _prefab, detailInfo);
             shuttleObject.SetActive(false);
 

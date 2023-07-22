@@ -1,11 +1,11 @@
-using NewHorizons.Components;
-using NewHorizons.Components.Volumes;
-using NewHorizons.External.Modules;
+using NewHorizons.Builder.Props.TranslatorText;
+using NewHorizons.External.Modules.Props;
+using NewHorizons.External.Modules.Props.Shuttle;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWML;
 using OWML.Common;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Props
 {
@@ -32,20 +32,13 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        public static GameObject Make(GameObject planetGO, Sector sector, PropModule.GravityCannonInfo info, IModBehaviour mod)
+        public static GameObject Make(GameObject planetGO, Sector sector, GravityCannonInfo info, IModBehaviour mod)
         {
             InitPrefab();
 
             if (_prefab == null || planetGO == null || sector == null) return null;
 
-            var detailInfo = new PropModule.DetailInfo()
-            {
-                position = info.position,
-                rotation = info.rotation,
-                parentPath = info.parentPath,
-                isRelativeToParent = info.isRelativeToParent,
-                rename = info.rename
-            };
+            var detailInfo = new DetailInfo(info);
             var gravityCannonObject = DetailBuilder.Make(planetGO, sector, _prefab, detailInfo);
             gravityCannonObject.SetActive(false);
 
@@ -55,38 +48,40 @@ namespace NewHorizons.Builder.Props
             gravityCannonController._shuttleID = ShuttleHandler.GetShuttleID(info.shuttleID);
             gravityCannonController._retrieveShipLogFact = info.retrieveReveal;
             gravityCannonController._launchShipLogFact = info.launchReveal;
+
             if (info.computer != null)
             {
-                gravityCannonController._nomaiComputer = NomaiTextBuilder.Make(planetGO, sector, new PropModule.NomaiTextInfo
-                {
-                    type = PropModule.NomaiTextInfo.NomaiTextType.Computer,
-                    position = info.computer.position,
-                    rotation = info.computer.rotation,
-                    normal = info.computer.normal,
-                    isRelativeToParent = info.computer.isRelativeToParent,
-                    rename = info.computer.rename,
-                    location = info.computer.location,
-                    xmlFile = info.computer.xmlFile,
-                    parentPath = info.computer.parentPath
-                }, mod).GetComponent<NomaiComputer>();
+                gravityCannonController._nomaiComputer = CreateComputer(planetGO, sector, info.computer);
             }
             else
             {
-                gravityCannonController._nomaiComputer = NomaiTextBuilder.Make(planetGO, sector, new PropModule.NomaiTextInfo
-                {
-                    type = PropModule.NomaiTextInfo.NomaiTextType.Computer,
-                    position = new MVector3(-2.556838f, -0.8018004f, 10.01348f),
-                    rotation = new MVector3(8.293f, 2.403f, 0.9f),
-                    isRelativeToParent = true,
-                    rename = "Computer",
-                    xmlFile = "Assets/GravityCannonComputer.xml",
-                    parentPath = gravityCannonObject.transform.GetPath().Remove(0, planetGO.name.Length + 1)
-                }, Main.Instance).GetComponent<NomaiComputer>();
+                gravityCannonController._nomaiComputer = null;
             }
 
             gravityCannonObject.SetActive(true);
 
             return gravityCannonObject;
+        }
+
+        private static NomaiComputer CreateComputer(GameObject planetGO, Sector sector, NomaiComputerInfo computerInfo)
+        {
+            var prefab = computerInfo.type switch
+            {
+                NomaiComputerType.NORMAL => TranslatorTextBuilder.ComputerPrefab,
+                NomaiComputerType.PRECRASH => TranslatorTextBuilder.PreCrashComputerPrefab,
+                _ => throw new System.NotImplementedException()
+            };
+
+            var computerObject = DetailBuilder.Make(planetGO, sector, prefab, new DetailInfo(computerInfo));
+
+            var computer = computerObject.GetComponentInChildren<NomaiComputer>();
+            computer.SetSector(sector);
+
+            Delay.FireOnNextUpdate(computer.ClearAllEntries);
+
+            computerObject.SetActive(true);
+
+            return computer;
         }
     }
 }

@@ -1,11 +1,6 @@
-using NewHorizons.Utility;
-using OWML.Common;
+using NewHorizons.Utility.OWML;
 using OWML.Utils;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Handlers
 {
@@ -15,8 +10,7 @@ namespace NewHorizons.Handlers
         {
             try
             {
-                NomaiShuttleController.ShuttleID shuttleID;
-                if (EnumUtils.TryParse<NomaiShuttleController.ShuttleID>(id, out shuttleID))
+                if (EnumUtils.TryParse(id, out NomaiShuttleController.ShuttleID shuttleID))
                 {
                     return shuttleID;
                 }
@@ -27,14 +21,14 @@ namespace NewHorizons.Handlers
             }
             catch (Exception e)
             {
-                Logger.LogError($"Couldn't load shuttle id [{id}]:\n{e}");
+                NHLogger.LogError($"Couldn't load shuttle id [{id}]:\n{e}");
                 return EnumUtils.FromObject<NomaiShuttleController.ShuttleID>(-1);
             }
         }
 
         public static NomaiShuttleController.ShuttleID AddCustomShuttleID(string id)
         {
-            Logger.LogVerbose($"Registering new shuttle id [{id}]");
+            NHLogger.LogVerbose($"Registering new shuttle id [{id}]");
 
             return EnumUtilities.Create<NomaiShuttleController.ShuttleID>(id);
         }
