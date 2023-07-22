@@ -7,8 +7,7 @@ namespace NewHorizons.Builder.Atmosphere
     {
         private static readonly int FogColor = Shader.PropertyToID("_FogColor");
 
-        private static Material _gdMaterial;
-        private static Material _gdCloudMaterial;
+        private static Material _gdMaterial, _gdCloudMaterial;
 
         private static bool _isInit;
 
@@ -21,7 +20,7 @@ namespace NewHorizons.Builder.Atmosphere
             if (_gdMaterial == null) _gdMaterial = new Material(SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Volumes_GD/RulesetVolumes_GD").GetComponent<EffectRuleset>()._material).DontDestroyOnLoad();
             if (_gdCloudMaterial == null) _gdCloudMaterial = new Material(SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Volumes_GD/RulesetVolumes_GD").GetComponent<EffectRuleset>()._cloudMaterial).DontDestroyOnLoad();
         }
-        
+
         public static void Make(GameObject planetGO, OWRigidbody owrb, PlanetConfig config, float sphereOfInfluence)
         {
             InitPrefabs();
@@ -59,12 +58,23 @@ namespace NewHorizons.Builder.Atmosphere
 
             ER._material = _gdMaterial;
 
-            var cloudMaterial = new Material(_gdCloudMaterial);
-            if (config.Atmosphere?.clouds?.tint != null)
+            if (config.Atmosphere?.clouds != null)
             {
-                cloudMaterial.SetColor(FogColor, config.Atmosphere.clouds.tint.ToColor());
+                var cloudMaterial = new Material(_gdCloudMaterial);
+
+                if (config.Atmosphere?.clouds?.tint != null)
+                {
+                    cloudMaterial.SetColor(FogColor, config.Atmosphere.clouds.tint.ToColor());
+                }
+                // For all prefabs but GD we want grey fog between clouds
+                // I can't find an EffectsRuleset on the QM so I don't know how it works
+                else if (config.Atmosphere.clouds.cloudsPrefab != External.Modules.CloudPrefabType.GiantsDeep)
+                {
+                    cloudMaterial.SetColor(FogColor, new Color(43f/255f, 51f/255f, 57f/255f));
+                }
+
+                ER._cloudMaterial = cloudMaterial;
             }
-            ER._cloudMaterial = cloudMaterial;
 
             volumesGO.transform.position = planetGO.transform.position;
             rulesetGO.SetActive(true);
