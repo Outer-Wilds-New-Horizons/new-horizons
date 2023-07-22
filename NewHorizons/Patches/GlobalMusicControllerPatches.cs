@@ -6,7 +6,7 @@ using UnityEngine;
 namespace NewHorizons.Patches;
 
 [HarmonyPatch(typeof(GlobalMusicController))]
-public class GlobalMusicControllerPatches
+public static class GlobalMusicControllerPatches
 {
 	private static AudioDetector _audioDetector;
 
@@ -29,19 +29,19 @@ public class GlobalMusicControllerPatches
         // Find the first part of the boolean assignment
         .Start()
         .MatchForward(true,
-            new CodeMatch(OpCodes.Call, typeof(Locator), nameof(Locator.GetPlayerSectorDetector)),
-            new CodeMatch(OpCodes.Callvirt, typeof(PlayerSectorDetector), nameof(PlayerSectorDetector.InBrambleDimension)),
+            new CodeMatch(OpCodes.Call, AccessTools.Method(typeof(Locator), nameof(Locator.GetPlayerSectorDetector))),
+            new CodeMatch(OpCodes.Callvirt, AccessTools.Method(typeof(PlayerSectorDetector), nameof(PlayerSectorDetector.InBrambleDimension))),
             new CodeMatch(OpCodes.Brfalse_S)
         )
         // Insert a new check to it pointing to the same label as the others
         .Insert(
-            new CodeMatch(OpCodes.Call, typeof(GlobalMusicControllerPatches), nameof(GlobalMusicControllerPatches.IsPlayerInNoAudioVolumes)),
+            new CodeMatch(OpCodes.Call, AccessTools.Method(typeof(GlobalMusicControllerPatches), nameof(GlobalMusicControllerPatches.IsPlayerInNoAudioVolumes))),
             new CodeMatch(OpCodes.Brfalse_S, label)
         )
         .InstructionEnumeration();
 	}
 
-    private static bool IsPlayerInNoAudioVolumes()
+    public static bool IsPlayerInNoAudioVolumes()
     {
         if (_audioDetector == null) _audioDetector = Object.FindObjectOfType<AudioDetector>();
         return _audioDetector._activeVolumes.Count == 0;
