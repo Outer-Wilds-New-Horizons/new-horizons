@@ -71,7 +71,7 @@ namespace NewHorizons.Builder.Props
 
             if (_prefab == null || planetGO == null || sector == null) return null;
 
-            var detailInfo = new DetailInfo(info);
+            var detailInfo = new DetailInfo(info) { keepLoaded = true };
             var shuttleObject = DetailBuilder.Make(planetGO, sector, _prefab, detailInfo);
             shuttleObject.SetActive(false);
 

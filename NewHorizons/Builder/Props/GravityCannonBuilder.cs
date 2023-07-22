@@ -39,16 +39,16 @@ namespace NewHorizons.Builder.Props
 
             if (_prefab == null || planetGO == null || sector == null) return null;
 
-            var detailInfo = new DetailInfo(info);
+            var detailInfo = new DetailInfo(info) { keepLoaded = true };
             var gravityCannonObject = DetailBuilder.Make(planetGO, sector, _prefab, detailInfo);
             gravityCannonObject.SetActive(false);
 
-            StreamingHandler.SetUpStreaming(gravityCannonObject, sector);
-
             var gravityCannonController = gravityCannonObject.GetComponent<GravityCannonController>();
             gravityCannonController._shuttleID = ShuttleHandler.GetShuttleID(info.shuttleID);
-            gravityCannonController._retrieveShipLogFact = info.retrieveReveal;
-            gravityCannonController._launchShipLogFact = info.launchReveal;
+
+            // Gravity controller checks string length instead of isnullorempty
+            gravityCannonController._retrieveShipLogFact = info.retrieveReveal ?? string.Empty;
+            gravityCannonController._launchShipLogFact = info.launchReveal ?? string.Empty;
 
             if (info.computer != null)
             {
