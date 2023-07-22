@@ -22,7 +22,8 @@ namespace NewHorizons.Utility.OWML
 
         public static void FireOnNextUpdate(Action action) => FireInNUpdates(action, 1);
 
-        public static void RunWhenAndInNUpdates(Action action, Func<bool> predicate, int n) => Delay.StartCoroutine(RunWhenOrInNUpdatesCoroutine(action, predicate, n));
+        public static void RunWhenOrInNUpdates(Action action, Func<bool> predicate, int n) => Delay.StartCoroutine(RunWhenOrInNUpdatesCoroutine(action, predicate, n));
+        public static void RunWhenAndInNUpdates(Action action, Func<bool> predicate, int n) => Delay.StartCoroutine(RunWhenAndInNUpdatesCoroutine(action, predicate, n));
         #endregion
 
         #region Coroutines
@@ -52,6 +53,20 @@ namespace NewHorizons.Utility.OWML
                 yield return new WaitForEndOfFrame();
             }
             while (!predicate.Invoke())
+            {
+                yield return new WaitForEndOfFrame();
+            }
+
+            action.Invoke();
+        }
+
+        private static IEnumerator RunWhenAndInNUpdatesCoroutine(Action action, Func<bool> predicate, int n)
+        {
+            while (!predicate.Invoke())
+            {
+                yield return new WaitForEndOfFrame();
+            }
+            for (int i = 0; i < n; i++)
             {
                 yield return new WaitForEndOfFrame();
             }

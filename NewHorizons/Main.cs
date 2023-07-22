@@ -548,7 +548,7 @@ namespace NewHorizons
                 }
 
                 // Wait for player to be awake and also for frames to pass
-                Delay.RunWhenAndInNUpdates(() => OnSystemReady(DidWarpFromShip, DidWarpFromVessel), () => _playerAwake && PlayerSpawned, 30);
+                Delay.RunWhenOrInNUpdates(() => OnSystemReady(DidWarpFromShip, DidWarpFromVessel), () => _playerAwake && PlayerSpawned, 30);
             }
             else
             {

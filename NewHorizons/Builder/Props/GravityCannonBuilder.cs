@@ -6,13 +6,16 @@ using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OWML;
 using OWML.Common;
+using System;
 using UnityEngine;
+using UnityEngine.InputSystem.XR;
 
 namespace NewHorizons.Builder.Props
 {
     public static class GravityCannonBuilder
     {
         private static GameObject _prefab;
+        private static GameObject _orb;
 
         internal static void InitPrefab()
         {
@@ -30,6 +33,13 @@ namespace NewHorizons.Builder.Props
                 gravityCannonController._forceVolume = GameObject.Instantiate(SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_GravityCannon/Interactables_GravityCannon/CannonForceVolume"), _prefab.transform, true).Rename("ForceVolume").GetComponent<DirectionalForceVolume>();
                 gravityCannonController._platformTrigger = GameObject.Instantiate(SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_GravityCannon/Volumes_GravityCannon/CannonPlatformTrigger"), _prefab.transform, true).Rename("PlatformTrigger").GetComponent<OWTriggerVolume>();
                 gravityCannonController._nomaiComputer = null;
+            }
+            if (_orb == null)
+            {
+                _orb = SearchUtilities.Find("Prefab_NOM_InterfaceOrb")
+                    .InstantiateInactive()
+                    .Rename("Prefab_NOM_InterfaceOrb")
+                    .DontDestroyOnLoad();
             }
         }
 
@@ -59,9 +69,51 @@ namespace NewHorizons.Builder.Props
                 gravityCannonController._nomaiComputer = null;
             }
 
+            CreateOrb(planetGO, gravityCannonController);
+
             gravityCannonObject.SetActive(true);
 
             return gravityCannonObject;
+        }
+
+        private static void CreateOrb(GameObject planetGO, GravityCannonController gravityCannonController)
+        {
+            var orb = _orb.InstantiateInactive().Rename(_orb.name);
+            orb.transform.parent = gravityCannonController.transform;
+            orb.transform.localPosition = new Vector3(0f, 0.9673f, 0f);
+            orb.transform.localScale = Vector3.one;
+            orb.SetActive(true);
+
+            var planetBody = planetGO.GetComponent<OWRigidbody>();
+            var orbBody = orb.GetComponent<OWRigidbody>();
+
+            var nomaiInterfaceOrb = orb.GetComponent<NomaiInterfaceOrb>();
+            nomaiInterfaceOrb._orbBody = orbBody;
+            nomaiInterfaceOrb._slotRoot = gravityCannonController.gameObject;
+            orbBody._origParent = planetGO.transform;
+            orbBody._origParentBody = planetBody;
+            nomaiInterfaceOrb._slots = nomaiInterfaceOrb._slotRoot.GetComponentsInChildren<NomaiInterfaceSlot>();
+            nomaiInterfaceOrb.SetParentBody(planetBody);
+            nomaiInterfaceOrb._safetyRails = new OWRail[0];
+            nomaiInterfaceOrb.RemoveAllLocks();
+
+            var spawnVelocity = planetBody.GetVelocity();
+            var spawnAngularVelocity = planetBody.GetPointTangentialVelocity(orbBody.transform.position);
+            var velocity = spawnVelocity + spawnAngularVelocity;
+
+            orbBody._lastVelocity = velocity;
+            orbBody._currentVelocity = velocity;
+
+            orb.GetComponent<ConstantForceDetector>()._detectableFields = new ForceVolume[] { planetGO.GetComponentInChildren<GravityVolume>() };
+
+            Delay.RunWhenAndInNUpdates(() =>
+            {
+                foreach (var component in orb.GetComponents<MonoBehaviour>())
+                {
+                    component.enabled = true;
+                }
+                nomaiInterfaceOrb.RemoveAllLocks();
+            }, () => Main.IsSystemReady, 10);
         }
 
         private static NomaiComputer CreateComputer(GameObject planetGO, Sector sector, GeneralPropInfo computerInfo)
