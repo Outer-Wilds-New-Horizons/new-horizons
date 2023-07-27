@@ -1,6 +1,7 @@
 using NewHorizons.Components.Stars;
 using NewHorizons.Handlers;
 using NewHorizons.Utility.OWML;
+using System.Linq;
 using UnityEngine;
 
 namespace NewHorizons.Components.EOTE
@@ -12,11 +13,17 @@ namespace NewHorizons.Components.EOTE
         
         public void Start()
         {
-            // Enable and disable all cloaks, else Stranger state is weird at the start
-            foreach (var cloak in CloakHandler.Cloaks)
+            if (CloakHandler.Cloaks.Any())
             {
-                SetCurrentCloak(cloak);
-                cloak.enabled = false;
+                // Enable and disable all cloaks, else Stranger state is weird at the start
+                foreach (var cloak in CloakHandler.Cloaks)
+                {
+                    SetCurrentCloak(cloak);
+                    cloak.enabled = false;
+                }
+
+                // Make sure a cloak is enabled
+                SetCurrentCloak(CloakHandler.Cloaks.First());
             }
         }
 

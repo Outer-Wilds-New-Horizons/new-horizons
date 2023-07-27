@@ -33,6 +33,7 @@ using NewHorizons.Utility.DebugTools;
 using NewHorizons.Utility.DebugTools.Menu;
 using NewHorizons.Components.Ship;
 using NewHorizons.Builder.Props.Audio;
+using Epic.OnlineServices;
 
 namespace NewHorizons
 {
@@ -600,6 +601,33 @@ namespace NewHorizons
 
 
         #region Load
+        public void LoadStarSystemConfig(string starSystemName, StarSystemConfig starSystemConfig, string relativePath, IModBehaviour mod)
+        {
+            starSystemConfig.Migrate();
+            starSystemConfig.FixCoordinates();
+
+            if (starSystemConfig.startHere)
+            {
+                // We always want to allow mods to overwrite setting the main SolarSystem as default but not the other way around
+                if (starSystemName != "SolarSystem")
+                {
+                    SetDefaultSystem(starSystemName);
+                    _currentStarSystem = starSystemName;
+                }
+            }
+
+            if (SystemDict.ContainsKey(starSystemName))
+            {
+                if (string.IsNullOrEmpty(SystemDict[starSystemName].Config.travelAudio) && SystemDict[starSystemName].Config.Skybox == null)
+                    SystemDict[starSystemName].Mod = mod;
+                SystemDict[starSystemName].Config.Merge(starSystemConfig);
+            }
+            else
+            {
+                SystemDict[starSystemName] = new NewHorizonsSystem(starSystemName, starSystemConfig, relativePath, mod);
+            }
+        }
+
         public void LoadConfigs(IModBehaviour mod)
         {
             try
@@ -627,35 +655,13 @@ namespace NewHorizons
 
                     foreach (var file in systemFiles)
                     {
-                        var name = Path.GetFileNameWithoutExtension(file);
+                        var starSystemName = Path.GetFileNameWithoutExtension(file);
 
-                        NHLogger.LogVerbose($"Loading system {name}");
+                        NHLogger.LogVerbose($"Loading system {starSystemName}");
 
                         var relativePath = file.Replace(folder, "");
                         var starSystemConfig = mod.ModHelper.Storage.Load<StarSystemConfig>(relativePath, false);
-                        starSystemConfig.Migrate();
-                        starSystemConfig.FixCoordinates();
-
-                        if (starSystemConfig.startHere)
-                        {
-                            // We always want to allow mods to overwrite setting the main SolarSystem as default but not the other way around
-                            if (name != "SolarSystem")
-                            {
-                                SetDefaultSystem(name);
-                                _currentStarSystem = name;
-                            }
-                        }
-
-                        if (SystemDict.ContainsKey(name))
-                        {
-                            if (string.IsNullOrEmpty(SystemDict[name].Config.travelAudio) && SystemDict[name].Config.Skybox == null)
-                                SystemDict[name].Mod = mod;
-                            SystemDict[name].Config.Merge(starSystemConfig);
-                        }
-                        else
-                        {
-                            SystemDict[name] = new NewHorizonsSystem(name, starSystemConfig, relativePath, mod);
-                        }
+                        LoadStarSystemConfig(starSystemName, starSystemConfig, relativePath, mod);
                     }
                 }
                 if (Directory.Exists(planetsFolder))
@@ -766,28 +772,7 @@ namespace NewHorizons
 
                 NHLogger.LogVerbose($"Loaded {config.name}");
 
-                if (!SystemDict.ContainsKey(config.starSystem))
-                {
-                    // Since we didn't load it earlier there shouldn't be a star system config
-                    var starSystemConfig = mod.ModHelper.Storage.Load<StarSystemConfig>(Path.Combine("systems", config.starSystem + ".json"), false);
-                    if (starSystemConfig == null) starSystemConfig = new StarSystemConfig();
-                    else NHLogger.LogWarning($"Loaded system config for {config.starSystem}. Why wasn't this loaded earlier?");
-
-                    starSystemConfig.Migrate();
-                    starSystemConfig.FixCoordinates();
-
-                    var system = new NewHorizonsSystem(config.starSystem, starSystemConfig, $"", mod);
-
-                    SystemDict.Add(config.starSystem, system);
-
-                    BodyDict.Add(config.starSystem, new List<NewHorizonsBody>());
-                }
-
-                // Has to happen after we make sure theres a system config
-                config.Validate();
-                config.Migrate();
-
-                body = new NewHorizonsBody(config, mod, relativePath);
+                body = RegisterPlanetConfig(config, mod, relativePath);
             }
             catch (Exception e)
             {
@@ -796,6 +781,32 @@ namespace NewHorizons
             }
 
             return body;
+        }
+
+        public NewHorizonsBody RegisterPlanetConfig(PlanetConfig config, IModBehaviour mod, string relativePath)
+        {
+            if (!SystemDict.ContainsKey(config.starSystem))
+            {
+                // Since we didn't load it earlier there shouldn't be a star system config
+                var starSystemConfig = mod.ModHelper.Storage.Load<StarSystemConfig>(Path.Combine("systems", config.starSystem + ".json"), false);
+                if (starSystemConfig == null) starSystemConfig = new StarSystemConfig();
+                else NHLogger.LogWarning($"Loaded system config for {config.starSystem}. Why wasn't this loaded earlier?");
+
+                starSystemConfig.Migrate();
+                starSystemConfig.FixCoordinates();
+
+                var system = new NewHorizonsSystem(config.starSystem, starSystemConfig, $"", mod);
+
+                SystemDict.Add(config.starSystem, system);
+
+                BodyDict.Add(config.starSystem, new List<NewHorizonsBody>());
+            }
+
+            // Has to happen after we make sure theres a system config
+            config.Validate();
+            config.Migrate();
+
+            return new NewHorizonsBody(config, mod, relativePath);
         }
 
         public void SetDefaultSystem(string defaultSystem)

@@ -1,3 +1,4 @@
+using NewHorizons.Builder.General;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OWML;
 using System.Collections;
@@ -45,33 +46,71 @@ namespace NewHorizons.Handlers
             }
         }
 
+        public static void SpawnShip()
+        {
+            var ship = SearchUtilities.Find("Ship_Body");
+            if (ship != null)
+            {
+                ship.SetActive(true);
+
+                var pos = SpawnPointBuilder.ShipSpawn.transform.position;
+
+                // Move it up a bit more when aligning to surface
+                if (SpawnPointBuilder.ShipSpawnOffset != null)
+                {
+                    pos += SpawnPointBuilder.ShipSpawn.transform.TransformDirection(SpawnPointBuilder.ShipSpawnOffset);
+                }
+
+                SpawnBody(ship.GetAttachedOWRigidbody(), SpawnPointBuilder.ShipSpawn, pos);
+            }
+        }
+
         private static IEnumerator SpawnCoroutine(int length)
         {
             for(int i = 0; i < length; i++) 
             {
-                FixVelocity();
+                FixPlayerVelocity();
                 yield return new WaitForEndOfFrame();
             }
 
             InvulnerabilityHandler.MakeInvulnerable(false);
+
+            if (!Main.Instance.IsWarpingFromShip)
+            {
+                if (SpawnPointBuilder.ShipSpawn != null)
+                {
+                    NHLogger.Log("Spawning player ship");
+                    SpawnShip();
+                }
+                else
+                {
+                    NHLogger.Log("System has no ship spawn. Deactivating it.");
+                    SearchUtilities.Find("Ship_Body")?.SetActive(false);
+                }
+            }
         }
 
-        private static void FixVelocity()
+        private static void FixPlayerVelocity()
         {
             var playerBody = SearchUtilities.Find("Player_Body").GetAttachedOWRigidbody();
-            var spawn = GetDefaultSpawn();
             var resources = playerBody.GetComponent<PlayerResources>();
 
-            playerBody.WarpToPositionRotation(spawn.transform.position, spawn.transform.rotation);
-
-            var spawnVelocity = spawn._attachedBody.GetVelocity();
-            var spawnAngularVelocity = spawn._attachedBody.GetPointTangentialVelocity(playerBody.transform.position);
-            var velocity = spawnVelocity + spawnAngularVelocity;
-
-            playerBody.SetVelocity(velocity);
-            NHLogger.LogVerbose($"Player spawn velocity {velocity} Player velocity {playerBody.GetVelocity()} spawn body {spawnVelocity} spawn angular vel {spawnAngularVelocity}");
+            SpawnBody(playerBody, GetDefaultSpawn());
 
             resources._currentHealth = 100f;
+        }
+
+        public static void SpawnBody(OWRigidbody body, SpawnPoint spawn, Vector3? positionOverride = null)
+        {
+            var pos = positionOverride ?? spawn.transform.position;
+
+            body.WarpToPositionRotation(pos, spawn.transform.rotation);
+
+            var spawnVelocity = spawn._attachedBody.GetVelocity();
+            var spawnAngularVelocity = spawn._attachedBody.GetPointTangentialVelocity(pos);
+            var velocity = spawnVelocity + spawnAngularVelocity;
+
+            body.SetVelocity(velocity);
         }
 
         private static Vector3 CalculateMatchVelocity(OWRigidbody owRigidbody, OWRigidbody bodyToMatch, bool ignoreAngularVelocity)

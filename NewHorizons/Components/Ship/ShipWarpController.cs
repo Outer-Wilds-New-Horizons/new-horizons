@@ -201,6 +201,8 @@ namespace NewHorizons.Components.Ship
 
             GlobalMessenger.FireEvent("EnterShip");
             PlayerState.OnEnterShip();
+
+            PlayerSpawnHandler.SpawnShip();
         }
     }
 }
