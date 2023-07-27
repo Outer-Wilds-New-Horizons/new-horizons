@@ -8,7 +8,6 @@ using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.Props.Audio;
 using NewHorizons.External.Modules.Props.Dialogue;
 using NewHorizons.External.SerializableData;
-using NewHorizons.OtherMods.MenuFramework;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OWML;
 using Newtonsoft.Json;
@@ -62,7 +61,7 @@ namespace NewHorizons
                 if (!Main.BodyDict.ContainsKey(body.Config.starSystem)) Main.BodyDict.Add(body.Config.starSystem, new List<NewHorizonsBody>());
                 Main.BodyDict[body.Config.starSystem].Add(body);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 NHLogger.LogError($"Error in Create API:\n{ex}");
             }
@@ -143,7 +142,8 @@ namespace NewHorizons
         public T QueryBody<T>(string bodyName, string jsonPath)
         {
             var data = QueryBody(typeof(T), bodyName, jsonPath);
-            if (data is T result) {
+            if (data is T result)
+            {
                 return result;
             }
             return default;
@@ -152,14 +152,16 @@ namespace NewHorizons
         public object QuerySystem(Type outType, string jsonPath)
         {
             var system = Main.SystemDict[Main.Instance.CurrentStarSystem];
-            return system == null 
-                ? null 
+            return system == null
+                ? null
                 : QueryJson(outType, Path.Combine(system.Mod.ModHelper.Manifest.ModFolderPath, system.RelativePath), jsonPath);
         }
 
-        public T QuerySystem<T>(string jsonPath) {
+        public T QuerySystem<T>(string jsonPath)
+        {
             var data = QuerySystem(typeof(T), jsonPath);
-            if (data is T result) {
+            if (data is T result)
+            {
                 return result;
             }
             return default;
@@ -169,7 +171,8 @@ namespace NewHorizons
             float scale, bool alignRadial)
         {
             var prefab = SearchUtilities.Find(propToCopyPath);
-            var detailInfo = new DetailInfo() {
+            var detailInfo = new DetailInfo()
+            {
                 position = position,
                 rotation = eulerAngles,
                 scale = scale,
@@ -199,8 +202,8 @@ namespace NewHorizons
             return SignalBuilder.Make(root, null, info, mod).GetComponent<AudioSignal>();
         }
 
-        public (CharacterDialogueTree, RemoteDialogueTrigger) SpawnDialogue(IModBehaviour mod, GameObject root, string xmlFile, float radius = 1f, 
-            float range = 1f, string blockAfterPersistentCondition = null, float lookAtRadius = 1f, string pathToAnimController = null, 
+        public (CharacterDialogueTree, RemoteDialogueTrigger) SpawnDialogue(IModBehaviour mod, GameObject root, string xmlFile, float radius = 1f,
+            float range = 1f, string blockAfterPersistentCondition = null, float lookAtRadius = 1f, string pathToAnimController = null,
             float remoteTriggerRadius = 0f)
         {
             var info = new DialogueInfo()
