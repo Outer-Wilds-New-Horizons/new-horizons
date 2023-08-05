@@ -811,7 +811,14 @@ namespace NewHorizons
 
         public void SetDefaultSystem(string defaultSystem)
         {
-            _defaultStarSystem = defaultSystem;
+            if (string.IsNullOrEmpty(defaultSystem))
+            {
+                _defaultStarSystem = "SolarSystem";
+            }
+            else
+            {
+                _defaultStarSystem = defaultSystem;
+            }
         }
 
         #endregion Load
