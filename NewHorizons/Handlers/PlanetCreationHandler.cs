@@ -66,7 +66,7 @@ namespace NewHorizons.Handlers
                 var starLightGO = UnityEngine.Object.Instantiate(sun.GetComponentInChildren<SunLightController>().gameObject);
                 foreach (var comp in starLightGO.GetComponents<Component>())
                 {
-                    if (comp is not SunLightController && comp is not SunLightParamUpdater && comp is not Light && comp is not Transform)
+                    if (comp is not (SunLightController or SunLightParamUpdater or Light or Transform))
                     {
                         UnityEngine.Object.Destroy(comp);
                     }
