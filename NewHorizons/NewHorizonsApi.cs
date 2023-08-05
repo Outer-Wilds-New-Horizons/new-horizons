@@ -1,10 +1,13 @@
 using NewHorizons.Builder.Props;
 using NewHorizons.Builder.Props.Audio;
+using NewHorizons.Builder.ShipLog;
 using NewHorizons.External;
+using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.Props.Audio;
 using NewHorizons.External.Modules.Props.Dialogue;
+using NewHorizons.External.SerializableData;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OWML;
 using Newtonsoft.Json;
@@ -15,8 +18,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Xml.Linq;
 using UnityEngine;
 using UnityEngine.Events;
+using static NewHorizons.External.Modules.ShipLogModule;
 
 namespace NewHorizons
 {
@@ -56,7 +61,7 @@ namespace NewHorizons
                 if (!Main.BodyDict.ContainsKey(body.Config.starSystem)) Main.BodyDict.Add(body.Config.starSystem, new List<NewHorizonsBody>());
                 Main.BodyDict[body.Config.starSystem].Add(body);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 NHLogger.LogError($"Error in Create API:\n{ex}");
             }
@@ -137,7 +142,8 @@ namespace NewHorizons
         public T QueryBody<T>(string bodyName, string jsonPath)
         {
             var data = QueryBody(typeof(T), bodyName, jsonPath);
-            if (data is T result) {
+            if (data is T result)
+            {
                 return result;
             }
             return default;
@@ -146,14 +152,16 @@ namespace NewHorizons
         public object QuerySystem(Type outType, string jsonPath)
         {
             var system = Main.SystemDict[Main.Instance.CurrentStarSystem];
-            return system == null 
-                ? null 
+            return system == null
+                ? null
                 : QueryJson(outType, Path.Combine(system.Mod.ModHelper.Manifest.ModFolderPath, system.RelativePath), jsonPath);
         }
 
-        public T QuerySystem<T>(string jsonPath) {
+        public T QuerySystem<T>(string jsonPath)
+        {
             var data = QuerySystem(typeof(T), jsonPath);
-            if (data is T result) {
+            if (data is T result)
+            {
                 return result;
             }
             return default;
@@ -163,7 +171,8 @@ namespace NewHorizons
             float scale, bool alignRadial)
         {
             var prefab = SearchUtilities.Find(propToCopyPath);
-            var detailInfo = new DetailInfo() {
+            var detailInfo = new DetailInfo()
+            {
                 position = position,
                 rotation = eulerAngles,
                 scale = scale,
@@ -193,8 +202,8 @@ namespace NewHorizons
             return SignalBuilder.Make(root, null, info, mod).GetComponent<AudioSignal>();
         }
 
-        public (CharacterDialogueTree, RemoteDialogueTrigger) SpawnDialogue(IModBehaviour mod, GameObject root, string xmlFile, float radius = 1f, 
-            float range = 1f, string blockAfterPersistentCondition = null, float lookAtRadius = 1f, string pathToAnimController = null, 
+        public (CharacterDialogueTree, RemoteDialogueTrigger) SpawnDialogue(IModBehaviour mod, GameObject root, string xmlFile, float radius = 1f,
+            float range = 1f, string blockAfterPersistentCondition = null, float lookAtRadius = 1f, string pathToAnimController = null,
             float remoteTriggerRadius = 0f)
         {
             var info = new DialogueInfo()
@@ -214,6 +223,89 @@ namespace NewHorizons
             };
 
             return DialogueBuilder.Make(root, null, info, mod);
+        }
+
+        public void CreatePlanet(string config, IModBehaviour mod)
+        {
+            try
+            {
+                var planet = JsonConvert.DeserializeObject<PlanetConfig>(config);
+                if (planet == null)
+                {
+                    NHLogger.LogError($"Couldn't load planet via API. Is your Json formatted correctly? {config}");
+                    return;
+                }
+
+                var body = Main.Instance.RegisterPlanetConfig(planet, mod, null);
+
+                if (!Main.BodyDict.ContainsKey(body.Config.starSystem)) Main.BodyDict.Add(body.Config.starSystem, new List<NewHorizonsBody>());
+                Main.BodyDict[body.Config.starSystem].Add(body);
+            }
+            catch (Exception ex)
+            {
+                NHLogger.LogError($"Error in CreatePlanet API:\n{ex}");
+            }
+        }
+
+        public void DefineStarSystem(string name, string config, IModBehaviour mod)
+        {
+            var starSystemConfig = JsonConvert.DeserializeObject<StarSystemConfig>(config);
+            Main.Instance.LoadStarSystemConfig(name, starSystemConfig, null, mod);
+        }
+
+        public (CharacterDialogueTree, RemoteDialogueTrigger) CreateDialogueFromXML(string textAssetID, string xml, string dialogueInfo, GameObject planetGO)
+        {
+            var info = JsonConvert.DeserializeObject<DialogueInfo>(dialogueInfo);
+            return DialogueBuilder.Make(planetGO, null, info, xml, textAssetID);
+        }
+
+        public void AddShipLogXML(IModBehaviour mod, XElement xml, string planetName, string imageFolder, Dictionary<string, Vector2> entryPositions, Dictionary<string, (Color colour, Color highlight)> curiousityColours)
+        {
+            // This method has to be called each time the ship log manager is created, i.e. each time a system loads so it will only ever be relevant to the current one.
+            var starSystem = Main.Instance.CurrentStarSystem;
+
+            var body = new NewHorizonsBody(new PlanetConfig()
+            {
+                name = planetName,
+                starSystem = starSystem,
+                ShipLog = new ShipLogModule()
+                {
+                    spriteFolder = imageFolder
+                }
+            }, mod);
+
+            if (!Main.BodyDict.ContainsKey(starSystem))
+            {
+                Main.BodyDict.Add(starSystem, new List<NewHorizonsBody>());
+                Main.BodyDict[starSystem].Add(body);
+            }
+            else
+            {
+                var existingBody = Main.BodyDict[starSystem]
+                    .FirstOrDefault(x => x.Config.name == planetName && x.Mod.ModHelper.Manifest.UniqueName == mod.ModHelper.Manifest.UniqueName);
+                if (existingBody != null)
+                {
+                    body = existingBody;
+                }
+                else
+                {
+                    Main.BodyDict[starSystem].Add(body);
+                }
+            }
+
+            var system = new StarSystemConfig()
+            {
+                entryPositions = entryPositions?
+                    .Select((pair) => new EntryPositionInfo() { id = pair.Key, position = pair.Value })
+                    .ToArray(),
+                curiosities = curiousityColours?
+                    .Select((pair) => new CuriosityColorInfo() { id = pair.Key, color = MColor.FromColor(pair.Value.colour), highlightColor = MColor.FromColor(pair.Value.highlight) })
+                    .ToArray()
+            };
+
+            Main.Instance.LoadStarSystemConfig(starSystem, system, null, mod);
+
+            RumorModeBuilder.AddShipLogXML(GameObject.FindObjectOfType<ShipLogManager>(), xml, body);
         }
     }
 }

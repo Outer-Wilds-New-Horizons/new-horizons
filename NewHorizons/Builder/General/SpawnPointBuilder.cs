@@ -13,6 +13,9 @@ namespace NewHorizons.Builder.General
     public static class SpawnPointBuilder
     {
         private static bool suitUpQueued = false;
+        public static SpawnPoint ShipSpawn { get; private set; }
+        public static Vector3 ShipSpawnOffset { get; private set; }
+
         public static SpawnPoint Make(GameObject planetGO, SpawnModule module, OWRigidbody owRigidBody)
         {
             SpawnPoint playerSpawn = null;
@@ -35,41 +38,21 @@ namespace NewHorizons.Builder.General
 
             if (module.shipSpawn != null)
             {
-                GameObject spawnGO = GeneralPropBuilder.MakeNew("ShipSpawnPoint", planetGO, null, module.shipSpawn);
+                var spawnGO = GeneralPropBuilder.MakeNew("ShipSpawnPoint", planetGO, null, module.shipSpawn);
                 spawnGO.SetActive(false);
                 spawnGO.layer = Layer.PlayerSafetyCollider;
 
-                var shipSpawn = spawnGO.AddComponent<SpawnPoint>();
-                shipSpawn._isShipSpawn = true;
-                shipSpawn._attachedBody = owRigidBody;
-                shipSpawn._spawnLocation = SpawnLocation.None;
+                ShipSpawn = spawnGO.AddComponent<SpawnPoint>();
+                ShipSpawn._isShipSpawn = true;
+                ShipSpawn._attachedBody = owRigidBody;
+                ShipSpawn._spawnLocation = SpawnLocation.None;
 
                 // #601 we need to actually set the right trigger volumes here
-                shipSpawn._triggerVolumes = new OWTriggerVolume[0];
+                ShipSpawn._triggerVolumes = new OWTriggerVolume[0];
 
-                // TODO: this should happen elsewhere
-                var ship = SearchUtilities.Find("Ship_Body");
-                if (ship != null)
-                {
-                    ship.transform.position = spawnGO.transform.position;
-                    ship.transform.rotation = spawnGO.transform.rotation;
+                ShipSpawnOffset = module.shipSpawn.offset ?? (module.shipSpawn.alignRadial.GetValueOrDefault() ? Vector3.up * 4 : Vector3.zero);
 
-                    // Move it up a bit more when aligning to surface
-                    if (module.shipSpawn.offset != null)
-                    {
-                        ship.transform.position += spawnGO.transform.TransformDirection(module.shipSpawn.offset);
-                    }
-                    else if (module.shipSpawn.alignRadial.GetValueOrDefault())
-                    {
-                        ship.transform.position += ship.transform.up * 4f;
-                    }
-
-                    ship.GetRequiredComponent<MatchInitialMotion>().SetBodyToMatch(owRigidBody);
-                }
                 spawnGO.SetActive(true);
-
-                // Ship doesn't get activated sometimes
-                Delay.RunWhen(() => Main.IsSystemReady, () => ship.gameObject.SetActive(true));
             }
 
             if ((Main.Instance.IsWarpingFromVessel || (!Main.Instance.IsWarpingFromShip && (module.playerSpawn?.startWithSuit ?? false))) && !suitUpQueued)
