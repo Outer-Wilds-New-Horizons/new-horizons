@@ -121,7 +121,7 @@ namespace NewHorizons
             // Else it doesn't get set idk
             if (currentScene == "TitleScreen" && SystemDict.ContainsKey(_defaultSystemOverride))
             {
-                _currentStarSystem = string.IsNullOrEmpty(_defaultSystemOverride) ? "SolarSystem" : _defaultSystemOverride;
+                _currentStarSystem = _defaultSystemOverride;
             }
 
             var wasUsingCustomTitleScreen = _useCustomTitleScreen;
