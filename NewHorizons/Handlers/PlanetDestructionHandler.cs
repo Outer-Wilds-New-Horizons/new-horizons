@@ -54,20 +54,36 @@ namespace NewHorizons.Handlers
 
         public static void RemoveSolarSystem()
         {
-            // Stop the sun from killing the player if they spawn at the center of the solar system
-            var sunVolumes = SearchUtilities.Find("Sun_Body/Sector_SUN/Volumes_SUN");
-            sunVolumes.SetActive(false);
+            // Adapted from EOTS thanks corby
+            var toDisable = new List<GameObject>();
 
-            // Random shit breaks if we don't wait idk why
-            foreach (var name in _solarSystemBodies)
+            // Collect all rigid bodies and proxies
+            foreach (var rigidbody in CenterOfTheUniverse.s_rigidbodies)
             {
-                var ao = AstroObjectLocator.GetAstroObject(name);
-                if (ao != null) Delay.FireInNUpdates(() => RemoveBody(ao, false), 2);
-                else NHLogger.LogError($"Couldn't find [{name}]");
+                if (rigidbody.name is not ("Player_Body" or "Probe_Body" or "Ship_Body"))
+                {
+                    toDisable.Add(rigidbody.gameObject);
+                }
             }
 
-            // Bring the sun back
-            Delay.FireInNUpdates(() => { if (Locator.GetAstroObject(AstroObject.Name.Sun).gameObject.activeInHierarchy) { sunVolumes.SetActive(true); } }, 3);
+            foreach (var proxyBody in GameObject.FindObjectsOfType<ProxyBody>())
+            {
+                toDisable.Add(proxyBody.gameObject);
+            }
+
+            Delay.FireInNUpdates(() =>
+            {
+                foreach (var gameObject in toDisable)
+                {
+                    gameObject.SetActive(false);
+                }
+                GameObject.FindObjectOfType<SunProxy>().gameObject.SetActive(false);
+            }, 2); // Have to wait or shit goes wild
+
+            foreach (var streamingAssetBundle in StreamingManager.s_activeBundles)
+            {
+                //streamingAssetBundle.Unload();
+            }
         }
 
         public static void RemoveEyeOfTheUniverse()

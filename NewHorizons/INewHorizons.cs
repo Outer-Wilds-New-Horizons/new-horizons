@@ -148,6 +148,15 @@ namespace NewHorizons
         (CharacterDialogueTree, RemoteDialogueTrigger) CreateDialogueFromXML(string textAssetID, string xml, string dialogueInfo, GameObject planetGO);
 
         /// <summary>
+        /// Allows the creation of Nomai text by directly passing the xml and translatorTextInfo json contents as strings
+        /// </summary>
+        /// <param name="xml">The contents of the translator text file as a string</param>
+        /// <param name="textInfo">The json translator text info as a string. See the documentation/schema for what this can contain.</param>
+        /// <param name="planetGO">The root planet rigidbody that this text is attached to. Any paths in the translatorTextInfo are relative to this body.</param>
+        /// <returns></returns>
+        GameObject CreateNomaiText(string xml, string textInfo, GameObject planetGO);
+
+        /// <summary>
         /// Directly add ship logs from XML. Call this method right before ShipLogManager awake.
         /// </summary>
         /// <param name="mod">The mod this method is being called from. This is required for loading files.</param>

@@ -29,7 +29,7 @@ namespace NewHorizons.External.Modules
     }
 
     [JsonObject]
-    public abstract class GeneralPropInfo : GeneralPointPropInfo
+    public class GeneralPropInfo : GeneralPointPropInfo
     {
         /// <summary>
         /// Rotation of the object

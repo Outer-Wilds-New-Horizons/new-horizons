@@ -8,9 +8,9 @@ namespace NewHorizons.Handlers
 {
     public static class TranslationHandler
     {
-        private static Dictionary<TextTranslation.Language, Dictionary<string, string>> _shipLogTranslationDictionary = new Dictionary<TextTranslation.Language, Dictionary<string, string>>();
-        private static Dictionary<TextTranslation.Language, Dictionary<string, string>> _dialogueTranslationDictionary = new Dictionary<TextTranslation.Language, Dictionary<string, string>>();
-        private static Dictionary<TextTranslation.Language, Dictionary<string, string>> _uiTranslationDictionary = new Dictionary<TextTranslation.Language, Dictionary<string, string>>();
+        private static Dictionary<TextTranslation.Language, Dictionary<string, string>> _shipLogTranslationDictionary = new();
+        private static Dictionary<TextTranslation.Language, Dictionary<string, string>> _dialogueTranslationDictionary = new();
+        private static Dictionary<TextTranslation.Language, Dictionary<string, string>> _uiTranslationDictionary = new();
 
         public enum TextType
         {
@@ -93,8 +93,9 @@ namespace NewHorizons.Handlers
                 if (!_uiTranslationDictionary.ContainsKey(language)) _uiTranslationDictionary.Add(language, new Dictionary<string, string>());
                 foreach (var originalKey in config.UIDictionary.Keys)
                 {
-                    var key = originalKey.Replace("&lt;", "<").Replace("&gt;", ">").Replace("<![CDATA[", "").Replace("]]>", "");
-                    var value = config.UIDictionary[originalKey].Replace("&lt;", "<").Replace("&gt;", ">").Replace("<![CDATA[", "").Replace("]]>", "");
+                    // Don't remove CDATA from UI
+                    var key = originalKey.Replace("&lt;", "<").Replace("&gt;", ">");
+                    var value = config.UIDictionary[originalKey].Replace("&lt;", "<").Replace("&gt;", ">");
 
                     if (!_uiTranslationDictionary[language].ContainsKey(key)) _uiTranslationDictionary[language].Add(key, value);
                     else _uiTranslationDictionary[language][key] = value;

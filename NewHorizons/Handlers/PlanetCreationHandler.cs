@@ -36,6 +36,12 @@ namespace NewHorizons.Handlers
 
         public static void Init(List<NewHorizonsBody> bodies)
         {
+            // Start by destroying all planets if need be
+            if (Main.SystemDict[Main.Instance.CurrentStarSystem].Config.destroyStockPlanets)
+            {
+                PlanetDestructionHandler.RemoveStockPlanets();
+            }
+
             // Base game value
             SolarSystemRadius = DefaultFurthestOrbit;
 
@@ -60,7 +66,7 @@ namespace NewHorizons.Handlers
                 var starLightGO = UnityEngine.Object.Instantiate(sun.GetComponentInChildren<SunLightController>().gameObject);
                 foreach (var comp in starLightGO.GetComponents<Component>())
                 {
-                    if (!(comp is SunLightController) && !(comp is SunLightParamUpdater) && !(comp is Light) && !(comp is Transform))
+                    if (comp is not (SunLightController or SunLightParamUpdater or Light or Transform))
                     {
                         UnityEngine.Object.Destroy(comp);
                     }
@@ -138,10 +144,6 @@ namespace NewHorizons.Handlers
             NHLogger.Log("Done loading bodies");
 
             SingularityBuilder.PairAllSingularities();
-
-            // Events.FireOnNextUpdate(PlanetDestroyer.RemoveAllProxies);
-
-            if (Main.SystemDict[Main.Instance.CurrentStarSystem].Config.destroyStockPlanets) PlanetDestructionHandler.RemoveStockPlanets();
         }
 
         public static bool LoadBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)
