@@ -546,7 +546,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
 
                 // make an entry in the cache for all these spirals
 
-                if (nhBody.Cache != null) 
+                if (nhBody?.Cache != null) 
                 {
                     var cacheData = arranger.spirals.Select(spiralManipulator => new ArcCacheData() 
                     { 
