@@ -2929,6 +2929,11 @@
           "type": "string",
           "description": "Ship log fact revealed when launching from this pad. Optional."
         },
+        "detailed": {
+          "type": "boolean",
+          "description": "Hide the lattice cage around the platform. Defaults to true.",
+          "default": true
+        },
         "computer": {
           "description": "Will create a modern Nomai computer linked to this gravity cannon.",
           "$ref": "#/definitions/NomaiComputerInfo"
