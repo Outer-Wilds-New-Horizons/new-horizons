@@ -51,9 +51,9 @@ namespace NewHorizons.Builder.Props
                     .InstantiateInactive()
                     .Rename("Prefab_GravityCannonPlatform")
                     .DontDestroyOnLoad();
-                GameObject.Destroy(_platformPrefab.FindChild("Structure_NOM_GravityCannon_Collider"));
-                GameObject.Destroy(_platformPrefab.FindChild("Structure_NOM_GravityCannon_Crystals"));
-                GameObject.Destroy(_platformPrefab.FindChild("Structure_NOM_GravityCannon_Geo"));
+                GameObject.DestroyImmediate(_platformPrefab.FindChild("Structure_NOM_GravityCannon_Collider"));
+                GameObject.DestroyImmediate(_platformPrefab.FindChild("Structure_NOM_GravityCannon_Crystals"));
+                GameObject.DestroyImmediate(_platformPrefab.FindChild("Structure_NOM_GravityCannon_Geo"));
             }
 
             if (_orbPrefab == null)
