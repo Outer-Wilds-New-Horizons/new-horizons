@@ -3,6 +3,7 @@ using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.Props.Shuttle;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace NewHorizons.Builder.Props
@@ -12,6 +13,8 @@ namespace NewHorizons.Builder.Props
         private static GameObject _prefab;
         private static GameObject _orbPrefab;
         private static GameObject _bodyPrefab;
+
+        public static Dictionary<NomaiShuttleController.ShuttleID, NomaiShuttleController> Shuttles { get; } = new();
 
         internal static void InitPrefab()
         {
@@ -107,6 +110,8 @@ namespace NewHorizons.Builder.Props
             bodyObject.SetActive(true);
             orbObject.SetActive(true);
             shuttleController._orb.RemoveAllLocks();
+
+            Shuttles[id] = shuttleController;
 
             return shuttleObject;
         }

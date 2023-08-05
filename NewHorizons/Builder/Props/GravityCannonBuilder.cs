@@ -1,10 +1,14 @@
 using NewHorizons.Builder.Props.TranslatorText;
+using NewHorizons.Components.Orbital;
 using NewHorizons.External.Modules;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.Props.Shuttle;
+using NewHorizons.External.Modules.TranslatorText;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OuterWilds;
 using NewHorizons.Utility.OWML;
+using Newtonsoft.Json;
 using OWML.Common;
 using UnityEngine;
 
@@ -76,7 +80,8 @@ namespace NewHorizons.Builder.Props
             gravityCannonObject.SetActive(false);
 
             var gravityCannonController = gravityCannonObject.GetComponent<GravityCannonController>();
-            gravityCannonController._shuttleID = ShuttleHandler.GetShuttleID(info.shuttleID);
+            var id = ShuttleHandler.GetShuttleID(info.shuttleID);
+            gravityCannonController._shuttleID = id;
 
             // Gravity controller checks string length instead of isnullorempty
             gravityCannonController._retrieveShipLogFact = info.retrieveReveal ?? string.Empty;
@@ -86,7 +91,11 @@ namespace NewHorizons.Builder.Props
 
             if (info.computer != null)
             {
-                gravityCannonController._nomaiComputer = CreateComputer(planetGO, sector, info.computer);
+                // Do it next update so that the shuttle has been made
+                Delay.FireOnNextUpdate(() =>
+                {
+                    gravityCannonController._nomaiComputer = CreateComputer(planetGO, sector, info.computer, id);
+                });
             }
             else
             {
@@ -140,14 +149,23 @@ namespace NewHorizons.Builder.Props
             }, () => Main.IsSystemReady, 10);
         }
 
-        private static NomaiComputer CreateComputer(GameObject planetGO, Sector sector, GeneralPropInfo computerInfo)
+        private static NomaiComputer CreateComputer(GameObject planetGO, Sector sector, GeneralPropInfo computerInfo, NomaiShuttleController.ShuttleID id)
         {
-            var computerObject = DetailBuilder.Make(planetGO, sector, TranslatorTextBuilder.ComputerPrefab, new DetailInfo(computerInfo));
+            // Load the position info from the GeneralPropInfo
+            var translatorTextInfo = new TranslatorTextInfo();
+            JsonConvert.PopulateObject(JsonConvert.SerializeObject(computerInfo), translatorTextInfo);
+            translatorTextInfo.type = NomaiTextType.Computer;
+
+            var shuttle = ShuttleBuilder.Shuttles[id];
+            var planet = AstroObjectLocator.GetPlanetName(shuttle.GetComponentInParent<AstroObject>());
+
+            var displayText = TranslationHandler.GetTranslation("NOMAI_SHUTTLE_COMPUTER", TranslationHandler.TextType.UI).Replace("{0}", planet);
+            NHLogger.Log(displayText);
+            var xmlContent = $"<NomaiObject>\r\n    <TextBlock>\r\n        <ID>1</ID>\r\n        <Text>{displayText}</Text>\r\n    </TextBlock>\r\n</NomaiObject>";
+
+            var computerObject = TranslatorTextBuilder.Make(planetGO, sector, translatorTextInfo, null, xmlContent);
 
             var computer = computerObject.GetComponentInChildren<NomaiComputer>();
-            computer.SetSector(sector);
-
-            Delay.FireOnNextUpdate(computer.ClearAllEntries);
 
             computerObject.SetActive(true);
 

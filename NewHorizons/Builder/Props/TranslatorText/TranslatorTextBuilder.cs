@@ -1,7 +1,7 @@
 using NewHorizons.External;
 using NewHorizons.External.Modules.Props;
-using NewHorizons.External.SerializableData;
 using NewHorizons.External.Modules.TranslatorText;
+using NewHorizons.External.SerializableData;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using NewHorizons.Utility.Geometry;
@@ -14,7 +14,6 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 using UnityEngine;
-
 using Random = UnityEngine.Random;
 
 namespace NewHorizons.Builder.Props.TranslatorText
@@ -137,6 +136,11 @@ namespace NewHorizons.Builder.Props.TranslatorText
                 return null;
             }
 
+            return Make(planetGO, sector, info, nhBody, xmlContent);
+        }
+
+        public static GameObject Make(GameObject planetGO, Sector sector, TranslatorTextInfo info, NewHorizonsBody nhBody, string xmlContent)
+        {
             switch (info.type)
             {
                 case NomaiTextType.Wall:
@@ -401,7 +405,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
             }
         }
 
-        private static NomaiWallText MakeWallText(GameObject go, Sector sector, TranslatorTextInfo info, string xmlPath, NewHorizonsBody nhBody)
+        private static NomaiWallText MakeWallText(GameObject go, Sector sector, TranslatorTextInfo info, string xmlContent, NewHorizonsBody nhBody)
         {
             GameObject nomaiWallTextObj = new GameObject("NomaiWallText");
             nomaiWallTextObj.SetActive(false);
@@ -418,13 +422,13 @@ namespace NewHorizons.Builder.Props.TranslatorText
 
             nomaiWallText._location = EnumUtils.Parse<NomaiText.Location>(info.location.ToString());
 
-            var text = new TextAsset(xmlPath);
+            var text = new TextAsset(xmlContent);
 
             // Text assets need a name to be used with VoiceMod
             text.name = Path.GetFileNameWithoutExtension(info.xmlFile);
 
-            BuildArcs(xmlPath, nomaiWallText, nomaiWallTextObj, info, nhBody);
-            AddTranslation(xmlPath);
+            BuildArcs(xmlContent, nomaiWallText, nomaiWallTextObj, info, nhBody);
+            AddTranslation(xmlContent);
             nomaiWallText._nomaiTextAsset = text;
 
             nomaiWallText.SetTextAsset(text);
