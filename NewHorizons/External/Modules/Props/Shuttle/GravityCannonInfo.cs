@@ -2,6 +2,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
@@ -26,6 +27,11 @@ namespace NewHorizons.External.Modules.Props.Shuttle
         /// Ship log fact revealed when launching from this pad. Optional.
         /// </summary>
         public string launchReveal;
+
+        /// <summary>
+        /// Hide the lattice cage around the platform. Defaults to true.
+        /// </summary>
+        [DefaultValue(true)] public bool detailed = true;
 
         /// <summary>
         /// Will create a modern Nomai computer linked to this gravity cannon.
