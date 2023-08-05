@@ -25,6 +25,7 @@ namespace NewHorizons.Builder.Props
                     .Rename("Prefab_GravityCannon")
                     .DontDestroyOnLoad();
             }
+
             if (_detailedPlatformPrefab == null)
             {
                 // Creating it in the original position so we can instantiate the other parts in the right relative positions
