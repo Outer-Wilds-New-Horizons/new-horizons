@@ -54,23 +54,36 @@ namespace NewHorizons.Handlers
 
         public static void RemoveSolarSystem()
         {
-            // Stop the sun from killing the player if they spawn at the center of the solar system
-            SearchUtilities.Find("Sun_Body/Sector_SUN/Volumes_SUN").SetActive(false);
+            // Adapted from EOTS thanks corby
+            var toDisable = new List<GameObject>();
+
+            // Collect all rigid bodies and proxies
+            foreach (var rigidbody in CenterOfTheUniverse.s_rigidbodies)
+            {
+                if (rigidbody.name is not "Player_Body" && rigidbody.name is not "Ship_Body")
+                {
+                    toDisable.Add(rigidbody.gameObject);
+                }
+            }
+
+            foreach (var proxyBody in GameObject.FindObjectsOfType<ProxyBody>())
+            {
+                toDisable.Add(proxyBody.gameObject);
+            }
 
             Delay.FireInNUpdates(() =>
             {
-                // From EOTS thanks corby
-                foreach (var rigidbody in CenterOfTheUniverse.s_rigidbodies)
-                    if (rigidbody.name is not "Player_Body" or "Ship_Body")
-                        rigidbody.gameObject.SetActive(false);
-
-                foreach (var proxyBody in GameObject.FindObjectsOfType<ProxyBody>())
-                    proxyBody.gameObject.SetActive(false);
+                foreach (var gameObject in toDisable)
+                {
+                    gameObject.SetActive(false);
+                }
                 GameObject.FindObjectOfType<SunProxy>().gameObject.SetActive(false);
+            }, 2); // Have to wait or shit goes wild
 
-                foreach (var streamingAssetBundle in StreamingManager.s_activeBundles)
-                    streamingAssetBundle.Unload();
-            }, 2); // Random shit breaks if we don't wait idk why
+            foreach (var streamingAssetBundle in StreamingManager.s_activeBundles)
+            {
+                //streamingAssetBundle.Unload();
+            }
         }
 
         public static void RemoveEyeOfTheUniverse()
