@@ -112,7 +112,7 @@ namespace NewHorizons.Builder.Props
                 // Could check this in the for loop but I'm not sure what order we need to know about this in
                 isItem = false;
 
-                var existingSectors = new HashSet<Sector>(prop.GetComponentsInChildren<Sector>());
+                var existingSectors = new HashSet<Sector>(prop.GetComponentsInChildren<Sector>(true));
 
                 foreach (var component in prop.GetComponentsInChildren<Component>(true))
                 {
@@ -258,7 +258,7 @@ namespace NewHorizons.Builder.Props
 
             // Not doing else if here because idk if any of the classes below implement ISectorGroup
 
-            if (component is Sector s && existingSectors.Contains(s.GetParentSector()))
+            if (component is Sector s && !existingSectors.Contains(s.GetParentSector()))
             {
                 s.SetParentSector(sector);
             }
