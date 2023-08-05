@@ -55,19 +55,22 @@ namespace NewHorizons.Handlers
         public static void RemoveSolarSystem()
         {
             // Stop the sun from killing the player if they spawn at the center of the solar system
-            var sunVolumes = SearchUtilities.Find("Sun_Body/Sector_SUN/Volumes_SUN");
-            sunVolumes.SetActive(false);
+            SearchUtilities.Find("Sun_Body/Sector_SUN/Volumes_SUN").SetActive(false);
 
-            // Random shit breaks if we don't wait idk why
-            foreach (var name in _solarSystemBodies)
+            Delay.FireInNUpdates(() =>
             {
-                var ao = AstroObjectLocator.GetAstroObject(name);
-                if (ao != null) Delay.FireInNUpdates(() => RemoveBody(ao, false), 2);
-                else NHLogger.LogError($"Couldn't find [{name}]");
-            }
+                // From EOTS thanks corby
+                foreach (var rigidbody in CenterOfTheUniverse.s_rigidbodies)
+                    if (rigidbody.name is not "Player_Body" or "Ship_Body")
+                        rigidbody.gameObject.SetActive(false);
 
-            // Bring the sun back
-            Delay.FireInNUpdates(() => { if (Locator.GetAstroObject(AstroObject.Name.Sun).gameObject.activeInHierarchy) { sunVolumes.SetActive(true); } }, 3);
+                foreach (var proxyBody in GameObject.FindObjectsOfType<ProxyBody>())
+                    proxyBody.gameObject.SetActive(false);
+                GameObject.FindObjectOfType<SunProxy>().gameObject.SetActive(false);
+
+                foreach (var streamingAssetBundle in StreamingManager.s_activeBundles)
+                    streamingAssetBundle.Unload();
+            }, 2); // Random shit breaks if we don't wait idk why
         }
 
         public static void RemoveEyeOfTheUniverse()
