@@ -60,7 +60,7 @@ namespace NewHorizons.Handlers
             // Collect all rigid bodies and proxies
             foreach (var rigidbody in CenterOfTheUniverse.s_rigidbodies)
             {
-                if (rigidbody.name is not "Player_Body" && rigidbody.name is not "Ship_Body")
+                if (rigidbody.name is not ("Player_Body" or "Probe_Body" or "Ship_Body"))
                 {
                     toDisable.Add(rigidbody.gameObject);
                 }
