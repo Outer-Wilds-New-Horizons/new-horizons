@@ -6,7 +6,7 @@ namespace NewHorizons.Builder.General
     {
         public static OWRigidbody Make(GameObject body, float sphereOfInfluence)
         {
-            body.AddComponent<ProxyShadowCasterSuperGroup>()._bounds.radius = sphereOfInfluence;
+            body.AddComponent<ProxyShadowCasterSuperGroup>()._bounds.radius = sphereOfInfluence * 2;
 
             Rigidbody rigidBody = body.AddComponent<Rigidbody>();
             rigidBody.mass = 10000;
