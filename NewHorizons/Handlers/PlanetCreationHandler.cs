@@ -346,10 +346,12 @@ namespace NewHorizons.Handlers
             body.Config.Base.showMinimap = false;
             body.Config.Base.hasMapMarker = false;
 
-            var owRigidBody = RigidBodyBuilder.Make(go, body.Config);
+            const float sphereOfInfluence = 2000f;
+            
+            var owRigidBody = RigidBodyBuilder.Make(go, sphereOfInfluence);
             var ao = AstroObjectBuilder.Make(go, null, body.Config, false);
 
-            var sector = SectorBuilder.Make(go, owRigidBody, 2000f);
+            var sector = SectorBuilder.Make(go, owRigidBody, sphereOfInfluence);
             ao._rootSector = sector;
             ao._type = AstroObject.Type.None;
 
@@ -419,10 +421,10 @@ namespace NewHorizons.Handlers
                 };
             }
 
-            var owRigidBody = RigidBodyBuilder.Make(go, body.Config);
-            var ao = AstroObjectBuilder.Make(go, primaryBody, body.Config, false);
-
             var sphereOfInfluence = GetSphereOfInfluence(body);
+            
+            var owRigidBody = RigidBodyBuilder.Make(go, sphereOfInfluence);
+            var ao = AstroObjectBuilder.Make(go, primaryBody, body.Config, false);
 
             var sector = SectorBuilder.Make(go, owRigidBody, sphereOfInfluence * 2f);
             ao._rootSector = sector;

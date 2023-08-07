@@ -1,13 +1,12 @@
-using NewHorizons.External.Configs;
 using NewHorizons.Utility;
 using UnityEngine;
 namespace NewHorizons.Builder.General
 {
     public static class RigidBodyBuilder
     {
-        public static OWRigidbody Make(GameObject body, PlanetConfig config)
+        public static OWRigidbody Make(GameObject body, float sphereOfInfluence)
         {
-            body.AddComponent<ProxyShadowCasterSuperGroup>();
+            body.AddComponent<ProxyShadowCasterSuperGroup>()._bounds.radius = sphereOfInfluence;
 
             Rigidbody rigidBody = body.AddComponent<Rigidbody>();
             rigidBody.mass = 10000;
