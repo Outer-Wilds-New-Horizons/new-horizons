@@ -258,7 +258,7 @@ namespace NewHorizons.Builder.Props
 
             // Not doing else if here because idk if any of the classes below implement ISectorGroup
 
-            if (component is Sector s && !existingSectors.Contains(s.GetParentSector()))
+            if (component is Sector s && s.GetParentSector() != null && !existingSectors.Contains(s.GetParentSector()))
             {
                 s.SetParentSector(sector);
             }
