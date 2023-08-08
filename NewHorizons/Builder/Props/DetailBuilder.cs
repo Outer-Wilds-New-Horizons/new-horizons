@@ -257,7 +257,8 @@ namespace NewHorizons.Builder.Props
             }
 
             // Not doing else if here because idk if any of the classes below implement ISectorGroup
-
+            
+            // Null check else shuttles controls break
             if (component is Sector s && s.GetParentSector() != null && !existingSectors.Contains(s.GetParentSector()))
             {
                 s.SetParentSector(sector);
