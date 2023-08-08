@@ -81,6 +81,9 @@ namespace NewHorizons.Handlers
                 
                 // force call update here to make it switch to an active star. idk why we didnt have to do this before
                 SunLightEffectsController.Instance.Update();
+                
+                // Since we didn't call RemoveBody on the Stranger have to call this here
+                StrangerRemoved();
             }, 2); // Have to wait or shit goes wild
 
             foreach (var streamingAssetBundle in StreamingManager.s_activeBundles)
@@ -99,14 +102,23 @@ namespace NewHorizons.Handlers
             }
         }
 
+        public static void StrangerRemoved()
+        {
+            CloakHandler.FlagStrangerDisabled = true;
+
+            if (Locator._cloakFieldController?.GetComponentInParent<AstroObject>()?.GetAstroObjectName() == AstroObject.Name.RingWorld)
+            {
+                Locator._cloakFieldController = null;
+            }
+        }
+
         public static void RemoveBody(AstroObject ao, bool delete = false, List<AstroObject> toDestroy = null)
         {
             NHLogger.LogVerbose($"Removing [{ao.name}]");
 
             if (ao.GetAstroObjectName() == AstroObject.Name.RingWorld)
             {
-                CloakHandler.FlagStrangerDisabled = true;
-                if (Locator._cloakFieldController?.GetComponentInParent<AstroObject>() == ao) Locator._cloakFieldController = null;
+                StrangerRemoved();
             }
 
             if (ao.gameObject == null || !ao.gameObject.activeInHierarchy)
