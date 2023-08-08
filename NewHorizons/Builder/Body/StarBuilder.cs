@@ -178,14 +178,11 @@ namespace NewHorizons.Builder.Body
             light.color = lightColour;
             ambientLight.color = new Color(lightColour.r, lightColour.g, lightColour.b, lightColour.a == 0 ? 0.0001f : lightColour.a);
 
+            // used to use CopyPropertiesFrom, but that doesnt work here. instead, just copy settings from unity explorer
             var faceActiveCamera = sunLight.AddComponent<FaceActiveCamera>();
-            faceActiveCamera.CopyPropertiesFrom(_sunLight.GetComponent<FaceActiveCamera>());
+            faceActiveCamera._useLookAt = true;
             var csmTextureCacher = sunLight.AddComponent<CSMTextureCacher>();
-            csmTextureCacher.CopyPropertiesFrom(_sunLight.GetComponent<CSMTextureCacher>());
-            csmTextureCacher._light = light;
             var proxyShadowLight = sunLight.AddComponent<ProxyShadowLight>();
-            proxyShadowLight.CopyPropertiesFrom(_sunLight.GetComponent<ProxyShadowLight>());
-            proxyShadowLight._light = light;
 
             sunLight.name = "StarLight";
 

@@ -112,6 +112,8 @@ namespace NewHorizons.Builder.Props
                 // Could check this in the for loop but I'm not sure what order we need to know about this in
                 isItem = false;
 
+                var existingSectors = new HashSet<Sector>(prop.GetComponentsInChildren<Sector>(true));
+
                 foreach (var component in prop.GetComponentsInChildren<Component>(true))
                 {
                     // Components can come through as null here (yes, really),
@@ -127,7 +129,10 @@ namespace NewHorizons.Builder.Props
                     {
                         if (FixUnsectoredComponent(component)) continue;
                     }
-                    else FixSectoredComponent(component, sector, detail.keepLoaded);
+                    else
+                    {
+                        FixSectoredComponent(component, sector, existingSectors, detail.keepLoaded);
+                    }
 
                     FixComponent(component, go, detail.ignoreSun);
                 }
@@ -235,7 +240,7 @@ namespace NewHorizons.Builder.Props
         /// <summary>
         /// Fix components that have sectors. Has a specific fix if there is a VisionTorchItem on the object.
         /// </summary>
-        private static void FixSectoredComponent(Component component, Sector sector, bool keepLoaded)
+        private static void FixSectoredComponent(Component component, Sector sector, HashSet<Sector> existingSectors, bool keepLoaded)
         {
             // keepLoaded should remove existing groups
             // renderers/colliders get enabled later so we dont have to do that here
@@ -246,14 +251,15 @@ namespace NewHorizons.Builder.Props
             }
 
             // fix Sector stuff, eg SectorCullGroup (without this, props that have a SectorCullGroup component will become invisible inappropriately)
-            if (component is ISectorGroup sectorGroup)
+            if (component is ISectorGroup sectorGroup && !existingSectors.Contains(sectorGroup.GetSector()))
             {
                 sectorGroup.SetSector(sector);
             }
 
             // Not doing else if here because idk if any of the classes below implement ISectorGroup
-
-            if (component is Sector s)
+            
+            // Null check else shuttles controls break
+            if (component is Sector s && s.GetParentSector() != null && !existingSectors.Contains(s.GetParentSector()))
             {
                 s.SetParentSector(sector);
             }
@@ -269,14 +275,14 @@ namespace NewHorizons.Builder.Props
                 sectorCullGroup.SetVisible(sectorCullGroup.ShouldBeVisible(), true, false);
             }
 
-            else if(component is SectoredMonoBehaviour behaviour)
+            else if(component is SectoredMonoBehaviour behaviour && !existingSectors.Contains(behaviour._sector))
             {
                 // not using SetSector here because it registers the events twice
                 // perhaps this happens with ISectorGroup.SetSector or Sector.SetParentSector too? idk and nothing seems to break because of it yet
                 behaviour._sector = sector;
             }
 
-            else if(component is OWItemSocket socket)
+            else if(component is OWItemSocket socket && !existingSectors.Contains(socket._sector))
             {
                 socket._sector = sector;
             }
@@ -287,7 +293,7 @@ namespace NewHorizons.Builder.Props
 
             }
 
-            else if(component is NomaiRemoteCameraPlatform remoteCameraPlatform)
+            else if(component is NomaiRemoteCameraPlatform remoteCameraPlatform && !existingSectors.Contains(remoteCameraPlatform._visualSector))
             {
                 remoteCameraPlatform._visualSector = sector;
             }

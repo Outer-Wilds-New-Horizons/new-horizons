@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using NewHorizons.Components.Orbital;
+using NewHorizons.Handlers;
 using NewHorizons.Utility.OWML;
 using UnityEngine;
 
@@ -176,6 +178,33 @@ namespace NewHorizons.Utility.OuterWilds
             }
 
             return otherChildren.ToArray();
+        }
+
+        public static string GetPlanetName(AstroObject astroObject)
+        {
+            if (astroObject != null)
+            {
+                if (astroObject is NHAstroObject nhAstroObject)
+                {
+                    var customName = nhAstroObject.GetCustomName();
+
+                    if (!string.IsNullOrWhiteSpace(customName))
+                    {
+                        return TranslationHandler.GetTranslation(customName, TranslationHandler.TextType.UI, false);
+                    }
+                }
+                else
+                {
+                    AstroObject.Name astroObjectName = astroObject.GetAstroObjectName();
+
+                    if (astroObjectName - AstroObject.Name.Sun <= 7 || astroObjectName - AstroObject.Name.TimberMoon <= 1)
+                    {
+                        return AstroObject.AstroObjectNameToString(astroObject.GetAstroObjectName());
+                    }
+                }
+            }
+
+            return "???";
         }
     }
 }

@@ -36,6 +36,12 @@ namespace NewHorizons.Handlers
 
         public static void Init(List<NewHorizonsBody> bodies)
         {
+            // Start by destroying all planets if need be
+            if (Main.SystemDict[Main.Instance.CurrentStarSystem].Config.destroyStockPlanets)
+            {
+                PlanetDestructionHandler.RemoveStockPlanets();
+            }
+
             // Base game value
             SolarSystemRadius = DefaultFurthestOrbit;
 
@@ -60,7 +66,7 @@ namespace NewHorizons.Handlers
                 var starLightGO = UnityEngine.Object.Instantiate(sun.GetComponentInChildren<SunLightController>().gameObject);
                 foreach (var comp in starLightGO.GetComponents<Component>())
                 {
-                    if (!(comp is SunLightController) && !(comp is SunLightParamUpdater) && !(comp is Light) && !(comp is Transform))
+                    if (comp is not (SunLightController or SunLightParamUpdater or Light or Transform))
                     {
                         UnityEngine.Object.Destroy(comp);
                     }
@@ -138,10 +144,6 @@ namespace NewHorizons.Handlers
             NHLogger.Log("Done loading bodies");
 
             SingularityBuilder.PairAllSingularities();
-
-            // Events.FireOnNextUpdate(PlanetDestroyer.RemoveAllProxies);
-
-            if (Main.SystemDict[Main.Instance.CurrentStarSystem].Config.destroyStockPlanets) PlanetDestructionHandler.RemoveStockPlanets();
         }
 
         public static bool LoadBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)
@@ -344,10 +346,12 @@ namespace NewHorizons.Handlers
             body.Config.Base.showMinimap = false;
             body.Config.Base.hasMapMarker = false;
 
-            var owRigidBody = RigidBodyBuilder.Make(go, body.Config);
+            const float sphereOfInfluence = 2000f;
+            
+            var owRigidBody = RigidBodyBuilder.Make(go, sphereOfInfluence);
             var ao = AstroObjectBuilder.Make(go, null, body.Config, false);
 
-            var sector = SectorBuilder.Make(go, owRigidBody, 2000f);
+            var sector = SectorBuilder.Make(go, owRigidBody, sphereOfInfluence);
             ao._rootSector = sector;
             ao._type = AstroObject.Type.None;
 
@@ -417,10 +421,10 @@ namespace NewHorizons.Handlers
                 };
             }
 
-            var owRigidBody = RigidBodyBuilder.Make(go, body.Config);
-            var ao = AstroObjectBuilder.Make(go, primaryBody, body.Config, false);
-
             var sphereOfInfluence = GetSphereOfInfluence(body);
+            
+            var owRigidBody = RigidBodyBuilder.Make(go, sphereOfInfluence);
+            var ao = AstroObjectBuilder.Make(go, primaryBody, body.Config, false);
 
             var sector = SectorBuilder.Make(go, owRigidBody, sphereOfInfluence * 2f);
             ao._rootSector = sector;

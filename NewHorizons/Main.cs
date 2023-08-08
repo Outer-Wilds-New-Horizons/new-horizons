@@ -314,6 +314,8 @@ namespace NewHorizons
                     VolcanoBuilder.InitPrefab();
                     VolumesBuilder.InitPrefabs();
                     WaterBuilder.InitPrefabs();
+                    GravityCannonBuilder.InitPrefab();
+                    ShuttleBuilder.InitPrefab();
 
                     ProjectionBuilder.InitPrefabs();
                     CloakBuilder.InitPrefab();
@@ -547,7 +549,7 @@ namespace NewHorizons
                 }
 
                 // Wait for player to be awake and also for frames to pass
-                Delay.RunWhenAndInNUpdates(() => OnSystemReady(DidWarpFromShip, DidWarpFromVessel), () => _playerAwake && PlayerSpawned, 30);
+                Delay.RunWhenOrInNUpdates(() => OnSystemReady(DidWarpFromShip, DidWarpFromVessel), () => _playerAwake && PlayerSpawned, 30);
             }
             else
             {
@@ -811,7 +813,14 @@ namespace NewHorizons
 
         public void SetDefaultSystem(string defaultSystem)
         {
-            _defaultStarSystem = defaultSystem;
+            if (string.IsNullOrEmpty(defaultSystem))
+            {
+                _defaultStarSystem = "SolarSystem";
+            }
+            else
+            {
+                _defaultStarSystem = defaultSystem;
+            }
         }
 
         #endregion Load

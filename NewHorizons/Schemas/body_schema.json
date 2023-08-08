@@ -1238,6 +1238,20 @@
           "items": {
             "$ref": "#/definitions/AudioSourceInfo"
           }
+        },
+        "gravityCannons": {
+          "type": "array",
+          "description": "Add a gravity cannon to this planet. Must be paired to a new shuttle, which can be placed on this planet or elsewhere.",
+          "items": {
+            "$ref": "#/definitions/GravityCannonInfo"
+          }
+        },
+        "shuttles": {
+          "type": "array",
+          "description": "Add a Nomai shuttle to this planet. Can be paired to a gravity cannon on this planet or elsewhere.",
+          "items": {
+            "$ref": "#/definitions/ShuttleInfo"
+          }
         }
       }
     },
@@ -2696,7 +2710,7 @@
         },
         "computer": {
           "description": "Will create a modern Nomai computer linked to this receiver.",
-          "$ref": "#/definitions/NomaiWarpComputerLoggerInfo"
+          "$ref": "#/definitions/NomaiComputerInfo"
         },
         "detailed": {
           "type": "boolean",
@@ -2704,7 +2718,7 @@
         }
       }
     },
-    "NomaiWarpComputerLoggerInfo": {
+    "NomaiComputerInfo": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -2871,6 +2885,134 @@
         "muffleIndoors",
         "slideReelMusic"
       ]
+    },
+    "GravityCannonInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "shuttleID": {
+          "type": "string",
+          "description": "Unique ID for the shuttle that pairs with this gravity cannon"
+        },
+        "retrieveReveal": {
+          "type": "string",
+          "description": "Ship log fact revealed when retrieving the shuttle to this pad. Optional."
+        },
+        "launchReveal": {
+          "type": "string",
+          "description": "Ship log fact revealed when launching from this pad. Optional."
+        },
+        "detailed": {
+          "type": "boolean",
+          "description": "Hide the lattice cage around the platform. Defaults to true.",
+          "default": true
+        },
+        "computer": {
+          "description": "Will create a modern Nomai computer linked to this gravity cannon.",
+          "$ref": "#/definitions/NomaiComputerInfo"
+        },
+        "controls": {
+          "description": "Position of the interface used to launc the shuttle",
+          "$ref": "#/definitions/GeneralPropInfo"
+        }
+      }
+    },
+    "GeneralPropInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        }
+      }
+    },
+    "ShuttleInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "id": {
+          "type": "string",
+          "description": "Unique ID for this shuttle"
+        }
+      }
     },
     "ReferenceFrameModule": {
       "type": "object",

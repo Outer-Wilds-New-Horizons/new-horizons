@@ -1,5 +1,6 @@
 using NewHorizons.Builder.Props;
 using NewHorizons.Builder.Props.Audio;
+using NewHorizons.Builder.Props.TranslatorText;
 using NewHorizons.Builder.ShipLog;
 using NewHorizons.External;
 using NewHorizons.External.Configs;
@@ -7,6 +8,7 @@ using NewHorizons.External.Modules;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.Props.Audio;
 using NewHorizons.External.Modules.Props.Dialogue;
+using NewHorizons.External.Modules.TranslatorText;
 using NewHorizons.External.SerializableData;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OWML;
@@ -257,6 +259,12 @@ namespace NewHorizons
         {
             var info = JsonConvert.DeserializeObject<DialogueInfo>(dialogueInfo);
             return DialogueBuilder.Make(planetGO, null, info, xml, textAssetID);
+        }
+
+        public GameObject CreateNomaiText(string xml, string textInfo, GameObject planetGO)
+        {
+            var info = JsonConvert.DeserializeObject<TranslatorTextInfo>(textInfo);
+            return TranslatorTextBuilder.Make(planetGO, null, info, null, xml);
         }
 
         public void AddShipLogXML(IModBehaviour mod, XElement xml, string planetName, string imageFolder, Dictionary<string, Vector2> entryPositions, Dictionary<string, (Color colour, Color highlight)> curiousityColours)

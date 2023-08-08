@@ -24,6 +24,9 @@
     "DEBUG_REDO": "Redo",
     "Vessel": "Vessel"
   },
+  "OtherDictionary": {
+    "NOMAI_SHUTTLE_COMPUTER": "The <![CDATA[<color=orange>shuttle</color>]]> is currently resting at <![CDATA[<color=lightblue>{0}</color>]]>."
+  },
   "AchievementTranslations": {
     "NH_EATEN_OUTSIDE_BRAMBLE": {
       "Name": "Containment Breach",

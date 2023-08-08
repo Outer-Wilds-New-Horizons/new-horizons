@@ -744,6 +744,12 @@ namespace NewHorizons.Builder.Props
             XmlDocument xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(xmlPath);
             XmlNode rootNode = xmlDocument.SelectSingleNode("NomaiObject");
+            
+            if (rootNode == null)
+            {
+                NHLogger.LogError($"Couldn't find NomaiObject in [{xmlPath}]");
+                return dict;
+            }
 
             foreach (object obj in rootNode.SelectNodes("TextBlock"))
             {

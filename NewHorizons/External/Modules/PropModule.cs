@@ -4,6 +4,7 @@ using NewHorizons.External.Modules.Props.Dialogue;
 using NewHorizons.External.Modules.Props.EchoesOfTheEye;
 using NewHorizons.External.Modules.Props.Quantum;
 using NewHorizons.External.Modules.Props.Remote;
+using NewHorizons.External.Modules.Props.Shuttle;
 using NewHorizons.External.Modules.TranslatorText;
 using NewHorizons.External.Modules.VariableSize;
 using NewHorizons.External.Modules.Volumes.VolumeInfos;
@@ -111,6 +112,16 @@ namespace NewHorizons.External.Modules
         /// Add audio point sources to this planet. For audio across an entire area, look for AudioVolumes under the Volumes module.
         /// </summary>
         public AudioSourceInfo[] audioSources;
+
+        /// <summary>
+        /// Add a gravity cannon to this planet. Must be paired to a new shuttle, which can be placed on this planet or elsewhere.
+        /// </summary>
+        public GravityCannonInfo[] gravityCannons;
+
+        /// <summary>
+        /// Add a Nomai shuttle to this planet. Can be paired to a gravity cannon on this planet or elsewhere.
+        /// </summary>
+        public ShuttleInfo[] shuttles;
 
         [Obsolete("reveal is deprecated. Use Volumes->revealVolumes instead.")] public RevealVolumeInfo[] reveal;
 
