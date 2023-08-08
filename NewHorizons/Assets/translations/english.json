@@ -22,7 +22,9 @@
     "DEBUG_PLACE_TEXT": "Place Nomai Text",
     "DEBUG_UNDO": "Undo",
     "DEBUG_REDO": "Redo",
-    "Vessel": "Vessel",
+    "Vessel": "Vessel"
+  },
+  "OtherDictionary": {
     "NOMAI_SHUTTLE_COMPUTER": "The <![CDATA[<color=orange>shuttle</color>]]> is currently resting at <![CDATA[<color=lightblue>{0}</color>]]>."
   },
   "AchievementTranslations": {

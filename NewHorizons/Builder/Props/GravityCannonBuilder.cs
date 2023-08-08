@@ -159,7 +159,7 @@ namespace NewHorizons.Builder.Props
             var shuttle = ShuttleBuilder.Shuttles[id];
             var planet = AstroObjectLocator.GetPlanetName(shuttle.GetComponentInParent<AstroObject>());
 
-            var displayText = TranslationHandler.GetTranslation("NOMAI_SHUTTLE_COMPUTER", TranslationHandler.TextType.UI).Replace("{0}", planet);
+            var displayText = TranslationHandler.GetTranslation("NOMAI_SHUTTLE_COMPUTER", TranslationHandler.TextType.OTHER).Replace("{0}", planet);
             NHLogger.Log(displayText);
             var xmlContent = $"<NomaiObject>\r\n    <TextBlock>\r\n        <ID>1</ID>\r\n        <Text>{displayText}</Text>\r\n    </TextBlock>\r\n</NomaiObject>";
 

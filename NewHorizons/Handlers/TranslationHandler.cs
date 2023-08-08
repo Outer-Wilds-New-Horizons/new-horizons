@@ -11,12 +11,14 @@ namespace NewHorizons.Handlers
         private static Dictionary<TextTranslation.Language, Dictionary<string, string>> _shipLogTranslationDictionary = new();
         private static Dictionary<TextTranslation.Language, Dictionary<string, string>> _dialogueTranslationDictionary = new();
         private static Dictionary<TextTranslation.Language, Dictionary<string, string>> _uiTranslationDictionary = new();
+        private static Dictionary<TextTranslation.Language, Dictionary<string, string>> _otherTranslationDictionary = new();
 
         public enum TextType
         {
             SHIPLOG,
             DIALOGUE,
-            UI
+            UI,
+            OTHER
         }
 
         public static string GetTranslation(string text, TextType type) => GetTranslation(text, type, true);
@@ -36,6 +38,9 @@ namespace NewHorizons.Handlers
                     break;
                 case TextType.UI:
                     dictionary = _uiTranslationDictionary;
+                    break;                     
+                case TextType.OTHER:
+                    dictionary = _otherTranslationDictionary;
                     break;
                 default:
                     if (warn) NHLogger.LogVerbose($"Invalid TextType {type}");
@@ -93,12 +98,25 @@ namespace NewHorizons.Handlers
                 if (!_uiTranslationDictionary.ContainsKey(language)) _uiTranslationDictionary.Add(language, new Dictionary<string, string>());
                 foreach (var originalKey in config.UIDictionary.Keys)
                 {
-                    // Don't remove CDATA from UI
-                    var key = originalKey.Replace("&lt;", "<").Replace("&gt;", ">");
-                    var value = config.UIDictionary[originalKey].Replace("&lt;", "<").Replace("&gt;", ">");
+                    var key = originalKey.Replace("&lt;", "<").Replace("&gt;", ">").Replace("<![CDATA[", "").Replace("]]>", "");
+                    var value = config.UIDictionary[originalKey].Replace("&lt;", "<").Replace("&gt;", ">").Replace("<![CDATA[", "").Replace("]]>", "");
 
                     if (!_uiTranslationDictionary[language].ContainsKey(key)) _uiTranslationDictionary[language].Add(key, value);
                     else _uiTranslationDictionary[language][key] = value;
+                }
+            }
+
+            if (config.OtherDictionary != null && config.OtherDictionary.Count() > 0)
+            {
+                if (!_otherTranslationDictionary.ContainsKey(language)) _otherTranslationDictionary.Add(language, new Dictionary<string, string>());
+                foreach (var originalKey in config.OtherDictionary.Keys)
+                {
+                    // Don't remove CDATA
+                    var key = originalKey.Replace("&lt;", "<").Replace("&gt;", ">");
+                    var value = config.OtherDictionary[originalKey].Replace("&lt;", "<").Replace("&gt;", ">");
+
+                    if (!_otherTranslationDictionary[language].ContainsKey(key)) _otherTranslationDictionary[language].Add(key, value);
+                    else _otherTranslationDictionary[language][key] = value;
                 }
             }
         }
