@@ -78,6 +78,9 @@ namespace NewHorizons.Handlers
                     gameObject.SetActive(false);
                 }
                 GameObject.FindObjectOfType<SunProxy>().gameObject.SetActive(false);
+                
+                // force call update here to make it switch to an active star. idk why we didnt have to do this before
+                SunLightEffectsController.Instance.Update();
             }, 2); // Have to wait or shit goes wild
 
             foreach (var streamingAssetBundle in StreamingManager.s_activeBundles)
