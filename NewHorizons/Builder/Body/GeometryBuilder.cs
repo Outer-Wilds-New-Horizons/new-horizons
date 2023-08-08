@@ -30,6 +30,11 @@ namespace NewHorizons.Builder.Body
             {
                 groundGO.transform.localScale *= 2; // Multiply by 2 to match top layer
             }
+            
+            var superGroup = planetGO.GetComponent<ProxyShadowCasterSuperGroup>();
+            // idk if we need to set _superGroup manually since it does that in Awake, but it's done everywhere else so wtv
+            if (superGroup != null) groundGO.AddComponent<ProxyShadowCaster>()._superGroup = superGroup;
+
             groundGO.SetActive(true);
 
             return groundGO;
