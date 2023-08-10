@@ -63,10 +63,14 @@ namespace NewHorizons.Builder.General
                 objectImpactAudio._maxPitch = 0.6f;
                 objectImpactAudio._impactSensor = impactSensor;
                 
+                // For some reason when originally testing, not doing MakeKinematic caused the body to not move relative to the player character
+                // It seems that turning it on and then off makes it actually work properly
                 owRigidBody.MakeNonKinematic();
                 owRigidBody.DisableKinematicSimulation();
 
-                // Should make this number changeable
+                // Should make this number changeable, if anybody ever asks
+                // For some reason, setting this on the exact same frame as it is created doesn't work.
+                // I imagine something strange is happening on Awake/Start, hence the delay
                 Delay.FireOnNextUpdate(() => owRigidBody.SetMass(0.001f));
             }
 
