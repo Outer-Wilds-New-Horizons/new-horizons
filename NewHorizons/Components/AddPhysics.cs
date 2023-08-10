@@ -73,6 +73,7 @@ public class AddPhysics : MonoBehaviour
         transform.parent = bodyGo.transform;
         owRigidbody.SetMass(Mass);
         owRigidbody.SetVelocity(parentBody.GetPointVelocity(transform.position));
+        owRigidbody.SetAngularVelocity(parentBody.GetAngularVelocity());
 
         // #536 - Physics objects in bramble dimensions not disabled on load
         // sectors wait 3 frames and then call OnSectorOccupantsUpdated
