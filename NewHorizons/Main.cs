@@ -116,12 +116,12 @@ namespace NewHorizons
             else if (Debug) NHLogger.UpdateLogLevel(NHLogger.LogType.Log);
             else NHLogger.UpdateLogLevel(NHLogger.LogType.Error);
 
+            var oldDefaultSystemOverride = _defaultSystemOverride;
             _defaultSystemOverride = config.GetSettingsValue<string>("Default System Override");
-
-            // Else it doesn't get set idk
-            if (currentScene == "TitleScreen" && SystemDict.ContainsKey(_defaultSystemOverride))
+            if (oldDefaultSystemOverride != _defaultSystemOverride)
             {
-                _currentStarSystem = _defaultSystemOverride;
+                ResetCurrentStarSystem();
+                NHLogger.Log($"Changed default star system override to {_defaultSystemOverride}");
             }
 
             var wasUsingCustomTitleScreen = _useCustomTitleScreen;
@@ -553,17 +553,7 @@ namespace NewHorizons
             }
             else
             {
-                // Reset back to original solar system after going to main menu.
-                // If the override is a valid system then we go there
-                if (SystemDict.ContainsKey(_defaultSystemOverride))
-                {
-                    _currentStarSystem = _defaultSystemOverride;
-                    IsWarpingFromShip = true; // always do this else sometimes the spawn gets messed up
-                }
-                else
-                {
-                    _currentStarSystem = _defaultStarSystem;
-                }
+                ResetCurrentStarSystem();
             }
         }
 
@@ -614,7 +604,7 @@ namespace NewHorizons
                 if (starSystemName != "SolarSystem")
                 {
                     SetDefaultSystem(starSystemName);
-                    _currentStarSystem = starSystemName;
+                    _currentStarSystem = DefaultStarSystem;
                 }
             }
 
@@ -903,15 +893,23 @@ namespace NewHorizons
             {
                 if (SystemDict[_currentStarSystem].Config.respawnHere) return;
 
-                // If the override is a valid system then we go there
-                if (SystemDict.ContainsKey(_defaultSystemOverride))
-                {
-                    _currentStarSystem = _defaultSystemOverride;
-                }
-                else
-                {
-                    _currentStarSystem = _defaultStarSystem;
-                }
+                ResetCurrentStarSystem();
+            }
+        }
+
+        private void ResetCurrentStarSystem()
+        {
+            if (SystemDict.ContainsKey(_defaultSystemOverride))
+            {
+                _currentStarSystem = _defaultSystemOverride;
+
+                // Sometimes the override will not support spawning regularly, so always warp in
+                IsWarpingFromShip = true;
+            }
+            else
+            {
+                _currentStarSystem = _defaultStarSystem;
+                IsWarpingFromShip = false;
             }
         }
         #endregion Change star system
