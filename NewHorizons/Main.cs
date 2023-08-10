@@ -3,8 +3,10 @@ using NewHorizons.Builder.Atmosphere;
 using NewHorizons.Builder.Body;
 using NewHorizons.Builder.General;
 using NewHorizons.Builder.Props;
+using NewHorizons.Builder.Props.Audio;
 using NewHorizons.Builder.Props.TranslatorText;
 using NewHorizons.Components.Fixers;
+using NewHorizons.Components.Ship;
 using NewHorizons.Components.SizeControllers;
 using NewHorizons.External;
 using NewHorizons.External.Configs;
@@ -14,9 +16,11 @@ using NewHorizons.OtherMods.MenuFramework;
 using NewHorizons.OtherMods.OWRichPresence;
 using NewHorizons.OtherMods.VoiceActing;
 using NewHorizons.Utility;
+using NewHorizons.Utility.DebugTools;
+using NewHorizons.Utility.DebugTools.Menu;
 using NewHorizons.Utility.Files;
-using NewHorizons.Utility.OWML;
 using NewHorizons.Utility.OuterWilds;
+using NewHorizons.Utility.OWML;
 using OWML.Common;
 using OWML.ModHelper;
 using OWML.Utils;
@@ -28,12 +32,6 @@ using System.Reflection;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
-
-using NewHorizons.Utility.DebugTools;
-using NewHorizons.Utility.DebugTools.Menu;
-using NewHorizons.Components.Ship;
-using NewHorizons.Builder.Props.Audio;
-using Epic.OnlineServices;
 
 namespace NewHorizons
 {
