@@ -221,6 +221,8 @@ namespace NewHorizons.Builder.Props
                 addPhysics.Sector = sector;
                 addPhysics.Mass = detail.physicsMass;
                 addPhysics.Radius = detail.physicsRadius;
+                addPhysics.SuspendUntilImpact = detail.physicsSuspendUntilImpact;
+                addPhysics.KeepLoaded = detail.keepLoaded;
             }
 
             if (!string.IsNullOrEmpty(detail.activationCondition))

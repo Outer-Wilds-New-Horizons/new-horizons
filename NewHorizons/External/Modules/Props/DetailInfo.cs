@@ -76,6 +76,11 @@ namespace NewHorizons.External.Modules.Props
         [DefaultValue(1f)] public float physicsRadius = 1f;
 
         /// <summary>
+        /// If true, this detail will stay still until it bumps something.
+        /// </summary>
+        public bool physicsSuspendUntilImpact;
+
+        /// <summary>
         /// Set to true if this object's lighting should ignore the effects of sunlight
         /// </summary>
         public bool ignoreSun;

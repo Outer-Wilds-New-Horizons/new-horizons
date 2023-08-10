@@ -1,4 +1,5 @@
 using NewHorizons.Utility.OuterWilds;
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -18,19 +19,21 @@ public class AddPhysics : MonoBehaviour
     [Tooltip("The radius that the added sphere collider will use for physics collision.\n" +
         "If there's already good colliders on the detail, you can make this 0.")]
     public float Radius = 1f;
+    [Tooltip("If true, this detail will stay still until it bumps something.")]
+    public bool SuspendUntilImpact;
 
-    private OWRigidbody _parentBody;
+    [NonSerialized]
+    public bool KeepLoaded;
+
     private OWRigidbody _body;
     private ImpactSensor _impactSensor;
-    private bool _maintainVelocity;
-    private Vector3 _centerOfMass;
 
     private IEnumerator Start()
     {
         // detectors dont detect unless we wait for some reason
-        yield return new WaitForSeconds(10f);
+        yield return new WaitForSeconds(.1f);
 
-        _parentBody = GetComponentInParent<OWRigidbody>();
+        var parentBody = GetComponentInParent<OWRigidbody>();
 
         // hack: make all mesh colliders convex
         // triggers are already convex
@@ -45,9 +48,7 @@ public class AddPhysics : MonoBehaviour
         bodyGo.transform.rotation = transform.rotation;
 
         _body = bodyGo.AddComponent<OWRigidbody>();
-        _body._simulateInSector = Sector;
-        _body._autoGenerateCenterOfMass = false;
-        _body._centerOfMass = _body.transform.InverseTransformPoint(_parentBody.GetWorldCenterOfMass());
+        _body._simulateInSector = KeepLoaded ? null : Sector;
 
         bodyGo.layer = Layer.PhysicalDetector;
         bodyGo.tag = "DynamicPropDetector";
@@ -81,12 +82,8 @@ public class AddPhysics : MonoBehaviour
 
         transform.parent = bodyGo.transform;
         _body.SetMass(Mass);
-        _body.SetVelocity(_parentBody.GetPointVelocity(_body.GetWorldCenterOfMass()));
-        _body.SetAngularVelocity(_parentBody.GetAngularVelocity());
-        // hack: make center of mass at the parent body so it doesn't drift on rotating body
-        // _centerOfMass = _body.GetCenterOfMass();
-        // _body.SetCenterOfMass(_body.transform.InverseTransformPoint(_parentBody.GetWorldCenterOfMass()));
-        // _impactSensor.OnImpact += OnImpact;
+        _body.SetVelocity(parentBody.GetPointVelocity(_body.GetWorldCenterOfMass()));
+        _body.SetAngularVelocity(parentBody.GetAngularVelocity());
 
         // #536 - Physics objects in bramble dimensions not disabled on load
         // sectors wait 3 frames and then call OnSectorOccupantsUpdated
@@ -95,25 +92,20 @@ public class AddPhysics : MonoBehaviour
         if (_body._simulateInSector != null)
             _body.OnSectorOccupantsUpdated();
 
-        // it drifts otherwise for some reason
-        _maintainVelocity = true;
-        yield return new WaitForSeconds(10f);
-        _maintainVelocity = false;
-    }
-
-    private void FixedUpdate()
-    {
-        if (_maintainVelocity)
+        if (SuspendUntilImpact)
         {
-            _body.SetVelocity(_parentBody.GetPointVelocity(_body.GetWorldCenterOfMass()));
-            _body.SetAngularVelocity(_parentBody.GetAngularVelocity());
+            _body.Suspend();
+            _impactSensor.OnImpact += OnImpact;
+        }
+        else
+        {
+            Destroy(this);
         }
     }
 
     private void OnImpact(ImpactData impact)
     {
-        // revert it back to normal
-        _body.SetCenterOfMass(_centerOfMass);
+        _body.Unsuspend();
         _impactSensor.OnImpact -= OnImpact;
         Destroy(this);
     }
@@ -121,12 +113,5 @@ public class AddPhysics : MonoBehaviour
     private void OnDrawGizmosSelected()
     {
         Gizmos.DrawWireSphere(transform.position, Radius);
-    }
-
-    private void OnRenderObject()
-    {
-        Popcron.Gizmos.Sphere(transform.position, Radius);
-        if (_body) Popcron.Gizmos.Line(transform.position, _body.GetWorldCenterOfMass(), Color.red);
-        if (_parentBody) Popcron.Gizmos.Line(transform.position, _parentBody.GetWorldCenterOfMass(), Color.green);
     }
 }
