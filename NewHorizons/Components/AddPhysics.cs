@@ -1,6 +1,7 @@
 using NewHorizons.Utility.OuterWilds;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace NewHorizons.Components;
 
@@ -19,11 +20,16 @@ public class AddPhysics : MonoBehaviour
         "If there's already good colliders on the detail, you can make this 0.")]
     public float Radius = 1f;
 
+    private OWRigidbody parentBody;
+    private OWRigidbody owRigidbody;
+
     private IEnumerator Start()
     {
         yield return new WaitForSeconds(.1f);
 
-        var parentBody = GetComponentInParent<OWRigidbody>();
+        parentBody = GetComponentInParent<OWRigidbody>();
+
+        // yield return new WaitUntil(() => Keyboard.current.lKey.isPressed);
 
         // hack: make all mesh colliders convex
         // triggers are already convex
@@ -37,8 +43,10 @@ public class AddPhysics : MonoBehaviour
         bodyGo.transform.position = transform.position;
         bodyGo.transform.rotation = transform.rotation;
 
-        var owRigidbody = bodyGo.AddComponent<OWRigidbody>();
+        owRigidbody = bodyGo.AddComponent<OWRigidbody>();
         owRigidbody._simulateInSector = Sector;
+        // owRigidbody._autoGenerateCenterOfMass = false;
+        // owRigidbody._centerOfMass = owRigidbody.transform.InverseTransformPoint(parentBody.GetPosition());
 
         bodyGo.layer = Layer.PhysicalDetector;
         bodyGo.tag = "DynamicPropDetector";
@@ -72,8 +80,7 @@ public class AddPhysics : MonoBehaviour
 
         transform.parent = bodyGo.transform;
         owRigidbody.SetMass(Mass);
-        owRigidbody.SetVelocity(parentBody.GetPointVelocity(transform.position));
-        owRigidbody.SetAngularVelocity(parentBody.GetAngularVelocity());
+        owRigidbody.SetVelocity(parentBody.GetPointVelocity(owRigidbody.GetWorldCenterOfMass()));
 
         // #536 - Physics objects in bramble dimensions not disabled on load
         // sectors wait 3 frames and then call OnSectorOccupantsUpdated
@@ -82,11 +89,25 @@ public class AddPhysics : MonoBehaviour
         if (owRigidbody._simulateInSector != null)
             owRigidbody.OnSectorOccupantsUpdated();
 
+        yield return new WaitUntil(() => Keyboard.current.kKey.isPressed);
+
         Destroy(this);
     }
 
     private void OnDrawGizmosSelected()
     {
         Gizmos.DrawWireSphere(transform.position, Radius);
+    }
+
+    private void OnRenderObject()
+    {
+        Popcron.Gizmos.Sphere(transform.position, Radius);
+        Popcron.Gizmos.Line(transform.position, parentBody.GetPosition());
+        Popcron.Gizmos.Line(transform.position, owRigidbody.GetWorldCenterOfMass());
+    }
+
+    private void FixedUpdate()
+    {
+        // owRigidbody.SetVelocity(parentBody.GetPointVelocity(owRigidbody.GetWorldCenterOfMass()));
     }
 }
