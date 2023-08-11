@@ -634,6 +634,8 @@ namespace NewHorizons
         {
             try
             {
+                if (mod.ModHelper.Manifest.Filename.Contains("Extinction")) return;
+
                 if (_firstLoad)
                 {
                     MountedAddons.Add(mod);
