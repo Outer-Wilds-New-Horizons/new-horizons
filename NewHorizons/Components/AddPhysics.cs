@@ -1,5 +1,4 @@
 using NewHorizons.Utility.OuterWilds;
-using System;
 using System.Collections;
 using UnityEngine;
 
@@ -22,9 +21,6 @@ public class AddPhysics : MonoBehaviour
     [Tooltip("If true, this detail will stay still until it touches something.\n" +
         "Good for zero-g props.")]
     public bool SuspendUntilImpact;
-
-    [NonSerialized]
-    public bool KeepLoaded;
 
     private OWRigidbody _body;
     private ImpactSensor _impactSensor;
@@ -49,7 +45,7 @@ public class AddPhysics : MonoBehaviour
         bodyGo.transform.rotation = transform.rotation;
 
         _body = bodyGo.AddComponent<OWRigidbody>();
-        _body._simulateInSector = KeepLoaded ? null : Sector;
+        _body._simulateInSector = Sector;
 
         bodyGo.layer = Layer.PhysicalDetector;
         bodyGo.tag = "DynamicPropDetector";
@@ -90,8 +86,7 @@ public class AddPhysics : MonoBehaviour
         // sectors wait 3 frames and then call OnSectorOccupantsUpdated
         // however we wait .1 real seconds which is longer
         // so we have to manually call this
-        if (_body._simulateInSector != null)
-            _body.OnSectorOccupantsUpdated();
+        if (_body._simulateInSector) _body.OnSectorOccupantsUpdated();
 
         if (SuspendUntilImpact)
         {
@@ -101,7 +96,7 @@ public class AddPhysics : MonoBehaviour
             _body._transform.parent = parentBody.transform;
             _body._suspended = true;
             _body._unsuspendNextUpdate = false;
-            
+
             // match velocity doesnt work so just make it not targetable
             _body.SetIsTargetable(false);
 
@@ -114,12 +109,16 @@ public class AddPhysics : MonoBehaviour
         }
     }
 
+    private void OnDestroy()
+    {
+        if (_impactSensor) _impactSensor.OnImpact -= OnImpact;
+        Locator.GetProbe().OnAnchorProbe -= OnAnchorProbe;
+    }
+
     private void OnImpact(ImpactData impact)
     {
         _body.UnsuspendImmediate(false);
         _body.SetIsTargetable(true);
-        _impactSensor.OnImpact -= OnImpact;
-        Locator.GetProbe().OnAnchorProbe -= OnAnchorProbe;
         Destroy(this);
     }
 
