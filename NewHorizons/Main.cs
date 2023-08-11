@@ -3,8 +3,10 @@ using NewHorizons.Builder.Atmosphere;
 using NewHorizons.Builder.Body;
 using NewHorizons.Builder.General;
 using NewHorizons.Builder.Props;
+using NewHorizons.Builder.Props.Audio;
 using NewHorizons.Builder.Props.TranslatorText;
 using NewHorizons.Components.Fixers;
+using NewHorizons.Components.Ship;
 using NewHorizons.Components.SizeControllers;
 using NewHorizons.External;
 using NewHorizons.External.Configs;
@@ -14,9 +16,11 @@ using NewHorizons.OtherMods.MenuFramework;
 using NewHorizons.OtherMods.OWRichPresence;
 using NewHorizons.OtherMods.VoiceActing;
 using NewHorizons.Utility;
+using NewHorizons.Utility.DebugTools;
+using NewHorizons.Utility.DebugTools.Menu;
 using NewHorizons.Utility.Files;
-using NewHorizons.Utility.OWML;
 using NewHorizons.Utility.OuterWilds;
+using NewHorizons.Utility.OWML;
 using OWML.Common;
 using OWML.ModHelper;
 using OWML.Utils;
@@ -28,12 +32,6 @@ using System.Reflection;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
-
-using NewHorizons.Utility.DebugTools;
-using NewHorizons.Utility.DebugTools.Menu;
-using NewHorizons.Components.Ship;
-using NewHorizons.Builder.Props.Audio;
-using Epic.OnlineServices;
 
 namespace NewHorizons
 {
@@ -116,12 +114,12 @@ namespace NewHorizons
             else if (Debug) NHLogger.UpdateLogLevel(NHLogger.LogType.Log);
             else NHLogger.UpdateLogLevel(NHLogger.LogType.Error);
 
+            var oldDefaultSystemOverride = _defaultSystemOverride;
             _defaultSystemOverride = config.GetSettingsValue<string>("Default System Override");
-
-            // Else it doesn't get set idk
-            if (currentScene == "TitleScreen" && SystemDict.ContainsKey(_defaultSystemOverride))
+            if (oldDefaultSystemOverride != _defaultSystemOverride)
             {
-                _currentStarSystem = _defaultSystemOverride;
+                ResetCurrentStarSystem();
+                NHLogger.Log($"Changed default star system override to {_defaultSystemOverride}");
             }
 
             var wasUsingCustomTitleScreen = _useCustomTitleScreen;
@@ -553,17 +551,7 @@ namespace NewHorizons
             }
             else
             {
-                // Reset back to original solar system after going to main menu.
-                // If the override is a valid system then we go there
-                if (SystemDict.ContainsKey(_defaultSystemOverride))
-                {
-                    _currentStarSystem = _defaultSystemOverride;
-                    IsWarpingFromShip = true; // always do this else sometimes the spawn gets messed up
-                }
-                else
-                {
-                    _currentStarSystem = _defaultStarSystem;
-                }
+                ResetCurrentStarSystem();
             }
         }
 
@@ -614,7 +602,7 @@ namespace NewHorizons
                 if (starSystemName != "SolarSystem")
                 {
                     SetDefaultSystem(starSystemName);
-                    _currentStarSystem = starSystemName;
+                    _currentStarSystem = DefaultStarSystem;
                 }
             }
 
@@ -634,6 +622,8 @@ namespace NewHorizons
         {
             try
             {
+                if (mod.ModHelper.Manifest.Filename.Contains("Extinction")) return;
+
                 if (_firstLoad)
                 {
                     MountedAddons.Add(mod);
@@ -903,15 +893,23 @@ namespace NewHorizons
             {
                 if (SystemDict[_currentStarSystem].Config.respawnHere) return;
 
-                // If the override is a valid system then we go there
-                if (SystemDict.ContainsKey(_defaultSystemOverride))
-                {
-                    _currentStarSystem = _defaultSystemOverride;
-                }
-                else
-                {
-                    _currentStarSystem = _defaultStarSystem;
-                }
+                ResetCurrentStarSystem();
+            }
+        }
+
+        private void ResetCurrentStarSystem()
+        {
+            if (SystemDict.ContainsKey(_defaultSystemOverride))
+            {
+                _currentStarSystem = _defaultSystemOverride;
+
+                // Sometimes the override will not support spawning regularly, so always warp in
+                IsWarpingFromShip = true;
+            }
+            else
+            {
+                _currentStarSystem = _defaultStarSystem;
+                IsWarpingFromShip = false;
             }
         }
         #endregion Change star system

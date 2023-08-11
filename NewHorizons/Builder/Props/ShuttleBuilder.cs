@@ -52,6 +52,7 @@ namespace NewHorizons.Builder.Props
                 neutralSlot._attractive = true;
                 neutralSlot._muteAudio = true;
                 nhShuttleController._neutralSlot = neutralSlot;
+                // TODO: at some point delay rigidbody parenting so we dont have to find orb via references. mainly to fix orbs on existing details and rafts not rotating with planets
                 _orbPrefab = shuttleController._orb.gameObject?.InstantiateInactive()?.Rename("Prefab_QM_Shuttle_InterfaceOrbSmall")?.DontDestroyOnLoad();
                 nhShuttleController._orb = _orbPrefab.GetComponent<NomaiInterfaceOrb>();
                 nhShuttleController._orb._sector = nhShuttleController._interiorSector;

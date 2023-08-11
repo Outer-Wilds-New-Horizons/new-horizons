@@ -218,9 +218,10 @@ namespace NewHorizons.Builder.Props
             if (detail.hasPhysics)
             {
                 var addPhysics = prop.AddComponent<AddPhysics>();
-                addPhysics.Sector = sector;
+                addPhysics.Sector = detail.keepLoaded ? null : sector;
                 addPhysics.Mass = detail.physicsMass;
                 addPhysics.Radius = detail.physicsRadius;
+                addPhysics.SuspendUntilImpact = detail.physicsSuspendUntilImpact;
             }
 
             if (!string.IsNullOrEmpty(detail.activationCondition))
@@ -259,6 +260,7 @@ namespace NewHorizons.Builder.Props
             // Not doing else if here because idk if any of the classes below implement ISectorGroup
             
             // Null check else shuttles controls break
+            // parent sector is always null before Awake so this code actually never runs lol
             if (component is Sector s && s.GetParentSector() != null && !existingSectors.Contains(s.GetParentSector()))
             {
                 s.SetParentSector(sector);
