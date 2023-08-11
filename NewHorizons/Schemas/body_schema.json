@@ -1339,6 +1339,11 @@
           "format": "float",
           "default": 1.0
         },
+        "physicsSuspendUntilImpact": {
+          "type": "boolean",
+          "description": "If true, this detail will stay still until it touches something.\nGood for zero-g props.",
+          "default": false
+        },
         "ignoreSun": {
           "type": "boolean",
           "description": "Set to true if this object's lighting should ignore the effects of sunlight"
