@@ -76,7 +76,7 @@ namespace NewHorizons.External.Modules.Props
         [DefaultValue(1f)] public float physicsRadius = 1f;
 
         /// <summary>
-        /// If true, this detail will stay still until it bumps something.
+        /// If true, this detail will stay still until it touches something.
         /// </summary>
         public bool physicsSuspendUntilImpact;
 
