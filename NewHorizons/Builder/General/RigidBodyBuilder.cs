@@ -41,7 +41,7 @@ namespace NewHorizons.Builder.General
                 foreach (var meshCollider in body.GetComponentsInChildren<MeshCollider>(true))
                     meshCollider.convex = true;
 
-                // backup shape in case of no convex colliders
+                // backup collider in case of no convex colliders
                 body.AddComponent<SphereCollider>().radius = config.Base.surfaceSize;
 
                 var impactSensor = body.AddComponent<ImpactSensor>();
