@@ -33,7 +33,7 @@ namespace NewHorizons.Builder.General
             owRigidBody.EnableKinematicSimulation();
             rigidBody.mass = 10000;
 
-            if (config.Base.addPhysics)
+            if (config.Base.pushable)
             {
                 // hack: make all mesh colliders convex
                 // triggers are already convex

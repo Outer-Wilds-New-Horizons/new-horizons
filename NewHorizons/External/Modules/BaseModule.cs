@@ -77,7 +77,7 @@ namespace NewHorizons.External.Modules
         /// This is meant for stuff like satellites which are relatively simple and can be de-orbited.
         /// If you are using an orbit line but a tracking line, it will be removed when the planet is bumped in to.
         /// </summary>
-        public bool addPhysics;
+        public bool pushable;
 
         #region Obsolete
 
