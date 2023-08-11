@@ -79,7 +79,7 @@ namespace NewHorizons.External.Modules.Props
         /// If true, this detail will stay still until it touches something.
         /// Good for zero-g props.
         /// </summary>
-        public bool physicsSuspendUntilImpact;
+        [DefaultValue(false)] public bool physicsSuspendUntilImpact = false;
 
         /// <summary>
         /// Set to true if this object's lighting should ignore the effects of sunlight
