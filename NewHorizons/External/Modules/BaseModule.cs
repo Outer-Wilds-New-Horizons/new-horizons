@@ -71,6 +71,14 @@ namespace NewHorizons.External.Modules
         /// </summary>
         [DefaultValue(0)] public int gravityVolumePriority = 0;
 
+        /// <summary>
+        /// Apply physics to this planet when you bump into it. Will have a spherical collider the size of surfaceSize. 
+        /// For custom colliders they have to all be convex and you can leave surface size as 0.
+        /// This is meant for stuff like satellites which are relatively simple and can be de-orbited.
+        /// If you are using an orbit line but a tracking line, it will be removed when the planet is bumped in to.
+        /// </summary>
+        public bool addPhysics;
+
         #region Obsolete
 
         [Obsolete("IsSatellite is deprecated, please use ShowMinimap instead")]

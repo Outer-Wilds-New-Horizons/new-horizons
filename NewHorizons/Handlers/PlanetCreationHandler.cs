@@ -348,7 +348,7 @@ namespace NewHorizons.Handlers
 
             const float sphereOfInfluence = 2000f;
             
-            var owRigidBody = RigidBodyBuilder.Make(go, sphereOfInfluence);
+            var owRigidBody = RigidBodyBuilder.Make(go, sphereOfInfluence, body.Config);
             var ao = AstroObjectBuilder.Make(go, null, body.Config, false);
 
             var sector = SectorBuilder.Make(go, owRigidBody, sphereOfInfluence);
@@ -423,7 +423,7 @@ namespace NewHorizons.Handlers
 
             var sphereOfInfluence = GetSphereOfInfluence(body);
             
-            var owRigidBody = RigidBodyBuilder.Make(go, sphereOfInfluence);
+            var owRigidBody = RigidBodyBuilder.Make(go, sphereOfInfluence, body.Config);
             var ao = AstroObjectBuilder.Make(go, primaryBody, body.Config, false);
 
             var sector = SectorBuilder.Make(go, owRigidBody, sphereOfInfluence * 2f);
