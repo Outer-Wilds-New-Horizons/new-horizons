@@ -31,6 +31,9 @@ public class AddPhysics : MonoBehaviour
 
     private IEnumerator Start()
     {
+        SuspendUntilImpact = true;
+        Mass = .001f;
+
         // detectors dont detect unless we wait for some reason
         yield return new WaitForSeconds(.1f);
 
@@ -103,6 +106,7 @@ public class AddPhysics : MonoBehaviour
             _body._unsuspendNextUpdate = false;
 
             _impactSensor.OnImpact += OnImpact;
+            Locator.GetProbe().OnAnchorProbe += OnAnchorProbe;
         }
         else
         {
@@ -112,9 +116,28 @@ public class AddPhysics : MonoBehaviour
 
     private void OnImpact(ImpactData impact)
     {
-        _body.Unsuspend();
+        _body.UnsuspendImmediate(false);
         _impactSensor.OnImpact -= OnImpact;
+        Locator.GetProbe().OnAnchorProbe -= OnAnchorProbe;
         Destroy(this);
+    }
+
+    private void OnAnchorProbe()
+    {
+        var attachedOWRigidbody = Locator.GetProbe().GetAttachedOWRigidbody(true);
+        if (attachedOWRigidbody == _body)
+        {
+            OnImpact(null);
+
+            // copied from ProbeAnchor.AnchorToObject
+            var _probeBody = Locator.GetProbe().GetOWRigidbody();
+            var hitPoint = _probeBody.GetWorldCenterOfMass();
+            if (attachedOWRigidbody.GetMass() < 100f)
+            {
+                Vector3 vector = _probeBody.GetVelocity() - attachedOWRigidbody.GetPointVelocity(_probeBody.GetPosition());
+                attachedOWRigidbody.GetRigidbody().AddForceAtPosition(vector.normalized * 0.005f, hitPoint, ForceMode.Impulse);
+            }
+        }
     }
 
     private void OnDrawGizmosSelected()
