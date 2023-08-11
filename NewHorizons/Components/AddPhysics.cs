@@ -30,6 +30,8 @@ public class AddPhysics : MonoBehaviour
 
     private IEnumerator Start()
     {
+        SuspendUntilImpact = true;
+        
         // detectors dont detect unless we wait for some reason
         yield return new WaitForSeconds(.1f);
 
@@ -94,7 +96,8 @@ public class AddPhysics : MonoBehaviour
 
         if (SuspendUntilImpact)
         {
-            _body.Suspend();
+            // suspend disables colliders, so have to use copy-pasted version
+            Suspend();
             _impactSensor.OnImpact += OnImpact;
         }
         else
@@ -103,6 +106,61 @@ public class AddPhysics : MonoBehaviour
         }
     }
 
+    #region copy-pasted from OWRigidbody
+
+    private void Suspend()
+    {
+        if (!_body._suspended)
+        {
+            if (_body._origParentBody != null)
+            {
+                Suspend(_body._origParent, _body._origParentBody);
+                return;
+            }
+            if (_body._simulateInSector != null)
+            {
+                Suspend(_body._simulateInSector.GetOWRigidbody());
+                return;
+            }
+            Debug.Log("Unable to suspend : " + _body.gameObject.name);
+        }
+    }
+    
+    private void Suspend(OWRigidbody suspensionBody)
+    {
+        _body.Suspend(suspensionBody.transform, suspensionBody);
+    }
+
+    private void Suspend(Transform suspensionParent, OWRigidbody suspensionBody)
+    {
+        if (!_body._suspended || _body._unsuspendNextUpdate)
+        {
+            _body._suspensionBody = suspensionBody;
+            Vector3 vector = _body.GetVelocity() - suspensionBody.GetPointVelocity(_body._transform.position);
+            _body._cachedRelativeVelocity = suspensionBody.transform.InverseTransformDirection(vector);
+            _body._cachedAngularVelocity = (_body.RunningKinematicSimulation() ? _body._kinematicRigidbody.angularVelocity : _body._rigidbody.angularVelocity);
+            _body.enabled = false;
+            _body._offsetApplier.enabled = false;
+            if (_body.RunningKinematicSimulation())
+            {
+                _body._kinematicRigidbody.enabled = false;
+            }
+            else
+            {
+                _body.MakeKinematic();
+            }
+            _body._transform.parent = suspensionParent;
+            _body._suspended = true;
+            _body._unsuspendNextUpdate = false;
+            if (!Physics.autoSyncTransforms)
+            {
+                Physics.SyncTransforms();
+            }
+        }
+    }
+
+    #endregion
+    
     private void OnImpact(ImpactData impact)
     {
         _body.Unsuspend();
