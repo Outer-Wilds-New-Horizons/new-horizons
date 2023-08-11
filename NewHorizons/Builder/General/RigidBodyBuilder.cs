@@ -37,14 +37,12 @@ namespace NewHorizons.Builder.General
             {
                 // hack: make all mesh colliders convex
                 // triggers are already convex
-                // prints errors for non readable meshes but whatever
+                // doesnt work for some non readable meshes but whatever
                 foreach (var meshCollider in body.GetComponentsInChildren<MeshCollider>(true))
                     meshCollider.convex = true;
 
-                var shape = body.AddComponent<SphereShape>();
-                shape._collisionMode = Shape.CollisionMode.Detector;
-                shape._layerMask = (int)(Shape.Layer.Default | Shape.Layer.Gravity);
-                shape._radius = config.Base.surfaceSize;
+                // backup shape in case of no convex colliders
+                body.AddComponent<SphereCollider>().radius = config.Base.surfaceSize;
 
                 var impactSensor = body.AddComponent<ImpactSensor>();
                 var audioSource = body.AddComponent<AudioSource>();

@@ -34,7 +34,7 @@ public class AddPhysics : MonoBehaviour
 
         // hack: make all mesh colliders convex
         // triggers are already convex
-        // prints errors for non readable meshes but whatever
+        // doesnt work for some non readable meshes but whatever
         foreach (var meshCollider in GetComponentsInChildren<MeshCollider>(true))
             meshCollider.convex = true;
 
