@@ -84,7 +84,7 @@ namespace NewHorizons.Builder.Orbital
             Delay.FireOnNextUpdate(orbitLine.InitializeLineRenderer);
 
             // If the planet has physics and a regular orbit line, make sure that when it's bumped into the old orbit line vanishes
-            if (config.Base.addPhysics && !config.Orbit.trackingOrbitLine)
+            if (config.Base.pushable && !config.Orbit.trackingOrbitLine)
             {
                 var impactSensor = planetGO.GetComponent<ImpactSensor>();
                 impactSensor.OnImpact += (ImpactData _) =>
