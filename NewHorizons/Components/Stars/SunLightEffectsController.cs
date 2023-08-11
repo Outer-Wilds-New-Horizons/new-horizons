@@ -196,7 +196,7 @@ namespace NewHorizons.Components.Stars
             // Some effects use Locator.GetSunTransform so hopefully its fine to change it
             Locator._sunTransform = transform;
             
-            // TODO?: maybe also turn of star controller stuff (mainly proxy light) since idk if that can handle more than 1 being on
+            // TODO?: maybe also turn off star controller stuff (mainly proxy light) since idk if that can handle more than 1 being on
         }
     }
 }

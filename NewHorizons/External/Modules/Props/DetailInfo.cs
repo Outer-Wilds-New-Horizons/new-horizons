@@ -77,6 +77,7 @@ namespace NewHorizons.External.Modules.Props
 
         /// <summary>
         /// If true, this detail will stay still until it touches something.
+        /// Good for zero-g props.
         /// </summary>
         public bool physicsSuspendUntilImpact;
 

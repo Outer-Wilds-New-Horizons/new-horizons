@@ -19,7 +19,8 @@ public class AddPhysics : MonoBehaviour
     [Tooltip("The radius that the added sphere collider will use for physics collision.\n" +
         "If there's already good colliders on the detail, you can make this 0.")]
     public float Radius = 1f;
-    [Tooltip("If true, this detail will stay still until it touches something.")]
+    [Tooltip("If true, this detail will stay still until it touches something.\n" +
+        "Good for zero-g props.")]
     public bool SuspendUntilImpact;
 
     [NonSerialized]
