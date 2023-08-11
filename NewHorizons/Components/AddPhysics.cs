@@ -31,9 +31,6 @@ public class AddPhysics : MonoBehaviour
 
     private IEnumerator Start()
     {
-        SuspendUntilImpact = true;
-        Mass = .001f;
-
         // detectors dont detect unless we wait for some reason
         yield return new WaitForSeconds(.1f);
 
