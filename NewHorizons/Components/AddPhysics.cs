@@ -101,6 +101,9 @@ public class AddPhysics : MonoBehaviour
             _body._transform.parent = parentBody.transform;
             _body._suspended = true;
             _body._unsuspendNextUpdate = false;
+            
+            // match velocity doesnt work so just make it not targetable
+            _body.SetIsTargetable(false);
 
             _impactSensor.OnImpact += OnImpact;
             Locator.GetProbe().OnAnchorProbe += OnAnchorProbe;
@@ -114,6 +117,7 @@ public class AddPhysics : MonoBehaviour
     private void OnImpact(ImpactData impact)
     {
         _body.UnsuspendImmediate(false);
+        _body.SetIsTargetable(true);
         _impactSensor.OnImpact -= OnImpact;
         Locator.GetProbe().OnAnchorProbe -= OnAnchorProbe;
         Destroy(this);
