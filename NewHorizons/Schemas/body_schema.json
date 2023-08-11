@@ -1341,7 +1341,7 @@
         },
         "physicsSuspendUntilImpact": {
           "type": "boolean",
-          "description": "If true, this detail will stay still until it bumps something."
+          "description": "If true, this detail will stay still until it touches something.\nGood for zero-g props."
         },
         "ignoreSun": {
           "type": "boolean",
