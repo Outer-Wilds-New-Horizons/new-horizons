@@ -31,7 +31,7 @@ public class AddPhysics : MonoBehaviour
     private IEnumerator Start()
     {
         SuspendUntilImpact = true;
-        
+
         // detectors dont detect unless we wait for some reason
         yield return new WaitForSeconds(.1f);
 
@@ -102,7 +102,7 @@ public class AddPhysics : MonoBehaviour
             _body._transform.parent = parentBody.transform;
             _body._suspended = true;
             _body._unsuspendNextUpdate = false;
-            
+
             _impactSensor.OnImpact += OnImpact;
         }
         else
@@ -110,7 +110,7 @@ public class AddPhysics : MonoBehaviour
             Destroy(this);
         }
     }
-    
+
     private void OnImpact(ImpactData impact)
     {
         _body.Unsuspend();
