@@ -1,13 +1,12 @@
 using NewHorizons.Components.SizeControllers;
-using NewHorizons.Utility;
-using UnityEngine;
+using NewHorizons.Components.Stars;
 using NewHorizons.External.Modules.VariableSize;
+using NewHorizons.Utility;
+using NewHorizons.Utility.Files;
+using NewHorizons.Utility.OuterWilds;
 using OWML.Common;
 using System.Linq;
-using NewHorizons.Components.Stars;
-using NewHorizons.Utility.OuterWilds;
-using NewHorizons.Utility.Files;
-using NewHorizons.Utility.OWML;
+using UnityEngine;
 
 namespace NewHorizons.Builder.Body
 {
@@ -54,6 +53,7 @@ namespace NewHorizons.Builder.Body
             if (_starSurface == null) _starSurface = SearchUtilities.Find("Sun_Body/Sector_SUN/Geometry_SUN/Surface").InstantiateInactive().Rename("Prefab_Surface_Star").DontDestroyOnLoad();
             if (_starSolarFlareEmitter == null) _starSolarFlareEmitter = SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/SolarFlareEmitter").InstantiateInactive().Rename("Prefab_SolarFlareEmitter_Star").DontDestroyOnLoad();
             if (_supernovaPrefab == null) _supernovaPrefab = SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/Supernova").InstantiateInactive().Rename("Prefab_Supernova").DontDestroyOnLoad();
+            
             if (_mainSequenceMaterial == null) _mainSequenceMaterial = new Material(SearchUtilities.Find("Sun_Body").GetComponent<SunController>()._startSurfaceMaterial).DontDestroyOnLoad();
             if (_giantMaterial == null) _giantMaterial = new Material(SearchUtilities.Find("Sun_Body").GetComponent<SunController>()._endSurfaceMaterial).DontDestroyOnLoad();
             if (_flareMaterial == null)
@@ -344,7 +344,6 @@ namespace NewHorizons.Builder.Body
             solarFlareEmitter.transform.localPosition = Vector3.zero;
             solarFlareEmitter.transform.localScale = Vector3.one;
             solarFlareEmitter.name = "SolarFlareEmitter";
-            solarFlareEmitter.SetActive(true);
 
             var emitter = solarFlareEmitter.GetComponent<SolarFlareEmitter>();
 
@@ -361,10 +360,19 @@ namespace NewHorizons.Builder.Body
             }
 
             var material = new Material(_flareMaterial);
-            // Since the star isn't awake yet the controllers haven't been made 
-            foreach (var prefab in new GameObject[] { emitter.domePrefab, emitter.loopPrefab, emitter.streamerPrefab })
+
+            // Make our own copies of all prefabs to make sure we don't actually modify them
+            // else it will affect any other star using these prefabs
+            // #668
+            emitter._domePrefab = emitter.domePrefab.InstantiateInactive();
+            emitter._loopPrefab = emitter.loopPrefab.InstantiateInactive();
+            emitter._streamerPrefab = emitter.streamerPrefab.InstantiateInactive();
+
+            // Get all possible controllers, prefabs or already created ones
+            foreach (var controller in new GameObject[] { emitter.domePrefab, emitter.loopPrefab, emitter.streamerPrefab }
+                .Select(x => x.GetComponent<SolarFlareController>())
+                .Concat(emitter.GetComponentsInChildren<SolarFlareController>()))
             {
-                var controller = prefab.GetComponent<SolarFlareController>();
                 // controller._meshRenderer doesn't exist yet since Awake hasn't been called
                 if (starModule.tint != null)
                 {
@@ -376,6 +384,8 @@ namespace NewHorizons.Builder.Body
                 {
                     controller._scaleFactor = Vector3.one * starModule.solarFlareSettings.scaleFactor;
                 }
+                controller.gameObject.SetActive(true);
+                controller.enabled = true;
             }
 
             starGO.transform.position = rootObject.transform.position;
@@ -412,6 +422,8 @@ namespace NewHorizons.Builder.Body
                     surface.sharedMaterial.SetTexture(ColorRamp, ramp);
                 }
             }
+
+            solarFlareEmitter.SetActive(true);
 
             return starGO;
         }
