@@ -190,6 +190,7 @@ namespace NewHorizons.Builder.Props
                 newDetailGO.transform.parent = prop.transform.parent;
                 newDetailGO.transform.position = prop.transform.position;
                 newDetailGO.transform.rotation = prop.transform.rotation;
+                newDetailGO.transform.localScale = prop.transform.localScale;
 
                 // Can't modify parents while looping through children bc idk
                 var children = new List<Transform>();
