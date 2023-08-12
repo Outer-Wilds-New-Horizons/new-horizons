@@ -1,14 +1,12 @@
 using NewHorizons.Components.SizeControllers;
-using NewHorizons.Utility;
-using UnityEngine;
+using NewHorizons.Components.Stars;
 using NewHorizons.External.Modules.VariableSize;
+using NewHorizons.Utility;
+using NewHorizons.Utility.Files;
+using NewHorizons.Utility.OuterWilds;
 using OWML.Common;
 using System.Linq;
-using NewHorizons.Components.Stars;
-using NewHorizons.Utility.OuterWilds;
-using NewHorizons.Utility.Files;
-using NewHorizons.Utility.OWML;
-using UnityEngine.InputSystem.XR;
+using UnityEngine;
 
 namespace NewHorizons.Builder.Body
 {
