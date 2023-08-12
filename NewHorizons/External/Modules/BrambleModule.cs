@@ -1,13 +1,9 @@
-using NewHorizons.Utility;
+using NewHorizons.External.SerializableData;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.Serialization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NewHorizons.External.Modules
 {
@@ -78,18 +74,8 @@ namespace NewHorizons.External.Modules
 
         
         [JsonObject]
-        public class BrambleNodeInfo
+        public class BrambleNodeInfo : GeneralPropInfo
         {
-            /// <summary>
-            /// The physical position of the node
-            /// </summary>
-            public MVector3 position;
-            
-            /// <summary>
-            /// The physical rotation of the node
-            /// </summary>
-            public MVector3 rotation;
-
             /// <summary>
             /// The physical scale of the node, as a multiplier of the original size. 
             /// Nodes are 150m across, seeds are 10m across.

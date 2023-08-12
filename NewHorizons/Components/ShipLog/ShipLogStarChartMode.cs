@@ -1,12 +1,14 @@
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
+using NewHorizons.Utility.Files;
+using NewHorizons.Utility.OWML;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Components.ShipLog
 {
     public class ShipLogStarChartMode : ShipLogMode
@@ -61,7 +63,7 @@ namespace NewHorizons.Components.ShipLog
                 var flag = false;
                 if (starSystem.Equals("SolarSystem")) flag = true;
                 else if (starSystem.Equals("EyeOfTheUniverse")) flag = false;
-                else if (config.Spawn?.shipSpawnPoint != null) flag = true;
+                else if (config.Spawn?.shipSpawn != null) flag = true;
 
                 if (!StarChartHandler.HasUnlockedSystem(starSystem)) continue;
 
@@ -132,9 +134,18 @@ namespace NewHorizons.Components.ShipLog
                 }
                 else
                 {
-                    var path = Path.Combine("planets", uniqueID + ".png");
-                    Logger.LogVerbose($"ShipLogStarChartManager - Trying to load {path}");
-                    texture = ImageUtilities.GetTexture(Main.SystemDict[uniqueID].Mod, path);
+                    var mod = Main.SystemDict[uniqueID].Mod;
+
+                    var path = Path.Combine("systems", uniqueID + ".png");
+
+                    // Else check the old location
+                    if (!File.Exists(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, path)))
+                    {
+                        path = Path.Combine("planets", uniqueID + ".png");
+                    }
+
+                    NHLogger.LogVerbose($"ShipLogStarChartManager - Trying to load {path}");
+                    texture = ImageUtilities.GetTexture(mod, path);
                 }
             }
             catch (Exception) { }

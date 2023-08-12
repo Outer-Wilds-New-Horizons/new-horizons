@@ -1,11 +1,12 @@
 using NewHorizons.Components.Stars;
 using NewHorizons.Utility;
-using OWML.Utils;
+using NewHorizons.Utility.OWML;
+using NewHorizons.Utility.OuterWilds;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Handlers
 {
     public static class PlanetDestructionHandler
@@ -53,19 +54,42 @@ namespace NewHorizons.Handlers
 
         public static void RemoveSolarSystem()
         {
-            // Stop the sun from killing the player
-            var sunVolumes = SearchUtilities.Find("Sun_Body/Sector_SUN/Volumes_SUN");
-            sunVolumes.SetActive(false);
+            // Adapted from EOTS thanks corby
+            var toDisable = new List<GameObject>();
 
-            foreach (var name in _solarSystemBodies)
+            // Collect all rigid bodies and proxies
+            foreach (var rigidbody in CenterOfTheUniverse.s_rigidbodies)
             {
-                var ao = AstroObjectLocator.GetAstroObject(name);
-                if (ao != null) Delay.FireInNUpdates(() => RemoveBody(ao, false), 2);
-                else Logger.LogError($"Couldn't find [{name}]");
+                if (rigidbody.name is not ("Player_Body" or "Probe_Body" or "Ship_Body"))
+                {
+                    toDisable.Add(rigidbody.gameObject);
+                }
             }
 
-            // Bring the sun back because why not
-            Delay.FireInNUpdates(() => { if (Locator.GetAstroObject(AstroObject.Name.Sun).gameObject.activeInHierarchy) { sunVolumes.SetActive(true); } }, 3);
+            foreach (var proxyBody in GameObject.FindObjectsOfType<ProxyBody>())
+            {
+                toDisable.Add(proxyBody.gameObject);
+            }
+
+            Delay.FireInNUpdates(() =>
+            {
+                foreach (var gameObject in toDisable)
+                {
+                    gameObject.SetActive(false);
+                }
+                GameObject.FindObjectOfType<SunProxy>().gameObject.SetActive(false);
+                
+                // force call update here to make it switch to an active star. idk why we didnt have to do this before
+                SunLightEffectsController.Instance.Update();
+                
+                // Since we didn't call RemoveBody on the Stranger have to call this here
+                StrangerRemoved();
+            }, 2); // Have to wait or shit goes wild
+
+            foreach (var streamingAssetBundle in StreamingManager.s_activeBundles)
+            {
+                //streamingAssetBundle.Unload();
+            }
         }
 
         public static void RemoveEyeOfTheUniverse()
@@ -74,17 +98,32 @@ namespace NewHorizons.Handlers
             {
                 var ao = AstroObjectLocator.GetAstroObject(name);
                 if (ao != null) Delay.FireInNUpdates(() => RemoveBody(ao, false), 2);
-                else Logger.LogError($"Couldn't find [{name}]");
+                else NHLogger.LogError($"Couldn't find [{name}]");
+            }
+        }
+
+        public static void StrangerRemoved()
+        {
+            CloakHandler.FlagStrangerDisabled = true;
+
+            if (Locator._cloakFieldController?.GetComponentInParent<AstroObject>()?.GetAstroObjectName() == AstroObject.Name.RingWorld)
+            {
+                Locator._cloakFieldController = null;
             }
         }
 
         public static void RemoveBody(AstroObject ao, bool delete = false, List<AstroObject> toDestroy = null)
         {
-            Logger.LogVerbose($"Removing [{ao.name}]");
+            NHLogger.LogVerbose($"Removing [{ao.name}]");
+
+            if (ao.GetAstroObjectName() == AstroObject.Name.RingWorld)
+            {
+                StrangerRemoved();
+            }
 
             if (ao.gameObject == null || !ao.gameObject.activeInHierarchy)
             {
-                Logger.LogVerbose($"[{ao.name}] was already removed");
+                NHLogger.LogVerbose($"[{ao.name}] was already removed");
                 return;
             }
 
@@ -92,7 +131,7 @@ namespace NewHorizons.Handlers
 
             if (toDestroy.Contains(ao))
             {
-                Logger.LogVerbose($"Possible infinite recursion in RemoveBody: {ao.name} might be it's own primary body?");
+                NHLogger.LogVerbose($"Possible infinite recursion in RemoveBody: {ao.name} might be it's own primary body?");
                 return;
             }
 
@@ -106,7 +145,7 @@ namespace NewHorizons.Handlers
                         RemoveBody(AstroObjectLocator.GetAstroObject(AstroObject.Name.WhiteHole.ToString()), delete, toDestroy);
                         // Might prevent leftover fragments from existing
                         // Might also prevent people from using their own detachable fragments however
-                        foreach(var fragment in GameObject.FindObjectsOfType<DetachableFragment>())
+                        foreach(var fragment in UnityEngine.Object.FindObjectsOfType<DetachableFragment>())
                         {
                             DisableBody(fragment.gameObject, delete);
                         }
@@ -119,7 +158,7 @@ namespace NewHorizons.Handlers
                     case AstroObject.Name.GiantsDeep:
                         // Might prevent leftover jellyfish from existing
                         // Might also prevent people from using their own jellyfish however
-                        foreach (var jelly in GameObject.FindObjectsOfType<JellyfishController>())
+                        foreach (var jelly in UnityEngine.Object.FindObjectsOfType<JellyfishController>())
                         {
                             DisableBody(jelly.gameObject, delete);
                         }
@@ -130,11 +169,11 @@ namespace NewHorizons.Handlers
                         // Always just fucking kill this one to stop THE WARP BUG!!!
                         DisableBody(SearchUtilities.Find("StreamingGroup_TH"), true);
 
-                        foreach (var obj in GameObject.FindObjectsOfType<DayNightTracker>())
+                        foreach (var obj in UnityEngine.Object.FindObjectsOfType<DayNightTracker>())
                         {
                             DisableBody(obj.gameObject, true);
                         }
-                        foreach (var obj in GameObject.FindObjectsOfType<VillageMusicVolume>())
+                        foreach (var obj in UnityEngine.Object.FindObjectsOfType<VillageMusicVolume>())
                         {
                             DisableBody(obj.gameObject, true);
                         }
@@ -143,27 +182,27 @@ namespace NewHorizons.Handlers
                         var starController = ao.gameObject.GetComponent<StarController>();
                         SunLightEffectsController.RemoveStar(starController);
                         SunLightEffectsController.RemoveStarLight(ao.transform.Find("Sector_SUN/Effects_SUN/SunLight").GetComponent<Light>());
-                        GameObject.Destroy(starController);
+                        UnityEngine.Object.Destroy(starController);
 
                         var audio = ao.GetComponentInChildren<SunSurfaceAudioController>();
-                        GameObject.Destroy(audio);
+                        UnityEngine.Object.Destroy(audio);
 
                         foreach (var owAudioSource in ao.GetComponentsInChildren<OWAudioSource>())
                         {
                             owAudioSource.Stop();
-                            GameObject.Destroy(owAudioSource);
+                            UnityEngine.Object.Destroy(owAudioSource);
                         }
 
                         foreach (var audioSource in ao.GetComponentsInChildren<AudioSource>())
                         {
                             audioSource.Stop();
-                            GameObject.Destroy(audioSource);
+                            UnityEngine.Object.Destroy(audioSource);
                         }
 
-                        foreach (var sunProxy in GameObject.FindObjectsOfType<SunProxy>())
+                        foreach (var sunProxy in UnityEngine.Object.FindObjectsOfType<SunProxy>())
                         {
-                            Logger.LogVerbose($"Destroying SunProxy {sunProxy.gameObject.name}");
-                            GameObject.Destroy(sunProxy.gameObject);
+                            NHLogger.LogVerbose($"Destroying SunProxy {sunProxy.gameObject.name}");
+                            UnityEngine.Object.Destroy(sunProxy.gameObject);
                         }
 
                         // Stop the sun from breaking stuff when the supernova gets triggered
@@ -172,12 +211,12 @@ namespace NewHorizons.Handlers
                 }
 
                 // Always delete the children
-                Logger.LogVerbose($"Removing Children of [{ao._name}], [{ao._customName}]");
+                NHLogger.LogVerbose($"Removing Children of [{ao._name}], [{ao._customName}]");
                 foreach (var child in AstroObjectLocator.GetChildren(ao))
                 {
                     if (child == null) continue;
 
-                    Logger.LogVerbose($"Removing child [{child.name}] of [{ao._name}]");
+                    NHLogger.LogVerbose($"Removing child [{child.name}] of [{ao._name}]");
 
                     // Ship starts as a child of TH but obvious we want to keep that
                     if (child.name == "Ship_Body") continue;
@@ -198,11 +237,11 @@ namespace NewHorizons.Handlers
             }
             catch (Exception e)
             {
-                Logger.LogError($"Exception thrown when trying to delete bodies related to [{ao.name}]:\n{e}");
+                NHLogger.LogError($"Exception thrown when trying to delete bodies related to [{ao.name}]:\n{e}");
             }
 
             // Deal with proxies
-            foreach (var p in GameObject.FindObjectsOfType<ProxyOrbiter>())
+            foreach (var p in UnityEngine.Object.FindObjectsOfType<ProxyOrbiter>())
             {
                 if (p._originalBody == ao.gameObject)
                 {
@@ -214,18 +253,18 @@ namespace NewHorizons.Handlers
 
             Delay.RunWhen(() => Main.IsSystemReady, () => DisableBody(ao.gameObject, delete));
 
-            foreach (ProxyBody proxy in GameObject.FindObjectsOfType<ProxyBody>())
+            foreach (ProxyBody proxy in UnityEngine.Object.FindObjectsOfType<ProxyBody>())
             {
                 if (proxy?._realObjectTransform?.gameObject == ao.gameObject)
                 {
-                    GameObject.Destroy(proxy.gameObject);
+                    UnityEngine.Object.Destroy(proxy.gameObject);
                 }
             }
         }
 
         public static void RemoveAllProxies()
         {
-            GameObject.Destroy(GameObject.FindObjectOfType<DistantProxyManager>().gameObject);
+            UnityEngine.Object.Destroy(UnityEngine.Object.FindObjectOfType<DistantProxyManager>().gameObject);
 
             foreach (var name in _solarSystemBodies)
             {
@@ -244,7 +283,7 @@ namespace NewHorizons.Handlers
         {
             if (go == null) return;
 
-            Logger.LogVerbose($"Removing [{go.name}]");
+            NHLogger.LogVerbose($"Removing [{go.name}]");
 
             OWRigidbody rigidbody = go.GetComponent<OWRigidbody>();
             if (rigidbody != null)
@@ -273,7 +312,7 @@ namespace NewHorizons.Handlers
 
             if (delete)
             {
-                GameObject.Destroy(go);
+                UnityEngine.Object.Destroy(go);
             }
             else
             {
@@ -293,11 +332,11 @@ namespace NewHorizons.Handlers
             var distantProxy = SearchUtilities.Find(name + "_DistantProxy", false);
             var distantProxyClone = SearchUtilities.Find(name + "_DistantProxy(Clone)", false);
 
-            if (distantProxy != null) GameObject.Destroy(distantProxy.gameObject);
-            if (distantProxyClone != null) GameObject.Destroy(distantProxyClone.gameObject);
+            if (distantProxy != null) UnityEngine.Object.Destroy(distantProxy.gameObject);
+            if (distantProxyClone != null) UnityEngine.Object.Destroy(distantProxyClone.gameObject);
 
             if (distantProxy == null && distantProxyClone == null)
-                Logger.LogVerbose($"Couldn't find proxy for {name}");
+                NHLogger.LogVerbose($"Couldn't find proxy for {name}");
         }
     }
 }

@@ -1,6 +1,7 @@
 using NewHorizons.Components.Orbital;
 using NewHorizons.External.Configs;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWML;
 using UnityEngine;
 namespace NewHorizons.Builder.Orbital
 {
@@ -16,7 +17,7 @@ namespace NewHorizons.Builder.Orbital
 
             if (_dottedLineMaterial == null || _lineMaterial == null) return null;
 
-            GameObject orbitGO = new GameObject("Orbit");
+            var orbitGO = new GameObject("Orbit");
             orbitGO.transform.parent = planetGO.transform;
             orbitGO.transform.localPosition = Vector3.zero;
 
@@ -81,6 +82,16 @@ namespace NewHorizons.Builder.Orbital
             orbitLine._numVerts = (int)Mathf.Clamp(config.Orbit.semiMajorAxis / 1000f, numVerts, 4096);
 
             Delay.FireOnNextUpdate(orbitLine.InitializeLineRenderer);
+
+            // If the planet has physics and a regular orbit line, make sure that when it's bumped into the old orbit line vanishes
+            if (config.Base.pushable && !config.Orbit.trackingOrbitLine)
+            {
+                var impactSensor = planetGO.GetComponent<ImpactSensor>();
+                impactSensor.OnImpact += (ImpactData _) =>
+                {
+                    orbitGO.SetActive(false);
+                };
+            }
 
             return orbitLine;
         }

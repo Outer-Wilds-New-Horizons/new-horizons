@@ -1,22 +1,24 @@
 using NewHorizons.External.Configs;
+using NewHorizons.Utility.OWML;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Handlers
 {
     public static class TranslationHandler
     {
-        private static Dictionary<TextTranslation.Language, Dictionary<string, string>> _shipLogTranslationDictionary = new Dictionary<TextTranslation.Language, Dictionary<string, string>>();
-        private static Dictionary<TextTranslation.Language, Dictionary<string, string>> _dialogueTranslationDictionary = new Dictionary<TextTranslation.Language, Dictionary<string, string>>();
-        private static Dictionary<TextTranslation.Language, Dictionary<string, string>> _uiTranslationDictionary = new Dictionary<TextTranslation.Language, Dictionary<string, string>>();
+        private static Dictionary<TextTranslation.Language, Dictionary<string, string>> _shipLogTranslationDictionary = new();
+        private static Dictionary<TextTranslation.Language, Dictionary<string, string>> _dialogueTranslationDictionary = new();
+        private static Dictionary<TextTranslation.Language, Dictionary<string, string>> _uiTranslationDictionary = new();
+        private static Dictionary<TextTranslation.Language, Dictionary<string, string>> _otherTranslationDictionary = new();
 
         public enum TextType
         {
             SHIPLOG,
             DIALOGUE,
-            UI
+            UI,
+            OTHER
         }
 
         public static string GetTranslation(string text, TextType type) => GetTranslation(text, type, true);
@@ -36,9 +38,12 @@ namespace NewHorizons.Handlers
                     break;
                 case TextType.UI:
                     dictionary = _uiTranslationDictionary;
+                    break;                     
+                case TextType.OTHER:
+                    dictionary = _otherTranslationDictionary;
                     break;
                 default:
-                    if (warn) Logger.LogVerbose($"Invalid TextType {type}");
+                    if (warn) NHLogger.LogVerbose($"Invalid TextType {type}");
                     return text;
             }
 
@@ -47,14 +52,14 @@ namespace NewHorizons.Handlers
                 if (table.TryGetValue(text, out var translatedText))
                     return translatedText;
 
-            if (warn) Logger.LogVerbose($"Defaulting to english for {text}");
+            if (warn) NHLogger.LogVerbose($"Defaulting to english for {text}");
 
             // Try to default to English
             if (dictionary.TryGetValue(TextTranslation.Language.ENGLISH, out var englishTable))
                 if (englishTable.TryGetValue(text, out var englishText))
                     return englishText;
 
-            if (warn) Logger.LogVerbose($"Defaulting to key for {text}");
+            if (warn) NHLogger.LogVerbose($"Defaulting to key for {text}");
 
             // Default to the key
             return text;
@@ -98,6 +103,20 @@ namespace NewHorizons.Handlers
 
                     if (!_uiTranslationDictionary[language].ContainsKey(key)) _uiTranslationDictionary[language].Add(key, value);
                     else _uiTranslationDictionary[language][key] = value;
+                }
+            }
+
+            if (config.OtherDictionary != null && config.OtherDictionary.Count() > 0)
+            {
+                if (!_otherTranslationDictionary.ContainsKey(language)) _otherTranslationDictionary.Add(language, new Dictionary<string, string>());
+                foreach (var originalKey in config.OtherDictionary.Keys)
+                {
+                    // Don't remove CDATA
+                    var key = originalKey.Replace("&lt;", "<").Replace("&gt;", ">");
+                    var value = config.OtherDictionary[originalKey].Replace("&lt;", "<").Replace("&gt;", ">");
+
+                    if (!_otherTranslationDictionary[language].ContainsKey(key)) _otherTranslationDictionary[language].Add(key, value);
+                    else _otherTranslationDictionary[language][key] = value;
                 }
             }
         }

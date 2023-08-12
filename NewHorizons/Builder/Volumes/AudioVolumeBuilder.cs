@@ -1,48 +1,19 @@
-using NewHorizons.External.Modules;
+using NewHorizons.Builder.Props;
+using NewHorizons.External.Modules.Volumes.VolumeInfos;
 using NewHorizons.Utility;
+using NewHorizons.Utility.Files;
+using NewHorizons.Utility.OuterWilds;
 using OWML.Common;
-using OWML.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Volumes
 {
     public static class AudioVolumeBuilder
     {
-        public static AudioVolume Make(GameObject planetGO, Sector sector, VolumesModule.AudioVolumeInfo info, IModBehaviour mod)
+        public static AudioVolume Make(GameObject planetGO, Sector sector, AudioVolumeInfo info, IModBehaviour mod)
         {
-            var go = new GameObject("AudioVolume");
-            go.SetActive(false);
-
-            go.transform.parent = sector?.transform ?? planetGO.transform;
-
-            if (!string.IsNullOrEmpty(info.rename))
-            {
-                go.name = info.rename;
-            }
-
-            if (!string.IsNullOrEmpty(info.parentPath))
-            {
-                var newParent = planetGO.transform.Find(info.parentPath);
-                if (newParent != null)
-                {
-                    go.transform.parent = newParent;
-                }
-                else
-                {
-                    Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
-                }
-            }
-
-            var pos = (Vector3)(info.position ?? Vector3.zero);
-            if (info.isRelativeToParent) go.transform.localPosition = pos;
-            else go.transform.position = planetGO.transform.TransformPoint(pos);
-            go.layer = LayerMask.NameToLayer("AdvancedEffectVolume");
+            var go = GeneralPropBuilder.MakeNew("AudioVolume", planetGO, sector, info);
+            go.layer = Layer.AdvancedEffectVolume;
 
             var audioSource = go.AddComponent<AudioSource>();
 
@@ -50,8 +21,8 @@ namespace NewHorizons.Builder.Volumes
             owAudioSource._audioSource = audioSource;
             owAudioSource.loop = info.loop;
             owAudioSource.SetMaxVolume(info.volume);
-            owAudioSource.SetClipSelectionType(EnumUtils.Parse<OWAudioSource.ClipSelectionOnPlay>(info.clipSelection.ToString()));
-            owAudioSource.SetTrack(EnumUtils.Parse<OWAudioMixer.TrackName>(info.track.ToString()));
+            owAudioSource.SetClipSelectionType(info.clipSelection.ConvertToOW());
+            owAudioSource.SetTrack(info.track.ConvertToOW());
             AudioUtilities.SetAudioClip(owAudioSource, info.audio, mod);
 
             var audioVolume = go.AddComponent<AudioVolume>();

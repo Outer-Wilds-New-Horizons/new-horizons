@@ -1,4 +1,4 @@
-using NewHorizons.Components;
+using NewHorizons.Components.Props;
 using NewHorizons.Components.SizeControllers;
 using System.Collections.Generic;
 using UnityEngine;

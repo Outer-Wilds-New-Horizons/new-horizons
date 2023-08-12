@@ -1,6 +1,6 @@
 using System.ComponentModel;
 using System.Runtime.Serialization;
-using NewHorizons.Utility;
+using NewHorizons.External.SerializableData;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 

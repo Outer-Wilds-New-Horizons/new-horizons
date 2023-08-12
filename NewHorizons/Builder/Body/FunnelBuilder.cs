@@ -1,9 +1,11 @@
-using System.Runtime.Serialization;
-using NewHorizons.Components;
 using NewHorizons.Utility;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
+
 using NewHorizons.External.Modules.VariableSize;
+using NewHorizons.Components.Orbital;
+using NewHorizons.Utility.OWML;
+using NewHorizons.Utility.OuterWilds;
+using NewHorizons.Components.SizeControllers;
 
 namespace NewHorizons.Builder.Body
 {
@@ -34,7 +36,7 @@ namespace NewHorizons.Builder.Body
             if (_lavaMaterial == null) _lavaMaterial = new Material(SearchUtilities.Find("VolcanicMoon_Body/MoltenCore_VM/LavaSphere").GetComponent<MeshRenderer>().sharedMaterial).DontDestroyOnLoad();
         }
 
-        public static void Make(GameObject planetGO, ConstantForceDetector detector, OWRigidbody rigidbody, FunnelModule module)
+        public static void Make(GameObject planetGO, Sector sector, OWRigidbody rigidbody, FunnelModule module)
         {
             InitPrefabs();
 
@@ -55,7 +57,7 @@ namespace NewHorizons.Builder.Body
             var detectorGO = new GameObject("Detector_Funnel");
             detectorGO.transform.parent = funnelGO.transform;
             var funnelDetector = detectorGO.AddComponent<ConstantForceDetector>();
-            funnelDetector._inheritDetector = detector;
+            funnelDetector._inheritDetector = planetGO.GetComponentInChildren<ConstantForceDetector>();
             funnelDetector._detectableFields = new ForceVolume[0];
 
             detectorGO.AddComponent<ForceApplier>();
@@ -66,15 +68,15 @@ namespace NewHorizons.Builder.Body
             scaleRoot.transform.localPosition = Vector3.zero;
             scaleRoot.transform.localScale = new Vector3(1, 1, 1);
 
-            var proxyGO = GameObject.Instantiate(_proxySandFunnel, scaleRoot.transform);
+            var proxyGO = Object.Instantiate(_proxySandFunnel, scaleRoot.transform);
             proxyGO.name = "Proxy_Funnel";
             proxyGO.SetActive(true);
 
-            var geoGO = GameObject.Instantiate(_geoSandFunnel, scaleRoot.transform);
+            var geoGO = Object.Instantiate(_geoSandFunnel, scaleRoot.transform);
             geoGO.name = "Geo_Funnel";
             geoGO.SetActive(true);
 
-            var volumesGO = GameObject.Instantiate(_volumesSandFunnel, scaleRoot.transform);
+            var volumesGO = Object.Instantiate(_volumesSandFunnel, scaleRoot.transform);
             volumesGO.name = "Volumes_Funnel";
             volumesGO.SetActive(true);
             var sfv = volumesGO.GetComponentInChildren<SimpleFluidVolume>();
@@ -88,7 +90,7 @@ namespace NewHorizons.Builder.Body
                 case FunnelType.Water:
                     sfv._fluidType = FluidVolume.Type.WATER;
 
-                    GameObject.Destroy(geoGO.transform.Find("Effects_HT_SandColumn/SandColumn_Interior").gameObject);
+                    Object.Destroy(geoGO.transform.Find("Effects_HT_SandColumn/SandColumn_Interior").gameObject);
 
                     var waterMaterials = _waterMaterials;
                     var materials = new Material[waterMaterials.Length];
@@ -136,7 +138,7 @@ namespace NewHorizons.Builder.Body
                 case FunnelType.Star:
                     sfv._fluidType = FluidVolume.Type.PLASMA;
 
-                    GameObject.Destroy(geoGO.transform.Find("Effects_HT_SandColumn/SandColumn_Interior").gameObject);
+                    Object.Destroy(geoGO.transform.Find("Effects_HT_SandColumn/SandColumn_Interior").gameObject);
 
                     var lavaMaterial = new Material(_lavaMaterial);
                     lavaMaterial.mainTextureOffset = new Vector2(0.1f, 0.2f);
@@ -165,7 +167,10 @@ namespace NewHorizons.Builder.Body
                     break;
             }
 
-            var sector = planetGO.GetComponent<AstroObject>().GetPrimaryBody().GetRootSector();
+            // We take the sector of the binary focal point if it exists for this funnel (like with the twins)
+            var primaryBody = planetGO.GetComponent<AstroObject>().GetPrimaryBody();
+            if (primaryBody?.GetComponent<BinaryFocalPoint>() != null) sector = primaryBody.GetRootSector();
+
             proxyGO.GetComponent<SectorProxy>().SetSector(sector);
             geoGO.GetComponent<SectorCullGroup>().SetSector(sector);
             volumesGO.GetComponent<SectorCollisionGroup>().SetSector(sector);
@@ -195,8 +200,8 @@ namespace NewHorizons.Builder.Body
             var target = targetAO?.GetAttachedOWRigidbody();
             if (target == null)
             {
-                if (targetAO != null) Logger.LogError($"Found funnel target ({targetAO.name}) but couldn't find rigidbody for the funnel {funnelGO.name}");
-                else Logger.LogError($"Couldn't find the target ({module.target}) for the funnel {funnelGO.name}");
+                if (targetAO != null) NHLogger.LogError($"Found funnel target ({targetAO.name}) but couldn't find rigidbody for the funnel {funnelGO.name}");
+                else NHLogger.LogError($"Couldn't find the target ({module.target}) for the funnel {funnelGO.name}");
                 return;
             }
 

@@ -1,8 +1,8 @@
 using NewHorizons.Builder.Atmosphere;
-using NewHorizons.Utility;
+using NewHorizons.Utility.OWML;
 using System.Collections.Generic;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Components.Stars
 {
     [RequireComponent(typeof(SunLightController))]
@@ -43,13 +43,15 @@ namespace NewHorizons.Components.Stars
         {
             if (star == null) return;
 
-            Logger.LogVerbose($"Adding new star to list: {star.gameObject.name}");
+            NHLogger.LogVerbose($"Adding new star to list: {star.gameObject.name}");
             Instance._stars.Add(star);
         }
 
         public static void RemoveStar(StarController star)
         {
-            Logger.LogVerbose($"Removing star from list: {star?.gameObject?.name}");
+            if (Instance == null) return;
+
+            NHLogger.LogVerbose($"Removing star from list: {star?.gameObject?.name}");
             if (Instance._stars.Contains(star))
             {
                 if (Instance._activeStar != null && Instance._activeStar.Equals(star))
@@ -74,7 +76,7 @@ namespace NewHorizons.Components.Stars
 
         public static void RemoveStarLight(Light light)
         {
-            if (light != null && Instance._lights.Contains(light))
+            if (Instance != null && light != null && Instance._lights.Contains(light))
             {
                 Instance._lights.Remove(light);
             }
@@ -89,10 +91,12 @@ namespace NewHorizons.Components.Stars
             {
                 origin = Locator.GetActiveCamera().transform.position;
 
-                // Keep all star lights on in map
                 foreach (var light in _lights)
                 {
+                    // Keep all star lights on in map
                     light.enabled = true;
+                    // Fixes everything transparent breaking due to directional
+                    if (light.type == LightType.Directional) light.type = LightType.Point;
                 }
             }
             else
@@ -110,6 +114,8 @@ namespace NewHorizons.Components.Stars
                     {
                         light.enabled = false;
                     }
+                    // Revert map fix
+                    if (light.type == LightType.Point) light.type = LightType.Directional;
                 }
             }
 
@@ -166,7 +172,7 @@ namespace NewHorizons.Components.Stars
 
             if (_activeStar != null) _activeStar.Disable();
 
-            Logger.LogVerbose($"Switching active star: {star.gameObject.name}");
+            NHLogger.LogVerbose($"Switching active star: {star.gameObject.name}");
 
             _activeStar = star;
 
@@ -186,6 +192,11 @@ namespace NewHorizons.Components.Stars
             // For the param thing to work it wants this to be on the star idk
             transform.parent = star.transform;
             transform.localPosition = Vector3.zero;
+
+            // Some effects use Locator.GetSunTransform so hopefully its fine to change it
+            Locator._sunTransform = transform;
+            
+            // TODO?: maybe also turn off star controller stuff (mainly proxy light) since idk if that can handle more than 1 being on
         }
     }
 }

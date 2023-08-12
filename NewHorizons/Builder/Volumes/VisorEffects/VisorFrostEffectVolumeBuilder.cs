@@ -1,11 +1,11 @@
-using NewHorizons.External.Modules;
+using NewHorizons.External.Modules.Volumes;
 using UnityEngine;
 
-namespace NewHorizons.Builder.Volumes
+namespace NewHorizons.Builder.Volumes.VisorEffects
 {
     public static class VisorFrostEffectVolumeBuilder
     {
-        public static VisorFrostEffectVolume Make(GameObject planetGO, Sector sector, VolumesModule.VisorEffectModule.FrostEffectVolumeInfo info)
+        public static VisorFrostEffectVolume Make(GameObject planetGO, Sector sector, VisorEffectModule.FrostEffectVolumeInfo info)
         {
             var volume = PriorityVolumeBuilder.Make<VisorFrostEffectVolume>(planetGO, sector, info);
 

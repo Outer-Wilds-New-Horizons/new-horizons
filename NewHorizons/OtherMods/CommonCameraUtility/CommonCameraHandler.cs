@@ -1,5 +1,4 @@
-using NewHorizons.OtherMods.MenuFramework;
-using Logger = NewHorizons.Utility.Logger;
+using NewHorizons.Utility.OWML;
 
 namespace NewHorizons.OtherMods.CommonCameraUtility
 {
@@ -20,7 +19,7 @@ namespace NewHorizons.OtherMods.CommonCameraUtility
             }
             else
             {
-                Logger.LogError("Tried to register custom camera but Common Camera Utility was missing.");
+                NHLogger.LogError("Tried to register custom camera but Common Camera Utility was missing.");
             }
         }
     }

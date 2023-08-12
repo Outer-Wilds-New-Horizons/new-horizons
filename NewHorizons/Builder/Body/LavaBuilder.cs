@@ -2,8 +2,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using NewHorizons.Utility;
 using NewHorizons.External.Modules.VariableSize;
-using System.Linq;
-using UnityEngine.Assertions.Must;
 using NewHorizons.Components.SizeControllers;
 
 namespace NewHorizons.Builder.Body
@@ -44,7 +42,7 @@ namespace NewHorizons.Builder.Body
             moltenCore.transform.position = planetGO.transform.position;
             moltenCore.transform.localScale = Vector3.one * module.size;
 
-            var lavaSphere = GameObject.Instantiate(_lavaSphere, moltenCore.transform);
+            var lavaSphere = Object.Instantiate(_lavaSphere, moltenCore.transform);
             lavaSphere.transform.localScale = Vector3.one;
             lavaSphere.transform.name = "LavaSphere";
             lavaSphere.GetComponent<MeshRenderer>().material.SetFloat(HeightScale, 150f * multiplier);
@@ -56,7 +54,7 @@ namespace NewHorizons.Builder.Body
             var sectorCullGroup = lavaSphere.GetComponent<SectorCullGroup>();
             sectorCullGroup.SetSector(sector);
 
-            var moltenCoreProxy = GameObject.Instantiate(_moltenCoreProxy, moltenCore.transform); ;
+            var moltenCoreProxy = Object.Instantiate(_moltenCoreProxy, moltenCore.transform); ;
             moltenCoreProxy.name = "MoltenCore_Proxy";
             moltenCoreProxy.SetActive(true);
 
@@ -72,7 +70,7 @@ namespace NewHorizons.Builder.Body
             sectorProxy._renderers = new List<Renderer> { proxyLavaSphere.GetComponent<MeshRenderer>() };
             sectorProxy.SetSector(sector);
 
-            var destructionVolume = GameObject.Instantiate(_destructionVolume, moltenCore.transform);
+            var destructionVolume = Object.Instantiate(_destructionVolume, moltenCore.transform);
             destructionVolume.name = "DestructionVolume";
             destructionVolume.GetComponent<SphereCollider>().radius = 1;
             destructionVolume.SetActive(true);

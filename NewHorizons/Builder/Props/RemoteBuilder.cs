@@ -1,11 +1,17 @@
-using NewHorizons.External.Modules;
+using NewHorizons.Builder.Props.TranslatorText;
+using NewHorizons.External;
+using NewHorizons.External.Modules.Props;
+using NewHorizons.External.Modules.Props.Remote;
+using NewHorizons.External.SerializableData;
+using NewHorizons.External.Modules.TranslatorText;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
+using NewHorizons.Utility.Files;
+using NewHorizons.Utility.OuterWilds;
+using NewHorizons.Utility.OWML;
 using OWML.Common;
 using System;
-using System.Linq;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Props
 {
@@ -59,7 +65,7 @@ namespace NewHorizons.Builder.Props
                 quad.AddComponent<OWRenderer>();
                 quad.GetComponent<MeshRenderer>().sharedMaterial = _decalMaterial;
                 quad.name = "AstroBodySymbolRenderer";
-                GameObject.DestroyImmediate(AstroBodySymbolRenderer);
+                UnityEngine.Object.DestroyImmediate(AstroBodySymbolRenderer);
             }
 
             if (_whiteboardPrefab == null)
@@ -80,13 +86,13 @@ namespace NewHorizons.Builder.Props
                 quadW.AddComponent<OWRenderer>();
                 quadW.GetComponent<MeshRenderer>().sharedMaterial = _decalMaterial;
                 quadW.name = "AstroBodySymbolRenderer";
-                GameObject.DestroyImmediate(AstroBodySymbolRendererW);
+                UnityEngine.Object.DestroyImmediate(AstroBodySymbolRendererW);
             }
 
             if (_shareStonePrefab == null)
             {
                 GameObject stone = new GameObject("ShareStoneFallback");
-                stone.layer = LayerMask.NameToLayer("Interactible");
+                stone.layer = Layer.Interactible;
                 stone.SetActive(false);
                 SphereCollider sc = stone.AddComponent<SphereCollider>();
                 sc.center = Vector3.zero;
@@ -103,7 +109,7 @@ namespace NewHorizons.Builder.Props
                 TransformAnimator transformAnimator = animRoot.AddComponent<TransformAnimator>();
                 item._animator = transformAnimator;
                 OWRenderer renderer = SearchUtilities.FindResourceOfTypeAndName<OWRenderer>("Props_NOM_SharedStone");
-                if (renderer != null) GameObject.Instantiate(renderer.gameObject, animRoot.transform);
+                if (renderer != null) UnityEngine.Object.Instantiate(renderer.gameObject, animRoot.transform);
                 GameObject planetDecal = GameObject.CreatePrimitive(PrimitiveType.Quad);
                 planetDecal.name = "PlanetDecal";
                 planetDecal.transform.parent = animRoot.transform;
@@ -116,25 +122,26 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        public static void Make(GameObject go, Sector sector, PropModule.RemoteInfo info, IModBehaviour mod)
+        public static void Make(GameObject go, Sector sector, RemoteInfo info, NewHorizonsBody nhBody)
         {
             InitPrefabs();
 
+            var mod = nhBody.Mod;
             var id = RemoteHandler.GetPlatformID(info.id);
 
             Texture2D decal = Texture2D.whiteTexture;
             if (!string.IsNullOrWhiteSpace(info.decalPath)) decal = ImageUtilities.GetTexture(mod, info.decalPath, false, false);
-            else Logger.LogError($"Missing decal path on [{info.id}] for [{go.name}]");
+            else NHLogger.LogError($"Missing decal path on [{info.id}] for [{go.name}]");
 
             if (info.platform != null)
             {
                 try
                 {
-                    RemoteBuilder.MakePlatform(go, sector, id, decal, info.platform, mod);
+                    MakePlatform(go, sector, id, decal, info.platform, mod);
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError($"Couldn't make remote platform [{info.id}] for [{go.name}]:\n{ex}");
+                    NHLogger.LogError($"Couldn't make remote platform [{info.id}] for [{go.name}]:\n{ex}");
                 }
             }
 
@@ -142,11 +149,11 @@ namespace NewHorizons.Builder.Props
             {
                 try
                 {
-                    RemoteBuilder.MakeWhiteboard(go, sector, id, decal, info.whiteboard, mod);
+                    MakeWhiteboard(go, sector, id, decal, info.whiteboard, nhBody);
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError($"Couldn't make remote whiteboard [{info.id}] for [{go.name}]:\n{ex}");
+                    NHLogger.LogError($"Couldn't make remote whiteboard [{info.id}] for [{go.name}]:\n{ex}");
                 }
             }
 
@@ -156,27 +163,19 @@ namespace NewHorizons.Builder.Props
                 {
                     try
                     {
-                        RemoteBuilder.MakeStone(go, sector, id, decal, stoneInfo, mod);
+                        MakeStone(go, sector, id, decal, stoneInfo, mod);
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError($"Couldn't make remote stone [{info.id}] for [{go.name}]:\n{ex}");
+                        NHLogger.LogError($"Couldn't make remote stone [{info.id}] for [{go.name}]:\n{ex}");
                     }
                 }
             }
         }
 
-        public static void MakeWhiteboard(GameObject go, Sector sector, NomaiRemoteCameraPlatform.ID id, Texture2D decal, PropModule.RemoteInfo.WhiteboardInfo info, IModBehaviour mod)
+        public static void MakeWhiteboard(GameObject go, Sector sector, NomaiRemoteCameraPlatform.ID id, Texture2D decal, RemoteWhiteboardInfo info, NewHorizonsBody nhBody)
         {
-            var detailInfo = new PropModule.DetailInfo()
-            {
-                position = info.position,
-                rotation = info.rotation,
-                parentPath = info.parentPath,
-                isRelativeToParent = info.isRelativeToParent,
-                rename = info.rename
-            };
-            var whiteboard = DetailBuilder.Make(go, sector, _whiteboardPrefab, detailInfo);
+            var whiteboard = DetailBuilder.Make(go, sector, _whiteboardPrefab, new DetailInfo(info));
             whiteboard.SetActive(false);
 
             var decalMat = new Material(_decalMaterial);
@@ -193,7 +192,7 @@ namespace NewHorizons.Builder.Props
             {
                 var textInfo = info.nomaiText[i];
                 component._remoteIDs[i] = RemoteHandler.GetPlatformID(textInfo.id);
-                var wallText = NomaiTextBuilder.Make(whiteboard, sector, new PropModule.NomaiTextInfo
+                var wallText = TranslatorTextBuilder.Make(whiteboard, sector, new TranslatorTextInfo
                 {
                     arcInfo = textInfo.arcInfo,
                     location = textInfo.location,
@@ -202,9 +201,9 @@ namespace NewHorizons.Builder.Props
                     rename = textInfo.rename,
                     rotation = Vector3.zero,
                     seed = textInfo.seed,
-                    type = PropModule.NomaiTextInfo.NomaiTextType.Wall,
+                    type = NomaiTextType.Wall,
                     xmlFile = textInfo.xmlFile
-                }, mod).GetComponent<NomaiWallText>();
+                }, nhBody).GetComponent<NomaiWallText>();
                 wallText._showTextOnStart = false;
                 component._nomaiTexts[i] = wallText;
             }
@@ -214,17 +213,9 @@ namespace NewHorizons.Builder.Props
             whiteboard.SetActive(true);
         }
 
-        public static void MakePlatform(GameObject go, Sector sector, NomaiRemoteCameraPlatform.ID id, Texture2D decal, PropModule.RemoteInfo.PlatformInfo info, IModBehaviour mod)
+        public static void MakePlatform(GameObject go, Sector sector, NomaiRemoteCameraPlatform.ID id, Texture2D decal, PlatformInfo info, IModBehaviour mod)
         {
-            var detailInfo = new PropModule.DetailInfo()
-            {
-                position = info.position,
-                rotation = info.rotation,
-                parentPath = info.parentPath,
-                isRelativeToParent = info.isRelativeToParent,
-                rename = info.rename
-            };
-            var platform = DetailBuilder.Make(go, sector, _remoteCameraPlatformPrefab, detailInfo);
+            var platform = DetailBuilder.Make(go, sector, _remoteCameraPlatformPrefab, new DetailInfo(info));
             platform.SetActive(false);
 
             var decalMat = new Material(_decalMaterial);
@@ -248,39 +239,9 @@ namespace NewHorizons.Builder.Props
             platform.SetActive(true);
         }
 
-        public static void MakeStone(GameObject go, Sector sector, NomaiRemoteCameraPlatform.ID id, Texture2D decal, PropModule.RemoteInfo.StoneInfo info, IModBehaviour mod)
+        public static void MakeStone(GameObject go, Sector sector, NomaiRemoteCameraPlatform.ID id, Texture2D decal, StoneInfo info, IModBehaviour mod)
         {
-            var shareStone = _shareStonePrefab.InstantiateInactive();
-
-            shareStone.name = !string.IsNullOrEmpty(info.rename) ? info.rename : ("ShareStone_" + id.ToString());
-
-            shareStone.transform.parent = sector?.transform ?? go.transform;
-
-            if (!string.IsNullOrEmpty(info.parentPath))
-            {
-                var newParent = go.transform.Find(info.parentPath);
-                if (newParent != null)
-                {
-                    shareStone.transform.parent = newParent;
-                }
-                else
-                {
-                    Logger.LogError($"Cannot find parent object at path: {go.name}/{info.parentPath}");
-                }
-            }
-
-            var pos = (Vector3)(info.position ?? Vector3.zero);
-            var rot = Quaternion.Euler((Vector3)(info.rotation ?? Vector3.zero));
-            if (info.isRelativeToParent)
-            {
-                shareStone.transform.localPosition = pos;
-                shareStone.transform.localRotation = rot;
-            }
-            else
-            {
-                shareStone.transform.position = go.transform.TransformPoint(pos);
-                shareStone.transform.rotation = go.transform.TransformRotation(rot);
-            }
+            var shareStone = GeneralPropBuilder.MakeFromPrefab(_shareStonePrefab, "ShareStone_" + id.ToString(), go, sector, info);
 
             shareStone.GetComponent<SharedStone>()._connectedPlatform = id;
 

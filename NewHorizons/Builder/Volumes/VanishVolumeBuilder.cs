@@ -1,41 +1,16 @@
-using NewHorizons.Components;
-using NewHorizons.External.Modules;
+using NewHorizons.Builder.Props;
+using NewHorizons.External.Modules.Volumes.VolumeInfos;
+using NewHorizons.Utility.OuterWilds;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Volumes
 {
     public static class VanishVolumeBuilder
     {
-        public static TVolume Make<TVolume>(GameObject planetGO, Sector sector, VolumesModule.VanishVolumeInfo info) where TVolume : VanishVolume
+        public static TVolume Make<TVolume>(GameObject planetGO, Sector sector, VanishVolumeInfo info) where TVolume : VanishVolume
         {
-            var go = new GameObject(typeof(TVolume).Name);
-            go.SetActive(false);
-
-            go.transform.parent = sector?.transform ?? planetGO.transform;
-
-            if (!string.IsNullOrEmpty(info.rename))
-            {
-                go.name = info.rename;
-            }
-
-            if (!string.IsNullOrEmpty(info.parentPath))
-            {
-                var newParent = planetGO.transform.Find(info.parentPath);
-                if (newParent != null)
-                {
-                    go.transform.parent = newParent;
-                }
-                else
-                {
-                    Logger.LogError($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
-                }
-            }
-
-            var pos = (Vector3)(info.position ?? Vector3.zero);
-            if (info.isRelativeToParent) go.transform.localPosition = pos;
-            else go.transform.position = planetGO.transform.TransformPoint(pos);
-            go.layer = LayerMask.NameToLayer("BasicEffectVolume");
+            var go = GeneralPropBuilder.MakeNew(typeof(TVolume).Name, planetGO, sector, info);
+            go.layer = Layer.BasicEffectVolume;
 
             var collider = go.AddComponent<SphereCollider>();
             collider.isTrigger = true;
@@ -51,7 +26,7 @@ namespace NewHorizons.Builder.Volumes
 
             volume._collider = collider;
             volume._shrinkBodies = info.shrinkBodies;
-            volume._onlyAffectsPlayerAndShip = info.onlyAffectsPlayerAndShip;
+            volume._onlyAffectsPlayerAndShip = info.onlyAffectsPlayerRelatedBodies;
 
             go.SetActive(true);
 

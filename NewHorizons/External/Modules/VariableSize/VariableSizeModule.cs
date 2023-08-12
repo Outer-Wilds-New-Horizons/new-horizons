@@ -1,6 +1,4 @@
-using NewHorizons.Utility;
 using Newtonsoft.Json;
-using UnityEngine;
 
 namespace NewHorizons.External.Modules.VariableSize
 {
@@ -8,7 +6,7 @@ namespace NewHorizons.External.Modules.VariableSize
     public class VariableSizeModule
     {
         /// <summary>
-        /// Scale this object over time
+        /// Scale this object over time. Time value is in minutes.
         /// </summary>
         public TimeValuePair[] curve;
     }

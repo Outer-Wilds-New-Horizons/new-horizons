@@ -12,6 +12,7 @@ namespace NewHorizons.Components.Orbital
         public bool HideDisplayName { get; set; }
         public bool IsDimension { get; set; }
         public bool invulnerableToSun;
+        public bool isVanilla;
 
         public void SetOrbitalParametersFromConfig(OrbitModule orbit)
         {

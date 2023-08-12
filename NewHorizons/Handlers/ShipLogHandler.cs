@@ -1,8 +1,11 @@
+using NewHorizons.External;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OuterWilds;
+using NewHorizons.Utility.OWML;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Handlers
 {
     public static class ShipLogHandler
@@ -70,7 +73,7 @@ namespace NewHorizons.Handlers
             if (_entryIDsToNHBody.ContainsKey(entryID)) return _entryIDsToNHBody[entryID];
             else
             {
-                Logger.LogError($"Couldn't find NewHorizonsBody that corresponds to {entryID}");
+                NHLogger.LogError($"Couldn't find NewHorizonsBody that corresponds to {entryID}");
                 return null;
             }
         }
@@ -84,17 +87,17 @@ namespace NewHorizons.Handlers
         {
             // Nice to be able to just get the AstroID from the body
             if (!_nhBodyToEntryIDs.ContainsKey(body)) _nhBodyToEntryIDs.Add(body, entryIDs);
-            else Logger.LogWarning($"Possible duplicate shiplog entry {body.Config.name}");
+            else NHLogger.LogWarning($"Possible duplicate shiplog entry {body.Config.name}");
 
             // AstroID
             if (!_nhBodyToAstroIDs.ContainsKey(body)) _nhBodyToAstroIDs.Add(body, astroID);
-            else Logger.LogWarning($"Possible duplicate shiplog entry {astroID} for {body.Config.name}");
+            else NHLogger.LogWarning($"Possible duplicate shiplog entry {astroID} for {body.Config.name}");
 
             // EntryID to Body
             foreach (var entryID in entryIDs)
             {
                 if (!_entryIDsToNHBody.ContainsKey(entryID)) _entryIDsToNHBody.Add(entryID, body);
-                else Logger.LogWarning($"Possible duplicate shiplog entry  {entryID} for {astroID} from NewHorizonsBody {body.Config.name}");
+                else NHLogger.LogWarning($"Possible duplicate shiplog entry  {entryID} for {astroID} from NewHorizonsBody {body.Config.name}");
             }
         }
 

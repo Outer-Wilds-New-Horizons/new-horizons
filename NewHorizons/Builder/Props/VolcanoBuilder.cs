@@ -1,7 +1,7 @@
-using NewHorizons.External.Modules;
+using NewHorizons.External.Modules.Props;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWML;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Props
 {
@@ -28,7 +28,7 @@ namespace NewHorizons.Builder.Props
                 meteorLauncher._dynamicProbability = 0f;
                 var meteorPrefab = meteorLauncher._meteorPrefab.InstantiateInactive().Rename("Prefab_VM_MoltenMeteor").DontDestroyOnLoad();
                 var meteor = meteorPrefab.GetComponent<MeteorController>();
-                GameObject.DestroyImmediate(meteorPrefab.FindChild("ConstantDetectors"));
+                Object.DestroyImmediate(meteorPrefab.FindChild("ConstantDetectors"));
                 var detectors = meteorPrefab.FindChild("DynamicDetector");
                 var rigidbody = meteor.GetComponent<OWRigidbody>();
                 meteor._owRigidbody = rigidbody;
@@ -41,35 +41,11 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        public static void Make(GameObject planetGO, Sector sector, PropModule.VolcanoInfo info)
+        public static void Make(GameObject planetGO, Sector sector, VolcanoInfo info)
         {
             InitPrefab();
 
-            var launcherGO = _meteorLauncherPrefab.InstantiateInactive();
-            launcherGO.name = !string.IsNullOrEmpty(info.rename) ? info.rename : "MeteorLauncher";
-            launcherGO.transform.parent = sector?.transform ?? planetGO.transform;
-            launcherGO.transform.position = planetGO.transform.TransformPoint(info.position == null ? Vector3.zero : (Vector3)info.position);
-
-            if (!string.IsNullOrEmpty(info.parentPath))
-            {
-                var newParent = planetGO.transform.Find(info.parentPath);
-                if (newParent != null)
-                {
-                    launcherGO.transform.parent = newParent;
-                }
-                else
-                {
-                    Logger.LogError($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
-                }
-            }
-
-            var pos = (Vector3)(info.position ?? Vector3.zero);
-            if (info.isRelativeToParent)
-                launcherGO.transform.localPosition = pos;
-            else
-                launcherGO.transform.position = planetGO.transform.TransformPoint(pos);
-
-            launcherGO.transform.rotation = Quaternion.FromToRotation(launcherGO.transform.TransformDirection(Vector3.up), pos.normalized).normalized;
+            var launcherGO = GeneralPropBuilder.MakeFromPrefab(_meteorLauncherPrefab, "MeteorLauncher", planetGO, sector, info);
 
             var meteorLauncher = launcherGO.GetComponent<MeteorLauncher>();
             meteorLauncher._audioSector = sector;
@@ -96,7 +72,7 @@ namespace NewHorizons.Builder.Props
             });
         }
 
-        private static void FixMeteor(MeteorController meteor, PropModule.VolcanoInfo info)
+        private static void FixMeteor(MeteorController meteor, VolcanoInfo info)
         {
             meteor.transform.localScale = Vector3.one * info.scale;
 

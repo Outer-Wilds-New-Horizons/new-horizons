@@ -1,17 +1,13 @@
-using HarmonyLib;
 using NewHorizons.Components.Quantum;
 using NewHorizons.External.Configs;
-using NewHorizons.External.Modules;
-using NewHorizons.Utility;
+using NewHorizons.External.Modules.Props.Quantum;
+using NewHorizons.Utility.Geometry;
+using NewHorizons.Utility.OWML;
 using OWML.Common;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
-using Logger = NewHorizons.Utility.Logger;
 
 // BUGS THAT REQUIRE REWRITING MOBIUS CODE
 // 1) FIXED!                              - MultiStateQuantumObjects don't check to see if the new state would be visible before choosing it
@@ -28,17 +24,17 @@ namespace NewHorizons.Builder.Props
     public static class QuantumBuilder
     {
         
-        public static void Make(GameObject go, Sector sector, PlanetConfig config, IModBehaviour mod, PropModule.QuantumGroupInfo quantumGroup, GameObject[] propsInGroup)
+        public static void Make(GameObject go, Sector sector, PlanetConfig config, IModBehaviour mod, QuantumGroupInfo quantumGroup, GameObject[] propsInGroup)
         {
             switch(quantumGroup.type)
             {
-                case PropModule.QuantumGroupType.Sockets: MakeSocketGroup (go, sector, config, mod, quantumGroup, propsInGroup); return;
-                case PropModule.QuantumGroupType.States:  MakeStateGroup  (go, sector, config, mod, quantumGroup, propsInGroup); return;
+                case QuantumGroupType.Sockets: MakeSocketGroup (go, sector, config, mod, quantumGroup, propsInGroup); return;
+                case QuantumGroupType.States:  MakeStateGroup  (go, sector, config, mod, quantumGroup, propsInGroup); return;
                 // case PropModule.QuantumGroupType.Shuffle: MakeShuffleGroup(go, sector, config, mod, quantumGroup, propsInGroup); return;
             }
         }
         
-        public static void MakeSocketGroup(GameObject go, Sector sector, PlanetConfig config, IModBehaviour mod, PropModule.QuantumGroupInfo quantumGroup, GameObject[] propsInGroup)
+        public static void MakeSocketGroup(GameObject go, Sector sector, PlanetConfig config, IModBehaviour mod, QuantumGroupInfo quantumGroup, GameObject[] propsInGroup)
         {
             var groupRoot = new GameObject("Quantum Sockets - " + quantumGroup.id);
             groupRoot.transform.parent = sector?.transform ?? go.transform;
@@ -50,11 +46,7 @@ namespace NewHorizons.Builder.Props
             {
                 var socketInfo = quantumGroup.sockets[i];
 
-                var socket = new GameObject("Socket " + i);
-                socket.SetActive(false);
-                socket.transform.parent = groupRoot.transform;
-                socket.transform.localPosition = socketInfo.position;
-                socket.transform.localEulerAngles = socketInfo.rotation;
+                var socket = GeneralPropBuilder.MakeNew("Socket " + i, go, sector, socketInfo, parentOverride: groupRoot.transform);
 
                 sockets[i] = socket.AddComponent<QuantumSocket>();
                 sockets[i]._lightSources = new Light[0];
@@ -76,7 +68,7 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        public static void MakeStateGroup(GameObject go, Sector sector, PlanetConfig config, IModBehaviour mod, PropModule.QuantumGroupInfo quantumGroup, GameObject[] propsInGroup)
+        public static void MakeStateGroup(GameObject go, Sector sector, PlanetConfig config, IModBehaviour mod, QuantumGroupInfo quantumGroup, GameObject[] propsInGroup)
         {
             var groupRoot = new GameObject("Quantum States - " + quantumGroup.id);
             groupRoot.transform.parent = sector?.transform ?? go.transform;
@@ -123,7 +115,7 @@ namespace NewHorizons.Builder.Props
             groupRoot.SetActive(true);
         }
 
-        public static void MakeShuffleGroup(GameObject go, Sector sector, PlanetConfig config, IModBehaviour mod, PropModule.QuantumGroupInfo quantumGroup, GameObject[] propsInGroup)
+        public static void MakeShuffleGroup(GameObject go, Sector sector, PlanetConfig config, IModBehaviour mod, QuantumGroupInfo quantumGroup, GameObject[] propsInGroup)
         {
             //var averagePosition = propsInGroup.Aggregate(Vector3.zero, (avg, prop) => avg + prop.transform.position) / propsInGroup.Count();
             GameObject shuffleParent = new GameObject("Quantum Shuffle - " + quantumGroup.id);
@@ -216,7 +208,7 @@ namespace NewHorizons.Builder.Props
 
         void Update()
         {
-            if (meshFilter == null && skinnedMeshRenderer == null) { Logger.LogVerbose("Useless BoxShapeFixer, destroying"); GameObject.DestroyImmediate(this); }
+            if (meshFilter == null && skinnedMeshRenderer == null) { NHLogger.LogVerbose("Useless BoxShapeFixer, destroying"); DestroyImmediate(this); }
 
             Mesh sharedMesh = null;
             if (meshFilter != null) sharedMesh = meshFilter.sharedMesh;
@@ -228,7 +220,7 @@ namespace NewHorizons.Builder.Props
             shape.size = sharedMesh.bounds.size;
             shape.center = sharedMesh.bounds.center;
 
-            GameObject.DestroyImmediate(this);
+            DestroyImmediate(this);
         }
     }
 }

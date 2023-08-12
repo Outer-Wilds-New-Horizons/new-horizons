@@ -1,11 +1,9 @@
-using NewHorizons.Components;
-using NewHorizons.Components.Achievement;
-using NewHorizons.Components.Volumes;
-using NewHorizons.External.Modules;
+using NewHorizons.External.Modules.Props.EchoesOfTheEye;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWML;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Builder.Props
 {
     public static class RaftBuilder
@@ -16,10 +14,10 @@ namespace NewHorizons.Builder.Props
         {
             if (_prefab == null)
             {
-                _prefab = GameObject.FindObjectOfType<RaftController>()?.gameObject?.InstantiateInactive()?.Rename("Raft_Body_Prefab")?.DontDestroyOnLoad();
+                _prefab = Object.FindObjectOfType<RaftController>()?.gameObject?.InstantiateInactive()?.Rename("Raft_Body_Prefab")?.DontDestroyOnLoad();
                 if (_prefab == null)
                 {
-                    Logger.LogWarning($"Tried to make a raft but couldn't. Do you have the DLC installed?");
+                    NHLogger.LogWarning($"Tried to make a raft but couldn't. Do you have the DLC installed?");
                     return;
                 }
                 else
@@ -46,41 +44,13 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        public static GameObject Make(GameObject planetGO, Sector sector, PropModule.RaftInfo info, OWRigidbody planetBody)
+        public static GameObject Make(GameObject planetGO, Sector sector, RaftInfo info, OWRigidbody planetBody)
         {
             InitPrefab();
 
             if (_prefab == null || sector == null) return null;
 
-            GameObject raftObject = _prefab.InstantiateInactive();
-            raftObject.name = !string.IsNullOrEmpty(info.rename) ? info.rename : "Raft_Body";
-            raftObject.transform.parent = sector?.transform ?? planetGO.transform;
-
-            if (!string.IsNullOrEmpty(info.parentPath))
-            {
-                var newParent = planetGO.transform.Find(info.parentPath);
-                if (newParent != null)
-                {
-                    raftObject.transform.parent = newParent;
-                }
-                else
-                {
-                    Logger.LogError($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
-                }
-            }
-
-            var pos = (Vector3)(info.position ?? Vector3.zero);
-            var rot = Quaternion.identity;
-            if (info.isRelativeToParent)
-            {
-                raftObject.transform.localPosition = pos;
-                raftObject.transform.localRotation = rot;
-            }
-            else
-            {
-                raftObject.transform.position = planetGO.transform.TransformPoint(pos);
-                raftObject.transform.rotation = planetGO.transform.TransformRotation(rot);
-            }
+            GameObject raftObject = GeneralPropBuilder.MakeFromPrefab(_prefab, "Raft_Body", planetGO, sector, info);
 
             StreamingHandler.SetUpStreaming(raftObject, sector);
 

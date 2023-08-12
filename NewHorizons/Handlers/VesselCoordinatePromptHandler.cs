@@ -1,17 +1,17 @@
 using NewHorizons.Components.ShipLog;
-using NewHorizons.Utility;
+using NewHorizons.External;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Linq;
 using UnityEngine;
 using static NewHorizons.External.Configs.StarSystemConfig;
 
 namespace NewHorizons.Handlers
 {
-    public class VesselCoordinatePromptHandler
+    public static class VesselCoordinatePromptHandler
     {
         private static List<Tuple<string, string, ScreenPrompt>> _factSystemIDPrompt;
+        // TODO: move this to ImageUtilities
         private static List<Texture2D> _textureCache;
 
         public static void RegisterPrompts(List<NewHorizonsSystem> systems)

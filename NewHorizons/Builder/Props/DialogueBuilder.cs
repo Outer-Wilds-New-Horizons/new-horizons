@@ -1,56 +1,46 @@
-using NewHorizons.External.Modules;
+using NewHorizons.Components.Props;
+using NewHorizons.External.Modules.Props.Dialogue;
 using NewHorizons.Handlers;
+using NewHorizons.Utility;
+using NewHorizons.Utility.OuterWilds;
+using NewHorizons.Utility.OWML;
 using OWML.Common;
 using System.IO;
 using System.Xml;
+using System.Xml.Linq;
 using UnityEngine;
-using NewHorizons.Utility;
-using Logger = NewHorizons.Utility.Logger;
-using NewHorizons.Components;
 
 namespace NewHorizons.Builder.Props
 {
     public static class DialogueBuilder
     {
         // Returns the character dialogue tree and remote dialogue trigger, if applicable.
-        public static (CharacterDialogueTree, RemoteDialogueTrigger) Make(GameObject go, Sector sector, PropModule.DialogueInfo info, IModBehaviour mod)
+        public static (CharacterDialogueTree, RemoteDialogueTrigger) Make(GameObject go, Sector sector, DialogueInfo info, IModBehaviour mod)
         {
+            var xml = File.ReadAllText(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, info.xmlFile));
+            var dialogueName = Path.GetFileNameWithoutExtension(info.xmlFile);
+            return Make(go, sector, info, xml, dialogueName);
+        }
+
+        // Create dialogue directly from xml string instead of loading it from a file
+        public static (CharacterDialogueTree, RemoteDialogueTrigger) Make(GameObject go, Sector sector, DialogueInfo info, string xml, string dialogueName)
+        {
+            NHLogger.LogVerbose($"[DIALOGUE] Created a new character dialogue [{info.rename}] on [{info.parentPath}]");
+
             // In stock I think they disable dialogue stuff with conditions
             // Here we just don't make it at all
-            if (info.blockAfterPersistentCondition != null && PlayerData.GetPersistentCondition(info.blockAfterPersistentCondition)) return (null, null);
+            if (!string.IsNullOrEmpty(info.blockAfterPersistentCondition) && PlayerData.GetPersistentCondition(info.blockAfterPersistentCondition))
+            {
+                NHLogger.LogVerbose($"[DIALOGUE] Persistent condition [{info.blockAfterPersistentCondition}] was met for [{info.rename}], aborting");
+                return (null, null);
+            }
 
-            var dialogue = MakeConversationZone(go, sector, info, mod.ModHelper);
+            var dialogue = MakeConversationZone(go, sector, info, xml, dialogueName);
             
             RemoteDialogueTrigger remoteTrigger = null;
-            if (info.remoteTriggerPosition != null || info.remoteTriggerRadius != 0)
+            if (info.remoteTrigger != null)
             {
                 remoteTrigger = MakeRemoteDialogueTrigger(go, sector, info, dialogue);
-            }
-
-            if (!string.IsNullOrEmpty(info.rename))
-            {
-                dialogue.name = info.rename;
-                if (remoteTrigger != null)
-                {
-                    remoteTrigger.name = $"{info.rename}_{remoteTrigger.name}";
-                }
-            }
-
-            if (!string.IsNullOrEmpty(info.parentPath))
-            {
-                var parent = go.transform.Find(info.parentPath);
-                if (parent != null)
-                {
-                    dialogue.transform.parent = parent;
-                    if (remoteTrigger != null)
-                    {
-                        remoteTrigger.transform.parent = parent;
-                    }
-                }
-                else
-                {
-                    Logger.LogError($"Cannot find parent object at path: {go.name}/{info.parentPath}");
-                }
             }
 
             // Make the character look at the player
@@ -64,10 +54,9 @@ namespace NewHorizons.Builder.Props
             return (dialogue, remoteTrigger);
         }
 
-        private static RemoteDialogueTrigger MakeRemoteDialogueTrigger(GameObject planetGO, Sector sector, PropModule.DialogueInfo info, CharacterDialogueTree dialogue)
+        private static RemoteDialogueTrigger MakeRemoteDialogueTrigger(GameObject planetGO, Sector sector, DialogueInfo info, CharacterDialogueTree dialogue)
         {
-            var conversationTrigger = new GameObject("ConversationTrigger");
-            conversationTrigger.SetActive(false);
+            var conversationTrigger = GeneralPropBuilder.MakeNew("ConversationTrigger", planetGO, sector, info.remoteTrigger, defaultPosition: info.position, defaultParentPath: info.pathToAnimController);
 
             var remoteDialogueTrigger = conversationTrigger.AddComponent<RemoteDialogueTrigger>();
             var sphereCollider = conversationTrigger.AddComponent<SphereCollider>();
@@ -80,28 +69,27 @@ namespace NewHorizons.Builder.Props
                     priority = 1,
                     dialogue = dialogue,
                     prereqConditionType = RemoteDialogueTrigger.MultiConditionType.AND,
-                    prereqConditions = new string[]{ },
+                    // Base game never uses more than one condition anyone so we'll keep it simple
+                    prereqConditions = string.IsNullOrEmpty(info.remoteTrigger.prereqCondition) ? new string[]{ } : new string[] { info.remoteTrigger.prereqCondition },
+                    // Just set your enter conditions in XML instead of complicating it with this
                     onTriggerEnterConditions = new string[]{ }
                 }
             };
             remoteDialogueTrigger._activatedDialogues = new bool[1];
             remoteDialogueTrigger._deactivateTriggerPostConversation = true;
 
-            sphereCollider.radius = info.remoteTriggerRadius == 0 ? info.radius : info.remoteTriggerRadius;
+            sphereCollider.radius = info.remoteTrigger.radius == 0 ? info.radius : info.remoteTrigger.radius;
 
-            conversationTrigger.transform.parent = sector?.transform ?? planetGO.transform;
-            conversationTrigger.transform.position = planetGO.transform.TransformPoint(info.remoteTriggerPosition ?? info.position);
             conversationTrigger.SetActive(true);
 
             return remoteDialogueTrigger;
         }
 
-        private static CharacterDialogueTree MakeConversationZone(GameObject planetGO, Sector sector, PropModule.DialogueInfo info, IModHelper mod)
+        private static CharacterDialogueTree MakeConversationZone(GameObject planetGO, Sector sector, DialogueInfo info, string xml, string dialogueName)
         {
-            var conversationZone = new GameObject("ConversationZone");
-            conversationZone.SetActive(false);
+            var conversationZone = GeneralPropBuilder.MakeNew("ConversationZone", planetGO, sector, info, defaultParentPath: info.pathToAnimController);
 
-            conversationZone.layer = LayerMask.NameToLayer("Interactible");
+            conversationZone.layer = Layer.Interactible;
 
             var sphere = conversationZone.AddComponent<SphereCollider>();
             sphere.radius = info.radius;
@@ -121,43 +109,43 @@ namespace NewHorizons.Builder.Props
 
             var dialogueTree = conversationZone.AddComponent<NHCharacterDialogueTree>();
 
-            var xml = File.ReadAllText(Path.Combine(mod.Manifest.ModFolderPath, info.xmlFile));
             var text = new TextAsset(xml)
             {
                 // Text assets need a name to be used with VoiceMod
-                name = Path.GetFileNameWithoutExtension(info.xmlFile)
+                name = dialogueName
             };
-
             dialogueTree.SetTextXml(text);
             AddTranslation(xml);
 
-            conversationZone.transform.parent = sector?.transform ?? planetGO.transform;
-            
-            if (!string.IsNullOrEmpty(info.parentPath))
+            switch (info.flashlightToggle)
             {
-                conversationZone.transform.parent = planetGO.transform.Find(info.parentPath);
+                case FlashlightToggle.TurnOff:
+                    dialogueTree._turnOffFlashlight = true;
+                    dialogueTree._turnOnFlashlight = false;
+                    break;
+                case FlashlightToggle.TurnOffThenOn:
+                    dialogueTree._turnOffFlashlight = true;
+                    dialogueTree._turnOnFlashlight = true;
+                    break;
+                case FlashlightToggle.None:
+                default:
+                    dialogueTree._turnOffFlashlight = false;
+                    dialogueTree._turnOnFlashlight = false;
+                    break;
             }
-            else if (!string.IsNullOrEmpty(info.pathToAnimController))
-            {
-                conversationZone.transform.parent = planetGO.transform.Find(info.pathToAnimController);
-            }
-
-            var pos = (Vector3)(info.position ?? Vector3.zero);
-            if (info.isRelativeToParent) conversationZone.transform.localPosition = pos;
-            else conversationZone.transform.position = planetGO.transform.TransformPoint(pos);
 
             conversationZone.SetActive(true);
 
             return dialogueTree;
         }
 
-        private static void MakePlayerTrackingZone(GameObject go, CharacterDialogueTree dialogue, PropModule.DialogueInfo info)
+        private static void MakePlayerTrackingZone(GameObject go, CharacterDialogueTree dialogue, DialogueInfo info)
         {
             var character = go.transform.Find(info.pathToAnimController);
 
             if (character == null)
             {
-                Logger.LogError($"Couldn't find child of {go.transform.GetPath()} at {info.pathToAnimController}");
+                NHLogger.LogError($"Couldn't find child of {go.transform.GetPath()} at {info.pathToAnimController}");
                 return;
             }
 
@@ -166,6 +154,7 @@ namespace NewHorizons.Builder.Props
             var controller = character.GetComponent<CharacterAnimController>();
             var traveler = character.GetComponent<TravelerController>();
             var travelerEye = character.GetComponent<TravelerEyeController>();
+            var hearthianRecorder = character.GetComponent<HearthianRecorderEffects>();
 
             var lookOnlyWhenTalking = info.lookAtRadius <= 0;
 
@@ -215,6 +204,34 @@ namespace NewHorizons.Builder.Props
                     dialogue.OnEndConversation += nomaiController.StopWatchingPlayer;
                 }
             }
+            else if (hearthianRecorder != null)
+            {
+                Delay.FireOnNextUpdate(() =>
+                {
+                    // #520
+                    if (hearthianRecorder._characterDialogueTree != null)
+                    {
+                        hearthianRecorder._characterDialogueTree.OnStartConversation -= hearthianRecorder.OnPlayRecorder;
+                        hearthianRecorder._characterDialogueTree.OnEndConversation -= hearthianRecorder.OnStopRecorder;
+                    }
+
+                    // Recorder props have their own dialogue on them already
+                    // Make sure to delete it when we're trying to connect new dialogue to it
+                    var existingDialogue = hearthianRecorder.GetComponent<CharacterDialogueTree>();
+                    if (existingDialogue != dialogue && existingDialogue != null)
+                    {
+                        // Can't delete the existing dialogue because its a required component but we can make it unable to select at least
+                        GameObject.Destroy(hearthianRecorder.GetComponent<OWCollider>());
+                        GameObject.Destroy(hearthianRecorder.GetComponent<SphereCollider>());
+                        GameObject.Destroy(existingDialogue._interactVolume);
+                        existingDialogue.enabled = false;
+                    }
+
+                    hearthianRecorder._characterDialogueTree = dialogue;
+                    hearthianRecorder._characterDialogueTree.OnStartConversation += hearthianRecorder.OnPlayRecorder;
+                    hearthianRecorder._characterDialogueTree.OnEndConversation += hearthianRecorder.OnStopRecorder;
+                });
+            }
             else
             {
                 // If they have nothing else just put the face player when talking thing on them
@@ -240,7 +257,7 @@ namespace NewHorizons.Builder.Props
                 var playerTrackingZone = new GameObject("PlayerTrackingZone");
                 playerTrackingZone.SetActive(false);
 
-                playerTrackingZone.layer = LayerMask.NameToLayer("BasicEffectVolume");
+                playerTrackingZone.layer = Layer.BasicEffectVolume;
                 playerTrackingZone.SetActive(false);
 
                 var sphereCollider = playerTrackingZone.AddComponent<SphereCollider>();

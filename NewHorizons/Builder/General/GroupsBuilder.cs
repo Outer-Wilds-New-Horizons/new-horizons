@@ -1,5 +1,5 @@
-﻿using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
+using NewHorizons.Utility.OWML;
+using UnityEngine;
 
 namespace NewHorizons.Builder.General;
 
@@ -13,12 +13,12 @@ public static class GroupsBuilder
     {
         if (!sector)
         {
-            Logger.LogWarning($"tried to put groups on {go.name} when sector is null");
+            NHLogger.LogWarning($"tried to put groups on {go.name} when sector is null");
             return;
         }
         if (go.activeInHierarchy)
         {
-            Logger.LogWarning($"tried to put groups on an active gameobject {go.name}");
+            NHLogger.LogWarning($"tried to put groups on an active gameobject {go.name}");
             return;
         }
 

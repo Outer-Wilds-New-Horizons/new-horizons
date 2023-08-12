@@ -1,15 +1,14 @@
-using HarmonyLib;
 using NewHorizons.Builder.Props;
-using NewHorizons.Components;
 using NewHorizons.Components.Orbital;
+using NewHorizons.Components.Sectored;
+using NewHorizons.External;
 using NewHorizons.External.Modules;
-using NewHorizons.Handlers;
+using NewHorizons.External.Modules.Props;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWML;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
-using static NewHorizons.Main;
 
 namespace NewHorizons.Builder.Body
 {
@@ -103,8 +102,7 @@ namespace NewHorizons.Builder.Body
                 default: geometryPrefab = _hubGeometry; break;
             }
 
-            var detailInfo = new PropModule.DetailInfo();
-            var geometry = DetailBuilder.Make(go, sector, geometryPrefab, detailInfo);
+            var geometry = DetailBuilder.Make(go, sector, geometryPrefab, new DetailInfo());
 
             var exitWarps = _exitWarps.InstantiateInactive();
             var repelVolume = _repelVolume.InstantiateInactive();
@@ -136,11 +134,11 @@ namespace NewHorizons.Builder.Body
             if (config.vinePrefab == VinePrefabType.None)
             {
                 // Replace batched collision with our own if removing vines
-                GameObject.Destroy(geometry.FindChild("BatchedGroup"));
+                Object.Destroy(geometry.FindChild("BatchedGroup"));
                 var geoOtherComponentsGroup = geometry.FindChild("OtherComponentsGroup");
                 var dimensionWalls = geoOtherComponentsGroup.FindChild("Terrain_DB_BrambleSphere_Outer_v2");
                 dimensionWalls.transform.parent = geometry.transform;
-                GameObject.Destroy(geoOtherComponentsGroup);
+                Object.Destroy(geoOtherComponentsGroup);
 
                 var newCollider = _wallCollision.InstantiateInactive();
                 newCollider.transform.parent = dimensionWalls.transform;
@@ -245,13 +243,14 @@ namespace NewHorizons.Builder.Body
             cloak._sectors = new Sector[] { sector };
             cloak.GetComponent<Renderer>().enabled = true;
 
-            // Cull stuff
-            var cullController = go.AddComponent<BrambleSectorController>();
-            cullController.SetSector(sector);
-
             // Do next update so other nodes can be built first
             Delay.FireOnNextUpdate(() =>
             {
+                // Cull stuff
+                // this in in the delay because it fixes #562
+                var cullController = go.AddComponent<BrambleSectorController>();
+                cullController.SetSector(sector);
+
                 // Prevent recursion from causing hard crash
                 foreach (var senderWarp in outerFogWarpVolume._senderWarps.ToList())
                 {

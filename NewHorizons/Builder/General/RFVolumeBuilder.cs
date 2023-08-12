@@ -1,18 +1,25 @@
-using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
+using NewHorizons.Utility.OuterWilds;
 using UnityEngine;
+
 namespace NewHorizons.Builder.General
 {
     public static class RFVolumeBuilder
     {
         public static GameObject Make(GameObject planetGO, OWRigidbody owrb, float sphereOfInfluence, ReferenceFrameModule module)
         {
-            if (!module.enabled) return null;
+            if (!module.enabled)
+            {
+                // We can't not build a reference frame volume, Cloak requires one to be there
+                module.maxTargetDistance = 0f;
+                module.hideInMap = true;
+                owrb.SetIsTargetable(false);
+            }
             
             var rfGO = new GameObject("RFVolume");
             rfGO.transform.parent = planetGO.transform;
             rfGO.transform.localPosition = Vector3.zero;
-            rfGO.layer = 19;
+            rfGO.layer = Layer.ReferenceFrameVolume;
             rfGO.SetActive(false);
 
             var SC = rfGO.AddComponent<SphereCollider>();

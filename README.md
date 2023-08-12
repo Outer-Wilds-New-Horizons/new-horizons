@@ -60,19 +60,16 @@ Join the [Outer Wilds Modding Discord](https://discord.gg/MvbCbBz6Q6) if you hav
 
 ## Credits
 Main authors:
-- xen (New Horizons v0.1.0 onwards)
+- [xen](https://github.com/xen-42)
 - [Bwc9876](https://github.com/Bwc9876) (New Horizons v0.9.0 onwards)
-- [Mister_Nebula](https://github.com/misternebula) ([Marshmallow](https://github.com/misternebula/Marshmallow) v0.1 to v1.1.0)
 
 New Horizons was made with help from:
-- [FreezeDriedMangos](https://github.com/FreezeDriedMangos)
-- [MegaPiggy](https://github.com/MegaPiggy)
 - [JohnCorby](https://github.com/JohnCorby) 
-- [Nageld](https://github.com/Nageld)
+- [MegaPiggy](https://github.com/MegaPiggy)
+- [FreezeDriedMangos](https://github.com/FreezeDriedMangos)
 - [Trifid](https://github.com/TerrificTrifid)
-- [Raicuparta](https://github.com/Raicuparta)
-- [jtsalomo](https://github.com/jtsalomo)
-- And the Outer Wilds modding server.
+- [Hawkbar](https://github.com/Hawkbat)
+- And many others, see the [contributors](https://github.com/Outer-Wilds-New-Horizons/new-horizons/graphs/contributors) page.
 
 Translation credits:
 - Russian: Tlya
@@ -80,7 +77,10 @@ Translation credits:
 - Spanish: Ciborgm9, Ink, GayCoffee
 - French: xen
 
-Marshmallow was made with help from:
+New Horizons was based off [Marshmallow](https://github.com/misternebula/Marshmallow) was made by:
+- [_nebula](https://github.com/misternebula)
+  
+with help from:
 - TAImatem
 - AmazingAlek
 - Raicuparta

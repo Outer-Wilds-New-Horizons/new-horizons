@@ -1,51 +1,60 @@
-using NewHorizons.External.Modules;
+using NewHorizons.External.Modules.Props;
+using NewHorizons.External.Modules.TranslatorText;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWML;
 using OWML.Common;
+using OWML.Utils;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
 using UnityEngine;
-using Enum = System.Enum;
-using Logger = NewHorizons.Utility.Logger;
+
 using Random = UnityEngine.Random;
-using OWML.Utils;
 
 namespace NewHorizons.Builder.Props
 {
+    /// <summary>
+    /// Legacy - this class is used with the deprecated "nomaiText" module (deprecated on release of autospirals)
+    /// </summary>
+    [Obsolete]
     public static class NomaiTextBuilder
     {
         private static List<GameObject> _arcPrefabs;
         private static List<GameObject> _childArcPrefabs;
+        private static GameObject _teenagerArcPrefab;
         private static List<GameObject> _ghostArcPrefabs;
         private static GameObject _scrollPrefab;
         private static GameObject _computerPrefab;
         private static GameObject _preCrashComputerPrefab;
-        private static GameObject _cairnPrefab;
-        private static GameObject _cairnVariantPrefab;
+        private static GameObject _cairnBHPrefab;
+        private static GameObject _cairnTHPrefab;
+        private static GameObject _cairnCTPrefab;
         private static GameObject _recorderPrefab;
         private static GameObject _preCrashRecorderPrefab;
         private static GameObject _trailmarkerPrefab;
 
-        private static Dictionary<PropModule.NomaiTextArcInfo, GameObject> arcInfoToCorrespondingSpawnedGameObject = new Dictionary<PropModule.NomaiTextArcInfo, GameObject>();
-        public static GameObject GetSpawnedGameObjectByNomaiTextArcInfo(PropModule.NomaiTextArcInfo arc)
+        private static Dictionary<NomaiTextArcInfo, GameObject> arcInfoToCorrespondingSpawnedGameObject = new();
+        public static GameObject GetSpawnedGameObjectByNomaiTextArcInfo(NomaiTextArcInfo arc)
         {
             if (!arcInfoToCorrespondingSpawnedGameObject.ContainsKey(arc)) return null;
             return arcInfoToCorrespondingSpawnedGameObject[arc];
         }
 
-        private static Dictionary<PropModule.NomaiTextInfo, GameObject> conversationInfoToCorrespondingSpawnedGameObject = new Dictionary<PropModule.NomaiTextInfo, GameObject>();
+        private static Dictionary<NomaiTextInfo, GameObject> conversationInfoToCorrespondingSpawnedGameObject = new();
         
-        public static GameObject GetSpawnedGameObjectByNomaiTextInfo(PropModule.NomaiTextInfo convo)
+        public static GameObject GetSpawnedGameObjectByNomaiTextInfo(NomaiTextInfo convo)
         {
-            Logger.LogVerbose("Retrieving wall text obj for " + convo);
+            NHLogger.LogVerbose("Retrieving wall text obj for " + convo);
             if (!conversationInfoToCorrespondingSpawnedGameObject.ContainsKey(convo)) return null;
             return conversationInfoToCorrespondingSpawnedGameObject[convo];
         }
 
         public static List<GameObject> GetArcPrefabs() { return _arcPrefabs; }
         public static List<GameObject> GetChildArcPrefabs() { return _childArcPrefabs; }
+        public static GameObject GetTeenagerArcPrefab() { return _teenagerArcPrefab; }
         public static List<GameObject> GetGhostArcPrefabs() { return _ghostArcPrefabs; }
 
         private static bool _isInit;
@@ -59,7 +68,7 @@ namespace NewHorizons.Builder.Props
             if (_arcPrefabs == null || _childArcPrefabs == null)
             {
                 // Just take every scroll and get the first arc
-                var existingArcs = GameObject.FindObjectsOfType<ScrollItem>()
+                var existingArcs = UnityEngine.Object.FindObjectsOfType<ScrollItem>()
                     .Select(x => x?._nomaiWallText?.gameObject?.transform?.Find("Arc 1")?.gameObject)
                     .Where(x => x != null)
                     .OrderBy(x => x.transform.GetPath()) // order by path so game updates dont break things
@@ -79,9 +88,15 @@ namespace NewHorizons.Builder.Props
                 }
             }
 
+            if (_teenagerArcPrefab == null)
+            {
+                _teenagerArcPrefab = GameObject.FindObjectsOfType<NomaiWallText>().FirstOrDefault(x => x.name.Equals("Arc_GD_StatueIsland_WindowNote"))
+                    ?.gameObject?.transform?.Find("Arc 1")?.gameObject.InstantiateInactive().Rename("Arc (Teenager)").DontDestroyOnLoad();
+            }
+
             if (_ghostArcPrefabs == null)
             {
-                var existingGhostArcs = GameObject.FindObjectsOfType<GhostWallText>()
+                var existingGhostArcs = UnityEngine.Object.FindObjectsOfType<GhostWallText>()
                     .Select(x => x?._textLine?.gameObject)
                     .Where(x => x != null)
                     .OrderBy(x => x.transform.GetPath()) // order by path so game updates dont break things
@@ -107,16 +122,22 @@ namespace NewHorizons.Builder.Props
                 _preCrashComputerPrefab.transform.rotation = Quaternion.identity;
             }
 
-            if (_cairnPrefab == null)
+            if (_cairnBHPrefab == null)
             {
-                _cairnPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_Crossroads/Interactables_Crossroads/Trailmarkers/Prefab_NOM_BH_Cairn_Arc (1)").InstantiateInactive().Rename("Prefab_NOM_Cairn").DontDestroyOnLoad();
-                _cairnPrefab.transform.rotation = Quaternion.identity;
+                _cairnBHPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_Crossroads/Interactables_Crossroads/Trailmarkers/Prefab_NOM_BH_Cairn_Arc (1)").InstantiateInactive().Rename("Prefab_NOM_BH_Cairn").DontDestroyOnLoad();
+                _cairnBHPrefab.transform.rotation = Quaternion.identity;
             }
 
-            if (_cairnVariantPrefab == null)
+            if (_cairnTHPrefab == null)
             {
-                _cairnVariantPrefab = SearchUtilities.Find("TimberHearth_Body/Sector_TH/Sector_NomaiMines/Interactables_NomaiMines/Prefab_NOM_TH_Cairn_Arc").InstantiateInactive().Rename("Prefab_NOM_Cairn").DontDestroyOnLoad();
-                _cairnVariantPrefab.transform.rotation = Quaternion.identity;
+                _cairnTHPrefab = SearchUtilities.Find("TimberHearth_Body/Sector_TH/Sector_NomaiMines/Interactables_NomaiMines/Prefab_NOM_TH_Cairn_Arc").InstantiateInactive().Rename("Prefab_NOM_TH_Cairn").DontDestroyOnLoad();
+                _cairnTHPrefab.transform.rotation = Quaternion.identity;
+            }
+
+            if (_cairnCTPrefab == null)
+            {
+                _cairnCTPrefab = SearchUtilities.Find("CaveTwin_Body/Sector_CaveTwin/Sector_NorthHemisphere/Sector_NorthSurface/Sector_TimeLoopExperiment/Interactables_TimeLoopExperiment/Prefab_NOM_CT_Cairn_Arc").InstantiateInactive().Rename("Prefab_NOM_CT_Cairn").DontDestroyOnLoad();
+                _cairnCTPrefab.transform.rotation = Quaternion.identity;
             }
 
             if (_recorderPrefab == null)
@@ -138,7 +159,7 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        public static GameObject Make(GameObject planetGO, Sector sector, PropModule.NomaiTextInfo info, IModBehaviour mod)
+        public static GameObject Make(GameObject planetGO, Sector sector, NomaiTextInfo info, IModBehaviour mod)
         {
             InitPrefabs();
 
@@ -146,7 +167,7 @@ namespace NewHorizons.Builder.Props
 
             switch (info.type)
             {
-                case PropModule.NomaiTextInfo.NomaiTextType.Wall:
+                case NomaiTextType.Wall:
                     {
                         var nomaiWallTextObj = MakeWallText(planetGO, sector, info, xmlPath).gameObject;
 
@@ -166,7 +187,7 @@ namespace NewHorizons.Builder.Props
                             }
                             else
                             {
-                                Logger.LogError($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                                NHLogger.LogError($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
                             }
                         }
 
@@ -211,7 +232,7 @@ namespace NewHorizons.Builder.Props
                         
                         return nomaiWallTextObj;
                     }
-                case PropModule.NomaiTextInfo.NomaiTextType.Scroll:
+                case NomaiTextType.Scroll:
                     {
                         var customScroll = _scrollPrefab.InstantiateInactive();
 
@@ -239,7 +260,7 @@ namespace NewHorizons.Builder.Props
                         var scrollItem = customScroll.GetComponent<ScrollItem>();
 
                         // Idk why this thing is always around
-                        GameObject.Destroy(customScroll.transform.Find("Arc_BH_City_Forum_2").gameObject);
+                        UnityEngine.Object.Destroy(customScroll.transform.Find("Arc_BH_City_Forum_2").gameObject);
 
                         // This variable is the bane of my existence i dont get it
                         scrollItem._nomaiWallText = nomaiWallText;
@@ -262,7 +283,7 @@ namespace NewHorizons.Builder.Props
                             }
                             else
                             {
-                                Logger.LogError($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                                NHLogger.LogError($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
                             }
                         }
 
@@ -287,7 +308,7 @@ namespace NewHorizons.Builder.Props
                             () => Main.IsSystemReady,
                             () =>
                             {
-                                Logger.LogVerbose("Fixing scroll!");
+                                NHLogger.LogVerbose("Fixing scroll!");
                                 scrollItem._nomaiWallText = nomaiWallText;
                                 scrollItem.SetSector(sector);
                                 customScroll.transform.Find("Props_NOM_Scroll/Props_NOM_Scroll_Geo").GetComponent<MeshRenderer>().enabled = true;
@@ -300,7 +321,7 @@ namespace NewHorizons.Builder.Props
                         
                         return customScroll;
                     }
-                case PropModule.NomaiTextInfo.NomaiTextType.Computer:
+                case NomaiTextType.Computer:
                     {
                         var computerObject = _computerPrefab.InstantiateInactive();
 
@@ -324,7 +345,7 @@ namespace NewHorizons.Builder.Props
                             }
                             else
                             {
-                                Logger.LogError($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                                NHLogger.LogError($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
                             }
                         }
 
@@ -353,16 +374,9 @@ namespace NewHorizons.Builder.Props
                         
                         return computerObject;
                     }
-                case PropModule.NomaiTextInfo.NomaiTextType.PreCrashComputer:
+                case NomaiTextType.PreCrashComputer:
                     {
-                        var detailInfo = new PropModule.DetailInfo()
-                        {
-                            position = info.position,
-                            parentPath = info.parentPath,
-                            isRelativeToParent = info.isRelativeToParent,
-                            rename = info.rename
-                        };
-                        var computerObject = DetailBuilder.Make(planetGO, sector, _preCrashComputerPrefab, detailInfo);
+                        var computerObject = DetailBuilder.Make(planetGO, sector, _preCrashComputerPrefab, new DetailInfo(info));
                         computerObject.SetActive(false);
 
                         var up = computerObject.transform.position - planetGO.transform.position;
@@ -403,18 +417,15 @@ namespace NewHorizons.Builder.Props
                         
                         return computerObject;
                     }
-                case PropModule.NomaiTextInfo.NomaiTextType.Cairn:
-                case PropModule.NomaiTextInfo.NomaiTextType.CairnVariant:
+                case NomaiTextType.CairnBrittleHollow:
+                case NomaiTextType.CairnTimberHearth:
+                case NomaiTextType.CairnEmberTwin:
                     {
-                        var cairnObject = (info.type == PropModule.NomaiTextInfo.NomaiTextType.CairnVariant ? _cairnVariantPrefab : _cairnPrefab).InstantiateInactive();
+                        var cairnObject = (info.type == NomaiTextType.CairnTimberHearth ? _cairnTHPrefab : (info.type == NomaiTextType.CairnEmberTwin ? _cairnCTPrefab : _cairnBHPrefab)).InstantiateInactive();
 
                         if (!string.IsNullOrEmpty(info.rename))
                         {
                             cairnObject.name = info.rename;
-                        }
-                        else
-                        {
-                            cairnObject.name = _cairnPrefab.name;
                         }
 
                         cairnObject.transform.parent = sector?.transform ?? planetGO.transform;
@@ -428,7 +439,7 @@ namespace NewHorizons.Builder.Props
                             }
                             else
                             {
-                                Logger.LogError($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                                NHLogger.LogError($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
                             }
                         }
 
@@ -478,18 +489,11 @@ namespace NewHorizons.Builder.Props
 
                         return cairnObject;
                     }
-                case PropModule.NomaiTextInfo.NomaiTextType.PreCrashRecorder:
-                case PropModule.NomaiTextInfo.NomaiTextType.Recorder:
+                case NomaiTextType.PreCrashRecorder:
+                case NomaiTextType.Recorder:
                     {
-                        var prefab = (info.type == PropModule.NomaiTextInfo.NomaiTextType.PreCrashRecorder ? _preCrashRecorderPrefab : _recorderPrefab);
-                        var detailInfo = new PropModule.DetailInfo {
-                            parentPath = info.parentPath,
-                            rotation = info.rotation,
-                            position = info.position,
-                            isRelativeToParent = info.isRelativeToParent,
-                            rename = info.rename
-                        };
-                        var recorderObject = DetailBuilder.Make(planetGO, sector, prefab, detailInfo);
+                        var prefab = (info.type == NomaiTextType.PreCrashRecorder ? _preCrashRecorderPrefab : _recorderPrefab);
+                        var recorderObject = DetailBuilder.Make(planetGO, sector, prefab, new DetailInfo(info));
                         recorderObject.SetActive(false);
 
                         if (info.rotation == null)
@@ -513,7 +517,7 @@ namespace NewHorizons.Builder.Props
                         conversationInfoToCorrespondingSpawnedGameObject[info] = recorderObject;
                         return recorderObject;
                     }
-                case PropModule.NomaiTextInfo.NomaiTextType.Trailmarker:
+                case NomaiTextType.Trailmarker:
                     {
                         var trailmarkerObject = _trailmarkerPrefab.InstantiateInactive();
 
@@ -537,7 +541,7 @@ namespace NewHorizons.Builder.Props
                             }
                             else
                             {
-                                Logger.LogError($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                                NHLogger.LogError($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
                             }
                         }
 
@@ -580,12 +584,12 @@ namespace NewHorizons.Builder.Props
                         return trailmarkerObject;
                     }
                 default:
-                    Logger.LogError($"Unsupported NomaiText type {info.type}");
+                    NHLogger.LogError($"Unsupported NomaiText type {info.type}");
                     return null;
             }
         }
 
-        private static NomaiWallText MakeWallText(GameObject go, Sector sector, PropModule.NomaiTextInfo info, string xmlPath)
+        private static NomaiWallText MakeWallText(GameObject go, Sector sector, NomaiTextInfo info, string xmlPath)
         {
             GameObject nomaiWallTextObj = new GameObject("NomaiWallText");
             nomaiWallTextObj.SetActive(false);
@@ -614,7 +618,7 @@ namespace NewHorizons.Builder.Props
             nomaiWallText.SetTextAsset(text);
 
             // #433 fuzzy stranger text
-            if (info.arcInfo != null && info.arcInfo.Any(x => x.type == PropModule.NomaiTextArcInfo.NomaiTextArcType.Stranger))
+            if (info.arcInfo != null && info.arcInfo.Any(x => x.type == NomaiTextArcInfo.NomaiTextArcType.Stranger))
             {
                 StreamingHandler.SetUpStreaming(AstroObject.Name.RingWorld, sector);
             }
@@ -622,7 +626,7 @@ namespace NewHorizons.Builder.Props
             return nomaiWallText;
         }
 
-        internal static void BuildArcs(string xml, NomaiWallText nomaiWallText, GameObject conversationZone, PropModule.NomaiTextInfo info)
+        internal static void BuildArcs(string xml, NomaiWallText nomaiWallText, GameObject conversationZone, NomaiTextInfo info)
         {
             var dict = MakeNomaiTextDict(xml);
 
@@ -631,7 +635,7 @@ namespace NewHorizons.Builder.Props
             RefreshArcs(nomaiWallText, conversationZone, info);
         }
 
-        internal static void RefreshArcs(NomaiWallText nomaiWallText, GameObject conversationZone, PropModule.NomaiTextInfo info)
+        internal static void RefreshArcs(NomaiWallText nomaiWallText, GameObject conversationZone, NomaiTextInfo info)
         {
             var dict = nomaiWallText._dictNomaiTextData;
             Random.InitState(info.seed);
@@ -640,7 +644,7 @@ namespace NewHorizons.Builder.Props
 
             if (info.arcInfo != null && info.arcInfo.Count() != dict.Values.Count())
             {
-                Logger.LogError($"Can't make NomaiWallText, arcInfo length [{info.arcInfo.Count()}] doesn't equal text entries [{dict.Values.Count()}]");
+                NHLogger.LogError($"Can't make NomaiWallText, arcInfo length [{info.arcInfo.Count()}] doesn't equal text entries [{dict.Values.Count()}]");
                 return;
             }
 
@@ -662,26 +666,29 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        internal static GameObject MakeArc(PropModule.NomaiTextArcInfo arcInfo, GameObject conversationZone, GameObject parent, int textEntryID)
+        internal static GameObject MakeArc(NomaiTextArcInfo arcInfo, GameObject conversationZone, GameObject parent, int textEntryID)
         {
             GameObject arc;
-            var type = arcInfo != null ? arcInfo.type : PropModule.NomaiTextArcInfo.NomaiTextArcType.Adult;
+            var type = arcInfo != null ? arcInfo.type : NomaiTextArcInfo.NomaiTextArcType.Adult;
             var variation = arcInfo != null ? arcInfo.variation : -1;
             switch (type)
             {
-                case PropModule.NomaiTextArcInfo.NomaiTextArcType.Child:
+                case NomaiTextArcInfo.NomaiTextArcType.Child:
                     variation = variation < 0
                         ? Random.Range(0, _childArcPrefabs.Count())
                         : (variation % _childArcPrefabs.Count());
                     arc = _childArcPrefabs[variation].InstantiateInactive();
                     break;
-                case PropModule.NomaiTextArcInfo.NomaiTextArcType.Stranger when _ghostArcPrefabs.Any():
+                case NomaiTextArcInfo.NomaiTextArcType.Teenager:
+                    arc = _teenagerArcPrefab.InstantiateInactive();
+                    break;
+                case NomaiTextArcInfo.NomaiTextArcType.Stranger when _ghostArcPrefabs.Any():
                     variation = variation < 0
                         ? Random.Range(0, _ghostArcPrefabs.Count())
                         : (variation % _ghostArcPrefabs.Count());
                     arc = _ghostArcPrefabs[variation].InstantiateInactive();
                     break;
-                case PropModule.NomaiTextArcInfo.NomaiTextArcType.Adult:
+                case NomaiTextArcInfo.NomaiTextArcType.Adult:
                 default:
                     variation = variation < 0
                         ? Random.Range(0, _arcPrefabs.Count())
@@ -699,9 +706,9 @@ namespace NewHorizons.Builder.Props
                 if (arcInfo.position == null) arc.transform.localPosition = Vector3.zero;
                 else arc.transform.localPosition = new Vector3(arcInfo.position.x, arcInfo.position.y, 0);
 
-                arc.transform.localRotation = Quaternion.Euler(0, 0, arcInfo.zRotation);
+                arc.transform.localRotation = Quaternion.Euler(0, 0, arcInfo.zRotation.GetValueOrDefault());
 
-                if (arcInfo.mirror) arc.transform.localScale = new Vector3(-1, 1, 1);
+                if (arcInfo.mirror.GetValueOrDefault()) arc.transform.localScale = new Vector3(-1, 1, 1);
             }
             // Try auto I guess
             else
@@ -737,6 +744,12 @@ namespace NewHorizons.Builder.Props
             XmlDocument xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(xmlPath);
             XmlNode rootNode = xmlDocument.SelectSingleNode("NomaiObject");
+            
+            if (rootNode == null)
+            {
+                NHLogger.LogError($"Couldn't find NomaiObject in [{xmlPath}]");
+                return dict;
+            }
 
             foreach (object obj in rootNode.SelectNodes("TextBlock"))
             {
@@ -751,13 +764,13 @@ namespace NewHorizons.Builder.Props
 
                 if (entryIDNode != null && !int.TryParse(entryIDNode.InnerText, out textEntryID))
                 {
-                    Logger.LogError($"Couldn't parse int ID in [{entryIDNode?.InnerText}] for [{xmlPath}]");
+                    NHLogger.LogError($"Couldn't parse int ID in [{entryIDNode?.InnerText}] for [{xmlPath}]");
                     textEntryID = -1;
                 }
 
                 if (parentIDNode != null && !int.TryParse(parentIDNode.InnerText, out parentID))
                 {
-                    Logger.LogError($"Couldn't parse int ParentID in [{parentIDNode?.InnerText}] for [{xmlPath}]");
+                    NHLogger.LogError($"Couldn't parse int ParentID in [{parentIDNode?.InnerText}] for [{xmlPath}]");
                     parentID = -1;
                 }
 

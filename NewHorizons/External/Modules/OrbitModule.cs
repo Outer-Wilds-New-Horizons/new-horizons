@@ -1,8 +1,8 @@
+using NewHorizons.Components.Orbital;
+using NewHorizons.External.SerializableData;
+using Newtonsoft.Json;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using NewHorizons.Components.Orbital;
-using NewHorizons.Utility;
-using Newtonsoft.Json;
 
 namespace NewHorizons.External.Modules
 {
@@ -33,6 +33,12 @@ namespace NewHorizons.External.Modules
         /// Rotation period in minutes.
         /// </summary>
         public float siderealPeriod;
+
+        /// <summary>
+        /// Offsets the planet's starting sidereal rotation. In degrees.
+        /// </summary>
+        [Range(0f, 360f)]
+        public float initialRotation;
 
         /// <summary>
         /// Should the body always have one side facing its primary?

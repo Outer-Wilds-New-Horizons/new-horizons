@@ -1,14 +1,16 @@
+using NewHorizons.External;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
-using NewHorizons.Utility;
+using NewHorizons.Utility.Files;
+using NewHorizons.Utility.OWML;
 using OWML.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml.Linq;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Builder.ShipLog
 {
     public static class RumorModeBuilder
@@ -53,15 +55,20 @@ namespace NewHorizons.Builder.ShipLog
         {
             string systemName = body.Config.starSystem;
             XElement astroBodyFile = XElement.Load(Path.Combine(body.Mod.ModHelper.Manifest.ModFolderPath, body.Config.ShipLog.xmlFile));
-            XElement astroBodyId = astroBodyFile.Element("ID");
+            AddShipLogXML(manager, astroBodyFile, body);
+        }
+
+        public static void AddShipLogXML(ShipLogManager manager, XElement xml, NewHorizonsBody body)
+        {
+            XElement astroBodyId = xml.Element("ID");
             if (astroBodyId == null)
             {
-                Logger.LogError("Failed to load ship logs for " + systemName + "!");
+                NHLogger.LogError("Failed to load ship logs for " + body.Config.name + "!");
             }
             else
             {
                 var entryIDs = new List<string>();
-                foreach (XElement entryElement in astroBodyFile.DescendantsAndSelf("Entry"))
+                foreach (XElement entryElement in xml.DescendantsAndSelf("Entry"))
                 {
                     XElement curiosityName = entryElement.Element("Curiosity");
                     XElement id = entryElement.Element("ID");
@@ -96,8 +103,8 @@ namespace NewHorizons.Builder.ShipLog
                     }
                     AddTranslation(entryElement);
                 }
-                TextAsset newAsset = new TextAsset(astroBodyFile.ToString());
-                List<TextAsset> newBodies = new List<TextAsset>(manager._shipLogXmlAssets) { newAsset };
+                var newAsset = new TextAsset(xml.ToString());
+                var newBodies = new List<TextAsset>(manager._shipLogXmlAssets) { newAsset };
                 manager._shipLogXmlAssets = newBodies.ToArray();
                 ShipLogHandler.AddConfig(astroBodyId.Value, entryIDs, body);
             }
@@ -197,7 +204,7 @@ namespace NewHorizons.Builder.ShipLog
                 }
                 else
                 {
-                    Logger.LogError($"Couldn't find {raw}. Did you define the curiosity in a json config? Because you have to.");
+                    NHLogger.LogError($"Couldn't find {raw}. Did you define the curiosity in a json config? Because you have to.");
                 }
             }
         }
@@ -214,7 +221,7 @@ namespace NewHorizons.Builder.ShipLog
             }
             catch (Exception)
             {
-                if (logError) Logger.LogError($"Couldn't load image for {entryId} at {relativePath}");
+                if (logError) NHLogger.LogError($"Couldn't load image for {entryId} at {relativePath}");
                 return null;
             }
         }

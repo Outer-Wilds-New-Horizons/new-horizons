@@ -1,9 +1,9 @@
 using NewHorizons.Components.Orbital;
 using NewHorizons.External.Modules;
-using NewHorizons.Utility;
-using System.Linq;
+using NewHorizons.Utility.OuterWilds;
+using NewHorizons.Utility.OWML;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Builder.Orbital
 {
     public static class InitialMotionBuilder
@@ -24,10 +24,12 @@ namespace NewHorizons.Builder.Orbital
             initialMotion._initAngularSpeed = orbit.siderealPeriod == 0 ? 0f : 2f * Mathf.PI / (orbit.siderealPeriod * 60f);
             var rotationAxis = Quaternion.AngleAxis(orbit.axialTilt, Vector3.right) * Vector3.up;
 
-            // For things with children this is broken
+            // For stock planets with unsuspended rigidbody children this is broken
+            // For planets with rafts this is broken
             if (AstroObjectLocator.GetChildren(secondaryBody).Length == 0)
             {
                 secondaryBody.transform.rotation = Quaternion.FromToRotation(Vector3.up, rotationAxis);
+                secondaryBody.transform.Rotate(rotationAxis, orbit.initialRotation);
             }
 
             if (!orbit.isStatic && primaryBody != null)
@@ -80,7 +82,7 @@ namespace NewHorizons.Builder.Orbital
             }
             else
             {
-                Logger.LogError($"No primary gravity or focal point for {primaryBody}");
+                NHLogger.LogError($"Trying to put {secondaryBody.name} around {primaryBody.name} but found no primary gravity or focal point.");
             }
         }
 
@@ -99,7 +101,7 @@ namespace NewHorizons.Builder.Orbital
 
         private static void SetBinaryInitialMotion(AstroObject baryCenter, NHAstroObject primaryBody, NHAstroObject secondaryBody)
         {
-            Logger.LogVerbose($"Setting binary initial motion [{primaryBody.name}] [{secondaryBody.name}]");
+            NHLogger.LogVerbose($"Setting binary initial motion [{primaryBody.name}] [{secondaryBody.name}]");
 
             var primaryGravity = new Gravity(primaryBody._gravityVolume);
             var secondaryGravity = new Gravity(secondaryBody._gravityVolume);
@@ -172,7 +174,7 @@ namespace NewHorizons.Builder.Orbital
             secondaryInitialMotion._cachedInitVelocity = baryCenterVelocity + secondaryVelocity;
             secondaryInitialMotion._isInitVelocityDirty = false;
 
-            Logger.LogVerbose($"Binary Initial Motion: {m1}, {m2}, {r1}, {r2}, {primaryVelocity}, {secondaryVelocity}");
+            NHLogger.LogVerbose($"Binary Initial Motion: {m1}, {m2}, {r1}, {r2}, {primaryVelocity}, {secondaryVelocity}");
         }
     }
 }

@@ -1,3 +1,4 @@
+using NewHorizons.Utility.OWML;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -12,13 +13,13 @@ namespace NewHorizons.Utility
 
         public static void ClearCache()
         {
-            Logger.LogVerbose("Clearing search cache");
+            NHLogger.LogVerbose("Clearing search cache");
             CachedGameObjects.Clear();
         }
 
         public static List<T> FindObjectsOfTypeAndName<T>(string name) where T : Object
         {
-            T[] firstList = GameObject.FindObjectsOfType<T>();
+            T[] firstList = Object.FindObjectsOfType<T>();
             List<T> finalList = new List<T>();
 
             for (var i = 0; i < firstList.Length; i++)
@@ -34,7 +35,7 @@ namespace NewHorizons.Utility
 
         public static T FindObjectOfTypeAndName<T>(string name) where T : Object
         {
-            T[] firstList = GameObject.FindObjectsOfType<T>();
+            T[] firstList = Object.FindObjectsOfType<T>();
 
             for (var i = 0; i < firstList.Length; i++)
             {
@@ -118,7 +119,7 @@ namespace NewHorizons.Utility
             }
 
             var name = names.Last();
-            if (warn) Logger.LogWarning($"Couldn't find object in path {path}, will look for potential matches for name {name}");
+            if (warn) NHLogger.LogWarning($"Couldn't find object in path {path}, will look for potential matches for name {name}");
             // 3: find resource to include inactive objects (but skip prefabs)
             go = Resources.FindObjectsOfTypeAll<GameObject>()
                 .FirstOrDefault(x => x.name == name && x.scene.name != null);
@@ -128,7 +129,7 @@ namespace NewHorizons.Utility
                 return go;
             }
 
-            if (warn) Logger.LogWarning($"Couldn't find object with name {name}");
+            if (warn) NHLogger.LogWarning($"Couldn't find object with name {name}");
             return null;
         }
 

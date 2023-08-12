@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
+
 namespace NewHorizons.Utility
 {
     public static class RandomUtility
@@ -14,7 +15,7 @@ namespace NewHorizons.Utility
             }
             for (var x = 0; x < count; x++)
             {
-                var randomIndex = UnityEngine.Random.Range(0, numbersInOrder.Count);
+                var randomIndex = Random.Range(0, numbersInOrder.Count);
                 result[x] = numbersInOrder[randomIndex];
                 numbersInOrder.RemoveAt(randomIndex);
             }

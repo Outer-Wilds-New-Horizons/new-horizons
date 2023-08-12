@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
+using NewHorizons.Utility.OWML;
+
 namespace NewHorizons.Components.Orbital
 {
     public class NHOrbitLine : OrbitLine
@@ -14,7 +15,7 @@ namespace NewHorizons.Components.Orbital
 
         public override void InitializeLineRenderer()
         {
-            base.GetComponent<LineRenderer>().positionCount = this._numVerts;
+            GetComponent<LineRenderer>().positionCount = this._numVerts;
         }
 
         public override void OnValidate()
@@ -23,7 +24,7 @@ namespace NewHorizons.Components.Orbital
             {
                 _numVerts = Mathf.Clamp(_numVerts, 0, 4096);
             }
-            if (base.GetComponent<LineRenderer>().positionCount != this._numVerts)
+            if (GetComponent<LineRenderer>().positionCount != this._numVerts)
             {
                 InitializeLineRenderer();
             }
@@ -45,7 +46,7 @@ namespace NewHorizons.Components.Orbital
 
             transform.localRotation = Quaternion.Euler(270, 90, 0);
 
-            base.enabled = false;
+            enabled = false;
         }
 
         public override void Update()
@@ -57,7 +58,7 @@ namespace NewHorizons.Components.Orbital
                 // If it has nothing to orbit then why is this here
                 if (primary == null || !primary.gameObject.activeSelf)
                 {
-                    base.enabled = false;
+                    enabled = false;
                     return;
                 }
 
@@ -85,7 +86,7 @@ namespace NewHorizons.Components.Orbital
             }
             catch (Exception ex)
             {
-                Logger.LogError($"Exception in OrbitLine for [{_astroObject?.name}]:\n{ex}");
+                NHLogger.LogError($"Exception in OrbitLine for [{_astroObject?.name}]:\n{ex}");
                 enabled = false;
             }
         }
