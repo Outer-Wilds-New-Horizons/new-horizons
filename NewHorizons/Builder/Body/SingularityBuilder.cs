@@ -113,24 +113,24 @@ namespace NewHorizons.Builder.Body
                 if (!_singularitiesByID.TryGetValue(blackHoleID, out GameObject blackHole))
                 {
                     NHLogger.LogWarning($"Black hole [{blackHoleID}] is missing.");
-                    break;
+                    continue;
                 }
                 if (!_singularitiesByID.TryGetValue(whiteHoleID, out GameObject whiteHole))
                 {
                     NHLogger.LogWarning($"White hole [{whiteHoleID}] is missing.");
-                    break;
+                    continue;
                 }
                 var whiteHoleVolume = whiteHole.GetComponentInChildren<WhiteHoleVolume>();
                 var blackHoleVolume = blackHole.GetComponentInChildren<BlackHoleVolume>();
                 if (whiteHoleVolume == null || blackHoleVolume == null)
                 {
                     NHLogger.LogWarning($"Singularities [{blackHoleID}] and [{whiteHoleID}] do not have compatible polarities.");
-                    break;
+                    continue;
                 }
                 if (blackHoleVolume._whiteHole != null && blackHoleVolume._whiteHole != whiteHoleVolume)
                 {
                     NHLogger.LogWarning($"Black hole [{blackHoleID}] has already been linked!");
-                    break;
+                    continue;
                 }
                 NHLogger.LogVerbose($"Pairing singularities [{blackHoleID}], [{whiteHoleID}]");
                 blackHoleVolume._whiteHole = whiteHoleVolume;
