@@ -82,11 +82,10 @@ namespace NewHorizons.Handlers
                 // force call update here to make it switch to an active star. idk why we didnt have to do this before
                 SunLightEffectsController.Instance.Update();
                 
-                // Since we didn't call RemoveBody on the Stranger have to call this here
+                // Since we didn't call RemoveBody on the all planets there are some we have to call here
                 StrangerRemoved();
-
-                // Don't forget to fix THE WARP BUG
-                DisableBody(SearchUtilities.Find("StreamingGroup_TH"), true);
+                TimberHearthRemoved();
+                SunRemoved();
             }, 2); // Have to wait or shit goes wild
 
             foreach (var streamingAssetBundle in StreamingManager.s_activeBundles)
@@ -119,11 +118,6 @@ namespace NewHorizons.Handlers
         {
             NHLogger.LogVerbose($"Removing [{ao.name}]");
 
-            if (ao.GetAstroObjectName() == AstroObject.Name.RingWorld)
-            {
-                StrangerRemoved();
-            }
-
             if (ao.gameObject == null || !ao.gameObject.activeInHierarchy)
             {
                 NHLogger.LogVerbose($"[{ao.name}] was already removed");
@@ -153,63 +147,31 @@ namespace NewHorizons.Handlers
                             DisableBody(fragment.gameObject, delete);
                         }
                         break;
+
                     case AstroObject.Name.CaveTwin:
                     case AstroObject.Name.TowerTwin:
                         DisableBody(SearchUtilities.Find("FocalBody"), delete);
                         DisableBody(SearchUtilities.Find("SandFunnel_Body", false), delete);
                         break;
+
                     case AstroObject.Name.GiantsDeep:
                         // Might prevent leftover jellyfish from existing
                         // Might also prevent people from using their own jellyfish however
+
+                        // TODO: Make this only affect those on GD?
                         foreach (var jelly in UnityEngine.Object.FindObjectsOfType<JellyfishController>())
                         {
                             DisableBody(jelly.gameObject, delete);
                         }
-                        // Else it will re-eanble the pieces
-                        // ao.GetComponent<OrbitalProbeLaunchController>()._realDebrisSectorProxies = null;
                         break;
                     case AstroObject.Name.TimberHearth:
-                        // Always just fucking kill this one to stop THE WARP BUG!!!
-                        DisableBody(SearchUtilities.Find("StreamingGroup_TH"), true);
-
-                        foreach (var obj in UnityEngine.Object.FindObjectsOfType<DayNightTracker>())
-                        {
-                            DisableBody(obj.gameObject, true);
-                        }
-                        foreach (var obj in UnityEngine.Object.FindObjectsOfType<VillageMusicVolume>())
-                        {
-                            DisableBody(obj.gameObject, true);
-                        }
+                        TimberHearthRemoved();
                         break;
                     case AstroObject.Name.Sun:
-                        var starController = ao.gameObject.GetComponent<StarController>();
-                        SunLightEffectsController.RemoveStar(starController);
-                        SunLightEffectsController.RemoveStarLight(ao.transform.Find("Sector_SUN/Effects_SUN/SunLight").GetComponent<Light>());
-                        UnityEngine.Object.Destroy(starController);
-
-                        var audio = ao.GetComponentInChildren<SunSurfaceAudioController>();
-                        UnityEngine.Object.Destroy(audio);
-
-                        foreach (var owAudioSource in ao.GetComponentsInChildren<OWAudioSource>())
-                        {
-                            owAudioSource.Stop();
-                            UnityEngine.Object.Destroy(owAudioSource);
-                        }
-
-                        foreach (var audioSource in ao.GetComponentsInChildren<AudioSource>())
-                        {
-                            audioSource.Stop();
-                            UnityEngine.Object.Destroy(audioSource);
-                        }
-
-                        foreach (var sunProxy in UnityEngine.Object.FindObjectsOfType<SunProxy>())
-                        {
-                            NHLogger.LogVerbose($"Destroying SunProxy {sunProxy.gameObject.name}");
-                            UnityEngine.Object.Destroy(sunProxy.gameObject);
-                        }
-
-                        // Stop the sun from breaking stuff when the supernova gets triggered
-                        GlobalMessenger.RemoveListener("TriggerSupernova", ao.GetComponent<SunController>().OnTriggerSupernova);
+                        SunRemoved();
+                        break;
+                    case AstroObject.Name.RingWorld:
+                        StrangerRemoved();
                         break;
                 }
 
@@ -244,6 +206,7 @@ namespace NewHorizons.Handlers
             }
 
             // Deal with proxies
+            // TODO: There has to be a better way of doing this
             foreach (var p in UnityEngine.Object.FindObjectsOfType<ProxyOrbiter>())
             {
                 if (p._originalBody == ao.gameObject)
@@ -262,6 +225,56 @@ namespace NewHorizons.Handlers
                 {
                     UnityEngine.Object.Destroy(proxy.gameObject);
                 }
+            }
+        }
+
+        private static void SunRemoved()
+        {
+            var sun = SearchUtilities.Find("Sun_Body").GetComponent<AstroObject>();
+
+            var starController = sun.gameObject.GetComponent<StarController>();
+            SunLightEffectsController.RemoveStar(starController);
+            SunLightEffectsController.RemoveStarLight(sun.transform.Find("Sector_SUN/Effects_SUN/SunLight").GetComponent<Light>());
+            UnityEngine.Object.Destroy(starController);
+
+            var audio = sun.GetComponentInChildren<SunSurfaceAudioController>();
+            UnityEngine.Object.Destroy(audio);
+
+            foreach (var owAudioSource in sun.GetComponentsInChildren<OWAudioSource>())
+            {
+                owAudioSource.Stop();
+                UnityEngine.Object.Destroy(owAudioSource);
+            }
+
+            foreach (var audioSource in sun.GetComponentsInChildren<AudioSource>())
+            {
+                audioSource.Stop();
+                UnityEngine.Object.Destroy(audioSource);
+            }
+
+            foreach (var sunProxy in UnityEngine.Object.FindObjectsOfType<SunProxy>())
+            {
+                NHLogger.LogVerbose($"Destroying SunProxy {sunProxy.gameObject.name}");
+                UnityEngine.Object.Destroy(sunProxy.gameObject);
+            }
+
+            // Stop the sun from breaking stuff when the supernova gets triggered
+            GlobalMessenger.RemoveListener("TriggerSupernova", sun.GetComponent<SunController>().OnTriggerSupernova);
+        }
+
+        private static void TimberHearthRemoved()
+        {
+            // Always just fucking kill this one to stop THE WARP BUG!!!
+            DisableBody(SearchUtilities.Find("StreamingGroup_TH"), true);
+
+            // TODO: These should only destroy those that are on TH
+            foreach (var obj in UnityEngine.Object.FindObjectsOfType<DayNightTracker>())
+            {
+                DisableBody(obj.gameObject, true);
+            }
+            foreach (var obj in UnityEngine.Object.FindObjectsOfType<VillageMusicVolume>())
+            {
+                DisableBody(obj.gameObject, true);
             }
         }
 
