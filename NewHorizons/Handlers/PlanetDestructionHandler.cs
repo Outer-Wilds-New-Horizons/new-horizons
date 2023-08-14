@@ -278,16 +278,6 @@ namespace NewHorizons.Handlers
             }
         }
 
-        public static void RemoveAllProxies()
-        {
-            UnityEngine.Object.Destroy(UnityEngine.Object.FindObjectOfType<DistantProxyManager>().gameObject);
-
-            foreach (var name in _solarSystemBodies)
-            {
-                RemoveProxy(name.Replace(" ", "").Replace("'", ""));
-            }
-        }
-
         private static bool CanSuspend(OWRigidbody rigidbody, string name)
         {
             if (rigidbody.transform.name == name) return true;
