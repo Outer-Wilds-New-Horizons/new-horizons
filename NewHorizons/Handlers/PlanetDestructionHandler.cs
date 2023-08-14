@@ -79,9 +79,6 @@ namespace NewHorizons.Handlers
                 }
                 GameObject.FindObjectOfType<SunProxy>().gameObject.SetActive(false);
                 
-                // force call update here to make it switch to an active star. idk why we didnt have to do this before
-                SunLightEffectsController.Instance.Update();
-                
                 // Since we didn't call RemoveBody on the all planets there are some we have to call here
                 StrangerRemoved();
                 TimberHearthRemoved();
@@ -260,6 +257,9 @@ namespace NewHorizons.Handlers
 
             // Stop the sun from breaking stuff when the supernova gets triggered
             GlobalMessenger.RemoveListener("TriggerSupernova", sun.GetComponent<SunController>().OnTriggerSupernova);
+
+            // Just to be safe
+            SunLightEffectsController.Instance.Update();
         }
 
         private static void TimberHearthRemoved()
