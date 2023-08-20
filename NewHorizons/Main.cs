@@ -547,7 +547,8 @@ namespace NewHorizons
                 }
 
                 // Wait for player to be awake and also for frames to pass
-                Delay.RunWhenOrInNUpdates(() => OnSystemReady(DidWarpFromShip, DidWarpFromVessel), () => _playerAwake && PlayerSpawned, 30);
+                var justLinkedToStatue = PlayerData.KnowsLaunchCodes() && PlayerData._currentGameSave.loopCount == 1;
+                Delay.RunWhenOrInNUpdates(() => OnSystemReady(DidWarpFromShip, DidWarpFromVessel), () => (_playerAwake && PlayerSpawned) || justLinkedToStatue, 30);
             }
             else
             {
