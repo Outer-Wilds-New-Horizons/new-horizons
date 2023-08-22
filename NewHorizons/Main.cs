@@ -906,6 +906,11 @@ namespace NewHorizons
             }
             else
             {
+                if (!string.IsNullOrEmpty(_defaultSystemOverride))
+                {
+                    NHLogger.LogError($"The given default system override {_defaultSystemOverride} is invalid - no system exists with that name");
+                }
+
                 _currentStarSystem = _defaultStarSystem;
                 IsWarpingFromShip = false;
             }
