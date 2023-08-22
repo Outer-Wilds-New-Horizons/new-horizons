@@ -1,5 +1,5 @@
 ---
-import { Schema, SchemaTools } from "../../schema_utils";
+import { Schema, SchemaTools } from '../../schema_utils';
 
 export interface Props {
     schema: Schema;
@@ -99,7 +99,7 @@ const HeadingTag = levelMap[level] ?? "h6";
             color: unset;
         }
         50% {
-            color: var(--theme-accent);
+            color: var(--sl-theme-accent);
         }
         100% {
             color: unset;
@@ -114,6 +114,7 @@ const HeadingTag = levelMap[level] ?? "h6";
     div.header {
         display: flex;
         flex-direction: column;
+        gap: 1rem;
     }
 
     div.wrapper[data-level="2"] {
@@ -151,16 +152,16 @@ const HeadingTag = levelMap[level] ?? "h6";
     }
 
     span {
-        background-color: var(--theme-bg-accent);
+        background-color: hsl(var(--sl-hue-accent) 50% 10%);
         font-size: small;
-        padding: 0.3rem;
+        padding: 0.5rem;
         margin-right: 0.3rem;
-        border: solid 2px var(--theme-accent);
+        border: solid 2px var(--sl-color-accent-low);
         border-radius: 5rem;
     }
 
     span.required {
-        background-color: hsla(var(--color-yellow), var(--theme-accent-opacity));
-        border-color: hsla(var(--color-yellow), 1);
+        background-color: hsl(var(--sl-hue-yellow) 50% 10%);
+        border-color: var(--sl-color-yellow-low);
     }
 </style>

@@ -1,0 +1,20 @@
+---
+import { SchemaTools } from '../../schema_utils';
+import Content from './Content.astro';
+
+interface Props {
+    fileName: string;
+    def: string;
+}
+
+const { fileName, def } = Astro.props; 
+
+const schema = SchemaTools.readSchema(`../NewHorizons/Schemas/${fileName}`);
+const defs = SchemaTools.getDefs(schema);
+
+const targetDef = defs.find(d => d.slug === def);
+
+---
+
+<Content schema={targetDef!} level={0} isDef />
+
