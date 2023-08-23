@@ -201,7 +201,8 @@ namespace NewHorizons.Components.Stars
             transform.localPosition = Vector3.zero;
 
             // Some effects use Locator.GetSunTransform so hopefully its fine to change it
-            Locator._sunTransform = transform;
+            // Use the root transform of the star because that's the default behaviour, breaks SunProxy is not (potentially others)
+            Locator._sunTransform = star.transform;
             
             // TODO?: maybe also turn off star controller stuff (mainly proxy light) since idk if that can handle more than 1 being on
         }
