@@ -1,4 +1,5 @@
 using HarmonyLib;
+using NewHorizons.Components.Stars;
 using UnityEngine;
 namespace NewHorizons.Patches.SunPatches
 {
@@ -13,10 +14,20 @@ namespace NewHorizons.Patches.SunPatches
             {
                 Vector3 position = __instance.transform.position;
                 float w = 2000f;
-                if (__instance._sunController != null)
+
+                var sunController = SunLightEffectsController.Instance.ActiveSunController;
+                var starEvolutionController = SunLightEffectsController.Instance.ActiveStarEvolutionController;
+
+                if (sunController != null)
                 {
-                    w = __instance._sunController.HasSupernovaStarted() ? __instance._sunController.GetSupernovaRadius() : __instance._sunController.GetSurfaceRadius();
+                    w = sunController.HasSupernovaStarted() ? sunController.GetSupernovaRadius() : sunController.GetSurfaceRadius();
                 }
+                // This is an addition in this patch, to work with our stars
+                else if (starEvolutionController != null)
+                {
+                    w = starEvolutionController.HasSupernovaStarted() ? starEvolutionController.GetSupernovaRadius() : starEvolutionController.GetSurfaceRadius();
+                }
+
                 float range = __instance.sunLight.range;
                 Color color = __instance._sunLightController != null ? __instance._sunLightController.sunColor : __instance.sunLight.color;
                 float w2 = __instance._sunLightController != null ? __instance._sunLightController.sunIntensity : __instance.sunLight.intensity;
