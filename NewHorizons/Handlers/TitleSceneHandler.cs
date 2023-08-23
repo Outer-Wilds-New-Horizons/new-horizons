@@ -79,10 +79,19 @@ namespace NewHorizons.Handlers
             // Resize planets relative to each other
             // If there are multiple planets shrink them down to 30% of the size
             var maxSize = planetSizes.Select(x => x.size).Max();
+            var minSize = planetSizes.Select(x => x.size).Min();
             var multiplePlanets = planetSizes.Count > 1;
             foreach (var (planet, size) in planetSizes) 
             {
-                planet.transform.localScale *= (size / maxSize) * (multiplePlanets ? 0.3f : 1f);
+                var adjustedSize = size / maxSize;
+                // If some planets would be too small we'll do a funny thing
+                if (minSize / maxSize < 0.3f)
+                {
+                    var t = Mathf.InverseLerp(minSize, maxSize, size);
+                    adjustedSize = Mathf.Lerp(0.3f, 1f, t * t);
+                }
+
+                planet.transform.localScale *= adjustedSize * (multiplePlanets ? 0.3f : 1f);
             }
         }
 
