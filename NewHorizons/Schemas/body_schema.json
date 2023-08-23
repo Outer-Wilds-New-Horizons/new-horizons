@@ -577,6 +577,10 @@
         "pushable": {
           "type": "boolean",
           "description": "Apply physics to this planet when you bump into it. Will have a spherical collider the size of surfaceSize. \nFor custom colliders they have to all be convex and you can leave surface size as 0.\nThis is meant for stuff like satellites which are relatively simple and can be de-orbited.\nIf you are using an orbit line but a tracking line, it will be removed when the planet is bumped in to."
+        },
+        "hideProxy": {
+          "type": "boolean",
+          "description": "Set this to true to have no proxy be generated for this planet. \nThis is a small representation of the planet that appears when it is outside of the regular Unity camera range."
         }
       }
     },
@@ -3876,6 +3880,11 @@
           "default": 1.0,
           "maximum": 1.0,
           "minimum": 0.0
+        },
+        "track": {
+          "description": "The audio track of this audio volume.\nMost of the time you'll use environment (the default) for sound effects and music for music. ",
+          "default": "environment",
+          "$ref": "#/definitions/NHAudioMixerTrackName"
         }
       }
     },

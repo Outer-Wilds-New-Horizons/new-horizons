@@ -547,7 +547,8 @@ namespace NewHorizons
                 }
 
                 // Wait for player to be awake and also for frames to pass
-                Delay.RunWhenOrInNUpdates(() => OnSystemReady(DidWarpFromShip, DidWarpFromVessel), () => _playerAwake && PlayerSpawned, 30);
+                var justLinkedToStatue = PlayerData.KnowsLaunchCodes() && PlayerData._currentGameSave.loopCount == 1;
+                Delay.RunWhenOrInNUpdates(() => OnSystemReady(DidWarpFromShip, DidWarpFromVessel), () => (_playerAwake && PlayerSpawned) || justLinkedToStatue, 30);
             }
             else
             {
@@ -906,6 +907,11 @@ namespace NewHorizons
             }
             else
             {
+                if (!string.IsNullOrEmpty(_defaultSystemOverride))
+                {
+                    NHLogger.LogError($"The given default system override {_defaultSystemOverride} is invalid - no system exists with that name");
+                }
+
                 _currentStarSystem = _defaultStarSystem;
                 IsWarpingFromShip = false;
             }
