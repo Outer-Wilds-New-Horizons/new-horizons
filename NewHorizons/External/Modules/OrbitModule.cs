@@ -46,6 +46,12 @@ namespace NewHorizons.External.Modules
         public bool isTidallyLocked;
 
         /// <summary>
+        /// Is the body meant to stay in one place without moving? If staticPosition is not set, the initial position
+        /// will be determined using its orbital parameters.
+        /// </summary>
+        public bool isStatic;
+
+        /// <summary>
         /// If it is tidally locked, this direction will face towards the primary. Ex: Interloper uses `0, -1, 0`. Most planets
         /// will want something like `-1, 0, 0`.
         /// </summary>
@@ -63,12 +69,6 @@ namespace NewHorizons.External.Modules
         public bool dottedOrbitLine;
 
         /// <summary>
-        /// Is the body meant to stay in one place without moving? If staticPosition is not set, the initial position
-        /// will be determined using its orbital parameters.
-        /// </summary>
-        public bool isStatic;
-
-        /// <summary>
         /// Colour of the orbit-line in the map view.
         /// </summary>
         public MColor tint;
@@ -77,6 +77,16 @@ namespace NewHorizons.External.Modules
         /// Should we just draw a line behind its orbit instead of the entire circle/ellipse?
         /// </summary>
         public bool trackingOrbitLine;
+
+        /// <summary>
+        /// If the camera is farther than this distance the orbit line will fade out. Leave empty to not have it fade out.
+        /// </summary>
+        public float orbitLineFadeEndDistance = -1f;
+
+        /// <summary>
+        /// If the camera is closer than this distance the orbit line will fade out. Leave empty to not have it fade out.
+        /// </summary>
+        public float orbitLineFadeStartDistance = -1f;
 
         /// <summary>
         /// The semi-major axis of the ellipse that is the body's orbit. For a circular orbit this is the radius.
