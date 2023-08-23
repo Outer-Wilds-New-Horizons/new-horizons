@@ -707,6 +707,62 @@ namespace NewHorizons.Handlers
                 var aoName = ao.GetAstroObjectName();
                 var aoType = ao.GetAstroObjectType();
 
+                // When updating orbits of the twins be sure the FocalBody is gone
+                if (aoName == AstroObject.Name.TowerTwin || aoName == AstroObject.Name.CaveTwin)
+                {
+                    var hourglassTwinsFocal = SearchUtilities.Find("FocalBody");
+
+                    // Have to copy the HGT sector bc it has some ruleset stuff on it we want
+                    var clonedSectorHGT = hourglassTwinsFocal.FindChild("Sector_HGT").Instantiate().Rename("Sector_HGT");
+                    clonedSectorHGT.transform.parent = go.transform;
+                    clonedSectorHGT.transform.localPosition = Vector3.zero;
+                    clonedSectorHGT.transform.localRotation = Quaternion.identity;
+                    var rootSector = clonedSectorHGT.GetComponent<Sector>();
+
+                    var streamingGroupGO = hourglassTwinsFocal.GetComponentInChildren<StreamingGroup>().gameObject.Instantiate().Rename("StreamingGroup");
+                    streamingGroupGO.transform.parent = go.transform;
+                    streamingGroupGO.transform.localPosition = Vector3.zero;
+                    streamingGroupGO.transform.localRotation = Quaternion.identity;
+
+                    // HGT streaming group is shared between the two so we have to move it onto the individual ones
+                    // Inefficient because being on ember twin will have ash twin assets load regardless of distance but whatever
+                    var sectorStreaming = clonedSectorHGT.GetComponentInChildren<SectorStreaming>();
+                    sectorStreaming._streamingGroup = streamingGroupGO.GetComponent<StreamingGroup>();
+                    sectorStreaming.SetSector(rootSector);
+
+                    hourglassTwinsFocal.SetActive(false);
+
+                    // Remove the drift tracker since its unneeded now
+                    Component.Destroy(go.GetComponent<DriftTracker>());
+
+                    // Fix anything pointing to the original HGT sector
+                    foreach (var component in ao.GetComponentsInChildren<Component>(true))
+                    {
+                        if (component is ISectorGroup sectorGroup)
+                        {
+                            if (sectorGroup.GetSector()?._name == Sector.Name.HourglassTwins)
+                            {
+                                sectorGroup.SetSector(rootSector);
+                            }
+                        }
+
+                        if (component is SectoredMonoBehaviour behaviour)
+                        {
+                            if (behaviour.GetSector()?._name == Sector.Name.HourglassTwins)
+                            {
+                                behaviour.SetSector(rootSector);
+                            }
+                        }
+                    }
+
+                    // Update the parent sector
+                    ao.GetRootSector().SetParentSector(rootSector);
+
+                    // Take the hourglass twins shader effect controller off the focal body so it can stay active
+                    var shaderController = hourglassTwinsFocal.GetComponentInChildren<HourglassTwinsShaderController>();
+                    if (shaderController != null) shaderController.transform.parent = null;
+                }
+
                 var owrb = go.GetComponent<OWRigidbody>();
 
                 var im = go.GetComponent<InitialMotion>();
