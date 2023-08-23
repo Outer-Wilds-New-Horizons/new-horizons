@@ -5,6 +5,9 @@ using NewHorizons.External.Modules.VariableSize;
 using Tessellation;
 using NewHorizons.Utility.OWML;
 using NewHorizons.Utility.OuterWilds;
+using NewHorizons.External.Configs;
+using NewHorizons.Components.Volumes;
+using System.Linq;
 
 namespace NewHorizons.Builder.Body
 {
@@ -41,9 +44,11 @@ namespace NewHorizons.Builder.Body
             if (_oceanAmbientLight == null) _oceanAmbientLight = SearchUtilities.Find("Ocean_GD").GetComponent<OceanLODController>()._ambientLight.gameObject.InstantiateInactive().Rename("OceanAmbientLight").DontDestroyOnLoad();
         }
 
-        public static RadialFluidVolume Make(GameObject planetGO, Sector sector, OWRigidbody rb, WaterModule module)
+        public static RadialFluidVolume Make(GameObject planetGO, Sector sector, OWRigidbody rb, PlanetConfig config)
         {
             InitPrefabs();
+
+            var module = config.Water;
 
             var waterSize = module.size;
 
@@ -152,6 +157,11 @@ namespace NewHorizons.Builder.Body
             {
                 fogGO.GetComponent<MeshRenderer>().material.SetFloat("_Radius", module.size);
                 fogGO.GetComponent<MeshRenderer>().material.SetFloat("_Radius2", 0);
+            }
+
+            if (config.Cloak != null)
+            {
+                fluidVolume.gameObject.AddComponent<WaterCloakFixerVolume>().material = TSR.sharedMaterials.First(x => x.name == "Ocean_GD_Surface_mat");
             }
 
             // TODO: fix ruleset making the sand bubble pop up
