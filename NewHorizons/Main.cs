@@ -907,7 +907,8 @@ namespace NewHorizons
             }
             else
             {
-                if (!string.IsNullOrEmpty(_defaultSystemOverride))
+                // Ignore first load because it doesn't even know what systems we have
+                if (!_firstLoad && !string.IsNullOrEmpty(_defaultSystemOverride))
                 {
                     NHLogger.LogError($"The given default system override {_defaultSystemOverride} is invalid - no system exists with that name");
                 }
