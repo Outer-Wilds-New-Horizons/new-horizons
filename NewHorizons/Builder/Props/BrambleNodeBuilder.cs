@@ -257,7 +257,9 @@ namespace NewHorizons.Builder.Props
 
                 // Seed fog works differently, so it doesn't need to be fixed
                 // (it's also located on a different child path, so the below FindChild calls wouldn't work)
+                // Default size is 70
                 var fog = brambleNode.FindChild("Effects/InnerWarpFogSphere");
+                fog.transform.localScale = Vector3.one * config.scale * 70f;
                 var fogMaterial = fog.GetComponent<MeshRenderer>().material;
                 fogMaterial.SetFloat("_Radius", fogMaterial.GetFloat("_Radius") * config.scale);
                 fogMaterial.SetFloat("_Density", fogMaterial.GetFloat("_Density") / config.scale);

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using NewHorizons.Components;
 
 namespace NewHorizons.Handlers
 {
@@ -66,16 +67,19 @@ namespace NewHorizons.Handlers
                 }
             }
 
-            foreach (var proxyBody in GameObject.FindObjectsOfType<ProxyBody>())
-            {
-                toDisable.Add(proxyBody.gameObject);
-            }
-
             Delay.FireInNUpdates(() =>
             {
                 foreach (var gameObject in toDisable)
                 {
                     gameObject.SetActive(false);
+                }
+                // Kill all non nh proxies
+                foreach (var proxy in GameObject.FindObjectsOfType<ProxyBody>())
+                {
+                    if (proxy is not NHProxy)
+                    {
+                        proxy.gameObject.SetActive(false);
+                    }
                 }
                 GameObject.FindObjectOfType<SunProxy>().gameObject.SetActive(false);
                 

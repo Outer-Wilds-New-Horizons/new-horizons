@@ -454,6 +454,8 @@ namespace NewHorizons.Components.SizeControllers
 
         public float GetSupernovaRadius() => supernova.GetSupernovaRadius();
 
+        public float GetSurfaceRadius() => transform.localScale.x;
+
         public float GetMaxSupernovaRadius() => supernovaSize;
 
         protected new void FixedUpdate()
