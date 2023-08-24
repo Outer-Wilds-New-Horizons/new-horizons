@@ -45,6 +45,7 @@ namespace NewHorizons.Handlers
                     // Since we didn't call RemoveBody on the all planets there are some we have to call here
                     StrangerRemoved();
                     TimberHearthRemoved();
+                    GiantsDeepRemoved();
                     SunRemoved();
                 }
 
@@ -114,6 +115,17 @@ namespace NewHorizons.Handlers
                 GameObject.Destroy(obj.gameObject);
             }
         }
+
+        private static void GiantsDeepRemoved()
+        {
+            foreach (var jelly in UnityEngine.Object.FindObjectsOfType<JellyfishController>())
+            {
+                if (jelly.GetSector().GetRootSector().GetName() == Sector.Name.GiantsDeep)
+                {
+                    DisableGameObject(jelly.gameObject);
+                }
+            }
+        }
         #endregion
 
         public static void DisableAstroObject(AstroObject ao, List<AstroObject> toDisable = null)
@@ -157,13 +169,7 @@ namespace NewHorizons.Handlers
                         break;
 
                     case AstroObject.Name.GiantsDeep:
-                        foreach (var jelly in UnityEngine.Object.FindObjectsOfType<JellyfishController>())
-                        {
-                            if (jelly.GetSector().GetRootSector().GetName() == Sector.Name.GiantsDeep)
-                            {
-                                DisableGameObject(jelly.gameObject);
-                            }
-                        }
+                        GiantsDeepRemoved();
                         break;
                     case AstroObject.Name.TimberHearth:
                         TimberHearthRemoved();
@@ -189,8 +195,14 @@ namespace NewHorizons.Handlers
 
                     // Some children might be astro objects and as such can have children of their own
                     var childAO = child.GetComponent<AstroObject>();
-                    if (childAO != null) DisableAstroObject(childAO, toDisable);
-                    else DisableGameObject(child);
+                    if (childAO != null)
+                    {
+                        DisableAstroObject(childAO, toDisable);
+                    }
+                    else
+                    {
+                        DisableGameObject(child);
+                    }
                 }
 
                 // Always delete moons
