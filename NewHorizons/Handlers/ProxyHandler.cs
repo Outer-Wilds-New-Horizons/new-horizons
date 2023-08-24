@@ -29,7 +29,10 @@ namespace NewHorizons.Handlers
 
         public static void RegisterVanillaProxyBody(ProxyBody proxy)
         {
-            _vanillaProxyBody.Add(proxy.realObjectTransform, proxy);
+            if (proxy.realObjectTransform != null)
+            {
+                _vanillaProxyBody.Add(proxy.realObjectTransform, proxy);
+            }
         }
 
         public static ProxyBody GetVanillaProxyBody(Transform t)
@@ -46,7 +49,10 @@ namespace NewHorizons.Handlers
 
         public static void RegisterVanillaProxyOrbiter(ProxyOrbiter proxy)
         {
-            _vanillaProxyOrbiter.Add(proxy._originalPlanetBody, proxy);
+            if (proxy._originalPlanetBody != null)
+            {
+                _vanillaProxyOrbiter.Add(proxy._originalPlanetBody, proxy);
+            }
         }
 
         public static ProxyOrbiter GetVanillaProxyOrbiter(Transform t)
