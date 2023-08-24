@@ -105,12 +105,12 @@ namespace NewHorizons.Handlers
             // Always just fucking kill this one to stop THE WARP BUG!!!
             GameObject.Destroy(SearchUtilities.Find("StreamingGroup_TH").gameObject);
 
-            // TODO: These should only destroy those that are on TH
-            foreach (var obj in UnityEngine.Object.FindObjectsOfType<DayNightTracker>())
+            var timberHearth = SearchUtilities.Find("TimberHearth_Body");
+            foreach (var obj in timberHearth.GetComponentsInChildren<DayNightTracker>())
             {
                 GameObject.Destroy(obj.gameObject);
             }
-            foreach (var obj in UnityEngine.Object.FindObjectsOfType<VillageMusicVolume>())
+            foreach (var obj in timberHearth.GetComponentsInChildren<VillageMusicVolume>())
             {
                 GameObject.Destroy(obj.gameObject);
             }
