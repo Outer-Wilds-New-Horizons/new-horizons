@@ -81,8 +81,9 @@ namespace NewHorizons.Builder.Atmosphere
 
             foreach (var vectionField in config.VectionFields)
             {
-                var emitter = Object.Instantiate(GetPrefabByType(vectionField.type), effectsGO.transform);
-                emitter.name = !string.IsNullOrWhiteSpace(vectionField.rename) ? vectionField.rename : emitter.name.Replace("Prefab_", "");
+                var prefab = GetPrefabByType(vectionField.type);
+                var emitter = Object.Instantiate(prefab, effectsGO.transform);
+                emitter.name = !string.IsNullOrWhiteSpace(vectionField.rename) ? vectionField.rename : prefab.name.Replace("Prefab_", "");
                 emitter.transform.position = planetGO.transform.position;
 
                 var vfe = emitter.GetComponent<VectionFieldEmitter>();
