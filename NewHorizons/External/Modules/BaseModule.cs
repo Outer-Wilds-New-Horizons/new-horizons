@@ -79,6 +79,12 @@ namespace NewHorizons.External.Modules
         /// </summary>
         public bool pushable;
 
+        /// <summary>
+        /// Set this to true to have no proxy be generated for this planet. 
+        /// This is a small representation of the planet that appears when it is outside of the regular Unity camera range.
+        /// </summary>
+        public bool hideProxy;
+
         #region Obsolete
 
         [Obsolete("IsSatellite is deprecated, please use ShowMinimap instead")]

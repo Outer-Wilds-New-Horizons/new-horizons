@@ -1,6 +1,7 @@
 using NewHorizons.Builder.Props;
 using NewHorizons.Components.Volumes;
 using NewHorizons.External.Modules.Volumes.VolumeInfos;
+using NewHorizons.Utility;
 using NewHorizons.Utility.OuterWilds;
 using OWML.Common;
 using UnityEngine;
@@ -21,6 +22,7 @@ namespace NewHorizons.Builder.Volumes
             audioVolume.nightAudio = info.nightAudio;
             audioVolume.modBehaviour = mod;
             audioVolume.volume = info.volume;
+            audioVolume.SetTrack(info.track.ConvertToOW());
 
             var shape = go.AddComponent<SphereShape>();
             shape.radius = info.radius;

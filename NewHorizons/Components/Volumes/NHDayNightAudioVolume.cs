@@ -16,6 +16,7 @@ namespace NewHorizons.Components.Volumes
 
         private OWAudioSource _daySource;
         private OWAudioSource _nightSource;
+        private OWAudioMixer.TrackName _track;
 
         private Transform _planetTransform;
         private Transform _sunTransform;
@@ -63,6 +64,8 @@ namespace NewHorizons.Components.Volumes
                 _daySource.spread = 180f;
                 _daySource.dopplerLevel = 0f;
                 _daySource.SetMaxVolume(volume);
+                _daySource.SetTrack(_track);
+                _daySource.loop = true;
                 AudioUtilities.SetAudioClip(_daySource, dayAudio, modBehaviour);
             }
 
@@ -77,6 +80,8 @@ namespace NewHorizons.Components.Volumes
                 _nightSource.spread = 180f;
                 _nightSource.dopplerLevel = 0f;
                 _nightSource.SetMaxVolume(volume);
+                _nightSource.SetTrack(_track);
+                _nightSource.loop = true;
                 AudioUtilities.SetAudioClip(_nightSource, nightAudio, modBehaviour);
             }
         }
@@ -137,6 +142,13 @@ namespace NewHorizons.Components.Volumes
         private bool IsDay()
         {
             return Vector3.Angle(_planetTransform.position - Locator.GetPlayerTransform().position, Locator.GetPlayerTransform().position - _sunTransform.position) < dayWindow * 0.5f;
+        }
+
+        public void SetTrack(OWAudioMixer.TrackName track)
+        {
+            _track = track;
+            _nightSource?.SetTrack(track);
+            _daySource?.SetTrack(track);
         }
     }
 }

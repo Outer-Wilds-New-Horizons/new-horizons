@@ -84,6 +84,9 @@ namespace NewHorizons.Handlers
                 
                 // Since we didn't call RemoveBody on the Stranger have to call this here
                 StrangerRemoved();
+
+                // Don't forget to fix THE WARP BUG
+                DisableBody(SearchUtilities.Find("StreamingGroup_TH"), true);
             }, 2); // Have to wait or shit goes wild
 
             foreach (var streamingAssetBundle in StreamingManager.s_activeBundles)

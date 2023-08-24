@@ -1,3 +1,4 @@
+using NewHorizons.External.SerializableEnums;
 using Newtonsoft.Json;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -35,5 +36,11 @@ namespace NewHorizons.External.Modules.Volumes.VolumeInfos
         [Range(0f, 1f)]
         [DefaultValue(1f)]
         public float volume = 1f;
+
+        /// <summary>
+        /// The audio track of this audio volume.
+        /// Most of the time you'll use environment (the default) for sound effects and music for music. 
+        /// </summary>
+        [DefaultValue("environment")] public NHAudioMixerTrackName track = NHAudioMixerTrackName.Environment;
     }
 }
