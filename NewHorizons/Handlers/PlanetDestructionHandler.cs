@@ -11,48 +11,9 @@ namespace NewHorizons.Handlers
 {
     public static class PlanetDestructionHandler
     {
-        private static readonly string[] _solarSystemBodies = new string[]
-        {
-            "Ash Twin",
-            "Attlerock",
-            "Brittle Hollow",
-            "Dark Bramble",
-            "DreamWorld",
-            "Ember Twin",
-            "Giant's Deep",
-            "Hollow's Lantern",
-            "Interloper",
-            "Map Satellite",
-            "Orbital Probe Cannon",
-            "Quantum Moon",
-            "RingWorld",
-            "Sun",
-            "Sun Station",
-            "Timber Hearth",
-            "White Hole"
-        };
-
-        private static readonly string[] _eyeOfTheUniverseBodies = new string[]
-        {
-            "Eye Of The Universe",
-            "Vessel"
-        };
-
-        private static readonly string[] _suspendBlacklist = new string[]
-        {
-            "Player_Body",
-            "Ship_Body"
-        };
+        public static readonly string[] _suspendBlacklist = new string[] { "Player_Body", "Probe_Body", "Ship_Body" };
 
         public static void RemoveStockPlanets()
-        {
-            if (Main.Instance.CurrentStarSystem == "EyeOfTheUniverse")
-                RemoveEyeOfTheUniverse();
-            else
-                RemoveSolarSystem();
-        }
-
-        public static void RemoveSolarSystem()
         {
             // Adapted from EOTS thanks corby
             var toDisable = new List<GameObject>();
@@ -60,7 +21,7 @@ namespace NewHorizons.Handlers
             // Collect all rigid bodies and proxies
             foreach (var rigidbody in CenterOfTheUniverse.s_rigidbodies)
             {
-                if (rigidbody.name is not ("Player_Body" or "Probe_Body" or "Ship_Body"))
+                if (!_suspendBlacklist.Contains(rigidbody.name))
                 {
                     toDisable.Add(rigidbody.gameObject);
                 }
@@ -79,28 +40,18 @@ namespace NewHorizons.Handlers
                 }
                 GameObject.FindObjectOfType<SunProxy>().gameObject.SetActive(false);
                 
-                // Since we didn't call RemoveBody on the all planets there are some we have to call here
-                StrangerRemoved();
-                TimberHearthRemoved();
-                SunRemoved();
+                if (Main.Instance.CurrentStarSystem != "EyeOfTheUniverse")
+                {
+                    // Since we didn't call RemoveBody on the all planets there are some we have to call here
+                    StrangerRemoved();
+                    TimberHearthRemoved();
+                    SunRemoved();
+                }
+
             }, 2); // Have to wait or shit goes wild
-
-            foreach (var streamingAssetBundle in StreamingManager.s_activeBundles)
-            {
-                //streamingAssetBundle.Unload();
-            }
         }
 
-        public static void RemoveEyeOfTheUniverse()
-        {
-            foreach (var name in _eyeOfTheUniverseBodies)
-            {
-                var ao = AstroObjectLocator.GetAstroObject(name);
-                if (ao != null) Delay.FireInNUpdates(() => RemoveBody(ao, false), 2);
-                else NHLogger.LogError($"Couldn't find [{name}]");
-            }
-        }
-
+        #region Planet specific removals
         public static void StrangerRemoved()
         {
             CloakHandler.FlagStrangerDisabled = true;
@@ -108,120 +59,6 @@ namespace NewHorizons.Handlers
             if (Locator._cloakFieldController?.GetComponentInParent<AstroObject>()?.GetAstroObjectName() == AstroObject.Name.RingWorld)
             {
                 Locator._cloakFieldController = null;
-            }
-        }
-
-        public static void RemoveBody(AstroObject ao, bool delete = false, List<AstroObject> toDestroy = null)
-        {
-            NHLogger.LogVerbose($"Removing [{ao.name}]");
-
-            if (ao.gameObject == null || !ao.gameObject.activeInHierarchy)
-            {
-                NHLogger.LogVerbose($"[{ao.name}] was already removed");
-                return;
-            }
-
-            if (toDestroy == null) toDestroy = new List<AstroObject>();
-
-            if (toDestroy.Contains(ao))
-            {
-                NHLogger.LogVerbose($"Possible infinite recursion in RemoveBody: {ao.name} might be it's own primary body?");
-                return;
-            }
-
-            toDestroy.Add(ao);
-
-            try
-            {
-                switch(ao._name)
-                {
-                    case AstroObject.Name.BrittleHollow:
-                        RemoveBody(AstroObjectLocator.GetAstroObject(AstroObject.Name.WhiteHole.ToString()), delete, toDestroy);
-                        // Might prevent leftover fragments from existing
-                        // Might also prevent people from using their own detachable fragments however
-                        foreach(var fragment in UnityEngine.Object.FindObjectsOfType<DetachableFragment>())
-                        {
-                            DisableBody(fragment.gameObject, delete);
-                        }
-                        break;
-
-                    case AstroObject.Name.CaveTwin:
-                    case AstroObject.Name.TowerTwin:
-                        DisableBody(SearchUtilities.Find("FocalBody"), delete);
-                        DisableBody(SearchUtilities.Find("SandFunnel_Body", false), delete);
-                        break;
-
-                    case AstroObject.Name.GiantsDeep:
-                        // Might prevent leftover jellyfish from existing
-                        // Might also prevent people from using their own jellyfish however
-
-                        // TODO: Make this only affect those on GD?
-                        foreach (var jelly in UnityEngine.Object.FindObjectsOfType<JellyfishController>())
-                        {
-                            DisableBody(jelly.gameObject, delete);
-                        }
-                        break;
-                    case AstroObject.Name.TimberHearth:
-                        TimberHearthRemoved();
-                        break;
-                    case AstroObject.Name.Sun:
-                        SunRemoved();
-                        break;
-                    case AstroObject.Name.RingWorld:
-                        StrangerRemoved();
-                        break;
-                }
-
-                // Always delete the children
-                NHLogger.LogVerbose($"Removing Children of [{ao._name}], [{ao._customName}]");
-                foreach (var child in AstroObjectLocator.GetChildren(ao))
-                {
-                    if (child == null) continue;
-
-                    NHLogger.LogVerbose($"Removing child [{child.name}] of [{ao._name}]");
-
-                    // Ship starts as a child of TH but obvious we want to keep that
-                    if (child.name == "Ship_Body") continue;
-
-                    // Some children might be astro objects and as such can have children of their own
-                    var childAO = child.GetComponent<AstroObject>();
-                    if (childAO != null) RemoveBody(childAO, false, toDestroy);
-                    else DisableBody(child, true);
-                }
-
-                // Always delete moons
-                foreach (var obj in AstroObjectLocator.GetMoons(ao))
-                {
-                    if (obj == null) continue;
-
-                    RemoveBody(obj.GetComponent<AstroObject>(), false, toDestroy);
-                }
-            }
-            catch (Exception e)
-            {
-                NHLogger.LogError($"Exception thrown when trying to delete bodies related to [{ao.name}]:\n{e}");
-            }
-
-            // Deal with proxies
-            // TODO: There has to be a better way of doing this
-            foreach (var p in UnityEngine.Object.FindObjectsOfType<ProxyOrbiter>())
-            {
-                if (p._originalBody == ao.gameObject)
-                {
-                    DisableBody(p.gameObject, true);
-                    break;
-                }
-            }
-            RemoveProxy(ao.name.Replace("_Body", ""));
-
-            Delay.RunWhen(() => Main.IsSystemReady, () => DisableBody(ao.gameObject, delete));
-
-            foreach (ProxyBody proxy in UnityEngine.Object.FindObjectsOfType<ProxyBody>())
-            {
-                if (proxy?._realObjectTransform?.gameObject == ao.gameObject)
-                {
-                    UnityEngine.Object.Destroy(proxy.gameObject);
-                }
             }
         }
 
@@ -265,17 +102,111 @@ namespace NewHorizons.Handlers
         private static void TimberHearthRemoved()
         {
             // Always just fucking kill this one to stop THE WARP BUG!!!
-            DisableBody(SearchUtilities.Find("StreamingGroup_TH"), true);
+            GameObject.Destroy(SearchUtilities.Find("StreamingGroup_TH").gameObject);
 
             // TODO: These should only destroy those that are on TH
             foreach (var obj in UnityEngine.Object.FindObjectsOfType<DayNightTracker>())
             {
-                DisableBody(obj.gameObject, true);
+                GameObject.Destroy(obj.gameObject);
             }
             foreach (var obj in UnityEngine.Object.FindObjectsOfType<VillageMusicVolume>())
             {
-                DisableBody(obj.gameObject, true);
+                GameObject.Destroy(obj.gameObject);
             }
+        }
+        #endregion
+
+        public static void DisableAstroObject(AstroObject ao, List<AstroObject> toDisable = null)
+        {
+            NHLogger.LogVerbose($"Removing [{ao.name}]");
+
+            if (ao.gameObject == null || !ao.gameObject.activeInHierarchy)
+            {
+                NHLogger.LogVerbose($"[{ao.name}] was already removed");
+                return;
+            }
+
+            toDisable ??= new List<AstroObject>();
+
+            if (toDisable.Contains(ao))
+            {
+                NHLogger.LogVerbose($"Possible infinite recursion in RemoveBody: {ao.name} might be it's own primary body?");
+                return;
+            }
+
+            toDisable.Add(ao);
+
+            try
+            {
+                switch(ao._name)
+                {
+                    case AstroObject.Name.BrittleHollow:
+                        DisableAstroObject(AstroObjectLocator.GetAstroObject(AstroObject.Name.WhiteHole.ToString()), toDisable);
+                        // Might prevent leftover fragments from existing
+                        // Might also prevent people from using their own detachable fragments however
+                        foreach(var fragment in UnityEngine.Object.FindObjectsOfType<DetachableFragment>())
+                        {
+                            DisableGameObject(fragment.gameObject);
+                        }
+                        break;
+
+                    case AstroObject.Name.CaveTwin:
+                    case AstroObject.Name.TowerTwin:
+                        DisableGameObject(SearchUtilities.Find("FocalBody"));
+                        DisableGameObject(SearchUtilities.Find("SandFunnel_Body", false));
+                        break;
+
+                    case AstroObject.Name.GiantsDeep:
+                        foreach (var jelly in UnityEngine.Object.FindObjectsOfType<JellyfishController>())
+                        {
+                            if (jelly.GetSector().GetRootSector().GetName() == Sector.Name.GiantsDeep)
+                            {
+                                DisableGameObject(jelly.gameObject);
+                            }
+                        }
+                        break;
+                    case AstroObject.Name.TimberHearth:
+                        TimberHearthRemoved();
+                        break;
+                    case AstroObject.Name.Sun:
+                        SunRemoved();
+                        break;
+                    case AstroObject.Name.RingWorld:
+                        StrangerRemoved();
+                        break;
+                }
+
+                // Always delete the children
+                NHLogger.LogVerbose($"Removing Children of [{ao._name}], [{ao._customName}]");
+                foreach (var child in AstroObjectLocator.GetChildren(ao))
+                {
+                    if (child == null) continue;
+
+                    NHLogger.LogVerbose($"Removing child [{child.name}] of [{ao._name}]");
+
+                    // Ship starts as a child of TH but obvious we want to keep that
+                    if (child.name == "Ship_Body") continue;
+
+                    // Some children might be astro objects and as such can have children of their own
+                    var childAO = child.GetComponent<AstroObject>();
+                    if (childAO != null) DisableAstroObject(childAO, toDisable);
+                    else DisableGameObject(child);
+                }
+
+                // Always delete moons
+                foreach (var obj in AstroObjectLocator.GetMoons(ao))
+                {
+                    if (obj == null) continue;
+
+                    DisableAstroObject(obj.GetComponent<AstroObject>(), toDisable);
+                }
+            }
+            catch (Exception e)
+            {
+                NHLogger.LogError($"Exception thrown when trying to delete bodies related to [{ao.name}]:\n{e}");
+            }
+
+            RemoveProxy(ao);
         }
 
         private static bool CanSuspend(OWRigidbody rigidbody, string name)
@@ -285,7 +216,7 @@ namespace NewHorizons.Handlers
             return CanSuspend(rigidbody._origParentBody, name);
         }
 
-        internal static void DisableBody(GameObject go, bool delete)
+        internal static void DisableGameObject(GameObject go)
         {
             if (go == null) return;
 
@@ -316,33 +247,18 @@ namespace NewHorizons.Handlers
                 }
             }
 
-            if (delete)
+            go.SetActive(false);
+            var ol = go.GetComponentInChildren<OrbitLine>();
+            if (ol)
             {
-                UnityEngine.Object.Destroy(go);
-            }
-            else
-            {
-                go.SetActive(false);
-                var ol = go.GetComponentInChildren<OrbitLine>();
-                if (ol)
-                {
-                    ol.enabled = false;
-                }
+                ol.enabled = false;
             }
         }
 
-        private static void RemoveProxy(string name)
+        private static void RemoveProxy(AstroObject ao)
         {
-            if (name.Equals("TowerTwin")) name = "AshTwin";
-            if (name.Equals("CaveTwin")) name = "EmberTwin";
-            var distantProxy = SearchUtilities.Find(name + "_DistantProxy", false);
-            var distantProxyClone = SearchUtilities.Find(name + "_DistantProxy(Clone)", false);
-
-            if (distantProxy != null) UnityEngine.Object.Destroy(distantProxy.gameObject);
-            if (distantProxyClone != null) UnityEngine.Object.Destroy(distantProxyClone.gameObject);
-
-            if (distantProxy == null && distantProxyClone == null)
-                NHLogger.LogVerbose($"Couldn't find proxy for {name}");
+            ProxyHandler.GetVanillaProxyBody(ao.transform)?.gameObject?.SetActive(false);
+            ProxyHandler.GetVanillaProxyOrbiter(ao.transform)?.gameObject?.SetActive(false);
         }
     }
 }

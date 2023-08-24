@@ -264,6 +264,7 @@ namespace NewHorizons
             AudioUtilities.ClearCache();
             AssetBundleUtilities.ClearCache();
             EnumUtilities.ClearCache();
+            ProxyHandler.OnSceneUnloaded();
             IsSystemReady = false;
         }
 
