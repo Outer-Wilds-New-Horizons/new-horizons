@@ -658,7 +658,7 @@ namespace NewHorizons.Handlers
                 atmosphere = AtmosphereBuilder.Make(go, sector, body.Config.Atmosphere, surfaceSize).GetComponentInChildren<LODGroup>();
             }
 
-            if (body.Config.VectionFields != null)
+            if (body.Config.ParticleFields != null)
             {
                 EffectsBuilder.Make(go, sector, body.Config);
             }

@@ -13,7 +13,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
-using static NewHorizons.External.Modules.VectionFieldModule;
+using static NewHorizons.External.Modules.ParticleFieldModule;
 using NomaiCoordinates = NewHorizons.External.Configs.StarSystemConfig.NomaiCoordinates;
 
 namespace NewHorizons.Utility

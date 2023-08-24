@@ -169,9 +169,10 @@ namespace NewHorizons.External.Configs
         public WaterModule Water;
 
         /// <summary>
-        /// Add particle effects to the planet
+        /// Add particle effects in a field around the planet.
+        /// Also known as Vection Fields.
         /// </summary>
-        public VectionFieldModule[] VectionFields;
+        public ParticleFieldModule[] ParticleFields;
 
         /// <summary>
         /// Add various volumes on this body
@@ -350,22 +351,22 @@ namespace NewHorizons.External.Configs
 
                 if (Atmosphere.hasRain)
                 {
-                    if (VectionFields == null) VectionFields = new VectionFieldModule[0];
-                    VectionFields = VectionFields.Append(new VectionFieldModule
+                    if (ParticleFields == null) ParticleFields = new ParticleFieldModule[0];
+                    ParticleFields = ParticleFields.Append(new ParticleFieldModule
                     {
-                        type = VectionFieldModule.VectionFieldType.Rain,
+                        type = ParticleFieldModule.ParticleFieldType.Rain,
                         rename = "RainEmitter"
                     }).ToArray();
                 }
 
                 if (Atmosphere.hasSnow)
                 {
-                    if (VectionFields == null) VectionFields = new VectionFieldModule[0];
+                    if (ParticleFields == null) ParticleFields = new ParticleFieldModule[0];
                     for (int i = 0; i < 5; i++)
                     {
-                        VectionFields = VectionFields.Append(new VectionFieldModule
+                        ParticleFields = ParticleFields.Append(new ParticleFieldModule
                         {
-                            type = VectionFieldModule.VectionFieldType.SnowflakesHeavy,
+                            type = ParticleFieldModule.ParticleFieldType.SnowflakesHeavy,
                             rename = "SnowEmitter"
                         }).ToArray();
                     }

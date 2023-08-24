@@ -79,23 +79,23 @@ namespace NewHorizons.Builder.Atmosphere
             var maxHeight = config.Atmosphere.size;
             if (config.Atmosphere.clouds?.outerCloudRadius != null) maxHeight = config.Atmosphere.clouds.outerCloudRadius;
 
-            foreach (var vectionField in config.VectionFields)
+            foreach (var particleField in config.ParticleFields)
             {
-                var prefab = GetPrefabByType(vectionField.type);
+                var prefab = GetPrefabByType(particleField.type);
                 var emitter = Object.Instantiate(prefab, effectsGO.transform);
-                emitter.name = !string.IsNullOrWhiteSpace(vectionField.rename) ? vectionField.rename : prefab.name.Replace("Prefab_", "");
+                emitter.name = !string.IsNullOrWhiteSpace(particleField.rename) ? particleField.rename : prefab.name.Replace("Prefab_", "");
                 emitter.transform.position = planetGO.transform.position;
 
                 var vfe = emitter.GetComponent<VectionFieldEmitter>();
                 var pvc = emitter.GetComponent<PlanetaryVectionController>();
                 pvc._vectionFieldEmitter = vfe;
-                pvc._densityByHeight = vectionField.densityByHeightCurve != null ? vectionField.densityByHeightCurve.ToAnimationCurve() : new AnimationCurve(new Keyframe[]
+                pvc._densityByHeight = particleField.densityByHeightCurve != null ? particleField.densityByHeightCurve.ToAnimationCurve() : new AnimationCurve(new Keyframe[]
                 {
                     new Keyframe(minHeight - 0.5f, 0),
                     new Keyframe(minHeight, 10f),
                     new Keyframe(maxHeight, 0f)
                 });
-                pvc._followTarget = vectionField.followTarget == VectionFieldModule.FollowTarget.Probe ? PlanetaryVectionController.FollowTarget.Probe : PlanetaryVectionController.FollowTarget.Player;
+                pvc._followTarget = particleField.followTarget == ParticleFieldModule.FollowTarget.Probe ? PlanetaryVectionController.FollowTarget.Probe : PlanetaryVectionController.FollowTarget.Player;
                 pvc._activeInSector = sector;
                 pvc._exclusionSectors = new Sector[] { };
 
@@ -106,27 +106,27 @@ namespace NewHorizons.Builder.Atmosphere
             effectsGO.SetActive(true);
         }
 
-        public static GameObject GetPrefabByType(VectionFieldModule.VectionFieldType type)
+        public static GameObject GetPrefabByType(ParticleFieldModule.ParticleFieldType type)
         {
             return type switch
             {
-                VectionFieldModule.VectionFieldType.Rain => _rainEmitterPrefab,
-                VectionFieldModule.VectionFieldType.SnowflakesHeavy => _snowEmitterPrefab,
-                VectionFieldModule.VectionFieldType.SnowflakesLight => _snowLightEmitterPrefab,
-                VectionFieldModule.VectionFieldType.Embers => _emberEmitterPrefab,
-                VectionFieldModule.VectionFieldType.Clouds => _cloudEmitterPrefab,
-                VectionFieldModule.VectionFieldType.Leaves => _leafEmitterPrefab,
-                VectionFieldModule.VectionFieldType.Bubbles => _bubbleEmitterPrefab,
-                VectionFieldModule.VectionFieldType.Fog => _fogEmitterPrefab,
-                VectionFieldModule.VectionFieldType.CrystalMotes => _crystalMoteEmitterPrefab,
-                VectionFieldModule.VectionFieldType.RockMotes => _rockMoteEmitterPrefab,
-                VectionFieldModule.VectionFieldType.IceMotes => _iceMoteEmitterPrefab,
-                VectionFieldModule.VectionFieldType.SandMotes => _sandMoteEmitterPrefab,
-                VectionFieldModule.VectionFieldType.Crawlies => _crawliesEmitterPrefab,
-                VectionFieldModule.VectionFieldType.Fireflies => _firefliesEmitterPrefab,
-                VectionFieldModule.VectionFieldType.Plankton => _planktonEmitterPrefab,
-                VectionFieldModule.VectionFieldType.Pollen => _pollenEmitterPrefab,
-                VectionFieldModule.VectionFieldType.Current => _currentEmitterPrefab,
+                ParticleFieldModule.ParticleFieldType.Rain => _rainEmitterPrefab,
+                ParticleFieldModule.ParticleFieldType.SnowflakesHeavy => _snowEmitterPrefab,
+                ParticleFieldModule.ParticleFieldType.SnowflakesLight => _snowLightEmitterPrefab,
+                ParticleFieldModule.ParticleFieldType.Embers => _emberEmitterPrefab,
+                ParticleFieldModule.ParticleFieldType.Clouds => _cloudEmitterPrefab,
+                ParticleFieldModule.ParticleFieldType.Leaves => _leafEmitterPrefab,
+                ParticleFieldModule.ParticleFieldType.Bubbles => _bubbleEmitterPrefab,
+                ParticleFieldModule.ParticleFieldType.Fog => _fogEmitterPrefab,
+                ParticleFieldModule.ParticleFieldType.CrystalMotes => _crystalMoteEmitterPrefab,
+                ParticleFieldModule.ParticleFieldType.RockMotes => _rockMoteEmitterPrefab,
+                ParticleFieldModule.ParticleFieldType.IceMotes => _iceMoteEmitterPrefab,
+                ParticleFieldModule.ParticleFieldType.SandMotes => _sandMoteEmitterPrefab,
+                ParticleFieldModule.ParticleFieldType.Crawlies => _crawliesEmitterPrefab,
+                ParticleFieldModule.ParticleFieldType.Fireflies => _firefliesEmitterPrefab,
+                ParticleFieldModule.ParticleFieldType.Plankton => _planktonEmitterPrefab,
+                ParticleFieldModule.ParticleFieldType.Pollen => _pollenEmitterPrefab,
+                ParticleFieldModule.ParticleFieldType.Current => _currentEmitterPrefab,
                 _ => null,
             };
         }

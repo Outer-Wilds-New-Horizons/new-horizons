@@ -132,11 +132,11 @@
       "description": "Add water to this planet",
       "$ref": "#/definitions/WaterModule"
     },
-    "VectionFields": {
+    "ParticleFields": {
       "type": "array",
       "description": "Add particle effects to the planet",
       "items": {
-        "$ref": "#/definitions/VectionFieldModule"
+        "$ref": "#/definitions/ParticleFieldModule"
       }
     },
     "Volumes": {
@@ -378,7 +378,7 @@
         },
         "hasRain": {
           "type": "boolean",
-          "description": "Does this planet have rain? \nThis is equivalent to effects of setting a rain vection field, rain audio volume, and visor effect volume, combined for convenience.\nFor more control over the rain, use those individual components."
+          "description": "Does this planet have rain? \nThis is equivalent to effects of setting a rain particle/vection field, rain audio volume, and visor effect volume, combined for convenience.\nFor more control over the rain, use those individual components."
         },
         "size": {
           "type": "number",
@@ -3421,16 +3421,16 @@
         }
       }
     },
-    "VectionFieldModule": {
+    "ParticleFieldModule": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
         "type": {
           "description": "Particle type for this vection field.",
-          "$ref": "#/definitions/VectionFieldType"
+          "$ref": "#/definitions/ParticleFieldType"
         },
         "followTarget": {
-          "description": "What the vection field activates based on.",
+          "description": "What the particle field activates based on.",
           "default": "player",
           "$ref": "#/definitions/FollowTarget"
         },
@@ -3447,7 +3447,7 @@
         }
       }
     },
-    "VectionFieldType": {
+    "ParticleFieldType": {
       "type": "string",
       "description": "",
       "x-enumNames": [

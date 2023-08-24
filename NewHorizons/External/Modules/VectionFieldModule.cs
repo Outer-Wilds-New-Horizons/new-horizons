@@ -10,15 +10,15 @@ using System.Runtime.Serialization;
 namespace NewHorizons.External.Modules
 {
     [JsonObject]
-    public class VectionFieldModule
+    public class ParticleFieldModule
     {
         /// <summary>
         /// Particle type for this vection field.
         /// </summary>
-        public VectionFieldType type;
+        public ParticleFieldType type;
 
         /// <summary>
-        /// What the vection field activates based on.
+        /// What the particle field activates based on.
         /// </summary>
         [DefaultValue("player")] public FollowTarget followTarget = FollowTarget.Player;
 
@@ -48,7 +48,7 @@ namespace NewHorizons.External.Modules
         }
 
         [JsonConverter(typeof(StringEnumConverter))]
-        public enum VectionFieldType
+        public enum ParticleFieldType
         {
             [EnumMember(Value = @"rain")] Rain,
             [EnumMember(Value = @"snowflakesHeavy")] SnowflakesHeavy,
