@@ -81,7 +81,7 @@ namespace NewHorizons.Builder.Atmosphere
 
             foreach (var vectionField in config.VectionFields)
             {
-                var emitter = Object.Instantiate(_rainEmitterPrefab, effectsGO.transform);
+                var emitter = Object.Instantiate(GetPrefabByType(vectionField.type), effectsGO.transform);
                 emitter.name = !string.IsNullOrWhiteSpace(vectionField.rename) ? vectionField.rename : emitter.name.Replace("Prefab_", "");
                 emitter.transform.position = planetGO.transform.position;
 
