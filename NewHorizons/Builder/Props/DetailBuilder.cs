@@ -116,25 +116,33 @@ namespace NewHorizons.Builder.Props
 
                 foreach (var component in prop.GetComponentsInChildren<Component>(true))
                 {
-                    // Components can come through as null here (yes, really),
-                    // Usually if a script was added to a prefab in an asset bundle but isn't present in the loaded mod DLLs
-                    if (component == null)
+                    // Rather than having the entire prop not exist when a detail fails let's just try-catch and log an error
+                    try
                     {
-                        invalidComponentFound = true;
-                        continue;
-                    }
-                    if (component.gameObject == prop && component is OWItem) isItem = true;
+                        // Components can come through as null here (yes, really),
+                        // Usually if a script was added to a prefab in an asset bundle but isn't present in the loaded mod DLLs
+                        if (component == null)
+                        {
+                            invalidComponentFound = true;
+                            continue;
+                        }
+                        if (component.gameObject == prop && component is OWItem) isItem = true;
 
-                    if (sector == null)
-                    {
-                        if (FixUnsectoredComponent(component)) continue;
-                    }
-                    else
-                    {
-                        FixSectoredComponent(component, sector, existingSectors, detail.keepLoaded);
-                    }
+                        if (sector == null)
+                        {
+                            if (FixUnsectoredComponent(component)) continue;
+                        }
+                        else
+                        {
+                            FixSectoredComponent(component, sector, existingSectors, detail.keepLoaded);
+                        }
 
-                    FixComponent(component, go, detail.ignoreSun);
+                        FixComponent(component, go, detail.ignoreSun);
+                    }
+                    catch(Exception e)
+                    {
+                        NHLogger.LogError($"Failed to correct component {component?.GetType()?.Name} on {go?.name} - {e}");
+                    }
                 }
 
                 if (detail.path != null)
@@ -155,7 +163,7 @@ namespace NewHorizons.Builder.Props
                 }
             }
 
-            // Items shouldn't use these else they get weird
+            // Items should always be kept loaded else they will vanish in your hand as you leave the sector
             if (isItem) detail.keepLoaded = true;
 
             prop.transform.localScale = detail.stretch ?? (detail.scale != 0 ? Vector3.one * detail.scale : prefab.transform.localScale);
