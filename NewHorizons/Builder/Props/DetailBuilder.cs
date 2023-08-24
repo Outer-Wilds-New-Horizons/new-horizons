@@ -374,7 +374,7 @@ namespace NewHorizons.Builder.Props
             else if (component is NomaiInterfaceOrb orb)
             {
                 // detect planet gravity
-                var gravityVolume = planetGO.GetAttachedOWRigidbody().GetAttachedGravityVolume();
+                var gravityVolume = planetGO.GetAttachedOWRigidbody()?.GetAttachedGravityVolume();
                 orb.GetComponent<ConstantForceDetector>()._detectableFields = gravityVolume ? new ForceVolume[] { gravityVolume } : new ForceVolume[] { };
             }
 
