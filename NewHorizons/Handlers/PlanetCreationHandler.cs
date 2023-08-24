@@ -391,7 +391,8 @@ namespace NewHorizons.Handlers
                     if (defaultPrimaryToSun)
                     {
                         NHLogger.LogError($"Couldn't find {body.Config.Orbit.primaryBody}, defaulting to center of solar system");
-                        primaryBody = Locator.GetCenterOfTheUniverse().GetAttachedOWRigidbody().GetComponent<AstroObject>();
+                        // TODO: Make this work in other systems. We tried using Locator.GetCenterOfUniverse before but that doesn't work since its too early now
+                        primaryBody = SearchUtilities.Find("Sun_Body")?.GetComponent<AstroObject>();
                     }
                     else
                     {
