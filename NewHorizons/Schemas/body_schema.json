@@ -1056,6 +1056,10 @@
           "type": "boolean",
           "description": "Should the body always have one side facing its primary?"
         },
+        "isStatic": {
+          "type": "boolean",
+          "description": "Is the body meant to stay in one place without moving? If staticPosition is not set, the initial position\nwill be determined using its orbital parameters."
+        },
         "alignmentAxis": {
           "description": "If it is tidally locked, this direction will face towards the primary. Ex: Interloper uses `0, -1, 0`. Most planets\nwill want something like `-1, 0, 0`.",
           "$ref": "#/definitions/MVector3"
@@ -1069,10 +1073,6 @@
           "type": "boolean",
           "description": "Should the orbit line be dotted?"
         },
-        "isStatic": {
-          "type": "boolean",
-          "description": "Is the body meant to stay in one place without moving? If staticPosition is not set, the initial position\nwill be determined using its orbital parameters."
-        },
         "tint": {
           "description": "Colour of the orbit-line in the map view.",
           "$ref": "#/definitions/MColor"
@@ -1080,6 +1080,16 @@
         "trackingOrbitLine": {
           "type": "boolean",
           "description": "Should we just draw a line behind its orbit instead of the entire circle/ellipse?"
+        },
+        "orbitLineFadeEndDistance": {
+          "type": "number",
+          "description": "If the camera is farther than this distance the orbit line will fade out. Leave empty to not have it fade out.",
+          "format": "float"
+        },
+        "orbitLineFadeStartDistance": {
+          "type": "number",
+          "description": "If the camera is closer than this distance the orbit line will fade out. Leave empty to not have it fade out.",
+          "format": "float"
         },
         "semiMajorAxis": {
           "type": "number",

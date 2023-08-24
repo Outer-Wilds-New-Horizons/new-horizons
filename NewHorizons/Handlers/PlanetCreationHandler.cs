@@ -627,7 +627,7 @@ namespace NewHorizons.Handlers
 
             if (body.Config.Water != null)
             {
-                WaterBuilder.Make(go, sector, rb, body.Config.Water);
+                WaterBuilder.Make(go, sector, rb, body.Config);
             }
 
             if (body.Config.Sand != null)

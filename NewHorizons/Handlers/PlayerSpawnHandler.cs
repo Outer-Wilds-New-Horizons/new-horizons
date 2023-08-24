@@ -10,11 +10,11 @@ namespace NewHorizons.Handlers
     {
         public static void SetUpPlayerSpawn()
         {
-            var spawnPoint = Main.SystemDict[Main.Instance.CurrentStarSystem].SpawnPoint;
-            if (spawnPoint != null)
+            if (UsingCustomSpawn())
             {
-                SearchUtilities.Find("Player_Body").GetComponent<MatchInitialMotion>().SetBodyToMatch(spawnPoint.GetAttachedOWRigidbody());
-                GetPlayerSpawner().SetInitialSpawnPoint(spawnPoint);
+                var spawn = GetDefaultSpawn();
+                SearchUtilities.Find("Player_Body").GetComponent<MatchInitialMotion>().SetBodyToMatch(spawn.GetAttachedOWRigidbody());
+                GetPlayerSpawner().SetInitialSpawnPoint(spawn);
             }
             else
             {
@@ -43,6 +43,13 @@ namespace NewHorizons.Handlers
 
                 // Arbitrary number, depending on the machine some people die, some people fall through the floor, its very inconsistent
                 Delay.StartCoroutine(SpawnCoroutine(30));
+            }
+
+            var cloak = GetDefaultSpawn()?.GetAttachedOWRigidbody()?.GetComponentInChildren<CloakFieldController>();
+            if (cloak != null)
+            {
+                // Ensures it has invoked everything and actually placed the player in the cloaking field #671
+                cloak._firstUpdate = true;
             }
         }
 

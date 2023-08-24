@@ -61,15 +61,17 @@ namespace NewHorizons.Builder.Orbital
 
             var fade = isMoon;
 
-            /*
-            if (config.Base.IsSatellite)
+            if (config.Orbit.orbitLineFadeStartDistance >= 0)
             {
-                if (config.Orbit.Tint != null) color = new Color(0.4082f, 0.516f, 0.4469f, 1f);
                 fade = true;
-                orbitLine._fadeEndDist = 5000;
-                orbitLine._fadeStartDist = 3000;
+                orbitLine._fadeStartDist = config.Orbit.orbitLineFadeStartDistance;
             }
-            */
+
+            if (config.Orbit.orbitLineFadeEndDistance >= 0)
+            {
+                fade = true;
+                orbitLine._fadeEndDist = config.Orbit.orbitLineFadeEndDistance;
+            }
 
             orbitLine._color = color;
             lineRenderer.endColor = new Color(color.r, color.g, color.b, 0f);
