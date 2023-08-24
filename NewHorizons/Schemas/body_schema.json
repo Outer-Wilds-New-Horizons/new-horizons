@@ -376,6 +376,10 @@
           "type": "boolean",
           "description": "Does this planet have trees? This will change the notification from \"Oxygen tank refilled\" to \"Trees detected, oxygen tank refilled\"."
         },
+        "hasRain": {
+          "type": "boolean",
+          "description": "Does this planet have rain? \nThis is equivalent to effects of setting a rain vection field, rain audio volume, and visor effect volume, combined for convenience.\nFor more control over the rain, use those individual components."
+        },
         "size": {
           "type": "number",
           "description": "Scale height of the atmosphere",
