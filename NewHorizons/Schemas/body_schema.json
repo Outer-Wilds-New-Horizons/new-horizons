@@ -134,7 +134,7 @@
     },
     "ParticleFields": {
       "type": "array",
-      "description": "Add particle effects to the planet",
+      "description": "Add particle effects in a field around the planet.\nAlso known as Vection Fields.",
       "items": {
         "$ref": "#/definitions/ParticleFieldModule"
       }
