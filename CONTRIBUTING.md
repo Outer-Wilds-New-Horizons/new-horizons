@@ -18,6 +18,9 @@ This will automatically build to your mods directory in OWML (so long as it's in
 To save yourself the pain of decoding where in a function an error occured, you can [download this dll file](https://cdn.discordapp.com/attachments/929787137895854100/936860223983976448/mono-2.0-bdwgc.dll) and place it in `MonoBleedingEdge/EmbedRuntime` of the game's folder.  
 Then (so long as you build targeting `Debug`), line numbers will be shown in any error that comes from New Horizons
 
+## Provide examples
+When adding a new feature, include a complete set of planet config files that will sufficiently demonstrate the functionality of the feature/bug fix/improvement. This way reviewers can just copy paste these files into the New Horizons planets folder.
+
 ## Updating The Schema
 
 When you add fields to config classes, please document them using XML documentation so that our action can generate a proper schema.
