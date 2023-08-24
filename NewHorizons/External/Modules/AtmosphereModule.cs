@@ -75,6 +75,13 @@ namespace NewHorizons.External.Modules
         public bool hasTrees;
 
         /// <summary>
+        /// Does this planet have rain? 
+        /// This is equivalent to effects of setting a rain vection field, rain audio volume, and visor effect volume, combined for convenience.
+        /// For more control over the rain, use those individual components.
+        /// </summary>
+        public bool hasRain;
+
+        /// <summary>
         /// Scale height of the atmosphere
         /// </summary>
         public float size;
@@ -163,7 +170,6 @@ namespace NewHorizons.External.Modules
             /// How fast the clouds will rotate relative to the planet in degrees per second.
             /// </summary>
             [DefaultValue(0f)] public float rotationSpeed = 0f;
-
             
             #region Obsolete
 
@@ -179,10 +185,6 @@ namespace NewHorizons.External.Modules
 
 
         #region Obsolete
-
-        [Obsolete("HasRain is deprecated, please use VectionFields instead")]
-        public bool hasRain;
-
         [Obsolete("HasSnow is deprecated, please use VectionFields instead")]
         public bool hasSnow;
 

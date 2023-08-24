@@ -57,7 +57,6 @@ namespace NewHorizons.Builder.Atmosphere
                 airGO.AddComponent<OxygenVolume>()._treeVolume = config.Atmosphere.hasTrees;
             }
 
-            // TODO: figure out what to change "config.Atmosphere.hasRain" to...
             if (config.Atmosphere.hasRain)
             {
                 var vref = airGO.AddComponent<VisorRainEffectVolume>();
