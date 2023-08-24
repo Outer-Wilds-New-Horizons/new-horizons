@@ -164,7 +164,7 @@ namespace NewHorizons.Builder.Body
                 {
                     if (!string.IsNullOrWhiteSpace(config.ShockEffect.assetBundle) && !string.IsNullOrWhiteSpace(config.ShockEffect.meshPath))
                     {
-                        var mesh = AssetBundleUtilities.Load<Mesh>(config.ShockEffect.assetBundle, config.ShockEffect.meshPath, mod);
+                        var mesh = AssetBundleUtilities.Load<Mesh>(config.ShockEffect.assetBundle, config.ShockEffect.meshPath, mod, config.starSystem);
                         if (mesh != null)
                         {
                             shockLayer.GetComponent<MeshFilter>().sharedMesh = mesh;
