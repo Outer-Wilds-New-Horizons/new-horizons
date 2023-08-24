@@ -48,7 +48,7 @@ namespace NewHorizons.Handlers
             var cloak = GetDefaultSpawn()?.GetAttachedOWRigidbody()?.GetComponentInChildren<CloakFieldController>();
             if (cloak != null)
             {
-                // Ensures it has invoked everything and actually placed the player in the cloaking field
+                // Ensures it has invoked everything and actually placed the player in the cloaking field #671
                 cloak._firstUpdate = true;
             }
         }
