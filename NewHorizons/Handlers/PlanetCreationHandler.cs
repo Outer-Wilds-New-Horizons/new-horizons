@@ -35,7 +35,7 @@ namespace NewHorizons.Handlers
         public static float SolarSystemRadius { get; private set; }
         public static float DefaultFurthestOrbit => 30000f;
 
-        public static List<Action<GameObject, string>> CustomBuilders;
+        public static List<Action<GameObject, string>> CustomBuilders = new();
 
         public static void Init(List<NewHorizonsBody> bodies)
         {
@@ -712,9 +712,9 @@ namespace NewHorizons.Handlers
                     {
                         customBuilder.Invoke(go, JsonConvert.SerializeObject(body.Config.extras));
                     }
-                    catch
+                    catch (Exception e)
                     {
-                        NHLogger.LogError($"Failed to use custom builder on body {body.Config.name}");
+                        NHLogger.LogError($"Failed to use custom builder on body {body.Config.name} - {e}");
                     }
                 }
             }
