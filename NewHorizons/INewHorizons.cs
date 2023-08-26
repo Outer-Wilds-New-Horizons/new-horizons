@@ -1,3 +1,4 @@
+using NewHorizons.Handlers;
 using OWML.Common;
 using System;
 using System.Collections.Generic;
@@ -92,6 +93,11 @@ namespace NewHorizons
         /// Uses JSONPath to query the current star system
         ///</summary>
         T QuerySystem<T>(string path);
+
+        /// <summary>
+        /// Register your own builder that will act on the given GameObject by reading the json string of its "extras" module
+        /// </summary>
+        void RegisterCustomBuilder(Action<GameObject, string> builder); 
         #endregion
 
         #region Spawn props

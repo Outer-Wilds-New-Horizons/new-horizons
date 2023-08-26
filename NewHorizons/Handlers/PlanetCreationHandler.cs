@@ -16,7 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-
+using Newtonsoft.Json;
 
 namespace NewHorizons.Handlers
 {
@@ -33,6 +33,8 @@ namespace NewHorizons.Handlers
         // Farthest distance from the center of the solar system
         public static float SolarSystemRadius { get; private set; }
         public static float DefaultFurthestOrbit => 30000f;
+
+        public static List<Action<GameObject, string>> CustomBuilders;
 
         public static void Init(List<NewHorizonsBody> bodies)
         {
@@ -699,6 +701,21 @@ namespace NewHorizons.Handlers
             if (body.Config.Funnel != null)
             {
                 FunnelBuilder.Make(go, sector, rb, body.Config.Funnel);
+            }
+
+            if (body.Config.extras != null)
+            {
+                foreach (var customBuilder in CustomBuilders)
+                {
+                    try
+                    {
+                        customBuilder.Invoke(go, JsonConvert.SerializeObject(body.Config.extras));
+                    }
+                    catch
+                    {
+                        NHLogger.LogError($"Failed to use custom builder on body {body.Config.name}");
+                    }
+                }
             }
 
             // Has to go last probably
