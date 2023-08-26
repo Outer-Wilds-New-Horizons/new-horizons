@@ -16,7 +16,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-
+using NewHorizons.Streaming;
+using Newtonsoft.Json;
 
 namespace NewHorizons.Handlers
 {
@@ -33,6 +34,8 @@ namespace NewHorizons.Handlers
         // Farthest distance from the center of the solar system
         public static float SolarSystemRadius { get; private set; }
         public static float DefaultFurthestOrbit => 30000f;
+
+        public static List<Action<GameObject, string>> CustomBuilders;
 
         public static void Init(List<NewHorizonsBody> bodies)
         {
@@ -701,6 +704,21 @@ namespace NewHorizons.Handlers
                 FunnelBuilder.Make(go, sector, rb, body.Config.Funnel);
             }
 
+            if (body.Config.extras != null)
+            {
+                foreach (var customBuilder in CustomBuilders)
+                {
+                    try
+                    {
+                        customBuilder.Invoke(go, JsonConvert.SerializeObject(body.Config.extras));
+                    }
+                    catch
+                    {
+                        NHLogger.LogError($"Failed to use custom builder on body {body.Config.name}");
+                    }
+                }
+            }
+
             // Has to go last probably
             if (willHaveCloak)
             {
@@ -727,6 +745,37 @@ namespace NewHorizons.Handlers
                 var ao = go.GetComponent<AstroObject>();
                 var aoName = ao.GetAstroObjectName();
                 var aoType = ao.GetAstroObjectType();
+
+                // When updating orbits of the twins be sure the FocalBody is gone
+                // Don't do it if it's already an NHAstroObject since that means this was already done
+                if (ao is not NHAstroObject && (aoName == AstroObject.Name.TowerTwin || aoName == AstroObject.Name.CaveTwin))
+                {
+                    var hourglassTwinsFocal = SearchUtilities.Find("FocalBody");
+
+                    // Have to copy the HGT sector bc it has some ruleset stuff on it we want
+                    var clonedSectorHGT = hourglassTwinsFocal.FindChild("Sector_HGT").Instantiate().Rename("Sector_HGT");
+                    clonedSectorHGT.transform.parent = go.transform;
+                    clonedSectorHGT.transform.localPosition = Vector3.zero;
+                    clonedSectorHGT.transform.localRotation = Quaternion.identity;
+
+                    // Don't need this part
+                    GameObject.Destroy(clonedSectorHGT.GetComponentInChildren<SectorStreaming>().gameObject);
+
+                    // Take the hourglass twins shader effect controller off the focal body so it can stay active
+                    var shaderController = hourglassTwinsFocal.GetComponentInChildren<HourglassTwinsShaderController>();
+                    if (shaderController != null) shaderController.transform.parent = null;
+
+                    hourglassTwinsFocal.SetActive(false);
+
+                    // Remove the drift tracker since its unneeded now
+                    Component.Destroy(go.GetComponent<DriftTracker>());
+
+                    // Fix sectors
+                    VanillaStreamingFix.UnparentSectorStreaming(ao.GetRootSector(), ao.gameObject, AstroObject.Name.HourglassTwins, Sector.Name.HourglassTwins);
+                    // Not to be confused with Sector.GetRootSector, this returns the highest sector on the astro object not in the chain
+                    // CaveTwin/TowerTwin sectors both have HGT as parent so we want to get rid of that link
+                    ao.GetRootSector().SetParentSector(null);
+                }
 
                 var owrb = go.GetComponent<OWRigidbody>();
 

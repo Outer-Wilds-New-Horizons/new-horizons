@@ -10,6 +10,7 @@ using NewHorizons.External.Modules.Props.Audio;
 using NewHorizons.External.Modules.Props.Dialogue;
 using NewHorizons.External.Modules.TranslatorText;
 using NewHorizons.External.SerializableData;
+using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OWML;
 using Newtonsoft.Json;
@@ -315,5 +316,11 @@ namespace NewHorizons
 
             RumorModeBuilder.AddShipLogXML(GameObject.FindObjectOfType<ShipLogManager>(), xml, body);
         }
+
+        /// <summary>
+        /// Register your own builder that will act on the given GameObject by reading its raw json string
+        /// </summary>
+        /// <param name="builder"></param>
+        public void RegisterCustomBuilder(Action<GameObject, string> builder) => PlanetCreationHandler.CustomBuilders.Add(builder);
     }
 }
