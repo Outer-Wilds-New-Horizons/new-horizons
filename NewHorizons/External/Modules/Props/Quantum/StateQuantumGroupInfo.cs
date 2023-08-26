@@ -4,7 +4,7 @@ using System.ComponentModel;
 namespace NewHorizons.External.Modules.Props.Quantum;
 
 [JsonObject]
-internal class StatesQuantumGroupInfo : BaseQuantumGroupInfo
+public class StateQuantumGroupInfo : BaseQuantumGroupInfo
 {
     /// <summary>
     /// Optional. If this is true, then the states will be presented in order, rather than in a random order

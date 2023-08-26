@@ -1,15 +1,8 @@
-using Epic.OnlineServices.P2P;
 using NewHorizons.Components.Quantum;
-using NewHorizons.External.Configs;
-using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.Props.Quantum;
-using NewHorizons.Utility.Files;
 using NewHorizons.Utility.Geometry;
-using NewHorizons.Utility.OWML;
-using OWML.Common;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Sockets;
 using UnityEngine;
 
 
@@ -32,16 +25,16 @@ namespace NewHorizons.Builder.Props
             switch (quantumGroup.type)
             {
                 case QuantumGroupType.Sockets:
-                    MakeSocketGroup(planetGO, sector, quantumGroup, propsInGroup); 
+                    MakeSocketGroup(planetGO, sector, quantumGroup, propsInGroup);
                     return;
-                case QuantumGroupType.States: 
+                case QuantumGroupType.States:
                     MakeStateGroup(planetGO, sector, quantumGroup, propsInGroup);
                     return;
-                /*
-                case PropModule.QuantumGroupType.Shuffle: 
-                    MakeShuffleGroup(go, sector, quantumGroup, propsInGroup); 
-                    return;
-                */
+                    /*
+                    case PropModule.QuantumGroupType.Shuffle: 
+                        MakeShuffleGroup(go, sector, quantumGroup, propsInGroup); 
+                        return;
+                    */
             }
         }
 
@@ -96,7 +89,7 @@ namespace NewHorizons.Builder.Props
 
                 if (prop.GetComponentInChildren<VisibilityTracker>() == null)
                 {
-                    AddBoundsVisibility(prop);
+                    BoundsUtilities.AddBoundsVisibility(prop);
                 }
 
                 prop.SetActive(true);
@@ -121,7 +114,7 @@ namespace NewHorizons.Builder.Props
 
                 if (prop.GetComponentInChildren<ShapeVisibilityTracker>() != null) continue;
 
-                AddBoundsVisibility(prop);
+                BoundsUtilities.AddBoundsVisibility(prop);
             }
 
             if (quantumGroup.hasEmptyState)
@@ -133,7 +126,7 @@ namespace NewHorizons.Builder.Props
                 var state = empty.AddComponent<QuantumState>();
                 states.Add(state);
 
-                var boxBounds = GetBoundsOfSelfAndChildMeshes(template);
+                var boxBounds = BoundsUtilities.GetBoundsOfSelfAndChildMeshes(template);
                 var boxShape = empty.AddComponent<BoxShape>();
                 boxShape.center = boxBounds.center;
                 boxShape.extents = boxBounds.size;
@@ -165,77 +158,8 @@ namespace NewHorizons.Builder.Props
             shuffle._shuffledObjects = propsInGroup.Select(p => p.transform).ToArray();
             shuffle.Awake(); // this doesn't get called on its own for some reason
 
-            AddBoundsVisibility(shuffleParent);
+            BoundsUtilities.AddBoundsVisibility(shuffleParent);
             shuffleParent.SetActive(true);
         }
-
-
-        struct BoxShapeReciever
-        {
-            public MeshFilter f;
-            public SkinnedMeshRenderer s;
-            public GameObject g;
-        }
-
-        public static void AddBoundsVisibility(GameObject g)
-        {
-            var meshFilters = g.GetComponentsInChildren<MeshFilter>();
-            var skinnedMeshRenderers = g.GetComponentsInChildren<SkinnedMeshRenderer>();
-
-            var boxShapeRecievers = meshFilters
-                .Select(f => new BoxShapeReciever() { f = f, g = f.gameObject })
-                .Concat(
-                    skinnedMeshRenderers.Select(s => new BoxShapeReciever() { s = s, g = s.gameObject })
-                )
-                .ToList();
-
-            foreach (var boxshapeReciever in boxShapeRecievers)
-            {
-                var box = boxshapeReciever.g.AddComponent<BoxShape>();
-                boxshapeReciever.g.AddComponent<ShapeVisibilityTracker>();
-                if (Main.Debug) boxshapeReciever.g.AddComponent<BoxShapeVisualizer>();
-
-                var fixer = boxshapeReciever.g.AddComponent<BoxShapeFixer>();
-                fixer.shape = box;
-                fixer.meshFilter = boxshapeReciever.f;
-                fixer.skinnedMeshRenderer = boxshapeReciever.s;
-            }
-        }
-
-        public static Bounds GetBoundsOfSelfAndChildMeshes(GameObject g)
-        {
-            var meshFilters = g.GetComponentsInChildren<MeshFilter>();
-            var corners = meshFilters.SelectMany(m => GetMeshCorners(m, g)).ToList();
-
-            Bounds b = new Bounds(corners[0], Vector3.zero);
-            corners.ForEach(corner => b.Encapsulate(corner));
-
-            return b;
-        }
-
-        public static Vector3[] GetMeshCorners(MeshFilter m, GameObject relativeTo = null)
-        {
-            var bounds = m.mesh.bounds;
-
-            var localCorners = new Vector3[]
-            {
-                 bounds.min,
-                 bounds.max,
-                 new Vector3(bounds.min.x, bounds.min.y, bounds.max.z),
-                 new Vector3(bounds.min.x, bounds.max.y, bounds.min.z),
-                 new Vector3(bounds.max.x, bounds.min.y, bounds.min.z),
-                 new Vector3(bounds.min.x, bounds.max.y, bounds.max.z),
-                 new Vector3(bounds.max.x, bounds.min.y, bounds.max.z),
-                 new Vector3(bounds.max.x, bounds.max.y, bounds.min.z),
-            };
-
-            var globalCorners = localCorners.Select(localCorner => m.transform.TransformPoint(localCorner)).ToArray();
-
-            if (relativeTo == null) return globalCorners;
-
-            return globalCorners.Select(globalCorner => relativeTo.transform.InverseTransformPoint(globalCorner)).ToArray();
-        }
     }
-
-    
 }

@@ -69,16 +69,6 @@ namespace NewHorizons.External.Modules
         public ProjectionInfo[] slideShows;
 
         /// <summary>
-        /// A list of quantum groups that props can be added to. An example of a group would be a list of possible locations for a QuantumSocketedObject.
-        /// </summary>
-        public QuantumGroupInfo[] quantumGroups;
-
-        /// <summary>
-        /// Puts quantum lightning
-        /// </summary>
-        public DetailInfo[] quantumLightning;
-
-        /// <summary>
         /// Add tornadoes to this planet
         /// </summary>
         public TornadoInfo[] tornados;
@@ -128,8 +118,14 @@ namespace NewHorizons.External.Modules
         /// </summary>
         public ShuttleInfo[] shuttles;
 
+        public SocketQuantumGroupInfo[] socketQuantumGroups;
+
+        public StateQuantumGroupInfo[] stateQuantumGroups;
+
         [Obsolete("reveal is deprecated. Use Volumes->revealVolumes instead.")] public RevealVolumeInfo[] reveal;
 
         [Obsolete("audioVolumes is deprecated. Use Volumes->audioVolumes instead.")] public AudioVolumeInfo[] audioVolumes;
+
+        [Obsolete("quantumGroups is deprecated. Use stateQuantumGroups or socketQuantumGroups instead.")] public QuantumGroupInfo[] quantumGroups;
     }
 }
