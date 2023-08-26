@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using NewHorizons.Streaming;
+using Newtonsoft.Json;
 
 namespace NewHorizons.Handlers
 {
@@ -33,6 +34,8 @@ namespace NewHorizons.Handlers
         // Farthest distance from the center of the solar system
         public static float SolarSystemRadius { get; private set; }
         public static float DefaultFurthestOrbit => 30000f;
+
+        public static List<Action<GameObject, string>> CustomBuilders;
 
         public static void Init(List<NewHorizonsBody> bodies)
         {
@@ -158,8 +161,20 @@ namespace NewHorizons.Handlers
             }
             catch (Exception)
             {
-                if (body?.Config?.name == null) NHLogger.LogError($"How is there no name for {body}");
-                else existingPlanet = SearchUtilities.Find(body.Config.name.Replace(" ", "") + "_Body", false);
+                if (body?.Config?.name == null)
+                {
+                    NHLogger.LogError($"How is there no name for {body}");
+                }
+                else
+                {
+                    existingPlanet = SearchUtilities.Find(body.Config.name.Replace(" ", "") + "_Body", false);
+                }
+            }
+
+            if (existingPlanet == null && body.Config.destroy)
+            {
+                NHLogger.LogError($"{body.Config.name} was meant to be destroyed, but was not found");
+                return false;
             }
 
             if (existingPlanet != null)
@@ -169,8 +184,14 @@ namespace NewHorizons.Handlers
                     if (body.Config.destroy)
                     {
                         var ao = existingPlanet.GetComponent<AstroObject>();
-                        if (ao != null) Delay.FireInNUpdates(() => PlanetDestructionHandler.RemoveBody(ao), 2);
-                        else Delay.FireInNUpdates(() => PlanetDestructionHandler.DisableBody(existingPlanet, false), 2);
+                        if (ao != null)
+                        {
+                            Delay.FireInNUpdates(() => PlanetDestructionHandler.DisableAstroObject(ao), 2);
+                        }
+                        else
+                        {
+                            Delay.FireInNUpdates(() => PlanetDestructionHandler.DisableGameObject(existingPlanet), 2);
+                        }
                     }
                     else if (body.Config.isQuantumState)
                     {
@@ -391,7 +412,8 @@ namespace NewHorizons.Handlers
                     if (defaultPrimaryToSun)
                     {
                         NHLogger.LogError($"Couldn't find {body.Config.Orbit.primaryBody}, defaulting to center of solar system");
-                        primaryBody = Locator.GetCenterOfTheUniverse().GetAttachedOWRigidbody().GetComponent<AstroObject>();
+                        // TODO: Make this work in other systems. We tried using Locator.GetCenterOfUniverse before but that doesn't work since its too early now
+                        primaryBody = SearchUtilities.Find("Sun_Body")?.GetComponent<AstroObject>();
                     }
                     else
                     {
@@ -627,7 +649,7 @@ namespace NewHorizons.Handlers
 
             if (body.Config.Water != null)
             {
-                WaterBuilder.Make(go, sector, rb, body.Config.Water);
+                WaterBuilder.Make(go, sector, rb, body.Config);
             }
 
             if (body.Config.Sand != null)
@@ -654,15 +676,17 @@ namespace NewHorizons.Handlers
                     }
                 }
 
-                if (body.Config.Atmosphere.hasRain || body.Config.Atmosphere.hasSnow)
-                    EffectsBuilder.Make(go, sector, body.Config, surfaceSize);
-
                 if (body.Config.Atmosphere.fogSize != 0)
                 {
                     fog = FogBuilder.Make(go, sector, body.Config.Atmosphere, body.Mod);
                 }
 
                 atmosphere = AtmosphereBuilder.Make(go, sector, body.Config.Atmosphere, surfaceSize).GetComponentInChildren<LODGroup>();
+            }
+
+            if (body.Config.ParticleFields != null)
+            {
+                EffectsBuilder.Make(go, sector, body.Config);
             }
 
             if (body.Config.Props != null)
@@ -678,6 +702,21 @@ namespace NewHorizons.Handlers
             if (body.Config.Funnel != null)
             {
                 FunnelBuilder.Make(go, sector, rb, body.Config.Funnel);
+            }
+
+            if (body.Config.extras != null)
+            {
+                foreach (var customBuilder in CustomBuilders)
+                {
+                    try
+                    {
+                        customBuilder.Invoke(go, JsonConvert.SerializeObject(body.Config.extras));
+                    }
+                    catch
+                    {
+                        NHLogger.LogError($"Failed to use custom builder on body {body.Config.name}");
+                    }
+                }
             }
 
             // Has to go last probably

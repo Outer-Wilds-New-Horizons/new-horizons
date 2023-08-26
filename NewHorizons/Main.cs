@@ -59,8 +59,27 @@ namespace NewHorizons
         public static bool IsSystemReady { get; private set; }
 
         public string DefaultStarSystem => SystemDict.ContainsKey(_defaultSystemOverride) ? _defaultSystemOverride : _defaultStarSystem;
-        public string CurrentStarSystem => _currentStarSystem;
-        public bool TimeLoopEnabled => SystemDict[CurrentStarSystem]?.Config?.enableTimeLoop ?? true;
+        public string CurrentStarSystem
+        {
+            get
+            {
+                return _currentStarSystem;
+            }
+            set
+            {
+                // Prevent invalid values
+                if (value != "SolarSystem" && value != "EyeOfTheUniverse" && !SystemDict.ContainsKey(value) && !BodyDict.ContainsKey(value))
+                {
+                    NHLogger.LogError($"System \"{value}\" does not exist!");
+                    _currentStarSystem = DefaultStarSystem;
+                }
+                _currentStarSystem = value;
+            }
+        }
+        private string _currentStarSystem; 
+        private string _previousStarSystem;
+
+        public bool TimeLoopEnabled => CurrentStarSystem == null || (SystemDict[CurrentStarSystem]?.Config?.enableTimeLoop ?? true);
         public bool IsWarpingFromShip { get; private set; } = false;
         public bool IsWarpingFromVessel { get; private set; } = false;
         public bool IsWarpingBackToEye { get; internal set; } = false;
@@ -73,7 +92,7 @@ namespace NewHorizons
         public static bool HasWarpDrive { get; private set; } = false;
 
         private string _defaultStarSystem = "SolarSystem";
-        internal string _currentStarSystem = "SolarSystem";
+
         private bool _firstLoad = true;
 
         private bool _playerAwake;
@@ -260,11 +279,20 @@ namespace NewHorizons
 
         private void OnSceneUnloaded(Scene scene)
         {
+            // Caches of GameObjects must always be cleared
             SearchUtilities.ClearCache();
-            ImageUtilities.ClearCache();
-            AudioUtilities.ClearCache();
-            AssetBundleUtilities.ClearCache();
-            EnumUtilities.ClearCache();
+            ProxyHandler.ClearCache();
+
+            // Caches of other assets only have to be cleared if we changed star systems
+            if (CurrentStarSystem != _previousStarSystem)
+            {
+                NHLogger.Log($"Changing star system from {_previousStarSystem} to {CurrentStarSystem} - Clearing system-specific caches!");
+                ImageUtilities.ClearCache();
+                AudioUtilities.ClearCache();
+                AssetBundleUtilities.ClearCache();
+                EnumUtilities.ClearCache();
+            }
+
             IsSystemReady = false;
         }
 
@@ -330,7 +358,7 @@ namespace NewHorizons
 
             if (isEyeOfTheUniverse)
             {
-                _currentStarSystem = "EyeOfTheUniverse";
+                CurrentStarSystem = "EyeOfTheUniverse";
             }
             else if (IsWarpingBackToEye)
             {
@@ -341,14 +369,8 @@ namespace NewHorizons
                 return;
             }
 
-            if (!SystemDict.ContainsKey(_currentStarSystem) || !BodyDict.ContainsKey(_currentStarSystem))
-            {
-                NHLogger.LogError($"System \"{_currentStarSystem}\" does not exist!");
-                _currentStarSystem = DefaultStarSystem;
-            }
-
             // Set time loop stuff if its enabled and if we're warping to a new place
-            if (IsChangingStarSystem && (SystemDict[_currentStarSystem].Config.enableTimeLoop || _currentStarSystem == "SolarSystem") && SecondsElapsedInLoop > 0f)
+            if (IsChangingStarSystem && (SystemDict[CurrentStarSystem].Config.enableTimeLoop || CurrentStarSystem == "SolarSystem") && SecondsElapsedInLoop > 0f)
             {
                 TimeLoopUtilities.SetSecondsElapsed(SecondsElapsedInLoop);
                 // Prevent the OPC from firing
@@ -363,7 +385,7 @@ namespace NewHorizons
                     launchController.enabled = false;
                 }
                 var nomaiProbe = SearchUtilities.Find("NomaiProbe_Body");
-                if (nomaiProbe != null) nomaiProbe.gameObject.SetActive(false);
+                nomaiProbe?.gameObject.SetActive(false);
             }
 
             // Reset this
@@ -518,6 +540,10 @@ namespace NewHorizons
             {
                 ResetCurrentStarSystem();
             }
+
+            // We only check previous when the scene unloads, and at that point current should be updated to the new system
+            NHLogger.LogVerbose($"Set the previous system to {CurrentStarSystem}");
+            _previousStarSystem = CurrentStarSystem;
         }
 
         // Had a bunch of separate unity things firing stuff when the system is ready so I moved it all to here
@@ -567,7 +593,7 @@ namespace NewHorizons
                 if (starSystemName != "SolarSystem")
                 {
                     SetDefaultSystem(starSystemName);
-                    _currentStarSystem = DefaultStarSystem;
+                    CurrentStarSystem = DefaultStarSystem;
                 }
             }
 
@@ -784,7 +810,7 @@ namespace NewHorizons
             // If we're just on the title screen set the system for later
             if (LoadManager.GetCurrentScene() == OWScene.TitleScreen)
             {
-                _currentStarSystem = newStarSystem;
+                CurrentStarSystem = newStarSystem;
                 IsWarpingFromShip = warp;
                 IsWarpingFromVessel = vessel;
                 DidWarpFromVessel = false;
@@ -828,13 +854,13 @@ namespace NewHorizons
                 {
                     PlayerData.SaveEyeCompletion(); // So that the title screen doesn't keep warping you back to eye
 
-                    if (SystemDict[_currentStarSystem].Config.enableTimeLoop) SecondsElapsedInLoop = TimeLoop.GetSecondsElapsed();
+                    if (SystemDict[CurrentStarSystem].Config.enableTimeLoop) SecondsElapsedInLoop = TimeLoop.GetSecondsElapsed();
                     else SecondsElapsedInLoop = -1;
 
                     sceneToLoad = OWScene.SolarSystem;
                 }
 
-                _currentStarSystem = newStarSystem;
+                CurrentStarSystem = newStarSystem;
 
                 // Freeze player inputs
                 OWInput.ChangeInputMode(InputMode.None);
@@ -854,7 +880,7 @@ namespace NewHorizons
             // We reset the solar system on death
             if (!IsChangingStarSystem)
             {
-                if (SystemDict[_currentStarSystem].Config.respawnHere) return;
+                if (SystemDict[CurrentStarSystem].Config.respawnHere) return;
 
                 ResetCurrentStarSystem();
             }
@@ -864,19 +890,20 @@ namespace NewHorizons
         {
             if (SystemDict.ContainsKey(_defaultSystemOverride))
             {
-                _currentStarSystem = _defaultSystemOverride;
+                CurrentStarSystem = _defaultSystemOverride;
 
                 // Sometimes the override will not support spawning regularly, so always warp in
                 IsWarpingFromShip = true;
             }
             else
             {
-                if (!string.IsNullOrEmpty(_defaultSystemOverride))
+                // Ignore first load because it doesn't even know what systems we have
+                if (!_firstLoad && !string.IsNullOrEmpty(_defaultSystemOverride))
                 {
                     NHLogger.LogError($"The given default system override {_defaultSystemOverride} is invalid - no system exists with that name");
                 }
 
-                _currentStarSystem = _defaultStarSystem;
+                CurrentStarSystem = _defaultStarSystem;
                 IsWarpingFromShip = false;
             }
         }

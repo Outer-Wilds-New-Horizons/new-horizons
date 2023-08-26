@@ -29,12 +29,22 @@ namespace NewHorizons.Patches.WarpPatches
         [HarmonyPatch(nameof(VesselWarpController.CheckSystemActivation))]
         public static void VesselWarpController_CheckSystemActivation(VesselWarpController __instance)
         {
-            if (Locator.GetEyeStateManager() == null && Main.Instance.CurrentStarSystem != "EyeOfTheUniverse")
+            // Base method only manages the state of the source warp platform blackhole if the EyeStateManager isn't null
+            // However we place the vessel into other systems, so we want to handle the state in those locations as well
+            // For some reason the blackhole can also just be null in which case we ignore all this. Happens in Intervention 1.0.3
+            if (Locator.GetEyeStateManager() == null && Main.Instance.CurrentStarSystem != "EyeOfTheUniverse" && __instance._sourceWarpPlatform._blackHole != null)
             {
-                if (!__instance._sourceWarpPlatform.IsBlackHoleOpen() && __instance._hasPower && __instance._warpPlatformPowerSlot.IsActivated() && __instance._targetWarpPlatform != null)
-                    __instance._sourceWarpPlatform.OpenBlackHole(__instance._targetWarpPlatform, true);
-                else if (__instance._sourceWarpPlatform.IsBlackHoleOpen() && (!__instance._hasPower || !__instance._warpPlatformPowerSlot.IsActivated()))
+                var isBlackHoleOpen = __instance._sourceWarpPlatform.IsBlackHoleOpen();
+                var shouldBlackHoleBeOpen = __instance._hasPower && __instance._warpPlatformPowerSlot.IsActivated() && __instance._targetWarpPlatform != null;
+
+                if (isBlackHoleOpen && !shouldBlackHoleBeOpen)
+                {
                     __instance._sourceWarpPlatform.CloseBlackHole();
+                }
+                else if (!isBlackHoleOpen && shouldBlackHoleBeOpen)
+                {
+                    __instance._sourceWarpPlatform.OpenBlackHole(__instance._targetWarpPlatform, true);
+                }
             }
         }
 
@@ -53,7 +63,7 @@ namespace NewHorizons.Patches.WarpPatches
                 Locator.GetPauseCommandListener().AddPauseCommandLock();
                 if (canWarpToEye || canWarpToStarSystem && targetSystem == "EyeOfTheUniverse")
                 {
-                    Main.Instance._currentStarSystem = "EyeOfTheUniverse";
+                    Main.Instance.CurrentStarSystem = "EyeOfTheUniverse";
                     LoadManager.LoadSceneAsync(OWScene.EyeOfTheUniverse, false, LoadManager.FadeType.ToWhite);
                 }
                 else if (canWarpToStarSystem)

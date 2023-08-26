@@ -259,7 +259,7 @@ namespace NewHorizons.Components.ShipLog
             if (!name.Equals(uniqueID)) return name;
 
             // Else we return a default name
-            if (uniqueID.Equals("SolarSystem")) return "Hearthian System";
+            if (uniqueID.Equals("SolarSystem")) return "The Outer Wilds";
 
             var splitString = uniqueID.Split('.');
             if (splitString.Length > 1) splitString = splitString.Skip(1).ToArray();
