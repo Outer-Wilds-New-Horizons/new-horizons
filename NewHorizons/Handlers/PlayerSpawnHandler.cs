@@ -51,24 +51,38 @@ namespace NewHorizons.Handlers
                 // Ensures it has invoked everything and actually placed the player in the cloaking field #671
                 cloak._firstUpdate = true;
             }
+
+            // Spawn ship
+            Delay.FireInNUpdates(SpawnShip, 30);
         }
 
         public static void SpawnShip()
         {
             var ship = SearchUtilities.Find("Ship_Body");
-            if (ship != null)
+
+            if (SpawnPointBuilder.ShipSpawn != null)
             {
-                ship.SetActive(true);
+                NHLogger.Log("Spawning player ship");
 
-                var pos = SpawnPointBuilder.ShipSpawn.transform.position;
-
-                // Move it up a bit more when aligning to surface
-                if (SpawnPointBuilder.ShipSpawnOffset != null)
+                if (ship != null)
                 {
-                    pos += SpawnPointBuilder.ShipSpawn.transform.TransformDirection(SpawnPointBuilder.ShipSpawnOffset);
-                }
+                    ship.SetActive(true);
 
-                SpawnBody(ship.GetAttachedOWRigidbody(), SpawnPointBuilder.ShipSpawn, pos);
+                    var pos = SpawnPointBuilder.ShipSpawn.transform.position;
+
+                    // Move it up a bit more when aligning to surface
+                    if (SpawnPointBuilder.ShipSpawnOffset != null)
+                    {
+                        pos += SpawnPointBuilder.ShipSpawn.transform.TransformDirection(SpawnPointBuilder.ShipSpawnOffset);
+                    }
+
+                    SpawnBody(ship.GetAttachedOWRigidbody(), SpawnPointBuilder.ShipSpawn, pos);
+                }
+            }
+            else if (Main.Instance.CurrentStarSystem != "SolarSystem" && !Main.Instance.IsWarpingFromShip)
+            {
+                NHLogger.Log("System has no ship spawn. Deactivating it.");
+                ship?.SetActive(false);
             }
         }
 
@@ -81,20 +95,6 @@ namespace NewHorizons.Handlers
             }
 
             InvulnerabilityHandler.MakeInvulnerable(false);
-
-            if (!Main.Instance.IsWarpingFromShip)
-            {
-                if (SpawnPointBuilder.ShipSpawn != null)
-                {
-                    NHLogger.Log("Spawning player ship");
-                    SpawnShip();
-                }
-                else
-                {
-                    NHLogger.Log("System has no ship spawn. Deactivating it.");
-                    SearchUtilities.Find("Ship_Body")?.SetActive(false);
-                }
-            }
         }
 
         private static void FixPlayerVelocity()

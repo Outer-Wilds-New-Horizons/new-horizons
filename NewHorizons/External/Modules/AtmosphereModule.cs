@@ -57,7 +57,7 @@ namespace NewHorizons.External.Modules
         /// Colour of fog on the planet, if you put fog.
         /// </summary>
         public MColor fogTint;
-        
+
         /// <summary>
         /// Relative filepath to the fog color ramp texture, if you put fog.
         /// x axis is angle to sun (left at midnight, right at noon), y axis is distance to camera (close at bottom, far at top).
@@ -75,14 +75,11 @@ namespace NewHorizons.External.Modules
         public bool hasTrees;
 
         /// <summary>
-        /// Does this planet have rain?
+        /// Does this planet have rain? 
+        /// This is equivalent to effects of setting a rain particle/vection field, rain audio volume, and visor effect volume, combined for convenience.
+        /// For more control over the rain, use those individual components.
         /// </summary>
         public bool hasRain;
-
-        /// <summary>
-        /// Does this planet have snow?
-        /// </summary>
-        public bool hasSnow;
 
         /// <summary>
         /// Scale height of the atmosphere
@@ -174,7 +171,6 @@ namespace NewHorizons.External.Modules
             /// </summary>
             [DefaultValue(0f)] public float rotationSpeed = 0f;
 
-            
             #region Obsolete
 
             /// <summary>
@@ -189,6 +185,8 @@ namespace NewHorizons.External.Modules
 
 
         #region Obsolete
+        [Obsolete("HasSnow is deprecated, please use ParticleFields instead")]
+        public bool hasSnow;
 
         [Obsolete("CloudTint is deprecated, please use CloudInfo instead")]
         public MColor cloudTint;
@@ -208,7 +206,8 @@ namespace NewHorizons.External.Modules
         [Obsolete("UseBasicCloudShader is deprecated, please use CloudInfo instead")]
         public bool useBasicCloudShader;
 
-        [DefaultValue(true)] [Obsolete("ShadowsOnClouds is deprecated, please use CloudInfo instead")]
+        [DefaultValue(true)]
+        [Obsolete("ShadowsOnClouds is deprecated, please use CloudInfo instead")]
         public bool shadowsOnClouds = true;
 
         [Obsolete("HasAtmosphere is deprecated, please use UseAtmosphereShader instead")]
