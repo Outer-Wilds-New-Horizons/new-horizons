@@ -158,8 +158,20 @@ namespace NewHorizons.Handlers
             }
             catch (Exception)
             {
-                if (body?.Config?.name == null) NHLogger.LogError($"How is there no name for {body}");
-                else existingPlanet = SearchUtilities.Find(body.Config.name.Replace(" ", "") + "_Body", false);
+                if (body?.Config?.name == null)
+                {
+                    NHLogger.LogError($"How is there no name for {body}");
+                }
+                else
+                {
+                    existingPlanet = SearchUtilities.Find(body.Config.name.Replace(" ", "") + "_Body", false);
+                }
+            }
+
+            if (existingPlanet == null && body.Config.destroy)
+            {
+                NHLogger.LogError($"{body.Config.name} was meant to be destroyed, but was not found");
+                return false;
             }
 
             if (existingPlanet != null)
@@ -169,8 +181,14 @@ namespace NewHorizons.Handlers
                     if (body.Config.destroy)
                     {
                         var ao = existingPlanet.GetComponent<AstroObject>();
-                        if (ao != null) Delay.FireInNUpdates(() => PlanetDestructionHandler.RemoveBody(ao), 2);
-                        else Delay.FireInNUpdates(() => PlanetDestructionHandler.DisableBody(existingPlanet, false), 2);
+                        if (ao != null)
+                        {
+                            Delay.FireInNUpdates(() => PlanetDestructionHandler.DisableAstroObject(ao), 2);
+                        }
+                        else
+                        {
+                            Delay.FireInNUpdates(() => PlanetDestructionHandler.DisableGameObject(existingPlanet), 2);
+                        }
                     }
                     else if (body.Config.isQuantumState)
                     {

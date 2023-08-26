@@ -41,7 +41,9 @@ namespace NewHorizons.Builder.Props.Audio
 
             Initialized = true;
 
+            SceneManager.sceneUnloaded -= OnSceneUnloaded;
             SceneManager.sceneUnloaded += OnSceneUnloaded;
+            Main.Instance.OnStarSystemLoaded.RemoveListener(OnStarSystemLoaded);
             Main.Instance.OnStarSystemLoaded.AddListener(OnStarSystemLoaded);
         }
 
