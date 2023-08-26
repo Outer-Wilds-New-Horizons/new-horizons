@@ -7,8 +7,8 @@ namespace NewHorizons.Patches.ProxyPatches;
 public static class ProxyOrbiterPatches
 {
     [HarmonyPostfix]
-    [HarmonyPatch(nameof(ProxyOrbiter.Awake))]
-    public static void ProxyOrbiter_Awake(ProxyOrbiter __instance)
+    [HarmonyPatch(nameof(ProxyOrbiter.SetOriginalBodies))]
+    public static void ProxyOrbiter_SetOriginalBodies(ProxyOrbiter __instance)
     {
         ProxyHandler.RegisterVanillaProxyOrbiter(__instance);
     }

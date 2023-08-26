@@ -49,9 +49,11 @@ namespace NewHorizons.Handlers
 
         public static void RegisterVanillaProxyOrbiter(ProxyOrbiter proxy)
         {
-            if (proxy._originalPlanetBody != null)
+            // The _originalBody is the moon
+            // For _originalPlanetBody, that game object will also have a ProxyBody on it so it'd be counted via the other cache
+            if (proxy._originalBody != null)
             {
-                _vanillaProxyOrbiter.Add(proxy._originalPlanetBody, proxy);
+                _vanillaProxyOrbiter.Add(proxy._originalBody, proxy);
             }
         }
 
