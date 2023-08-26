@@ -62,7 +62,7 @@ namespace NewHorizons.Builder.Body
             cubeSphere.SetActive(false);
             cubeSphere.transform.SetParent(sector?.transform ?? planetGO.transform, false);
 
-            if (PlanetShader == null) PlanetShader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/SphereTextureWrapperTriplanar.shader");
+            if (PlanetShader == null) PlanetShader = AssetBundleUtilities.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/SphereTextureWrapperTriplanar.shader");
 
             var stretch = module.stretch != null ? (Vector3)module.stretch : Vector3.one;
 

@@ -35,5 +35,10 @@ namespace NewHorizons.External.Modules.Props.Quantum
         /// Optional. Only used if type is `states` and `sequential` is true. If this is false, then after the last state has appeared, the object will no longer change state
         /// </summary>
         [DefaultValue(true)] public bool loop = true;
+
+        /// <summary>
+        /// Flash of lightning and changes state
+        /// </summary>
+        public bool lightning;
     }
 }

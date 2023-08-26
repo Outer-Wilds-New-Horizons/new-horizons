@@ -74,6 +74,11 @@ namespace NewHorizons.External.Modules
         public QuantumGroupInfo[] quantumGroups;
 
         /// <summary>
+        /// Puts quantum lightning
+        /// </summary>
+        public DetailInfo[] quantumLightning;
+
+        /// <summary>
         /// Add tornadoes to this planet
         /// </summary>
         public TornadoInfo[] tornados;

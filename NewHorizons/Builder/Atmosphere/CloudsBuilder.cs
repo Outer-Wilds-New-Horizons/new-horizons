@@ -66,7 +66,7 @@ namespace NewHorizons.Builder.Atmosphere
                 }
                 _qmBottomMeshGroup.variants = variants.ToArray();
             }
-            if (_transparentCloud == null) _transparentCloud = Main.NHAssetBundle.LoadAsset<Material>("Assets/Resources/TransparentCloud.mat");
+            if (_transparentCloud == null) _transparentCloud = AssetBundleUtilities.NHAssetBundle.LoadAsset<Material>("Assets/Resources/TransparentCloud.mat");
         }
 
         public static void Make(GameObject planetGO, Sector sector, AtmosphereModule atmo, bool cloaked, IModBehaviour mod)

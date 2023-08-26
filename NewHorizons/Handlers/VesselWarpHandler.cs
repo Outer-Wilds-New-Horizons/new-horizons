@@ -2,10 +2,10 @@ using NewHorizons.Builder.Props;
 using NewHorizons.Components;
 using NewHorizons.Components.EyeOfTheUniverse;
 using NewHorizons.Utility;
+using NewHorizons.Utility.Files;
 using NewHorizons.Utility.OuterWilds;
 using NewHorizons.Utility.OWML;
 using UnityEngine;
-using static NewHorizons.Main;
 
 namespace NewHorizons.Handlers
 {
@@ -20,43 +20,46 @@ namespace NewHorizons.Handlers
 
         public static void Initialize()
         {
-            VesselPrefab = NHPrivateAssetBundle.LoadAsset<GameObject>("Vessel_Body");
+            VesselPrefab = AssetBundleUtilities.NHPrivateAssetBundle.LoadAsset<GameObject>("Vessel_Body");
         }
 
         public static bool IsVesselPresentAndActive()
         {
-            var vesselConfig = SystemDict[Instance.CurrentStarSystem].Config?.Vessel;
+            var vesselConfig = Main.SystemDict[Main.Instance.CurrentStarSystem].Config?.Vessel;
             var vesselIsPresent = vesselConfig?.alwaysPresent ?? false;
-            return Instance.IsWarpingFromVessel || vesselIsPresent;
+            return Main.Instance.IsWarpingFromVessel || vesselIsPresent;
         }
 
         public static bool IsVesselPresent()
         {
-            var isDefaultSolarSystem = Instance.CurrentStarSystem == "SolarSystem";
-            var isEyeOfTheUniverse = Instance.CurrentStarSystem == "EyeOfTheUniverse";
+            var isDefaultSolarSystem = Main.Instance.CurrentStarSystem == "SolarSystem";
+            var isEyeOfTheUniverse = Main.Instance.CurrentStarSystem == "EyeOfTheUniverse";
             return IsVesselPresentAndActive() || isDefaultSolarSystem || isEyeOfTheUniverse;
         }
 
         public static bool ShouldSpawnAtVessel()
         {
-            var vesselConfig = SystemDict[Instance.CurrentStarSystem].Config?.Vessel;
+            var vesselConfig = Main.SystemDict[Main.Instance.CurrentStarSystem].Config?.Vessel;
             var shouldSpawnOnVessel = IsVesselPresent() && (vesselConfig?.spawnOnVessel ?? false);
-            return !Instance.IsWarpingFromShip && (Instance.IsWarpingFromVessel || shouldSpawnOnVessel);
+            return !Main.Instance.IsWarpingFromShip && (Main.Instance.IsWarpingFromVessel || shouldSpawnOnVessel);
         }
 
         public static void LoadVessel()
         {
-            var system = SystemDict[Instance.CurrentStarSystem];
-            if (Instance.CurrentStarSystem == "EyeOfTheUniverse")
+            if (Main.Instance.CurrentStarSystem == "EyeOfTheUniverse")
             {
                 _vesselSpawnPoint = SearchUtilities.Find("Vessel_Body/SPAWN_Vessel").GetComponent<EyeSpawnPoint>();
                 return;
             }
 
             if (IsVesselPresentAndActive())
-                _vesselSpawnPoint = Instance.CurrentStarSystem == "SolarSystem" ? UpdateVessel() : CreateVessel();
+            {
+                _vesselSpawnPoint = Main.Instance.CurrentStarSystem == "SolarSystem" ? UpdateVessel() : CreateVessel();
+            }
             else
+            {
                 _vesselSpawnPoint = SearchUtilities.Find("DB_VesselDimension_Body/Sector_VesselDimension").GetComponentInChildren<SpawnPoint>();
+            }
         }
 
         public static void TeleportToVessel()
@@ -66,7 +69,7 @@ namespace NewHorizons.Handlers
             playerSpawner.DebugWarp(_vesselSpawnPoint);
             Builder.General.SpawnPointBuilder.SuitUp();
 
-            if (Instance.CurrentStarSystem == "SolarSystem")
+            if (Main.Instance.CurrentStarSystem == "SolarSystem")
             {
                 // Deactivate village music because for some reason it still plays.
                 SearchUtilities.Find("TimberHearth_Body/Sector_TH/Sector_Village/Volumes_Village/MusicVolume_Village").GetComponent<VillageMusicVolume>().Deactivate();
@@ -83,7 +86,7 @@ namespace NewHorizons.Handlers
 
         public static EyeSpawnPoint CreateVessel()
         {
-            var system = SystemDict[Instance.CurrentStarSystem];
+            var system = Main.SystemDict[Main.Instance.CurrentStarSystem];
 
             NHLogger.LogVerbose("Checking for Vessel Prefab");
             if (VesselPrefab == null) return null;
@@ -201,7 +204,7 @@ namespace NewHorizons.Handlers
 
         public static SpawnPoint UpdateVessel()
         {
-            var system = SystemDict[Instance.CurrentStarSystem];
+            var system = Main.SystemDict[Main.Instance.CurrentStarSystem];
 
             NHLogger.LogVerbose("Updating DB Vessel");
             var vectorSector = SearchUtilities.Find("DB_VesselDimension_Body/Sector_VesselDimension");
