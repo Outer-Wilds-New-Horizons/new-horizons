@@ -384,7 +384,7 @@ namespace NewHorizons
                     launchController.enabled = false;
                 }
                 var nomaiProbe = SearchUtilities.Find("NomaiProbe_Body");
-                if (nomaiProbe != null) nomaiProbe.gameObject.SetActive(false);
+                nomaiProbe?.gameObject.SetActive(false);
             }
 
             // Reset this
@@ -578,6 +578,7 @@ namespace NewHorizons
             }
 
             // We only check previous when the scene unloads, and at that point current should be updated to the new system
+            NHLogger.LogVerbose($"Set the previous system to {CurrentStarSystem}");
             _previousStarSystem = CurrentStarSystem;
         }
 
