@@ -717,7 +717,7 @@ namespace NewHorizons.Handlers
                     clonedSectorHGT.transform.parent = go.transform;
                     clonedSectorHGT.transform.localPosition = Vector3.zero;
                     clonedSectorHGT.transform.localRotation = Quaternion.identity;
-                    var rootSector = clonedSectorHGT.GetComponent<Sector>();
+                    var hgtSector = clonedSectorHGT.GetComponent<Sector>();
 
                     var streamingGroupGO = hourglassTwinsFocal.GetComponentInChildren<StreamingGroup>().gameObject.Instantiate().Rename("StreamingGroup");
                     streamingGroupGO.transform.parent = go.transform;
@@ -728,7 +728,7 @@ namespace NewHorizons.Handlers
                     // Inefficient because being on ember twin will have ash twin assets load regardless of distance but whatever
                     var sectorStreaming = clonedSectorHGT.GetComponentInChildren<SectorStreaming>();
                     sectorStreaming._streamingGroup = streamingGroupGO.GetComponent<StreamingGroup>();
-                    sectorStreaming.SetSector(rootSector);
+                    sectorStreaming.SetSector(hgtSector);
 
                     hourglassTwinsFocal.SetActive(false);
 
@@ -742,7 +742,7 @@ namespace NewHorizons.Handlers
                         {
                             if (sectorGroup.GetSector()?._name == Sector.Name.HourglassTwins)
                             {
-                                sectorGroup.SetSector(rootSector);
+                                sectorGroup.SetSector(hgtSector);
                             }
                         }
 
@@ -750,13 +750,21 @@ namespace NewHorizons.Handlers
                         {
                             if (behaviour.GetSector()?._name == Sector.Name.HourglassTwins)
                             {
-                                behaviour.SetSector(rootSector);
+                                behaviour.SetSector(hgtSector);
                             }
                         }
                     }
 
+                    // Sector tweaks
+                    if (aoName == AstroObject.Name.CaveTwin)
+                    {
+                        // Ember Twin hemisphere geometry only fully appears at 300 so we shrink the HGT sector to this size since it controls the proxy geometry
+                        hgtSector.GetComponent<SphereShape>().radius = 300;
+                    }
+
+
                     // Update the parent sector
-                    ao.GetRootSector().SetParentSector(rootSector);
+                    ao.GetRootSector().SetParentSector(hgtSector);
 
                     // Take the hourglass twins shader effect controller off the focal body so it can stay active
                     var shaderController = hourglassTwinsFocal.GetComponentInChildren<HourglassTwinsShaderController>();
