@@ -12,7 +12,7 @@ namespace NewHorizons.Utility.Files
     {
         public static Dictionary<string, (string starSystem, AssetBundle bundle)> AssetBundles = new();
 
-        public static void OnSceneUnloaded()
+        public static void ClearCache()
         {
             var bundleKeys = AssetBundles.Keys.ToArray();
 

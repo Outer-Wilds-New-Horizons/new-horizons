@@ -262,7 +262,7 @@ namespace NewHorizons
             SearchUtilities.ClearCache();
             ImageUtilities.ClearCache();
             AudioUtilities.ClearCache();
-            AssetBundleUtilities.OnSceneUnloaded();
+            AssetBundleUtilities.ClearCache();
             EnumUtilities.ClearCache();
             ProxyHandler.OnSceneUnloaded();
             IsSystemReady = false;
