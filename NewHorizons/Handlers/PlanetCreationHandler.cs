@@ -772,6 +772,8 @@ namespace NewHorizons.Handlers
 
                     // Fix sectors
                     VanillaStreamingFix.UnparentSectorStreaming(ao.GetRootSector(), ao.gameObject, AstroObject.Name.HourglassTwins, Sector.Name.HourglassTwins);
+                    // Not to be confused with Sector.GetRootSector, this returns the highest sector on the astro object not in the chain
+                    // CaveTwin/TowerTwin sectors both have HGT as parent so we want to get rid of that link
                     ao.GetRootSector().SetParentSector(null);
                 }
 
