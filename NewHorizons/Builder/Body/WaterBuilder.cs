@@ -164,7 +164,7 @@ namespace NewHorizons.Builder.Body
                 fluidVolume.gameObject.AddComponent<WaterCloakFixerVolume>().material = TSR.sharedMaterials.First(x => x.name == "Ocean_GD_Surface_mat");
             }
 
-            // TODO: fix ruleset making the sand bubble pop up
+            // TODO: fix ruleset making the sand bubble pop up when editing the twins
 
             waterGO.transform.position = planetGO.transform.position;
             waterGO.SetActive(true);

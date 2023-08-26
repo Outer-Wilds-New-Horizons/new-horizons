@@ -141,8 +141,6 @@ namespace NewHorizons.Builder.Body
                     return MakeWhiteDwarf(planet, null, mod, progenitor, proxy);
                 case StellarRemnantType.NeutronStar:
                     return MakeNeutronStar(planet, null, mod, progenitor, proxy);
-                case StellarRemnantType.Pulsar:
-                    return MakeNeutronStar(planet, null, mod, progenitor, proxy);
                 case StellarRemnantType.BlackHole:
                     return MakeBlackhole(planet, null, progenitor, proxy);
                 default:
