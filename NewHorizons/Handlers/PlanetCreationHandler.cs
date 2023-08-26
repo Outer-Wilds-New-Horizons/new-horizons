@@ -16,7 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-
+using NewHorizons.Streaming;
 
 namespace NewHorizons.Handlers
 {
@@ -717,58 +717,22 @@ namespace NewHorizons.Handlers
                     clonedSectorHGT.transform.parent = go.transform;
                     clonedSectorHGT.transform.localPosition = Vector3.zero;
                     clonedSectorHGT.transform.localRotation = Quaternion.identity;
-                    var hgtSector = clonedSectorHGT.GetComponent<Sector>();
 
-                    var streamingGroupGO = hourglassTwinsFocal.GetComponentInChildren<StreamingGroup>().gameObject.Instantiate().Rename("StreamingGroup");
-                    streamingGroupGO.transform.parent = go.transform;
-                    streamingGroupGO.transform.localPosition = Vector3.zero;
-                    streamingGroupGO.transform.localRotation = Quaternion.identity;
+                    // Don't need this part
+                    GameObject.Destroy(clonedSectorHGT.GetComponentInChildren<SectorStreaming>().gameObject);
 
-                    // HGT streaming group is shared between the two so we have to move it onto the individual ones
-                    // Inefficient because being on ember twin will have ash twin assets load regardless of distance but whatever
-                    var sectorStreaming = clonedSectorHGT.GetComponentInChildren<SectorStreaming>();
-                    sectorStreaming._streamingGroup = streamingGroupGO.GetComponent<StreamingGroup>();
-                    sectorStreaming.SetSector(hgtSector);
+                    // Take the hourglass twins shader effect controller off the focal body so it can stay active
+                    var shaderController = hourglassTwinsFocal.GetComponentInChildren<HourglassTwinsShaderController>();
+                    if (shaderController != null) shaderController.transform.parent = null;
 
                     hourglassTwinsFocal.SetActive(false);
 
                     // Remove the drift tracker since its unneeded now
                     Component.Destroy(go.GetComponent<DriftTracker>());
 
-                    // Fix anything pointing to the original HGT sector
-                    foreach (var component in ao.GetComponentsInChildren<Component>(true))
-                    {
-                        if (component is ISectorGroup sectorGroup)
-                        {
-                            if (sectorGroup.GetSector()?._name == Sector.Name.HourglassTwins)
-                            {
-                                sectorGroup.SetSector(hgtSector);
-                            }
-                        }
-
-                        if (component is SectoredMonoBehaviour behaviour)
-                        {
-                            if (behaviour.GetSector()?._name == Sector.Name.HourglassTwins)
-                            {
-                                behaviour.SetSector(hgtSector);
-                            }
-                        }
-                    }
-
-                    // Sector tweaks
-                    if (aoName == AstroObject.Name.CaveTwin)
-                    {
-                        // Ember Twin hemisphere geometry only fully appears at 300 so we shrink the HGT sector to this size since it controls the proxy geometry
-                        hgtSector.GetComponent<SphereShape>().radius = 300;
-                    }
-
-
-                    // Update the parent sector
-                    ao.GetRootSector().SetParentSector(hgtSector);
-
-                    // Take the hourglass twins shader effect controller off the focal body so it can stay active
-                    var shaderController = hourglassTwinsFocal.GetComponentInChildren<HourglassTwinsShaderController>();
-                    if (shaderController != null) shaderController.transform.parent = null;
+                    // Fix sectors
+                    VanillaStreamingFix.UnparentSectorStreaming(ao.GetRootSector(), ao.gameObject, AstroObject.Name.HourglassTwins, Sector.Name.HourglassTwins);
+                    ao.GetRootSector().SetParentSector(null);
                 }
 
                 var owrb = go.GetComponent<OWRigidbody>();
