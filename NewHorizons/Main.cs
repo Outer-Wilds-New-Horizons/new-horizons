@@ -64,7 +64,7 @@ namespace NewHorizons
             {
                 return _currentStarSystem;
             }
-            private set
+            internal set
             {
                 _previousStarSystem = _currentStarSystem;
                 _currentStarSystem = value;
@@ -275,7 +275,7 @@ namespace NewHorizons
         {
             // Caches of GameObjects must always be cleared
             SearchUtilities.ClearCache();
-            ProxyHandler.OnSceneUnloaded();
+            ProxyHandler.ClearCache();
 
             // Caches of other assets only have to be cleared if we changed star systems
             if (CurrentStarSystem != _previousStarSystem)

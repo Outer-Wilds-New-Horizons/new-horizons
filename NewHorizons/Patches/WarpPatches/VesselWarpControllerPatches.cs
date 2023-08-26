@@ -63,7 +63,7 @@ namespace NewHorizons.Patches.WarpPatches
                 Locator.GetPauseCommandListener().AddPauseCommandLock();
                 if (canWarpToEye || canWarpToStarSystem && targetSystem == "EyeOfTheUniverse")
                 {
-                    Main.Instance._currentStarSystem = "EyeOfTheUniverse";
+                    Main.Instance.CurrentStarSystem = "EyeOfTheUniverse";
                     LoadManager.LoadSceneAsync(OWScene.EyeOfTheUniverse, false, LoadManager.FadeType.ToWhite);
                 }
                 else if (canWarpToStarSystem)

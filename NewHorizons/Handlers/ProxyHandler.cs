@@ -10,7 +10,7 @@ namespace NewHorizons.Handlers
         private static Dictionary<Transform, ProxyBody> _vanillaProxyBody = new();
         private static Dictionary<Transform, ProxyOrbiter> _vanillaProxyOrbiter = new();
 
-        public static void OnSceneUnloaded()
+        public static void ClearCache()
         {
             _proxies.Clear();
             _vanillaProxyBody.Clear();
