@@ -481,7 +481,7 @@ namespace NewHorizons
 
                     // Fix moon vanilla sector components (they were set to their primaries' sectors)
                     VanillaStreamingFix.UnparentSectorStreaming(SearchUtilities.Find("Moon_Body/Sector_THM").GetComponent<Sector>(), AstroObject.Name.TimberHearth);
-                    VanillaStreamingFix.UnparentSectorStreaming(SearchUtilities.Find("VolcanicMoon_Body/Sector_VM").GetComponent<Sector>(), AstroObject.Name.TimberHearth);
+                    VanillaStreamingFix.UnparentSectorStreaming(SearchUtilities.Find("VolcanicMoon_Body/Sector_VM").GetComponent<Sector>(), AstroObject.Name.BrittleHollow);
 
                     //Fix brittle hollow north pole projection platform
                     var northPoleSurface = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_NorthPoleSurface").GetComponent<Sector>();
