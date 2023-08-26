@@ -1204,6 +1204,13 @@
             "$ref": "#/definitions/QuantumGroupInfo"
           }
         },
+        "quantumLightning": {
+          "type": "array",
+          "description": "Puts quantum lightning",
+          "items": {
+            "$ref": "#/definitions/DetailInfo"
+          }
+        },
         "tornados": {
           "type": "array",
           "description": "Add tornadoes to this planet",
@@ -2039,6 +2046,10 @@
           "type": "boolean",
           "description": "Optional. Only used if type is `states` and `sequential` is true. If this is false, then after the last state has appeared, the object will no longer change state",
           "default": true
+        },
+        "lightning": {
+          "type": "boolean",
+          "description": "Flash of lightning and changes state"
         }
       }
     },
