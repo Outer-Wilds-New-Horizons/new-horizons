@@ -27,6 +27,12 @@ namespace NewHorizons.Components.Props
 
         public void Start()
         {
+            // We delay else some props don't get properly initialized before being disappeared
+            Delay.FireOnNextUpdate(LateStart);
+        }
+
+        private void LateStart()
+        {
             var currentConditionState = DialogueConditionManager.SharedInstance.GetConditionState(DialogueCondition);
 
             // Would just call OnDialogueConditionChanged but maybe theres an activator and deactivator for this object so we have to be more careful
