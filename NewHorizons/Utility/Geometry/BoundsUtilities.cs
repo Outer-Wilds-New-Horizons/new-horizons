@@ -5,7 +5,7 @@ namespace NewHorizons.Utility.Geometry;
 
 public static class BoundsUtilities
 {
-    struct BoxShapeReciever
+    private struct BoxShapeReciever
     {
         public MeshFilter meshFilter;
         public SkinnedMeshRenderer skinnedMeshRenderer;
