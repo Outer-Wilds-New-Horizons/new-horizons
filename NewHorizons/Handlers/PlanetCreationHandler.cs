@@ -747,7 +747,8 @@ namespace NewHorizons.Handlers
                 var aoType = ao.GetAstroObjectType();
 
                 // When updating orbits of the twins be sure the FocalBody is gone
-                if (aoName == AstroObject.Name.TowerTwin || aoName == AstroObject.Name.CaveTwin)
+                // Don't do it if it's already an NHAstroObject since that means this was already done
+                if (ao is not NHAstroObject && (aoName == AstroObject.Name.TowerTwin || aoName == AstroObject.Name.CaveTwin))
                 {
                     var hourglassTwinsFocal = SearchUtilities.Find("FocalBody");
 
