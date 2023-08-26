@@ -45,6 +45,7 @@ namespace NewHorizons.Builder.Props
             }
         }
 
+        /*
         public static void MakeQuantumLightning(GameObject planetGO, Sector sector, GameObject[] propsInGroup)
         {
             var lightning = DetailBuilder.Make(planetGO, sector, AssetBundleUtilities.EyeLightning.LoadAsset<GameObject>("Prefab_EYE_QuantumLightningObject"), new DetailInfo());
@@ -59,6 +60,7 @@ namespace NewHorizons.Builder.Props
             lightningController._models = new GameObject[] { prop };
             lightningController.enabled = true;
         }
+        */
 
         public static void MakeSocketGroup(GameObject planetGO, Sector sector, QuantumGroupInfo quantumGroup, GameObject[] propsInGroup)
         {
@@ -67,29 +69,17 @@ namespace NewHorizons.Builder.Props
             groupRoot.transform.localPosition = Vector3.zero;
             groupRoot.transform.localEulerAngles = Vector3.zero;
 
-            var sockets = new GameObject[quantumGroup.sockets.Length];
+            var sockets = new QuantumSocket[quantumGroup.sockets.Length];
             for (int i = 0; i < quantumGroup.sockets.Length; i++)
             {
                 var socketInfo = quantumGroup.sockets[i];
 
                 var socketGO = GeneralPropBuilder.MakeNew("Socket " + i, planetGO, sector, socketInfo, parentOverride: groupRoot.transform);
-                sockets[i] = socketGO;
+                var socket = socketGO.AddComponent<QuantumSocket>();
+                socket._lightSources = new Light[0];
+                sockets[i] = socket;
 
                 socketGO.SetActive(true);
-            }
-
-            if (quantumGroup.lightning)
-            {
-
-            }
-            else
-            {
-                foreach (var socketGO in sockets)
-                {
-                    var socket = socketGO.AddComponent<QuantumSocket>();
-                    socket._lightSources = new Light[0];
-                }
-
             }
 
             foreach (var prop in propsInGroup)
@@ -107,11 +97,6 @@ namespace NewHorizons.Builder.Props
                 if (prop.GetComponentInChildren<VisibilityTracker>() == null)
                 {
                     AddBoundsVisibility(prop);
-                }
-
-                if (quantumGroup.lightning)
-                {
-                    MakeQuantumLightning(planetGO, sector, prop);
                 }
 
                 prop.SetActive(true);
@@ -252,27 +237,5 @@ namespace NewHorizons.Builder.Props
         }
     }
 
-    public class BoxShapeFixer : MonoBehaviour
-    {
-        public BoxShape shape;
-        public MeshFilter meshFilter;
-        public SkinnedMeshRenderer skinnedMeshRenderer;
-
-        void Update()
-        {
-            if (meshFilter == null && skinnedMeshRenderer == null) { NHLogger.LogVerbose("Useless BoxShapeFixer, destroying"); DestroyImmediate(this); }
-
-            Mesh sharedMesh = null;
-            if (meshFilter != null) sharedMesh = meshFilter.sharedMesh;
-            if (skinnedMeshRenderer != null) sharedMesh = skinnedMeshRenderer.sharedMesh;
-
-            if (sharedMesh == null) return;
-            if (sharedMesh.bounds.size == Vector3.zero) return;
-
-            shape.size = sharedMesh.bounds.size;
-            shape.center = sharedMesh.bounds.center;
-
-            DestroyImmediate(this);
-        }
-    }
+    
 }
