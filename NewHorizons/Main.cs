@@ -64,16 +64,21 @@ namespace NewHorizons
             {
                 return _currentStarSystem;
             }
-            internal set
+            set
             {
-                _previousStarSystem = _currentStarSystem;
+                // Prevent invalid values
+                if (value != "SolarSystem" && value != "EyeOfTheUniverse" && !SystemDict.ContainsKey(value) && !BodyDict.ContainsKey(value))
+                {
+                    NHLogger.LogError($"System \"{value}\" does not exist!");
+                    _currentStarSystem = DefaultStarSystem;
+                }
                 _currentStarSystem = value;
             }
         }
-        private string _currentStarSystem = "SolarSystem";
+        private string _currentStarSystem; 
         private string _previousStarSystem;
 
-        public bool TimeLoopEnabled => SystemDict[CurrentStarSystem]?.Config?.enableTimeLoop ?? true;
+        public bool TimeLoopEnabled => CurrentStarSystem == null || (SystemDict[CurrentStarSystem]?.Config?.enableTimeLoop ?? true);
         public bool IsWarpingFromShip { get; private set; } = false;
         public bool IsWarpingFromVessel { get; private set; } = false;
         public bool IsWarpingBackToEye { get; internal set; } = false;
@@ -280,6 +285,7 @@ namespace NewHorizons
             // Caches of other assets only have to be cleared if we changed star systems
             if (CurrentStarSystem != _previousStarSystem)
             {
+                NHLogger.Log($"Changing star system from {_previousStarSystem} to {CurrentStarSystem} - Clearing system-specific caches!");
                 ImageUtilities.ClearCache();
                 AudioUtilities.ClearCache();
                 AssetBundleUtilities.ClearCache();
@@ -360,12 +366,6 @@ namespace NewHorizons
                 LoadManager.LoadSceneImmediate(OWScene.EyeOfTheUniverse);
                 OWTime.Unpause(OWTime.PauseType.Loading);
                 return;
-            }
-
-            if (!SystemDict.ContainsKey(CurrentStarSystem) || !BodyDict.ContainsKey(CurrentStarSystem))
-            {
-                NHLogger.LogError($"System \"{CurrentStarSystem}\" does not exist!");
-                CurrentStarSystem = DefaultStarSystem;
             }
 
             // Set time loop stuff if its enabled and if we're warping to a new place
@@ -576,6 +576,9 @@ namespace NewHorizons
             {
                 ResetCurrentStarSystem();
             }
+
+            // We only check previous when the scene unloads, and at that point current should be updated to the new system
+            _previousStarSystem = CurrentStarSystem;
         }
 
         // Had a bunch of separate unity things firing stuff when the system is ready so I moved it all to here

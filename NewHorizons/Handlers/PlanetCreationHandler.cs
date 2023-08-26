@@ -158,8 +158,20 @@ namespace NewHorizons.Handlers
             }
             catch (Exception)
             {
-                if (body?.Config?.name == null) NHLogger.LogError($"How is there no name for {body}");
-                else existingPlanet = SearchUtilities.Find(body.Config.name.Replace(" ", "") + "_Body", false);
+                if (body?.Config?.name == null)
+                {
+                    NHLogger.LogError($"How is there no name for {body}");
+                }
+                else
+                {
+                    existingPlanet = SearchUtilities.Find(body.Config.name.Replace(" ", "") + "_Body", false);
+                }
+            }
+
+            if (existingPlanet == null && body.Config.destroy)
+            {
+                NHLogger.LogError($"{body.Config.name} was meant to be destroyed, but was not found");
+                return false;
             }
 
             if (existingPlanet != null)

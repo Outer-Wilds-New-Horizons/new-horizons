@@ -134,13 +134,13 @@ namespace NewHorizons.Handlers
 
         public static void DisableAstroObject(AstroObject ao, List<AstroObject> toDisable = null)
         {
-            NHLogger.LogVerbose($"Removing [{ao.name}]");
-
             if (ao.gameObject == null || !ao.gameObject.activeInHierarchy)
             {
-                NHLogger.LogVerbose($"[{ao.name}] was already removed");
+                NHLogger.LogVerbose($"[{ao?.name}] was already removed");
                 return;
             }
+
+            NHLogger.LogVerbose($"Removing [{ao.name}]");
 
             toDisable ??= new List<AstroObject>();
 
@@ -222,6 +222,7 @@ namespace NewHorizons.Handlers
                 NHLogger.LogError($"Exception thrown when trying to delete bodies related to [{ao.name}]:\n{e}");
             }
 
+            DisableGameObject(ao.gameObject);
             RemoveProxy(ao);
         }
 
