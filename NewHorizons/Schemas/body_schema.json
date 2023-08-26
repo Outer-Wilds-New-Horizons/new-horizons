@@ -2017,6 +2017,7 @@
     },
     "QuantumGroupInfo": {
       "type": "object",
+      "x-deprecated": true,
       "additionalProperties": false,
       "properties": {
         "type": {
@@ -2046,10 +2047,6 @@
           "type": "boolean",
           "description": "Optional. Only used if type is `states` and `sequential` is true. If this is false, then after the last state has appeared, the object will no longer change state",
           "default": true
-        },
-        "lightning": {
-          "type": "boolean",
-          "description": "Flash of lightning and changes state"
         }
       }
     },
