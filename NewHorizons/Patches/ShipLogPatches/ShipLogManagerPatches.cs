@@ -2,7 +2,6 @@ using HarmonyLib;
 using NewHorizons.Builder.ShipLog;
 using NewHorizons.External;
 using NewHorizons.Handlers;
-using NewHorizons.OtherMods.AchievementsPlus;
 using NewHorizons.Utility.OWML;
 using System.Collections.Generic;
 using UnityEngine;
@@ -75,6 +74,7 @@ namespace NewHorizons.Patches.ShipLogPatches
         [HarmonyPatch(nameof(ShipLogManager.IsFactRevealed))]
         public static bool ShipLogManager_IsFactRevealed(ShipLogManager __instance, ref bool __result, string id)
         {
+            // normally throws an error on not found
             if (__instance._factDict != null && __instance._factDict.ContainsKey(id))
             {
                 __result = __instance._factDict[id].IsRevealed();
@@ -125,14 +125,6 @@ namespace NewHorizons.Patches.ShipLogPatches
                 EntryLocationBuilder.InitializeLocations();
                 return false;
             }
-        }
-
-        [HarmonyPostfix]
-        [HarmonyPatch(nameof(ShipLogManager.RevealFact))]
-        public static void ShipLogManager_RevealFact(string id)
-        {
-            StarChartHandler.OnRevealFact(id);
-            AchievementHandler.OnRevealFact();
         }
     }
 }

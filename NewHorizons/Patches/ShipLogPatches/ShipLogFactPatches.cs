@@ -1,5 +1,6 @@
 using HarmonyLib;
 using NewHorizons.Handlers;
+using NewHorizons.OtherMods.AchievementsPlus;
 
 namespace NewHorizons.Patches.ShipLogPatches
 {
@@ -19,6 +20,14 @@ namespace NewHorizons.Patches.ShipLogPatches
             {
                 return true;
             }
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(nameof(ShipLogFact.Reveal))]
+        public static void ShipLogFact_Reveal(ShipLogFact __instance)
+        {
+            StarChartHandler.OnRevealFact(__instance.GetID());
+            AchievementHandler.OnRevealFact();
         }
     }
 }
