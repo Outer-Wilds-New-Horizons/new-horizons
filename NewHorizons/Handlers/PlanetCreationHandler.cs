@@ -18,6 +18,7 @@ using System.Linq;
 using UnityEngine;
 using NewHorizons.Streaming;
 using Newtonsoft.Json;
+using NewHorizons.External.Modules.VariableSize;
 
 namespace NewHorizons.Handlers
 {
@@ -603,10 +604,6 @@ namespace NewHorizons.Handlers
                     {
                         remnantGO.SetActive(false);
                         starEvolutionController.SetStellarRemnant(remnantGO);
-                    }
-                    else
-                    {
-                        starEvolutionController.willExplode = false;
                     }
                 }
             }
