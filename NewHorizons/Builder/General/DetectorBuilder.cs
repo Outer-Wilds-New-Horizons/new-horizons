@@ -166,7 +166,7 @@ namespace NewHorizons.Builder.General
             var primaryGV = primary.GetGravityVolume();
             var secondaryGV = secondary.GetGravityVolume();
 
-            if (primaryGV._falloffType != secondaryGV._falloffType)
+            if (primaryGV && secondaryGV && primaryGV._falloffType != secondaryGV._falloffType)
             {
                 NHLogger.LogError($"Binaries must have the same gravity falloff! {primaryGV._falloffType} != {secondaryGV._falloffType}");
                 return;
