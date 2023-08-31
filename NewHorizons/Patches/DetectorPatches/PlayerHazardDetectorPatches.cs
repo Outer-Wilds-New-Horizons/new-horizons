@@ -1,7 +1,7 @@
 using HarmonyLib;
 using NewHorizons.Utility.OWML;
 
-namespace NewHorizons.Patches.PlayerPatches
+namespace NewHorizons.Patches.DetectorPatches
 {
     [HarmonyPatch(typeof(HazardDetector))]
     public static class PlayerHazardDetectorPatches
