@@ -210,12 +210,15 @@ namespace NewHorizons.Builder.Props
             }
             if (config.Props.quantumGroups != null)
             {
-                Dictionary<string, List<GameObject>> propsByGroup = new Dictionary<string, List<GameObject>>();
+                var propsByGroup = new Dictionary<string, List<GameObject>>();
                 foreach (var detail in config.Props.details)
                 {
                     if (detail.quantumGroupID != null)
                     {
-                        if (!propsByGroup.ContainsKey(detail.quantumGroupID)) propsByGroup[detail.quantumGroupID] = new List<GameObject>();
+                        if (!propsByGroup.ContainsKey(detail.quantumGroupID))
+                        {
+                            propsByGroup[detail.quantumGroupID] = new List<GameObject>();
+                        }
                         propsByGroup[detail.quantumGroupID].Add(DetailBuilder.GetSpawnedGameObjectByDetailInfo(detail));
                     }
                 }
@@ -227,11 +230,11 @@ namespace NewHorizons.Builder.Props
 
                     try
                     {
-                        QuantumBuilder.Make(go, sector, config, mod, quantumGroup, propsInGroup.ToArray());
+                        QuantumBuilder.Make(go, sector, quantumGroup, propsInGroup.ToArray());
                     }
                     catch (Exception ex)
                     {
-                        NHLogger.LogError($"Couldn't make quantum group \"{quantumGroup.id}\" for [{go.name}]:\n{ex}");
+                        NHLogger.LogError($"Couldn't make quantum group [{quantumGroup.id}] for [{go.name}]:\n{ex}");
                     }
                 }
             }
