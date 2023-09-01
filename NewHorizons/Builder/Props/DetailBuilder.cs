@@ -382,8 +382,9 @@ namespace NewHorizons.Builder.Props
             else if (component is NomaiInterfaceOrb orb)
             {
                 // detect planet gravity
+                // somehow Intervention has GetAttachedOWRigidbody as null sometimes, idk why
                 var gravityVolume = planetGO.GetAttachedOWRigidbody()?.GetAttachedGravityVolume();
-                orb.GetComponent<ConstantForceDetector>()._detectableFields = gravityVolume ? new ForceVolume[] { gravityVolume } : new ForceVolume[] { };
+                orb.GetComponent<ConstantForceDetector>()._detectableFields = gravityVolume ? new ForceVolume[] { gravityVolume } : new ForceVolume[0];
             }
 
             else if (component is VisionTorchItem torchItem)

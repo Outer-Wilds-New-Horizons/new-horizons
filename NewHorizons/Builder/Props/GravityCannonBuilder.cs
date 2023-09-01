@@ -137,7 +137,10 @@ namespace NewHorizons.Builder.Props
             orbBody._lastVelocity = velocity;
             orbBody._currentVelocity = velocity;
 
-            orb.GetComponent<ConstantForceDetector>()._detectableFields = new ForceVolume[] { planetGO.GetComponentInChildren<GravityVolume>() };
+            // detect planet gravity
+            // somehow Intervention has GetAttachedOWRigidbody as null sometimes, idk why
+            var gravityVolume = planetGO.GetAttachedOWRigidbody()?.GetAttachedGravityVolume();
+            orb.GetComponent<ConstantForceDetector>()._detectableFields = gravityVolume ? new ForceVolume[] { gravityVolume } : new ForceVolume[0];
 
             Delay.RunWhenAndInNUpdates(() =>
             {
