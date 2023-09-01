@@ -78,7 +78,7 @@ namespace NewHorizons.Builder.Props
 
             var groupRoot = new GameObject("Quantum States - " + quantumGroup.id);
             groupRoot.transform.parent = sector?.transform ?? go.transform;
-            groupRoot.transform.position = Vector3.zero;
+            groupRoot.transform.localPosition = Vector3.zero;
 
             var states = new List<QuantumState>();
             foreach(var prop in propsInGroup)
