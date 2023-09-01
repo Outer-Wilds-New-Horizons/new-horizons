@@ -70,9 +70,14 @@ namespace NewHorizons.Builder.Props
 
         public static void MakeStateGroup(GameObject go, Sector sector, PlanetConfig config, IModBehaviour mod, QuantumGroupInfo quantumGroup, GameObject[] propsInGroup)
         {
+            // NOTE: States groups need special consideration that socket groups don't
+            // this is because the base class QuantumObject (and this is important) IGNORES PICTURES TAKEN FROM OVER 100 METERS AWAY
+            // why does this affect states and not sockets? Well because sockets put the QuantumObject component (QuantumSocketedObject) on the actual props themselves
+            // while states put the QuantumObject component (NHMultiStateQuantumObject) on the parent, which is located at the center of the planet
+            // this means that the distance measured by QuantumObject is not accurate, since it's not measuring from the active prop, but from the center of the planet
             var groupRoot = new GameObject("Quantum States - " + quantumGroup.id);
             groupRoot.transform.parent = sector?.transform ?? go.transform;
-            groupRoot.transform.localPosition = Vector3.zero;
+            groupRoot.transform.position = Vector3.zero; ////propsInGroup.Select(prop => prop.transform.position).Aggregate(Vector3.zero, (runningTotal, position) => runningTotal + position) / propsInGroup.Length;
 
             var states = new List<QuantumState>();
             foreach(var prop in propsInGroup)
@@ -112,6 +117,7 @@ namespace NewHorizons.Builder.Props
             multiState._states = states.ToArray();
             multiState._prerequisiteObjects = new MultiStateQuantumObject[0]; // TODO: support this
             multiState._initialState = 0;
+            multiState._maxSnapshotLockRange = Mathf.Infinity;
             groupRoot.SetActive(true);
         }
 
