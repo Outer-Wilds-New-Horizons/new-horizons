@@ -42,15 +42,9 @@ namespace NewHorizons.Components.Quantum
             else
             {
 
-                // TODO: perform this roll for number of states, each time adding the selected state to the end of a list and removing it from the source list
-                // this gets us a randomly ordered list that respects states' probability
-                // then we can sequentially attempt collapsing to them, checking at each state whether the new state is invalid due to the player being able to see it, according to this:
-                //
-                // if (!((!IsPlayerEntangled()) ? (CheckIllumination() ? CheckVisibilityInstantly() : CheckPointInside(Locator.GetPlayerCamera().transform.position)) : CheckIllumination()))
-                // {
-                //     return true; // this is a valid state
-                // }
-                //
+                // Iterate over list of possible states to find a valid state to collapse to
+                // current state is excluded, and states are randomly ordered using a weighted random roll to prioritize states with higher probability
+                // NOTE: they aren't actually pre-sorted into this random order, this random ordering is done on the fly using RollState
 
                 List<int> indices = new List<int>();
                 for (var i = 0; i < _states.Length; i++) if (i != stateIndex) indices.Add(i);
