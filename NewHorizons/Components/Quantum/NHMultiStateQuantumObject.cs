@@ -6,7 +6,6 @@ namespace NewHorizons.Components.Quantum
 {
     public class NHMultiStateQuantumObject : MultiStateQuantumObject
     {
-
         public override bool ChangeQuantumState(bool skipInstantVisibilityCheck)
         {
             for (int i = 0; i < _prerequisiteObjects.Length; i++)
@@ -97,14 +96,10 @@ namespace NewHorizons.Components.Quantum
             var visibility = CheckVisibilityInstantly();
             var playerInside = CheckPointInside(Locator.GetPlayerCamera().transform.position);
 
-            var isVisible =
-                isPlayerEntangled
-                ? illumination
-                : 
-                    illumination
-                    ? visibility
-                    : playerInside
-                ;
+            var notEntangledCheck = illumination ? visibility : playerInside;
+            var isVisible = isPlayerEntangled ? illumination : notEntangledCheck;
+            // I think this is what the above two lines simplify to but I don't want to test this:
+            // illumination ? visibility || isPlayerEntangled : playerInside
 
             return !isVisible;
         }
