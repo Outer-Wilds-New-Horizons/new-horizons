@@ -86,6 +86,8 @@ public static class SchemaExporter
                     schema.Definitions["NomaiTextType"].EnumerationNames.Remove("Cairn");
                     schema.Definitions["NomaiTextType"].Enumeration.Remove("cairnVariant");
                     schema.Definitions["NomaiTextType"].EnumerationNames.Remove("CairnVariant");
+                    schema.Definitions["QuantumGroupInfo"].Enumeration.Remove("FailedValidation");
+                    schema.Definitions["QuantumGroupInfo"].EnumerationNames.Remove("FailedValidation");
                     break;
                 case "Star System Schema":
                     schema.Definitions["NomaiCoordinates"].Properties["x"].UniqueItems = true;
