@@ -11,6 +11,6 @@ namespace NewHorizons.External.Modules.Props.Quantum
 
         [EnumMember(Value = @"states")] States = 1,
 
-        FailedValidation = 10
+        [JsonIgnore] FailedValidation = 10
     }
 }
