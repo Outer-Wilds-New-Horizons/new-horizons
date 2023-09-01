@@ -75,9 +75,10 @@ namespace NewHorizons.Builder.Props
             // why does this affect states and not sockets? Well because sockets put the QuantumObject component (QuantumSocketedObject) on the actual props themselves
             // while states put the QuantumObject component (NHMultiStateQuantumObject) on the parent, which is located at the center of the planet
             // this means that the distance measured by QuantumObject is not accurate, since it's not measuring from the active prop, but from the center of the planet
+
             var groupRoot = new GameObject("Quantum States - " + quantumGroup.id);
             groupRoot.transform.parent = sector?.transform ?? go.transform;
-            groupRoot.transform.position = Vector3.zero; ////propsInGroup.Select(prop => prop.transform.position).Aggregate(Vector3.zero, (runningTotal, position) => runningTotal + position) / propsInGroup.Length;
+            groupRoot.transform.position = Vector3.zero;
 
             var states = new List<QuantumState>();
             foreach(var prop in propsInGroup)
