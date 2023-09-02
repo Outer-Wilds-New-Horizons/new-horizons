@@ -1094,7 +1094,6 @@
           "type": "number",
           "description": "The semi-major axis of the ellipse that is the body's orbit. For a circular orbit this is the radius.",
           "format": "float",
-          "default": 5000.0,
           "minimum": 0.0
         },
         "inclination": {
