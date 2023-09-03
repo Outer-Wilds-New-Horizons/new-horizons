@@ -118,7 +118,7 @@ namespace NewHorizons.Builder.Props
             multiState._states = states.ToArray();
             multiState._prerequisiteObjects = new MultiStateQuantumObject[0]; // TODO: support this
             multiState._initialState = 0;
-            // bound to the sector, as snapshot events are listened to then
+            // snapshot events arent listened to outside of the sector, so this isnt really infintie fortunately
             multiState._maxSnapshotLockRange = Mathf.Infinity; // TODO: maybe expose this at some point if it breaks a puzzle or something
             groupRoot.SetActive(true);
         }
