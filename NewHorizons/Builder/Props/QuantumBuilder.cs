@@ -12,7 +12,7 @@ using UnityEngine;
 // BUGS THAT REQUIRE REWRITING MOBIUS CODE
 // 1) FIXED!                              - MultiStateQuantumObjects don't check to see if the new state would be visible before choosing it
 // 2) FIXED? no longer supporting shuffle - QuantumShuffleObjects don't respect rotation, they set rotation to 0 on collapse
-// 3)                                     - MultiStateQuantumObjects don't get locked by pictures
+// 3) FIXED!                              - MultiStateQuantumObjects don't get locked by pictures
 
 // New features to support
 // 1) multiState._prerequisiteObjects
@@ -49,7 +49,7 @@ namespace NewHorizons.Builder.Props
                 var socket = GeneralPropBuilder.MakeNew("Socket " + i, go, sector, socketInfo, parentOverride: groupRoot.transform);
 
                 sockets[i] = socket.AddComponent<QuantumSocket>();
-                sockets[i]._lightSources = new Light[0];
+                sockets[i]._lightSources = new Light[0]; // TODO: make this customizable?
                 socket.SetActive(true);
             }
 
@@ -118,7 +118,8 @@ namespace NewHorizons.Builder.Props
             multiState._states = states.ToArray();
             multiState._prerequisiteObjects = new MultiStateQuantumObject[0]; // TODO: support this
             multiState._initialState = 0;
-            multiState._maxSnapshotLockRange = Mathf.Infinity;
+            // bound to the sector, as snapshot events are listened to then
+            multiState._maxSnapshotLockRange = Mathf.Infinity; // TODO: maybe expose this at some point if it breaks a puzzle or something
             groupRoot.SetActive(true);
         }
 
@@ -133,7 +134,7 @@ namespace NewHorizons.Builder.Props
 
             var shuffle = shuffleParent.AddComponent<QuantumShuffleObject>();
             shuffle._shuffledObjects = propsInGroup.Select(p => p.transform).ToArray();
-            shuffle.Awake(); // this doesn't get called on its own for some reason
+            shuffle.Awake(); // this doesn't get called on its own for some reason. what? how?
             
             AddBoundsVisibility(shuffleParent);
             shuffleParent.SetActive(true);
@@ -172,6 +173,7 @@ namespace NewHorizons.Builder.Props
             }
         }
 
+        // BUG: does this even work? since it runs before BoxShapeFixer can fix stuff and also doesnt care about skinned guys
         public static Bounds GetBoundsOfSelfAndChildMeshes(GameObject g)
         {
             var meshFilters = g.GetComponentsInChildren<MeshFilter>();
@@ -207,6 +209,10 @@ namespace NewHorizons.Builder.Props
         }
     }
 
+    /// <summary>
+    /// for some reason mesh bounds are wrong unless we wait a bit
+    /// so this script contiously checks everything until it is correct
+    /// </summary>
     public class BoxShapeFixer : MonoBehaviour
     {
         public BoxShape shape;

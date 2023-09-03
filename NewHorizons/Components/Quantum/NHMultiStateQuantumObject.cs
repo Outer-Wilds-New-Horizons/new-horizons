@@ -4,6 +4,10 @@ using UnityEngine;
 
 namespace NewHorizons.Components.Quantum
 {
+    /// <summary>
+    /// exists because MultiStateQuantumObject only checks visibility on the current state,
+    /// whereas this one also checks on each new state, in case they are bigger
+    /// </summary>
     public class NHMultiStateQuantumObject : MultiStateQuantumObject
     {
         public override bool ChangeQuantumState(bool skipInstantVisibilityCheck)
@@ -87,6 +91,7 @@ namespace NewHorizons.Components.Quantum
         {
             var isPlayerEntangled = IsPlayerEntangled();
             var illumination = CheckIllumination();
+            // faster than full CheckVisibility
             var visibility = CheckVisibilityInstantly();
             var playerInside = CheckPointInside(Locator.GetPlayerCamera().transform.position);
 
