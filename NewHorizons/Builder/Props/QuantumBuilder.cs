@@ -46,7 +46,7 @@ namespace NewHorizons.Builder.Props
             {
                 var socketInfo = quantumGroup.sockets[i];
 
-                var socket = GeneralPropBuilder.MakeNew("Socket " + i, go, sector, socketInfo, parentOverride: groupRoot.transform);
+                var socket = GeneralPropBuilder.MakeNew("Socket " + i, go, sector, socketInfo, defaultParent: groupRoot.transform);
 
                 sockets[i] = socket.AddComponent<QuantumSocket>();
                 sockets[i]._lightSources = new Light[0]; // TODO: make this customizable?
