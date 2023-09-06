@@ -8,17 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-
-// BUGS THAT REQUIRE REWRITING MOBIUS CODE
-// 1) FIXED!                              - MultiStateQuantumObjects don't check to see if the new state would be visible before choosing it
-// 2) FIXED? no longer supporting shuffle - QuantumShuffleObjects don't respect rotation, they set rotation to 0 on collapse
-// 3) FIXED!                              - MultiStateQuantumObjects don't get locked by pictures
-
-// New features to support
-// 1) multiState._prerequisiteObjects
-// 2) Socket groups that have an equal number of props and sockets
-// 3) Nice to have: socket groups that specify a filledSocketObject and an emptySocketObject (eg the archway in the giant's deep tower)
-
 namespace NewHorizons.Builder.Props
 {
     public static class QuantumBuilder
@@ -34,6 +23,8 @@ namespace NewHorizons.Builder.Props
             }
         }
         
+        // TODO: Socket groups that have an equal number of props and sockets
+        // Nice to have: socket groups that specify a filledSocketObject and an emptySocketObject (eg the archway in the giant's deep tower)
         public static void MakeSocketGroup(GameObject go, Sector sector, PlanetConfig config, IModBehaviour mod, QuantumGroupInfo quantumGroup, GameObject[] propsInGroup)
         {
             var groupRoot = new GameObject("Quantum Sockets - " + quantumGroup.id);
@@ -116,7 +107,7 @@ namespace NewHorizons.Builder.Props
             multiState._loop = quantumGroup.loop;
             multiState._sequential = quantumGroup.sequential;
             multiState._states = states.ToArray();
-            multiState._prerequisiteObjects = new MultiStateQuantumObject[0]; // TODO: support this
+            multiState._prerequisiteObjects = new MultiStateQuantumObject[0]; // TODO: _prerequisiteObjects
             multiState._initialState = 0;
             // snapshot events arent listened to outside of the sector, so fortunately this isnt really infinite 
             multiState._maxSnapshotLockRange = Mathf.Infinity; // TODO: maybe expose this at some point if it breaks a puzzle or something
@@ -173,7 +164,7 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        // BUG: does this even work? since it runs before BoxShapeFixer can fix stuff and also doesnt care about skinned guys
+        // BUG: ignores skinned guys. this coincidentally makes it work without BoxShapeFixer
         public static Bounds GetBoundsOfSelfAndChildMeshes(GameObject g)
         {
             var meshFilters = g.GetComponentsInChildren<MeshFilter>();
@@ -212,6 +203,9 @@ namespace NewHorizons.Builder.Props
     /// <summary>
     /// for some reason mesh bounds are wrong unless we wait a bit
     /// so this script contiously checks everything until it is correct
+    ///
+    /// this actually only seems to be a problem with skinned renderers. normal ones work fine
+    /// TODO: at some point narrow this down to just skinned, instead of doing everything and checking every frame
     /// </summary>
     public class BoxShapeFixer : MonoBehaviour
     {
