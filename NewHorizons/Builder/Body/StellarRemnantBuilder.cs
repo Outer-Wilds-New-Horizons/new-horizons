@@ -43,6 +43,11 @@ namespace NewHorizons.Builder.Body
                         MakeNeutronStar(go, sector, mod, star.Config.Star);
 
                         break;
+                    case StellarRemnantType.Pulsar:
+                        MakeNeutronStar(go, sector, mod, star.Config.Star);
+                        // TODO: add jets, up rotation speed (use a RotateTransform on the star instead of changing sidereal period)
+
+                        break;
                     case StellarRemnantType.BlackHole:
                         MakeBlackhole(go, sector, star.Config.Star);
 
@@ -140,6 +145,8 @@ namespace NewHorizons.Builder.Body
                 case StellarRemnantType.WhiteDwarf:
                     return MakeWhiteDwarf(planet, null, mod, progenitor, proxy);
                 case StellarRemnantType.NeutronStar:
+                    return MakeNeutronStar(planet, null, mod, progenitor, proxy);
+                case StellarRemnantType.Pulsar:
                     return MakeNeutronStar(planet, null, mod, progenitor, proxy);
                 case StellarRemnantType.BlackHole:
                     return MakeBlackhole(planet, null, progenitor, proxy);
