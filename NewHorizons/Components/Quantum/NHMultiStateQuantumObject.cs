@@ -94,6 +94,7 @@ namespace NewHorizons.Components.Quantum
             // faster than full CheckVisibility
             var visibility = CheckVisibilityInstantly();
             var playerInside = CheckPointInside(Locator.GetPlayerCamera().transform.position);
+            // does not check probe, but thats okay
 
             var notEntangledCheck = illumination ? visibility : playerInside;
             var isVisible = isPlayerEntangled ? illumination : notEntangledCheck;
