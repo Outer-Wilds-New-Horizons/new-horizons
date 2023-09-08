@@ -169,7 +169,7 @@ namespace NewHorizons.Handlers
             var attachWarpExitToVessel = system.Config.Vessel?.warpExit?.attachToVessel ?? false;
             var warpExitParent = vesselWarpController._targetWarpPlatform.transform.parent;
 
-            var warpExit = GeneralPropBuilder.MakeFromExisting(vesselWarpController._targetWarpPlatform.gameObject, planetGO, null, system.Config.Vessel?.warpExit, parentOverride: attachWarpExitToVessel ? warpExitParent : null);
+            var warpExit = GeneralPropBuilder.MakeFromExisting(vesselWarpController._targetWarpPlatform.gameObject, planetGO, null, system.Config.Vessel?.warpExit, defaultParent: attachWarpExitToVessel ? warpExitParent : null);
             if (attachWarpExitToVessel)
             {
                 warpExit.transform.parent = warpExitParent;

@@ -4,9 +4,12 @@ using UnityEngine;
 
 namespace NewHorizons.Components.Quantum
 {
+    /// <summary>
+    /// exists because MultiStateQuantumObject only checks visibility on the current state,
+    /// whereas this one also checks on each new state, in case they are bigger
+    /// </summary>
     public class NHMultiStateQuantumObject : MultiStateQuantumObject
     {
-
         public override bool ChangeQuantumState(bool skipInstantVisibilityCheck)
         {
             for (int i = 0; i < _prerequisiteObjects.Length; i++)
@@ -43,15 +46,9 @@ namespace NewHorizons.Components.Quantum
             else
             {
 
-                // TODO: perform this roll for number of states, each time adding the selected state to the end of a list and removing it from the source list
-                // this gets us a randomly ordered list that respects states' probability
-                // then we can sequentially attempt collapsing to them, checking at each state whether the new state is invalid due to the player being able to see it, according to this:
-                //
-                // if (!((!IsPlayerEntangled()) ? (CheckIllumination() ? CheckVisibilityInstantly() : CheckPointInside(Locator.GetPlayerCamera().transform.position)) : CheckIllumination()))
-                // {
-                //     return true; // this is a valid state
-                // }
-                //
+                // Iterate over list of possible states to find a valid state to collapse to
+                // current state is excluded, and states are randomly ordered using a weighted random roll to prioritize states with higher probability
+                // NOTE: they aren't actually pre-sorted into this random order, this random ordering is done on the fly using RollState
 
                 List<int> indices = new List<int>();
                 for (var i = 0; i < _states.Length; i++) if (i != stateIndex) indices.Add(i);
@@ -94,17 +91,15 @@ namespace NewHorizons.Components.Quantum
         {
             var isPlayerEntangled = IsPlayerEntangled();
             var illumination = CheckIllumination();
+            // faster than full CheckVisibility
             var visibility = CheckVisibilityInstantly();
             var playerInside = CheckPointInside(Locator.GetPlayerCamera().transform.position);
+            // does not check probe, but thats okay
 
-            var isVisible =
-                isPlayerEntangled
-                ? illumination
-                : 
-                    illumination
-                    ? visibility
-                    : playerInside
-                ;
+            var notEntangledCheck = illumination ? visibility : playerInside;
+            var isVisible = isPlayerEntangled ? illumination : notEntangledCheck;
+            // I think this is what the above two lines simplify to but I don't want to test this:
+            // illumination ? visibility || isPlayerEntangled : playerInside
 
             return !isVisible;
         }

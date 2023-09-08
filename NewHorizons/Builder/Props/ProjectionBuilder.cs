@@ -214,7 +214,7 @@ namespace NewHorizons.Builder.Props
             // The number of slides is unlimited, 15 is only for texturing the actual slide reel item. This is not a slide reel item
             var slides = info.slides;
             var slidesCount = slides.Length;
-            var slideCollection = new SlideCollection(slidesCount);
+            var slideCollection = new SlideCollection(slidesCount); // TODO: uh I think that info.slides[i].playTimeDuration is not being read here... note to self for when I implement support for that: 0.7 is what to default to if playTimeDuration turns out to be 0
 
             var imageLoader = AddAsyncLoader(g, mod, info.slides, ref slideCollection);
             imageLoader.imageLoadedEvent.AddListener((Texture2D tex, int index) => { slideCollection.slides[index]._image = tex; });

@@ -2047,13 +2047,11 @@
       "description": "",
       "x-enumNames": [
         "Sockets",
-        "States",
-        "FailedValidation"
+        "States"
       ],
       "enum": [
         "sockets",
-        "states",
-        "FailedValidation"
+        "states"
       ]
     },
     "QuantumSocketInfo": {
@@ -3509,6 +3507,7 @@
         "Default",
         "WhiteDwarf",
         "NeutronStar",
+        "Pulsar",
         "BlackHole",
         "Custom"
       ],
@@ -3516,6 +3515,7 @@
         "default",
         "whiteDwarf",
         "neutronStar",
+        "pulsar",
         "blackHole",
         "custom"
       ]
