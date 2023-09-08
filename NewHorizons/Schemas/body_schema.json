@@ -3507,6 +3507,7 @@
         "Default",
         "WhiteDwarf",
         "NeutronStar",
+        "Pulsar",
         "BlackHole",
         "Custom"
       ],
@@ -3514,6 +3515,7 @@
         "default",
         "whiteDwarf",
         "neutronStar",
+        "pulsar",
         "blackHole",
         "custom"
       ]
