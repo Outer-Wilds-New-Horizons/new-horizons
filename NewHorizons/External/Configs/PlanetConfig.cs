@@ -459,6 +459,9 @@ namespace NewHorizons.External.Configs
             if (Star != null)
             {
                 if (!Star.goSupernova) Star.stellarDeathType = StellarDeathType.None;
+
+                // Gave up on supporting pulsars
+                if (Star.stellarRemnantType == StellarRemnantType.Pulsar) Star.stellarRemnantType = StellarRemnantType.NeutronStar;
             }
 
             // Signals no longer use two different variables for audio
