@@ -124,7 +124,6 @@ namespace NewHorizons.Builder.Atmosphere
 
         private static (float, float) GetDefaultHeightRange(PlanetConfig config)
         {
-            // Determining default values for min/max height
             var minHeight = 0f;
 
             if (config.HeightMap?.minHeight != null)
@@ -146,6 +145,7 @@ namespace NewHorizons.Builder.Atmosphere
             }
 
             var maxHeight = 100f;
+
             if (config.Atmosphere != null)
             {
                 if (config.Atmosphere.clouds?.outerCloudRadius != null)
@@ -157,9 +157,9 @@ namespace NewHorizons.Builder.Atmosphere
                     maxHeight = config.Atmosphere.size;
                 }
             }
-            else if (config.Base != null)
+            else if (minHeight != 0f)
             {
-                maxHeight = config.Base.surfaceSize * 2f;
+                maxHeight = minHeight * 2f;
             }
 
             return (minHeight, maxHeight);
