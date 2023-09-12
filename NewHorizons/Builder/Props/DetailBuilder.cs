@@ -339,10 +339,12 @@ namespace NewHorizons.Builder.Props
                     component.gameObject.layer = Layer.IgnoreSun;
                 }
             }
-            // I forget why this is here
+            // Else it spams a ton of NRE, happens when you try to put a non-hostile Ghostbird 
             else if (component is GhostIK or GhostEffects)
             {
-                UnityEngine.Object.DestroyImmediate(component);
+                // For when somebody (pikmin) makes a Unity ghost bird
+                if (component.transform.parent.GetComponent<GhostBrain>() == null)
+                    UnityEngine.Object.DestroyImmediate(component);
                 return;
             }
             else if (component is DarkMatterVolume)
