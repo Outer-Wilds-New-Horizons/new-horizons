@@ -235,7 +235,11 @@ namespace NewHorizons.Builder.Props
             // account for scale (this will fix the issue with screen fog caused by scaled down nodes)
 
             // Set the main scale
-            brambleNode.transform.localScale = Vector3.one * config.scale;
+            // Can't just use localScale of root, that makes the preview fog lights get pulled in too much
+            foreach(Transform child in brambleNode.transform)
+            {
+                child.localScale = Vector3.one * config.scale;
+            }
             innerFogWarpVolume._warpRadius *= config.scale;
             innerFogWarpVolume._exitRadius *= config.scale;
 
