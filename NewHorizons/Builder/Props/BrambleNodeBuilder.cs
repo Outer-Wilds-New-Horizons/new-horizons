@@ -263,7 +263,7 @@ namespace NewHorizons.Builder.Props
                 // (it's also located on a different child path, so the below FindChild calls wouldn't work)
                 // Default size is 70
                 var fog = brambleNode.FindChild("Effects/InnerWarpFogSphere");
-                fog.transform.localScale = Vector3.one * config.scale * 70f;
+                //fog.transform.localScale = Vector3.one * config.scale * 70f; This is already scaled by its parent, don't know why we scale it again
 
                 // Copy shared material to not be shared
                 var fogRenderer = fog.GetComponent<MeshRenderer>();
