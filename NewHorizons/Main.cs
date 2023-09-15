@@ -196,6 +196,7 @@ namespace NewHorizons
                 }
             };
 
+            // why is this false when called in Start
             if (resetTranslation)
             {
                 TranslationHandler.ClearTables();

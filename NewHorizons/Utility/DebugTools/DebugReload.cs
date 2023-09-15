@@ -1,4 +1,5 @@
 using NewHorizons.Handlers;
+using NewHorizons.Utility.Files;
 using NewHorizons.Utility.OWML;
 using OWML.Common;
 using OWML.Common.Menus;
@@ -48,6 +49,11 @@ namespace NewHorizons.Utility.DebugTools
             SearchUtilities.Find("/PauseMenu/PauseMenuManagers").GetComponent<PauseMenuManager>().OnSkipToNextTimeLoop();
 
             Main.Instance.ChangeCurrentStarSystem(Main.Instance.CurrentStarSystem);
+            
+            NHLogger.Log($"Reloading star system {Main.Instance.CurrentStarSystem} - Clearing system-specific caches!");
+            ImageUtilities.ClearCache();
+            AudioUtilities.ClearCache();
+            AssetBundleUtilities.ClearCache();
 
             Main.SecondsElapsedInLoop = -1f;
         }
