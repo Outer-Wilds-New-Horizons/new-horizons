@@ -48,12 +48,8 @@ namespace NewHorizons.Utility.DebugTools
 
             SearchUtilities.Find("/PauseMenu/PauseMenuManagers").GetComponent<PauseMenuManager>().OnSkipToNextTimeLoop();
 
+            Main.Instance.ForceClearCaches = true;
             Main.Instance.ChangeCurrentStarSystem(Main.Instance.CurrentStarSystem);
-            
-            NHLogger.Log($"Reloading configs for star system {Main.Instance.CurrentStarSystem} - Clearing system-specific caches!");
-            ImageUtilities.ClearCache();
-            AudioUtilities.ClearCache();
-            AssetBundleUtilities.ClearCache();
 
             Main.SecondsElapsedInLoop = -1f;
         }

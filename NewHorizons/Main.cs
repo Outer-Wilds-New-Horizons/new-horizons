@@ -97,6 +97,7 @@ namespace NewHorizons
 
         private bool _playerAwake;
         public bool PlayerSpawned { get; set; }
+        public bool ForceClearCaches { get; set; } // for reloading configs
 
         public ShipWarpController ShipWarpController { get; private set; }
 
@@ -196,7 +197,6 @@ namespace NewHorizons
                 }
             };
 
-            // why is this false when called in Start
             if (resetTranslation)
             {
                 TranslationHandler.ClearTables();
@@ -289,8 +289,10 @@ namespace NewHorizons
             EnumUtilities.ClearCache();
 
             // Caches of other assets only have to be cleared if we changed star systems
-            if (CurrentStarSystem != _previousStarSystem)
+            if (ForceClearCaches || CurrentStarSystem != _previousStarSystem)
             {
+                ForceClearCaches = false;
+                
                 NHLogger.Log($"Changing star system from {_previousStarSystem} to {CurrentStarSystem} - Clearing system-specific caches!");
                 ImageUtilities.ClearCache();
                 AudioUtilities.ClearCache();
