@@ -50,7 +50,7 @@ namespace NewHorizons.Utility.DebugTools
 
             Main.Instance.ChangeCurrentStarSystem(Main.Instance.CurrentStarSystem);
             
-            NHLogger.Log($"Reloading star system {Main.Instance.CurrentStarSystem} - Clearing system-specific caches!");
+            NHLogger.Log($"Reloading configs for star system {Main.Instance.CurrentStarSystem} - Clearing system-specific caches!");
             ImageUtilities.ClearCache();
             AudioUtilities.ClearCache();
             AssetBundleUtilities.ClearCache();
