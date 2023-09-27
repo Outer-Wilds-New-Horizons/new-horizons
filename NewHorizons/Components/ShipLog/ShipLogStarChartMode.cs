@@ -54,20 +54,7 @@ namespace NewHorizons.Components.ShipLog
             _nextCardIndex = 0;
             foreach (var starSystem in Main.SystemDict.Keys)
             {
-                // Get rid of the warp option for the current system
-                if (starSystem == Main.Instance.CurrentStarSystem) continue;
-
-                var config = Main.SystemDict[starSystem];
-
-                // Conditions to allow warping into that system (either no planets (stock system) or has a ship spawn point)
-                var flag = false;
-                if (starSystem.Equals("SolarSystem")) flag = true;
-                else if (starSystem.Equals("EyeOfTheUniverse")) flag = false;
-                else if (config.Spawn?.shipSpawn != null) flag = true;
-
-                if (!StarChartHandler.HasUnlockedSystem(starSystem)) continue;
-
-                if (flag && Main.SystemDict[starSystem].Config.canEnterViaWarpDrive)
+                if (StarChartHandler.CanWarpToSystem(starSystem))
                 {
                     AddSystemCard(starSystem);
                 }

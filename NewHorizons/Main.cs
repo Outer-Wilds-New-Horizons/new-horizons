@@ -467,7 +467,10 @@ namespace NewHorizons
                         ShipWarpController = SearchUtilities.Find("Ship_Body").AddComponent<ShipWarpController>();
                         ShipWarpController.Init();
                     }
-                    if (HasWarpDrive == true) EnableWarpDrive();
+                    if (HasWarpDrive == true)
+                    {
+                        EnableWarpDrive();
+                    }
 
                     var shouldWarpInFromShip = IsWarpingFromShip && ShipWarpController != null;
                     var shouldWarpInFromVessel = IsWarpingFromVessel && VesselWarpHandler.VesselSpawnPoint != null;
@@ -490,6 +493,13 @@ namespace NewHorizons
                     var northPoleSurface = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_NorthPoleSurface").GetComponent<Sector>();
                     var remoteViewer = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_NorthPoleSurface/Interactables_NorthPoleSurface/LowBuilding/Prefab_NOM_RemoteViewer").GetComponent<NomaiRemoteCameraPlatform>();
                     remoteViewer._visualSector = northPoleSurface;
+
+                    // We are in a custom system on the first loop -> The time loop isn't active, that's not very good
+                    // TimeLoop uses the launch codes condition to know if the loop is active or not
+                    if (CurrentStarSystem != "SolarSystem" && PlayerData.LoadLoopCount() == 1)
+                    {
+                        PlayerData.SetPersistentCondition("LAUNCH_CODES_GIVEN", true);
+                    }
                 }
                 else if (isEyeOfTheUniverse)
                 {
@@ -544,13 +554,6 @@ namespace NewHorizons
                 ResetCurrentStarSystem();
             }
 
-            // We are in a custom system on the first loop -> The time loop isn't active, that's not very good
-            // TimeLoop uses the launch codes condition to know if they loop is active or not
-            if (CurrentStarSystem != "SolarSystem" && CurrentStarSystem != "EyeOfTheUniverse" && PlayerData.LoadLoopCount() == 1)
-            {
-                PlayerData.SetPersistentCondition("LAUNCH_CODES_GIVEN", true);
-            }
-
             // We only check previous when the scene unloads, and at that point current should be updated to the new system
             NHLogger.LogVerbose($"Set the previous system to {CurrentStarSystem}");
             _previousStarSystem = CurrentStarSystem;
@@ -586,7 +589,14 @@ namespace NewHorizons
         public void EnableWarpDrive()
         {
             NHLogger.LogVerbose("Setting up warp drive");
-            PlanetCreationHandler.LoadBody(LoadConfig(this, "Assets/WarpDriveConfig.json"));
+
+            // In weird edge case when starting in another system on a new expedition, don't want it to briefly pop up during warp
+            if (!IsWarpingFromShip)
+            {
+                // This is the dialogue that tells them the ship log has a warp drive feature
+                PlanetCreationHandler.LoadBody(LoadConfig(this, "Assets/WarpDriveConfig.json"));
+            }
+
             HasWarpDrive = true;
         }
 
