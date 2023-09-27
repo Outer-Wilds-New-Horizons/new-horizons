@@ -544,6 +544,13 @@ namespace NewHorizons
                 ResetCurrentStarSystem();
             }
 
+            // We are in a custom system on the first loop -> The time loop isn't active, that's not very good
+            // TimeLoop uses the launch codes condition to know if they loop is active or not
+            if (CurrentStarSystem != "SolarSystem" && CurrentStarSystem != "EyeOfTheUniverse" && PlayerData.LoadLoopCount() == 1)
+            {
+                PlayerData.SetPersistentCondition("LAUNCH_CODES_GIVEN", true);
+            }
+
             // We only check previous when the scene unloads, and at that point current should be updated to the new system
             NHLogger.LogVerbose($"Set the previous system to {CurrentStarSystem}");
             _previousStarSystem = CurrentStarSystem;
