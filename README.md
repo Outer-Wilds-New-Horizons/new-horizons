@@ -76,6 +76,7 @@ Translation credits:
 - German: Nolram
 - Spanish: Ciborgm9, Ink, GayCoffee
 - French: xen
+- Japanese: TRSasasusu
 
 New Horizons was based off [Marshmallow](https://github.com/misternebula/Marshmallow) was made by:
 - [_nebula](https://github.com/misternebula)
