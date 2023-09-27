@@ -339,12 +339,6 @@ namespace NewHorizons.Builder.Props
                     component.gameObject.layer = Layer.IgnoreSun;
                 }
             }
-            // I forget why this is here
-            else if (component is GhostIK or GhostEffects)
-            {
-                UnityEngine.Object.DestroyImmediate(component);
-                return;
-            }
             else if (component is DarkMatterVolume)
             {
                 var probeVisuals = component.gameObject.transform.Find("ProbeVisuals");
@@ -400,8 +394,15 @@ namespace NewHorizons.Builder.Props
             else if (component is Renderer renderer && component.gameObject.GetComponent<ElectricityEffect>() == null) renderer.enabled = true;
             else if(component is Shape shape) shape.enabled = true;
 
-            // If it's not a moving anglerfish make sure the anim controller is regular
-            else if(component is AnglerfishAnimController && component.transform.parent.GetComponent<AnglerfishController>() == null) //Manual parent chain so we can find inactive
+            // If it's not a moving ghostbird (ie Prefab_IP_GhostBird/Ghostbird_IP_ANIM) make sure it doesnt spam NREs
+            // Manual parent chain so we can find inactive
+            else if (component is GhostIK or GhostEffects && component.transform.parent.GetComponent<GhostBrain>() == null)
+            {
+                UnityEngine.Object.DestroyImmediate(component);
+            }
+            // If it's not a moving anglerfish (ie Anglerfish_Body/Beast_Anglerfish) make sure the anim controller is regular
+            // Manual parent chain so we can find inactive
+            else if(component is AnglerfishAnimController && component.transform.parent.GetComponent<AnglerfishController>() == null)
             {
                 component.gameObject.AddComponent<AnglerAnimFixer>();
             }
