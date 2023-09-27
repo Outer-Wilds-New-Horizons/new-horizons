@@ -575,7 +575,9 @@ namespace NewHorizons
 
                 // ShipWarpController will handle the invulnerability otherwise
                 if (!shouldWarpInFromShip)
+                {
                     Delay.FireOnNextUpdate(() => InvulnerabilityHandler.MakeInvulnerable(false));
+                }
 
                 Locator.GetPlayerBody().gameObject.AddComponent<DebugRaycaster>();
                 Locator.GetPlayerBody().gameObject.AddComponent<DebugPropPlacer>();
