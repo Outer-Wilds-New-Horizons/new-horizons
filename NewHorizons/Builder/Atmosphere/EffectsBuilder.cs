@@ -2,6 +2,7 @@ using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using UnityEngine;
+
 namespace NewHorizons.Builder.Atmosphere
 {
     public static class EffectsBuilder
@@ -55,29 +56,19 @@ namespace NewHorizons.Builder.Atmosphere
         {
             InitPrefabs();
 
-            GameObject effectsGO = new GameObject("Effects");
+            var effectsGO = new GameObject("Effects");
             effectsGO.SetActive(false);
             effectsGO.transform.parent = sector?.transform ?? planetGO.transform;
             effectsGO.transform.position = planetGO.transform.position;
 
-            SectorCullGroup SCG = effectsGO.AddComponent<SectorCullGroup>();
-            SCG._sector = sector;
-            SCG._particleSystemSuspendMode = CullGroup.ParticleSystemSuspendMode.Stop;
-            SCG._occlusionCulling = false;
-            SCG._dynamicCullingBounds = false;
-            SCG._waitForStreaming = false;
+            var sectorCullGroup = effectsGO.AddComponent<SectorCullGroup>();
+            sectorCullGroup._sector = sector;
+            sectorCullGroup._particleSystemSuspendMode = CullGroup.ParticleSystemSuspendMode.Stop;
+            sectorCullGroup._occlusionCulling = false;
+            sectorCullGroup._dynamicCullingBounds = false;
+            sectorCullGroup._waitForStreaming = false;
 
-            var minHeight = config.Base.surfaceSize;
-            if (config.HeightMap?.minHeight != null)
-            {
-                if (config.Water?.size >= config.HeightMap.minHeight) minHeight = config.Water.size; // use sea level if its higher
-                else minHeight = config.HeightMap.minHeight;
-            }
-            else if (config.Water?.size != null) minHeight = config.Water.size;
-            else if (config.Lava?.size != null) minHeight = config.Lava.size;
-
-            var maxHeight = config.Atmosphere.size;
-            if (config.Atmosphere.clouds?.outerCloudRadius != null) maxHeight = config.Atmosphere.clouds.outerCloudRadius;
+            var (minHeight, maxHeight) = GetDefaultHeightRange(config);
 
             foreach (var particleField in config.ParticleFields)
             {
@@ -129,6 +120,49 @@ namespace NewHorizons.Builder.Atmosphere
                 ParticleFieldModule.ParticleFieldType.Current => _currentEmitterPrefab,
                 _ => null,
             };
+        }
+
+        private static (float, float) GetDefaultHeightRange(PlanetConfig config)
+        {
+            var minHeight = 0f;
+
+            if (config.HeightMap?.minHeight != null)
+            {
+                if (config.Water?.size >= config.HeightMap.minHeight) minHeight = config.Water.size; // use sea level if its higher
+                else minHeight = config.HeightMap.minHeight;
+            }
+            else if (config.Water?.size != null)
+            {
+                minHeight = config.Water.size;
+            }
+            else if (config.Lava?.size != null)
+            {
+                minHeight = config.Lava.size;
+            }
+            else if (config.Base != null)
+            {
+                minHeight = config.Base.surfaceSize;
+            }
+
+            var maxHeight = 100f;
+
+            if (config.Atmosphere != null)
+            {
+                if (config.Atmosphere.clouds?.outerCloudRadius != null)
+                {
+                    maxHeight = config.Atmosphere.clouds.outerCloudRadius;
+                }
+                else
+                {
+                    maxHeight = config.Atmosphere.size;
+                }
+            }
+            else if (minHeight != 0f)
+            {
+                maxHeight = minHeight * 2f;
+            }
+
+            return (minHeight, maxHeight);
         }
     }
 }

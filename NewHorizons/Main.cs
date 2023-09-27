@@ -97,6 +97,7 @@ namespace NewHorizons
 
         private bool _playerAwake;
         public bool PlayerSpawned { get; set; }
+        public bool ForceClearCaches { get; set; } // for reloading configs
 
         public ShipWarpController ShipWarpController { get; private set; }
 
@@ -288,8 +289,10 @@ namespace NewHorizons
             EnumUtilities.ClearCache();
 
             // Caches of other assets only have to be cleared if we changed star systems
-            if (CurrentStarSystem != _previousStarSystem)
+            if (ForceClearCaches || CurrentStarSystem != _previousStarSystem)
             {
+                ForceClearCaches = false;
+                
                 NHLogger.Log($"Changing star system from {_previousStarSystem} to {CurrentStarSystem} - Clearing system-specific caches!");
                 ImageUtilities.ClearCache();
                 AudioUtilities.ClearCache();
@@ -467,7 +470,10 @@ namespace NewHorizons
                         ShipWarpController = SearchUtilities.Find("Ship_Body").AddComponent<ShipWarpController>();
                         ShipWarpController.Init();
                     }
-                    if (HasWarpDrive == true) EnableWarpDrive();
+                    if (HasWarpDrive == true)
+                    {
+                        EnableWarpDrive();
+                    }
 
                     var shouldWarpInFromShip = IsWarpingFromShip && ShipWarpController != null;
                     var shouldWarpInFromVessel = IsWarpingFromVessel && VesselWarpHandler.VesselSpawnPoint != null;
@@ -490,6 +496,13 @@ namespace NewHorizons
                     var northPoleSurface = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_NorthPoleSurface").GetComponent<Sector>();
                     var remoteViewer = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_NorthPoleSurface/Interactables_NorthPoleSurface/LowBuilding/Prefab_NOM_RemoteViewer").GetComponent<NomaiRemoteCameraPlatform>();
                     remoteViewer._visualSector = northPoleSurface;
+
+                    // We are in a custom system on the first loop -> The time loop isn't active, that's not very good
+                    // TimeLoop uses the launch codes condition to know if the loop is active or not
+                    if (CurrentStarSystem != "SolarSystem" && PlayerData.LoadLoopCount() == 1)
+                    {
+                        PlayerData.SetPersistentCondition("LAUNCH_CODES_GIVEN", true);
+                    }
                 }
                 else if (isEyeOfTheUniverse)
                 {
@@ -579,7 +592,14 @@ namespace NewHorizons
         public void EnableWarpDrive()
         {
             NHLogger.LogVerbose("Setting up warp drive");
-            PlanetCreationHandler.LoadBody(LoadConfig(this, "Assets/WarpDriveConfig.json"));
+
+            // In weird edge case when starting in another system on a new expedition, don't want it to briefly pop up during warp
+            if (!IsWarpingFromShip)
+            {
+                // This is the dialogue that tells them the ship log has a warp drive feature
+                PlanetCreationHandler.LoadBody(LoadConfig(this, "Assets/WarpDriveConfig.json"));
+            }
+
             HasWarpDrive = true;
         }
 
