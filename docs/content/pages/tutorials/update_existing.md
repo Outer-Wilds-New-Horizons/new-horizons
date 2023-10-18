@@ -5,9 +5,29 @@ Sort_Priority: 85
 
 # Update Existing Planets
 
-Similar to above, make a config where "Name" is the name of the planet. The name should be able to just match their in-game english names, however if you encounter any issues with that here are the in-code names for planets that are guaranteed to work: `SUN`, `CAVE_TWIN` (Ember Twin), `TOWER_TWIN` (Ash Twin), `TIMBER_HEARTH`, `BRITTLE_HOLLOW`, `GIANTS_DEEP`, `DARK_BRAMBLE`, `COMET` (Interloper), `WHITE_HOLE`, `WHITE_HOLE_TARGET` (Whitehole station I believe), `QUANTUM_MOON`, `ORBITAL_PROBE_CANNON`, `TIMBER_MOON` (Attlerock), `VOLCANIC_MOON` (Hollow's Lantern), `DREAMWORLD`, `MapSatellite`, `RINGWORLD` (the Stranger).
+Similar to above, make a config where "Name" is the name of the planet. The name should be able to just match their in-game english names, however if you encounter any issues with that here are the in-code names for planets that are guaranteed to work: 
+- `SUN`
+- `CAVE_TWIN` (Ember Twin)
+- `TOWER_TWIN` (Ash Twin)
+- `TIMBER_HEARTH`
+- `BRITTLE_HOLLOW`
+- `GIANTS_DEEP`
+- `DARK_BRAMBLE`
+- `COMET` (Interloper)
+- `WHITE_HOLE`
+- `WHITE_HOLE_TARGET` (The Whitehole Station)
+- `QUANTUM_MOON`
+- `ORBITAL_PROBE_CANNON`
+- `TIMBER_MOON` (Attlerock)
+- `VOLCANIC_MOON` (Hollow's Lantern)
+- `DREAMWORLD`
+- `MapSatellite`
+- `RINGWORLD` (The Stranger)
 
-Only some of the above modules are supported (currently) for existing planets. Things you cannot modify for existing planets include: heightmaps, procedural generation, gravity, or their orbits. You also can't make them into stars or binary focal points (but why would you want to, just delete them and replace them entirely). However, this still means there are many things you can do: completely change their atmospheres, give them rings, asteroid belts, comet tails, lava, water, prop details, or signals. 
+Some features will not work if you try to add them to a base planet config. These include:
+- FocalPoints (just makes no sense really, a focal point is meant to be a intangible point between two binary bodies).
+- Gravity (including the strength, fall-off, and the size of the gravitational sphere of influence)
+- Reference frames (the volume used for targetting a planet with your ships navigation systems)
 
 You can also delete parts of an existing planet. Here's part of an example config which would delete the rising sand from Ember Twin:
 ```json
@@ -19,7 +39,7 @@ You can also delete parts of an existing planet. Here's part of an example confi
 }
 ```
 
-In `childrenToDestroy` you list the relative paths for the children of the planet's gameObject that you want to delete.
+In `removeChildren` you list the relative paths for the children of the planet's gameObject that you want to delete. Relative path meaning it does not include the root planet game object (in this case it would be `EmberTwin_Body`).
 
 ## Destroy Existing Planets
 
@@ -31,4 +51,7 @@ You do this (but with the appropriate name) as its own config.
 }
 ```
 
-Remember that if you destroy Timber Hearth you better put a `Spawn` module on another planet. If you want to entirely replace the solar system you can destroy everything, including the sun. Also, deleting a planet destroys anything orbiting it, so if you want to replace the solar system you can just destroy the sun. If you're making a brand new star system, you don't have to worry about deleting any existing planets; they won't be there.
+Note that destroying a planet will destroy anything orbiting it. For instance, destroying Giants Deep will automatically destroy the Orbital Probe Cannon. If you destroy the sun, it will destroy the entire solar system. This is not recommended, since if you want to start a new solar system from scratch you should use the `starSystem` field to create your own system.
+
+Remember that if you destroy Timber Hearth you must put a `Spawn` module on another planet, since you just destroyed the default spawn location.
+
