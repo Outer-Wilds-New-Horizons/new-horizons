@@ -40,14 +40,12 @@ namespace NewHorizons.Handlers
             {
                 foreach (var gameObject in toDisable)
                 {
-                    // Somehow SetActive can NRE
-                    // Seems to only happen if they don't have the DLC installed
-                    // Even with the null check it's complaining so I don't understand at all
-                    try
+                    // The gameObject can be null, seems to only happen if they don't have the DLC installed
+                    // null coalesence doesn't work with game objects so don't use it here
+                    if (gameObject != null)
                     {
-                        gameObject?.SetActive(false);
+                        gameObject.SetActive(false);
                     }
-                    catch { }
                 }
                 // Kill all non nh proxies
                 foreach (var proxy in GameObject.FindObjectsOfType<ProxyBody>())
