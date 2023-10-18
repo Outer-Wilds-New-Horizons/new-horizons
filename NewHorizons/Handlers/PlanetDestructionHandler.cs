@@ -119,6 +119,9 @@ namespace NewHorizons.Handlers
 
             // Just to be safe
             SunLightEffectsController.Instance.Update();
+
+            // Put it back after banishing it else there are weird graphical bugs
+            sun.gameObject.transform.position = CenterOfTheUniverse.s_instance.transform.position;
         }
 
         private static void TimberHearthRemoved()
