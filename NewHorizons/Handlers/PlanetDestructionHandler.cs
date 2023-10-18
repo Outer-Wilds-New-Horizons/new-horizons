@@ -1,12 +1,12 @@
+using NewHorizons.Components;
 using NewHorizons.Components.Stars;
 using NewHorizons.Utility;
-using NewHorizons.Utility.OWML;
 using NewHorizons.Utility.OuterWilds;
+using NewHorizons.Utility.OWML;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using NewHorizons.Components;
 
 namespace NewHorizons.Handlers
 {
@@ -40,7 +40,12 @@ namespace NewHorizons.Handlers
             {
                 foreach (var gameObject in toDisable)
                 {
-                    gameObject.SetActive(false);
+                    // The gameObject can be null, seems to only happen if they don't have the DLC installed
+                    // null coalesence doesn't work with game objects so don't use it here
+                    if (gameObject != null)
+                    {
+                        gameObject.SetActive(false);
+                    }
                 }
                 // Kill all non nh proxies
                 foreach (var proxy in GameObject.FindObjectsOfType<ProxyBody>())
@@ -55,10 +60,14 @@ namespace NewHorizons.Handlers
                 if (Main.Instance.CurrentStarSystem != "EyeOfTheUniverse")
                 {
                     // Since we didn't call RemoveBody on the all planets there are some we have to call here
-                    StrangerRemoved();
                     TimberHearthRemoved();
                     GiantsDeepRemoved();
                     SunRemoved();
+
+                    if (Main.HasDLC)
+                    {
+                        StrangerRemoved();
+                    }
                 }
 
             }, 2); // Have to wait or shit goes wild

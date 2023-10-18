@@ -184,7 +184,7 @@ namespace NewHorizons.Components.Props
                 {
                     float collapseProgress = SunController.GetCollapseProgress();
 
-                    if (_ambientLight != null)
+                    if (_ambientLight != null && _ambientLightOrigIntensity != null)
                     {
                         for (int i = 0; i < _ambientLight.Length; i++)
                         {
@@ -221,11 +221,14 @@ namespace NewHorizons.Components.Props
             {
                 if (_shockLayer != null) _shockLayer.enabled = false;
 
-                if (_ambientLight != null)
+                if (_ambientLight != null && _ambientLightOrigIntensity != null)
                 {
                     for (int i = 0; i < _ambientLight.Length; i++)
                     {
-                        _ambientLight[i].intensity = _ambientLightOrigIntensity[i];
+                        if (_ambientLight[i] != null)
+                        {
+                            _ambientLight[i].intensity = _ambientLightOrigIntensity[i];
+                        }
                     }
                 }
 
