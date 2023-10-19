@@ -16,13 +16,16 @@ namespace NewHorizons.Handlers
 
         public static void RemoveStockPlanets()
         {
-            // For some reason disabling planets immediately ruins the creation of everything else
-            // However, the sun breaks a lot of stuff sometimes (literally destroys it in its volumes I imagine)
-            // Eg, vision torch in Mindscapes
-            // TODO: Fix it better by disabling destruction volumes the first few frames maybe
-            // Until then
-            // I am become death, the destroyer of worlds
-            SearchUtilities.Find("Sun_Body").transform.position = Vector3.left * 1000000000f;
+            if (Main.Instance.CurrentStarSystem != "EyeOfTheUniverse")
+            {
+                // For some reason disabling planets immediately ruins the creation of everything else
+                // However, the sun breaks a lot of stuff sometimes (literally destroys it in its volumes I imagine)
+                // Eg, vision torch in Mindscapes
+                // TODO: Fix it better by disabling destruction volumes the first few frames maybe
+                // Until then
+                // I am become death, the destroyer of worlds
+                SearchUtilities.Find("Sun_Body").transform.position = Vector3.left * 1000000000f;
+            }
 
             // Adapted from EOTS thanks corby
             var toDisable = new List<GameObject>();
@@ -68,6 +71,9 @@ namespace NewHorizons.Handlers
                     {
                         StrangerRemoved();
                     }
+
+                    // Put it back at the center of the universe after banishing it else there are weird graphical bugs
+                    SearchUtilities.Find("Sun_Body").gameObject.transform.position = Locator._centerOfTheUniverse._staticReferenceFrame.transform.position;
                 }
 
             }, 2); // Have to wait or shit goes wild
