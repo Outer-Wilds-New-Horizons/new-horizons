@@ -72,8 +72,8 @@ namespace NewHorizons.Handlers
                         StrangerRemoved();
                     }
 
-                    // Put it back after banishing it else there are weird graphical bugs
-                    SearchUtilities.Find("Sun_Body").gameObject.transform.position = CenterOfTheUniverse.s_instance.transform.position;
+                    // Put it back at the center of the universe after banishing it else there are weird graphical bugs
+                    SearchUtilities.Find("Sun_Body").gameObject.transform.position = Locator._centerOfTheUniverse._staticReferenceFrame.transform.position;
                 }
 
             }, 2); // Have to wait or shit goes wild
