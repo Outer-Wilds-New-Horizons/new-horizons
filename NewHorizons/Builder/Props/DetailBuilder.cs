@@ -163,6 +163,16 @@ namespace NewHorizons.Builder.Props
                 }
             }
 
+            if (detail.item != null)
+            {
+                ItemBuilder.MakeItem(prop, go, sector, detail.item);
+            }
+
+            if (detail.itemSocket != null)
+            {
+                ItemBuilder.MakeSocket(prop, go, sector, detail.itemSocket);
+            }
+
             // Items should always be kept loaded else they will vanish in your hand as you leave the sector
             if (isItem) detail.keepLoaded = true;
 
