@@ -1423,6 +1423,22 @@
           "description": "The direction the item will be oriented when dropping it on the ground. Defaults to up (0, 1, 0).",
           "$ref": "#/definitions/MVector3"
         },
+        "pickupAudio": {
+          "type": "string",
+          "description": "The audio to play when this item is picked up. Only applies to custom/non-vanilla item types.\nCan be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+        },
+        "dropAudio": {
+          "type": "string",
+          "description": "The audio to play when this item is dropped. Only applies to custom/non-vanilla item types.\nCan be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+        },
+        "socketAudio": {
+          "type": "string",
+          "description": "The audio to play when this item is inserted into a socket. Only applies to custom/non-vanilla item types.\nCan be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+        },
+        "unsocketAudio": {
+          "type": "string",
+          "description": "The audio to play when this item is removed from a socket. Only applies to custom/non-vanilla item types.\nCan be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+        },
         "pickupCondition": {
           "type": "string",
           "description": "A dialogue condition to set when picking up this item."
