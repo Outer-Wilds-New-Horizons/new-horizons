@@ -322,5 +322,13 @@ namespace NewHorizons
         /// </summary>
         /// <param name="builder"></param>
         public void RegisterCustomBuilder(Action<GameObject, string> builder) => PlanetCreationHandler.CustomBuilders.Add(builder);
+
+        public string GetTranslationForShipLog(string text) => TranslationHandler.GetTranslation(text, TranslationHandler.TextType.SHIPLOG);
+
+        public string GetTranslationForDialogue(string text) => TranslationHandler.GetTranslation(text, TranslationHandler.TextType.DIALOGUE);
+
+        public string GetTranslationForUI(string text) => TranslationHandler.GetTranslation(text, TranslationHandler.TextType.UI);
+
+        public string GetTranslationForOtherText(string text) => TranslationHandler.GetTranslation(text, TranslationHandler.TextType.OTHER);
     }
 }

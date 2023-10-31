@@ -173,5 +173,36 @@ namespace NewHorizons
         /// <param name="curiousityColours">A dictionary of each curiousity ID to its colour and highlight colour in the ship log. Optional.</param>
         void AddShipLogXML(IModBehaviour mod, XElement xml, string planetName, string imageFolder = null, Dictionary<string, Vector2> entryPositions = null, Dictionary<string, (Color colour, Color highlight)> curiousityColours = null);
         #endregion
+
+        #region Translations
+        /// <summary>
+        /// Look up shiplog-related translated text for the given text key.
+        /// Defaults to English if no translation in the current language is available, and just the key if no English translation is available.
+        /// </summary>
+        /// <param name="text">The text key to look up.</param>
+        /// <returns></returns>
+        string GetTranslationForShipLog(string text);
+        /// <summary>
+        /// Look up dialogue-related translated text for the given text key.
+        /// Defaults to English if no translation in the current language is available, and just the key if no English translation is available.
+        /// </summary>
+        /// <param name="text">The text key to look up.</param>
+        /// <returns></returns>
+        string GetTranslationForDialogue(string text);
+        /// <summary>
+        /// Look up UI-related translated text for the given text key.
+        /// Defaults to English if no translation in the current language is available, and just the key if no English translation is available.
+        /// </summary>
+        /// <param name="text">The text key to look up.</param>
+        /// <returns></returns>
+        string GetTranslationForUI(string text);
+        /// <summary>
+        /// Look up miscellaneous translated text for the given text key.
+        /// Defaults to English if no translation in the current language is available, and just the key if no English translation is available.
+        /// </summary>
+        /// <param name="text">The text key to look up.</param>
+        /// <returns></returns>
+        string GetTranslationForOtherText(string text);
+        #endregion
     }
 }
