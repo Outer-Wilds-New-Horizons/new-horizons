@@ -1,3 +1,4 @@
+using NewHorizons.Builder.Props;
 using NewHorizons.Handlers;
 using OWML.Utils;
 using System;
@@ -14,6 +15,10 @@ namespace NewHorizons.Components.Props
     {
         public string DisplayName;
         public bool Droppable;
+        public AudioType PickupAudio;
+        public AudioType DropAudio;
+        public AudioType SocketAudio;
+        public AudioType UnsocketAudio;
         public string PickupCondition;
         public bool ClearPickupConditionOnDrop;
 
@@ -37,12 +42,28 @@ namespace NewHorizons.Components.Props
         {
             base.PickUpItem(holdTranform);
             TriggerPickupConditions();
+            PlayCustomSound(PickupAudio);
         }
 
         public override void DropItem(Vector3 position, Vector3 normal, Transform parent, Sector sector, IItemDropTarget customDropTarget)
         {
             base.DropItem(position, normal, parent, sector, customDropTarget);
             TriggerDropConditions();
+            PlayCustomSound(DropAudio);
+        }
+
+        public override void SocketItem(Transform socketTransform, Sector sector)
+        {
+            base.SocketItem(socketTransform, sector);
+            TriggerDropConditions();
+            PlayCustomSound(SocketAudio);
+        }
+
+        public override void OnCompleteUnsocket()
+        {
+            base.OnCompleteUnsocket();
+            TriggerPickupConditions();
+            PlayCustomSound(UnsocketAudio);
         }
 
         internal void TriggerPickupConditions()
@@ -58,6 +79,19 @@ namespace NewHorizons.Components.Props
             if (ClearPickupConditionOnDrop && !string.IsNullOrEmpty(PickupCondition))
             {
                 DialogueConditionManager.SharedInstance.SetConditionState(PickupCondition, false);
+            }
+        }
+
+        void PlayCustomSound(AudioType audioType)
+        {
+            if (ItemBuilder.IsCustomItemType(ItemType))
+            {
+                Locator.GetPlayerAudioController()._oneShotExternalSource.PlayOneShot(audioType);
+            }
+            else
+            {
+                // Vanilla items play sounds via hard-coded ItemType switch statements
+                // in the PlayerAudioController code, so there's no clean way to override them
             }
         }
     }

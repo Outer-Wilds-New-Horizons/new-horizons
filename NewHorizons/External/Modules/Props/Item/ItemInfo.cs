@@ -39,6 +39,26 @@ namespace NewHorizons.External.Modules.Props.Item
         /// </summary>
         public MVector3 dropNormal;
         /// <summary>
+        /// The audio to play when this item is picked up. Only applies to custom/non-vanilla item types.
+        /// Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list.
+        /// </summary>
+        public string pickupAudio;
+        /// <summary>
+        /// The audio to play when this item is dropped. Only applies to custom/non-vanilla item types.
+        /// Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list.
+        /// </summary>
+        public string dropAudio;
+        /// <summary>
+        /// The audio to play when this item is inserted into a socket. Only applies to custom/non-vanilla item types.
+        /// Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list.
+        /// </summary>
+        public string socketAudio;
+        /// <summary>
+        /// The audio to play when this item is removed from a socket. Only applies to custom/non-vanilla item types.
+        /// Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list.
+        /// </summary>
+        public string unsocketAudio;
+        /// <summary>
         /// A dialogue condition to set when picking up this item.
         /// </summary>
         public string pickupCondition;

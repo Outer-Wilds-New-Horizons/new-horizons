@@ -1,6 +1,8 @@
 using NewHorizons.Components.Props;
 using NewHorizons.External.Modules.Props.Item;
+using NewHorizons.Handlers;
 using NewHorizons.Utility.OWML;
+using OWML.Common;
 using OWML.Utils;
 using System;
 using System.Collections.Generic;
@@ -27,7 +29,7 @@ namespace NewHorizons.Builder.Props
             _itemTypes = new Dictionary<string, ItemType>();
         }
 
-        public static NHItem MakeItem(GameObject go, GameObject planetGO, Sector sector, ItemInfo info)
+        public static NHItem MakeItem(GameObject go, GameObject planetGO, Sector sector, ItemInfo info, IModBehaviour mod)
         {
             var itemName = info.name;
             if (string.IsNullOrEmpty(itemName))
@@ -53,6 +55,30 @@ namespace NewHorizons.Builder.Props
             item.DisplayName = itemName;
             item.ItemType = itemType;
             item.Droppable = info.droppable;
+            if (!string.IsNullOrEmpty(info.pickupAudio))
+            {
+                item.PickupAudio = AudioTypeHandler.GetAudioType(info.pickupAudio, mod);
+            }
+            if (!string.IsNullOrEmpty(info.dropAudio))
+            {
+                item.DropAudio = AudioTypeHandler.GetAudioType(info.dropAudio, mod);
+            }
+            if (!string.IsNullOrEmpty(info.socketAudio))
+            {
+                item.SocketAudio = AudioTypeHandler.GetAudioType(info.socketAudio, mod);
+            }
+            else
+            {
+                item.SocketAudio = item.DropAudio;
+            }
+            if (!string.IsNullOrEmpty(info.unsocketAudio))
+            {
+                item.UnsocketAudio = AudioTypeHandler.GetAudioType(info.unsocketAudio, mod);
+            }
+            else
+            {
+                item.UnsocketAudio = item.PickupAudio;
+            }
             item.PickupCondition = info.pickupCondition;
             item.ClearPickupConditionOnDrop = info.clearPickupConditionOnDrop;
 
@@ -92,16 +118,13 @@ namespace NewHorizons.Builder.Props
 
         public static NHItemSocket MakeSocket(GameObject go, GameObject planetGO, Sector sector, ItemSocketInfo info)
         {
-
-            var socketGO = GeneralPropBuilder.MakeNew("Socket", planetGO, sector, info, defaultParent: go.transform);
-
             var itemType = EnumUtils.TryParse(info.itemType, true, out ItemType result) ? result : ItemType.Invalid;
             if (itemType == ItemType.Invalid && !string.IsNullOrEmpty(info.itemType))
             {
                 itemType = EnumUtilities.Create<ItemType>(info.itemType);
             }
 
-            var socket = socketGO.GetAddComponent<NHItemSocket>();
+            var socket = go.GetAddComponent<NHItemSocket>();
             socket._sector = sector;
             socket._interactable = info.interactRange > 0f;
             socket._interactRange = info.interactRange;
@@ -112,7 +135,9 @@ namespace NewHorizons.Builder.Props
             }
             if (socket._socketTransform == null)
             {
-                socket._socketTransform = socket.transform;
+                var socketGO = GeneralPropBuilder.MakeNew("Socket", planetGO, sector, info, defaultParent: go.transform);
+                socketGO.SetActive(true);
+                socket._socketTransform = socketGO.transform;
             }
 
             socket.ItemType = itemType;
@@ -150,6 +175,11 @@ namespace NewHorizons.Builder.Props
                 _itemTypes.Add(name, itemType);
             }
             return itemType;
+        }
+
+        public static bool IsCustomItemType(ItemType type)
+        {
+            return _itemTypes.ContainsValue(type);
         }
     }
 }
