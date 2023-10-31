@@ -70,6 +70,13 @@ namespace NewHorizons
             }
         }
 
+        [Obsolete("SpawnObject(GameObject planet, Sector sector, string propToCopyPath, Vector3 position, Vector3 eulerAngles, float scale, bool alignRadial) is deprecated, please use SpawnObject(IModBehaviour mod, GameObject planet, Sector sector, string propToCopyPath, Vector3 position, Vector3 eulerAngles, float scale, bool alignRadial) instead")]
+        public GameObject SpawnObject(GameObject planet, Sector sector, string propToCopyPath, Vector3 position, Vector3 eulerAngles,
+            float scale, bool alignRadial)
+        {
+            return SpawnObject(null, planet, sector, propToCopyPath, position, eulerAngles, scale, alignRadial);
+        }
+
         public void LoadConfigs(IModBehaviour mod)
         {
             Main.Instance.LoadConfigs(mod);
@@ -170,7 +177,7 @@ namespace NewHorizons
             return default;
         }
 
-        public GameObject SpawnObject(GameObject planet, Sector sector, string propToCopyPath, Vector3 position, Vector3 eulerAngles,
+        public GameObject SpawnObject(IModBehaviour mod, GameObject planet, Sector sector, string propToCopyPath, Vector3 position, Vector3 eulerAngles,
             float scale, bool alignRadial)
         {
             var prefab = SearchUtilities.Find(propToCopyPath);
@@ -181,7 +188,7 @@ namespace NewHorizons
                 scale = scale,
                 alignRadial = alignRadial
             };
-            return DetailBuilder.Make(planet, sector, prefab, detailInfo);
+            return DetailBuilder.Make(planet, sector, mod, prefab, detailInfo);
         }
 
         public AudioSignal SpawnSignal(IModBehaviour mod, GameObject root, string audio, string name, string frequency,

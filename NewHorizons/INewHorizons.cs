@@ -16,6 +16,9 @@ namespace NewHorizons
 
         [Obsolete("Create(Dictionary<string, object> config) is deprecated, please use LoadConfigs(IModBehaviour mod) instead")]
         void Create(Dictionary<string, object> config, IModBehaviour mod);
+
+        [Obsolete("SpawnObject(GameObject planet, Sector sector, string propToCopyPath, Vector3 position, Vector3 eulerAngles, float scale, bool alignRadial) is deprecated, please use SpawnObject(IModBehaviour mod, GameObject planet, Sector sector, string propToCopyPath, Vector3 position, Vector3 eulerAngles, float scale, bool alignRadial) instead")]
+        GameObject SpawnObject(GameObject planet, Sector sector, string propToCopyPath, Vector3 position, Vector3 eulerAngles, float scale, bool alignWithNormal);
         #endregion
 
         /// <summary>
@@ -105,7 +108,7 @@ namespace NewHorizons
         /// Allows you to spawn a copy of a prop by specifying its path.
         /// This is the same as using Props->details in a config, but also returns the spawned gameObject to you.
         /// </summary>
-        GameObject SpawnObject(GameObject planet, Sector sector, string propToCopyPath, Vector3 position, Vector3 eulerAngles, 
+        GameObject SpawnObject(IModBehaviour mod, GameObject planet, Sector sector, string propToCopyPath, Vector3 position, Vector3 eulerAngles, 
             float scale, bool alignWithNormal);
 
         /// <summary>
