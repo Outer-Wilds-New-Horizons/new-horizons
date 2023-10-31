@@ -1,3 +1,4 @@
+using NewHorizons.External.Modules.Props.Item;
 using NewHorizons.External.SerializableData;
 using Newtonsoft.Json;
 using System;
@@ -100,6 +101,16 @@ namespace NewHorizons.External.Modules.Props
         /// Should the player close their eyes while the activation state changes. Only relevant if activationCondition or deactivationCondition are set.
         /// </summary>
         [DefaultValue(true)] public bool blinkWhenActiveChanged = true;
+
+        /// <summary>
+        /// Should this detail be treated as an interactible item
+        /// </summary>
+        public ItemInfo item;
+
+        /// <summary>
+        /// Should this detail be treated as a socket for an interactible item
+        /// </summary>
+        public ItemSocketInfo itemSocket;
 
         [Obsolete("alignToNormal is deprecated. Use alignRadial instead")] public bool alignToNormal;
     }
