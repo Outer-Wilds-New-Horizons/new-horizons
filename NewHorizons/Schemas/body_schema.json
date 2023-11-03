@@ -1448,6 +1448,10 @@
           "description": "Whether the pickup condition should be cleared when dropping the item. Defaults to true.",
           "default": true
         },
+        "pickupFact": {
+          "type": "string",
+          "description": "A ship log fact to reveal when picking up this item."
+        },
         "pathToInitialSocket": {
           "type": "string",
           "description": "A relative path from the planet to a socket that this item will be automatically inserted into."
@@ -1512,6 +1516,10 @@
           "description": "Whether the insert condition should be cleared when removing the socketed item. Defaults to true.",
           "default": true
         },
+        "insertFact": {
+          "type": "string",
+          "description": "A ship log fact to reveal when inserting an item into this socket."
+        },
         "removalCondition": {
           "type": "string",
           "description": "A dialogue condition to set when removing an item from this socket, or when the socket is empty."
@@ -1520,6 +1528,10 @@
           "type": "boolean",
           "description": "Whether the removal condition should be cleared when inserting a socketed item. Defaults to true.",
           "default": true
+        },
+        "removalFact": {
+          "type": "string",
+          "description": "A ship log fact to reveal when removing an item from this socket, or when the socket is empty."
         }
       }
     },
