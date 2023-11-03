@@ -67,6 +67,10 @@ namespace NewHorizons.External.Modules.Props.Item
         /// </summary>
         [DefaultValue(true)] public bool clearPickupConditionOnDrop = true;
         /// <summary>
+        /// A ship log fact to reveal when picking up this item.
+        /// </summary>
+        public string pickupFact;
+        /// <summary>
         /// A relative path from the planet to a socket that this item will be automatically inserted into.
         /// </summary>
         public string pathToInitialSocket;

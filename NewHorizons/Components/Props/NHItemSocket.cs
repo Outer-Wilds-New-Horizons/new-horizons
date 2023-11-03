@@ -12,8 +12,10 @@ namespace NewHorizons.Components.Props
         public bool UseGiveTakePrompts;
         public string InsertCondition;
         public bool ClearInsertConditionOnRemoval;
+        public string InsertFact;
         public string RemovalCondition;
         public bool ClearRemovalConditionOnInsert;
+        public string RemovalFact;
 
         public ItemType ItemType
         {
@@ -65,6 +67,10 @@ namespace NewHorizons.Components.Props
             {
                 DialogueConditionManager.SharedInstance.SetConditionState(RemovalCondition, false);
             }
+            if (!string.IsNullOrEmpty(InsertFact))
+            {
+                Locator.GetShipLogManager().RevealFact(InsertFact);
+            }
         }
 
         internal void TriggerRemovalConditions()
@@ -76,6 +82,10 @@ namespace NewHorizons.Components.Props
             if (ClearInsertConditionOnRemoval && !string.IsNullOrEmpty(InsertCondition))
             {
                 DialogueConditionManager.SharedInstance.SetConditionState(InsertCondition, false);
+            }
+            if (!string.IsNullOrEmpty(RemovalFact))
+            {
+                Locator.GetShipLogManager().RevealFact(RemovalFact);
             }
         }
     }

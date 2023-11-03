@@ -39,6 +39,10 @@ namespace NewHorizons.External.Modules.Props.Item
         /// </summary>
         [DefaultValue(true)] public bool clearInsertConditionOnRemoval = true;
         /// <summary>
+        /// A ship log fact to reveal when inserting an item into this socket.
+        /// </summary>
+        public string insertFact;
+        /// <summary>
         /// A dialogue condition to set when removing an item from this socket, or when the socket is empty.
         /// </summary>
         public string removalCondition;
@@ -46,5 +50,9 @@ namespace NewHorizons.External.Modules.Props.Item
         /// Whether the removal condition should be cleared when inserting a socketed item. Defaults to true.
         /// </summary>
         [DefaultValue(true)] public bool clearRemovalConditionOnInsert = true;
+        /// <summary>
+        /// A ship log fact to reveal when removing an item from this socket, or when the socket is empty.
+        /// </summary>
+        public string removalFact;
     }
 }

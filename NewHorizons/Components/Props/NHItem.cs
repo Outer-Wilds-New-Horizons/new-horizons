@@ -21,6 +21,7 @@ namespace NewHorizons.Components.Props
         public AudioType UnsocketAudio;
         public string PickupCondition;
         public bool ClearPickupConditionOnDrop;
+        public string PickupFact;
 
         public ItemType ItemType
         {
@@ -71,6 +72,10 @@ namespace NewHorizons.Components.Props
             if (!string.IsNullOrEmpty(PickupCondition))
             {
                 DialogueConditionManager.SharedInstance.SetConditionState(PickupCondition, true);
+            }
+            if (!string.IsNullOrEmpty(PickupFact))
+            {
+                Locator.GetShipLogManager().RevealFact(PickupFact);
             }
         }
 

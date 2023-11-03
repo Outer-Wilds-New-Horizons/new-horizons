@@ -81,8 +81,9 @@ namespace NewHorizons.Builder.Props
             }
             item.PickupCondition = info.pickupCondition;
             item.ClearPickupConditionOnDrop = info.clearPickupConditionOnDrop;
+            item.PickupFact = info.pickupFact;
 
-            Delay.FireInNUpdates(() =>
+            Delay.FireOnNextUpdate(() =>
             {
                 if (item != null && !string.IsNullOrEmpty(info.pathToInitialSocket))
                 {
@@ -111,7 +112,7 @@ namespace NewHorizons.Builder.Props
                         NHLogger.LogError($"Could not find a socket to parent item {itemName} to at path {socketGO}");
                     }
                 }
-            }, 1);
+            });
 
             return item;
         }
@@ -144,8 +145,10 @@ namespace NewHorizons.Builder.Props
             socket.UseGiveTakePrompts = info.useGiveTakePrompts;
             socket.InsertCondition = info.insertCondition;
             socket.ClearInsertConditionOnRemoval = info.clearInsertConditionOnRemoval;
+            socket.InsertFact = info.insertFact;
             socket.RemovalCondition = info.removalCondition;
             socket.ClearRemovalConditionOnInsert = info.clearRemovalConditionOnInsert;
+            socket.RemovalFact = info.removalFact;
 
             Delay.FireInNUpdates(() =>
             {
