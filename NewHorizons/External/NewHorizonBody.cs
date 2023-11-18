@@ -1,8 +1,6 @@
 using NewHorizons.External.Configs;
 using NewHorizons.Utility.Files;
-using NewHorizons.Utility.OWML;
 using OWML.Common;
-using System;
 using System.Linq;
 using UnityEngine;
 
@@ -29,20 +27,16 @@ namespace NewHorizons.External
         #region Cache
         public void LoadCache()
         {
-            if (RelativePath == null)
+            if (string.IsNullOrEmpty(RelativePath))
             {
-                return;
+                // Create a duummy cache
+                // Never actually gets saved to disk but avoids us having to null check everywhere for the rest of our lives
+                Cache = new NHCache();
             }
-
-            try
+            else
             {
                 var pathWithoutExtension = RelativePath.Substring(0, RelativePath.LastIndexOf('.'));
                 Cache = new NHCache(Mod, pathWithoutExtension + ".nhcache");
-            }
-            catch (Exception e)
-            {
-                NHLogger.LogError("Cache failed to load: " + e.Message);
-                Cache = null;
             }
         }
 
@@ -50,11 +44,11 @@ namespace NewHorizons.External
         {
             if (writeBeforeUnload)
             {
-                Cache?.ClearUnaccessed();
-                Cache?.WriteToFile();
+                Cache.ClearUnaccessed();
+                Cache.WriteToFile();
             }
 
-            Cache = null; // garbage collection will take care of it
+            Cache = null;
         }
         #endregion Cache
 
