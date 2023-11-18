@@ -306,7 +306,7 @@ namespace NewHorizons
         {
             NHLogger.Log($"Scene Loaded: {scene.name} {mode} OWScene.{LoadManager.NameToScene(scene.name)}");
 
-            ImageUtilities.LoadCache(CurrentStarSystem);
+            ImageUtilities.OnSceneLoaded(CurrentStarSystem);
 
             PlayerSpawned = false;
 

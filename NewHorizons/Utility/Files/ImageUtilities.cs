@@ -30,6 +30,8 @@ namespace NewHorizons.Utility.Files
                 {
                     var fileName = $"{key.GetHashCode()}.png";
 
+                    // TODO in the future: use GetRawTextureData and LoadRawTextureData, which works when doing Texture2D.Compress.
+                    // Should be faster than encoding to png too since its just the raw byte array
                     var path = Path.Combine(Main.Instance.ModHelper.Manifest.ModFolderPath, "Cache", Main.Instance.CurrentStarSystem, fileName);
                     Directory.CreateDirectory(Path.GetDirectoryName(path));
                     File.WriteAllBytes(path, texture2D.EncodeToPNG());
@@ -53,7 +55,12 @@ namespace NewHorizons.Utility.Files
             }
         }
 
-        public static void LoadCache(string starSystem)
+        /// <summary>
+        /// Loads the image cache for the given system
+        /// Assumes that loading of the system will be done after 40 frames and then saves the new cached images
+        /// </summary>
+        /// <param name="starSystem"></param>
+        public static void OnSceneLoaded(string starSystem)
         {
             // Read the lookup file for this star system
             var lookupPath = Path.Combine(Main.Instance.ModHelper.Manifest.ModFolderPath, "Cache", starSystem, "lookup.json");
@@ -71,11 +78,6 @@ namespace NewHorizons.Utility.Files
                 }
             }
 
-            SceneManager.activeSceneChanged += OnSceneChanged;
-        }
-
-        private static void OnSceneChanged(Scene arg0, Scene arg1)
-        {
             Delay.FireInNUpdates(() =>
             {
                 NHLogger.LogVerbose("Saving image cache lookup");
