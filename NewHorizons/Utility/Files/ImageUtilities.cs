@@ -5,12 +5,12 @@ using OWML.Common;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Networking;
-using UnityEngine.SceneManagement;
 
 namespace NewHorizons.Utility.Files
 {
@@ -93,7 +93,7 @@ namespace NewHorizons.Utility.Files
             var key = path.Substring(Main.Instance.ModHelper.OwmlConfig.ModsPath.Length);
             if (File.Exists(path))
             {
-                key += File.GetLastWriteTime(path);
+                key += File.GetLastWriteTime(path).ToString(CultureInfo.InvariantCulture);
             }
             return key;
         }
