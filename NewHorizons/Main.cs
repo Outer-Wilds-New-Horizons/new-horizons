@@ -306,6 +306,8 @@ namespace NewHorizons
         {
             NHLogger.Log($"Scene Loaded: {scene.name} {mode} OWScene.{LoadManager.NameToScene(scene.name)}");
 
+            ImageUtilities.LoadCache(CurrentStarSystem);
+
             PlayerSpawned = false;
 
             var isTitleScreen = scene.name == LoadManager.SceneToName(OWScene.TitleScreen);

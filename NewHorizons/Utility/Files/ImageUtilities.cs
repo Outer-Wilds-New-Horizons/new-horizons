@@ -1,5 +1,6 @@
 using HarmonyLib;
 using NewHorizons.Utility.OWML;
+using Newtonsoft.Json;
 using OWML.Common;
 using System;
 using System.Collections;
@@ -9,6 +10,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Networking;
+using UnityEngine.SceneManagement;
 
 namespace NewHorizons.Utility.Files
 {
@@ -17,7 +19,72 @@ namespace NewHorizons.Utility.Files
         // key is path + applied effects
         private static readonly Dictionary<string, Texture> _textureCache = new();
         public static bool CheckCachedTexture(string key, out Texture existingTexture) => _textureCache.TryGetValue(key, out existingTexture);
-        public static void TrackCachedTexture(string key, Texture texture) => _textureCache.Add(key, texture);
+        public static void TrackCachedTexture(string key, Texture texture)
+        {
+            _textureCache[key] = texture;
+
+            // Save files to thing
+            if (texture is Texture2D texture2D)
+            {
+                try
+                {
+                    var fileName = $"{key.GetHashCode()}.png";
+
+                    var path = Path.Combine(Main.Instance.ModHelper.Manifest.ModFolderPath, "Cache", Main.Instance.CurrentStarSystem, fileName);
+                    Directory.CreateDirectory(Path.GetDirectoryName(path));
+                    File.WriteAllBytes(path, texture2D.EncodeToPNG());
+
+                    // Track the meta data about the image
+                    if (!_cacheTextureLookup.ContainsKey(key))
+                    {
+                        _cacheTextureLookup[key] = new TextureCacheData()
+                        {
+                            useMipmaps = texture.mipmapCount != 1,
+                            linear = false,
+                            wrap = texture.wrapMode == TextureWrapMode.Repeat,
+                            relativePath = fileName
+                        };
+                    }
+                }
+                catch (Exception e)
+                {
+
+                }
+            }
+        }
+
+        public static void LoadCache(string starSystem)
+        {
+            // Read the lookup file for this star system
+            var lookupPath = Path.Combine(Main.Instance.ModHelper.Manifest.ModFolderPath, "Cache", starSystem, "lookup.json");
+            if (File.Exists(lookupPath))
+            {
+                _cacheTextureLookup = JsonConvert.DeserializeObject<Dictionary<string, TextureCacheData>>(File.ReadAllText(lookupPath));
+
+                // Load all the individual files and add them to the cache
+                foreach (var pair in _cacheTextureLookup)
+                {
+                    var key = pair.Key;
+                    var cacheData = pair.Value;
+                    LoadTexture(key, Path.Combine(Main.Instance.ModHelper.Manifest.ModFolderPath, "Cache", starSystem, cacheData.relativePath),
+                        cacheData.useMipmaps, cacheData.wrap, cacheData.linear);
+                }
+            }
+
+            SceneManager.activeSceneChanged += OnSceneChanged;
+        }
+
+        private static void OnSceneChanged(Scene arg0, Scene arg1)
+        {
+            Delay.FireInNUpdates(() =>
+            {
+                NHLogger.LogVerbose("Saving image cache lookup");
+                var lookupPath = Path.Combine(Main.Instance.ModHelper.Manifest.ModFolderPath, "Cache", Main.Instance.CurrentStarSystem, "lookup.json");
+                File.WriteAllText(lookupPath, JsonConvert.SerializeObject(_cacheTextureLookup));
+            }, 40);
+        }
+
+        private static Dictionary<string, TextureCacheData> _cacheTextureLookup = new();
 
         private static string GetKey(string path) => path.Substring(Main.Instance.ModHelper.OwmlConfig.ModsPath.Length);
 
@@ -36,29 +103,36 @@ namespace NewHorizons.Utility.Files
             // Copied from OWML but without the print statement lol
             var path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, filename);
             var key = GetKey(path);
-            if (_textureCache.TryGetValue(key, out var existingTexture))
-            {
-                NHLogger.LogVerbose($"Already loaded image at path: {path}");
-                return (Texture2D)existingTexture;
-            }
 
             NHLogger.LogVerbose($"Loading image at path: {path}");
             try
             {
-                var data = File.ReadAllBytes(path);
-                var texture = new Texture2D(2, 2, TextureFormat.RGBA32, useMipmaps, linear);
-                texture.name = key;
-                texture.wrapMode = wrap ? TextureWrapMode.Repeat : TextureWrapMode.Clamp;
-                texture.LoadImage(data);
-                _textureCache.Add(key, texture);
-
-                return texture;
+                return LoadTexture(key, path, useMipmaps, wrap, linear);
             }
             catch (Exception ex)
             {
                 // Half the time when a texture doesn't load it doesn't need to exist so just log verbose
                 NHLogger.LogVerbose($"Exception thrown while loading texture [{filename}]:\n{ex}");
                 return null;
+            }
+        }
+
+        private static Texture2D LoadTexture(string key, string path, bool useMipmaps = true, bool wrap = false, bool linear = false)
+        {
+            if (_textureCache.TryGetValue(key, out var existingTexture))
+            {
+                NHLogger.LogVerbose($"Already loaded image at path: {path}");
+                return (Texture2D)existingTexture;
+            }
+            else
+            {
+                var data = File.ReadAllBytes(path);
+                var texture = new Texture2D(2, 2, TextureFormat.RGBA32, useMipmaps, linear);
+                texture.name = key;
+                texture.wrapMode = wrap ? TextureWrapMode.Repeat : TextureWrapMode.Clamp;
+                texture.LoadImage(data);
+                TrackCachedTexture(key, texture);
+                return texture;
             }
         }
 
@@ -124,7 +198,7 @@ namespace NewHorizons.Utility.Files
 
             newTexture.wrapMode = texture.wrapMode;
 
-            _textureCache.Add(key, newTexture);
+            TrackCachedTexture(key, newTexture);
 
             return newTexture;
         }
@@ -179,7 +253,7 @@ namespace NewHorizons.Utility.Files
             texture.SetPixels(fillPixels);
             texture.Apply();
 
-            _textureCache.Add(key, texture);
+            TrackCachedTexture(key, texture);
 
             return texture;
         }
@@ -213,7 +287,7 @@ namespace NewHorizons.Utility.Files
 
             outline.wrapMode = texture.wrapMode;
 
-            _textureCache.Add(key, outline);
+            TrackCachedTexture(key, outline);
 
             return outline;
         }
@@ -262,7 +336,7 @@ namespace NewHorizons.Utility.Files
 
             newImage.wrapMode = image.wrapMode;
 
-            _textureCache.Add(key, newImage);
+            TrackCachedTexture(key, newImage);
 
             return newImage;
         }
@@ -287,7 +361,7 @@ namespace NewHorizons.Utility.Files
 
             newImage.wrapMode = image.wrapMode;
 
-            _textureCache.Add(key, newImage);
+            TrackCachedTexture(key, newImage);
 
             return newImage;
         }
@@ -310,7 +384,7 @@ namespace NewHorizons.Utility.Files
 
             tex.wrapMode = wrap ? TextureWrapMode.Repeat : TextureWrapMode.Clamp;
 
-            _textureCache.Add(key, tex);
+            TrackCachedTexture(key, tex);
 
             return tex;
         }
@@ -341,7 +415,7 @@ namespace NewHorizons.Utility.Files
 
             tex.wrapMode = src.wrapMode;
 
-            _textureCache.Add(key, tex);
+            TrackCachedTexture(key, tex);
 
             return tex;
         }
@@ -469,7 +543,7 @@ namespace NewHorizons.Utility.Files
                         }
                         else
                         {
-                            _textureCache.Add(key, texture);
+                            TrackCachedTexture(key, texture);
                         }
 
                         imageLoadedEvent?.Invoke(texture, index);
