@@ -88,7 +88,15 @@ namespace NewHorizons.Utility.Files
 
         private static Dictionary<string, TextureCacheData> _cacheTextureLookup = new();
 
-        private static string GetKey(string path) => path.Substring(Main.Instance.ModHelper.OwmlConfig.ModsPath.Length);
+        private static string GetKey(string path)
+        {
+            var key = path.Substring(Main.Instance.ModHelper.OwmlConfig.ModsPath.Length);
+            if (File.Exists(path))
+            {
+                key += File.GetLastWriteTime(path);
+            }
+            return key;
+        }
 
         public static bool IsTextureLoaded(IModBehaviour mod, string filename)
         {
