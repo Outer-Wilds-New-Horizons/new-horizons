@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NewHorizons.Components.Orbital;
@@ -23,43 +24,51 @@ namespace NewHorizons.Utility.OuterWilds
             }
         }
 
-        public static AstroObject GetAstroObject(string name, bool flag = false)
+        private static AstroObject.Name GetAstroObjectName(string name)
         {
-            if (string.IsNullOrEmpty(name)) return null;
-
-            if (_customAstroObjectDictionary.ContainsKey(name))
-            {
-                return _customAstroObjectDictionary[name];
-            }
-
-            // Else check stock names
+            // Names are all formated uppercase with _ insted of spaces and without punctuation
             var stringID = name.ToUpper().Replace(" ", "_").Replace("'", "");
-            if (stringID.Equals("ATTLEROCK")) stringID = "TIMBER_MOON";
-            if (stringID.Equals("HOLLOWS_LANTERN")) stringID = "VOLCANIC_MOON";
-            if (stringID.Equals("ASH_TWIN")) stringID = "TOWER_TWIN";
-            if (stringID.Equals("EMBER_TWIN")) stringID = "CAVE_TWIN";
-            if (stringID.Equals("INTERLOPER")) stringID = "COMET";
-            if (stringID.Equals("EYE") || stringID.Equals("EYEOFTHEUNIVERSE")) stringID = "EYE_OF_THE_UNIVERSE";
 
-            string key;
-            if (stringID.ToUpper().Replace("_", "").Equals("MAPSATELLITE"))
+            return stringID switch
             {
-                key = AstroObject.Name.MapSatellite.ToString();
+                // Manually handle some of the human readable names
+                "ATTLEROCK" => AstroObject.Name.TimberMoon,
+                "HOLLOWS_LANTERN" => AstroObject.Name.VolcanicMoon,
+                "ASHTWIN" => AstroObject.Name.TowerTwin,
+                "EMBER_TWIN" => AstroObject.Name.CaveTwin,
+                "INTERLOPER" => AstroObject.Name.Comet,
+                "EYE" or "EYE_OF_THE_UNIVERSE" => AstroObject.Name.Eye,
+                "MAP_SATELLITE" => AstroObject.Name.MapSatellite,
+                _ => AstroObject.StringIDToAstroObjectName(stringID),
+            };
+        }
+
+        private static AstroObject SearchForAstroObject(string name)
+        {
+            if (_customAstroObjectDictionary.TryGetValue(name, out var astroObject))
+            {
+                return astroObject;
             }
             else
             {
-                key = AstroObject.StringIDToAstroObjectName(stringID).ToString();
+                // If it doesn't contain the name, try the astro object name as the key (for stock bodies only)
+                var aoName = GetAstroObjectName(name).ToString();
+                if (_customAstroObjectDictionary.TryGetValue(aoName, out astroObject))
+                {
+                    return astroObject;
+                }
+                else
+                {
+                    return null;
+                }
             }
+        }
 
-            if (_customAstroObjectDictionary.ContainsKey(key))
-            {
-                return _customAstroObjectDictionary[key];
-            }
+        public static AstroObject GetAstroObject(string name)
+        {
+            if (string.IsNullOrEmpty(name)) return null;
 
-            // Try again
-            if (!flag) return GetAstroObject(name.Replace(" ", ""), true);
-
-            return null;
+            return SearchForAstroObject(name) ?? SearchForAstroObject(name.Replace(" ", ""));
         }
 
         public static void RegisterCustomAstroObject(AstroObject ao)
