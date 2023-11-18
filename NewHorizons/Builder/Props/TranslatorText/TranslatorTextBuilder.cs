@@ -475,9 +475,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
                 return;
             }
 
-            ArcCacheData[] cachedData = null;
-            if (nhBody.Cache?.ContainsKey(cacheKey) ?? false)
-                cachedData = nhBody.Cache.Get<ArcCacheData[]>(cacheKey);
+            var cachedData = nhBody.Cache.ContainsKey(cacheKey) ? nhBody.Cache.Get<ArcCacheData[]>(cacheKey) : null;
 
             var arranger = nomaiWallText.gameObject.AddComponent<NomaiTextArcArranger>();
 
@@ -545,20 +543,16 @@ namespace NewHorizons.Builder.Props.TranslatorText
                 }
 
                 // make an entry in the cache for all these spirals
-
-                if (nhBody?.Cache != null) 
+                var cacheData = arranger.spirals.Select(spiralManipulator => new ArcCacheData()
                 {
-                    var cacheData = arranger.spirals.Select(spiralManipulator => new ArcCacheData() 
-                    { 
-                        mesh = spiralManipulator.GetComponent<MeshFilter>().sharedMesh,
-                        skeletonPoints = spiralManipulator.NomaiTextLine._points.Select(v => (MVector3)v).ToArray(),
-                        position = spiralManipulator.transform.localPosition,
-                        zRotation = spiralManipulator.transform.localEulerAngles.z,
-                        mirrored = spiralManipulator.transform.localScale.x < 0
-                    }).ToArray();
+                    mesh = spiralManipulator.GetComponent<MeshFilter>().sharedMesh,
+                    skeletonPoints = spiralManipulator.NomaiTextLine._points.Select(v => (MVector3)v).ToArray(),
+                    position = spiralManipulator.transform.localPosition,
+                    zRotation = spiralManipulator.transform.localEulerAngles.z,
+                    mirrored = spiralManipulator.transform.localScale.x < 0
+                }).ToArray();
 
-                    nhBody.Cache.Set(cacheKey, cacheData);
-                }
+                nhBody.Cache.Set(cacheKey, cacheData);
             }
         }
 

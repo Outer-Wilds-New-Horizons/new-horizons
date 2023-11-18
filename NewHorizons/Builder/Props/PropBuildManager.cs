@@ -51,7 +51,7 @@ namespace NewHorizons.Builder.Props
             {
                 try
                 {
-                    ScatterBuilder.Make(go, sector, config, mod);
+                    ScatterBuilder.Make(go, sector, nhBody);
                 }
                 catch (Exception ex)
                 {

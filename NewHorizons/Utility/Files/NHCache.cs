@@ -8,66 +8,73 @@ namespace NewHorizons.Utility.Files
 {
     public class NHCache
     {
-        string filepath;
-        IModBehaviour mod;
-        Dictionary<string, string> data = new Dictionary<string, string>();
-        HashSet<string> accessedKeys = new HashSet<string>();
-        bool dirty;
+        private string _filepath;
+        private IModBehaviour _mod;
+        private Dictionary<string, string> _data = new();
+        private HashSet<string> _accessedKeys = new();
+        private bool _dirty;
 
         public NHCache(IModBehaviour mod, string cacheFilePath)
         {
-            this.mod = mod;
-            filepath = cacheFilePath;
+            _mod = mod;
+            _filepath = cacheFilePath;
             var fullPath = mod.ModHelper.Manifest.ModFolderPath + cacheFilePath;
 
             if (!File.Exists(fullPath))
             {
-                data = new Dictionary<string, string>();
-                dirty = true;
-                return;
+                _data = new Dictionary<string, string>();
+                _dirty = true;
             }
+            else
+            {
+                var json = File.ReadAllText(fullPath);
+                _data = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                // The code above does exactly the same thing that the code below does, but the below for some reason always returns null. no clue why
+                // data = mod.ModHelper.Storage.Load<Dictionary<string, string>>(filepath);
 
-            var json = File.ReadAllText(fullPath);
-            data = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
-            // the code above does exactly the same thing that the code below does, but the below for some reason always returns null. no clue why
-            // data = mod.ModHelper.Storage.Load<Dictionary<string, string>>(filepath);
-
-            dirty = false;
+                _dirty = false;
+            }
         }
 
         public void WriteToFile()
         {
-            if (data.Count <= 0) return; // don't write empty caches
-            if (!dirty) return; // don't write unmodified caches
-            mod.ModHelper.Storage.Save(data, filepath);
+            if (_data.Count <= 0)
+            {
+                return; // don't write empty caches
+            }
+            if (!_dirty)
+            {
+                return; // don't write unmodified caches
+            }
+            _mod.ModHelper.Storage.Save(_data, _filepath);
         }
 
         public bool ContainsKey(string key)
         {
-            return data.ContainsKey(key);
+            return _data.ContainsKey(key);
         }
 
         public T Get<T>(string key)
         {
-            accessedKeys.Add(key);
-            var json = data[key];
+            _accessedKeys.Add(key);
+            var json = _data[key];
             return JsonConvert.DeserializeObject<T>(json);
         }
 
         public void Set<T>(string key, T value)
         {
-            dirty = true;
-            accessedKeys.Add(key);
-            data[key] = JsonConvert.SerializeObject(value);
+            _dirty = true;
+            _accessedKeys.Add(key);
+            _data[key] = JsonConvert.SerializeObject(value);
         }
 
         public void ClearUnaccessed()
         {
-            var keys = data.Keys.ToList();
+            var keys = _data.Keys.ToList();
             foreach (var key in keys)
             {
-                if (accessedKeys.Contains(key)) continue;
-                data.Remove(key);
+                if (_accessedKeys.Contains(key)) continue;
+                _data.Remove(key);
             }
         }
     }
