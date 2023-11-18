@@ -15,7 +15,7 @@ namespace NewHorizons.Builder.Props
 {
     public static class ScatterBuilder
     {
-        public const string FIBONACCI_SPHERE_CACHE_KEY = "ScatterBuilderPoints";
+        public const string FIBONACCI_SPHERE_CACHE_KEY_PREFIX = "ScatterBuilderPoints";
 
         public static void Make(GameObject go, Sector sector, NewHorizonsBody body)
         {
@@ -29,9 +29,13 @@ namespace NewHorizons.Builder.Props
 
             List<Vector3> points = new();
 
-            if (body.Cache.ContainsKey(FIBONACCI_SPHERE_CACHE_KEY))
+            // The key contains the radius since thats what decides the points list ultimately
+            // NHCache clears unused values so if they change the radius the old points list gets removed
+            var key = FIBONACCI_SPHERE_CACHE_KEY_PREFIX + radius;
+
+            if (body.Cache.ContainsKey(key))
             {
-                points = body.Cache.Get<ScatterCacheData>(FIBONACCI_SPHERE_CACHE_KEY).points.Select(x => (Vector3)x).ToList();
+                points = body.Cache.Get<ScatterCacheData>(key).points.Select(x => (Vector3)x).ToList();
             }
             else if (scatterInfo.Any(x => x.preventOverlap))
             {
@@ -45,7 +49,7 @@ namespace NewHorizons.Builder.Props
                 // So now we cache it
                 points = RandomUtility.FibonacciSphere(numPoints);
 
-                body.Cache.Set(FIBONACCI_SPHERE_CACHE_KEY, new ScatterCacheData() { points = points.Select(x => (MVector3)x).ToArray() });
+                body.Cache.Set(key, new ScatterCacheData() { points = points.Select(x => (MVector3)x).ToArray() });
             }
 
             Texture2D heightMapTexture = null;
