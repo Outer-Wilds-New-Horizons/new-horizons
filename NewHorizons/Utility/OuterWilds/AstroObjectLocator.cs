@@ -15,7 +15,7 @@ namespace NewHorizons.Utility.OuterWilds
         public static void Init()
         {
             _customAstroObjectDictionary = new Dictionary<string, AstroObject>();
-            foreach (AstroObject ao in Object.FindObjectsOfType<AstroObject>())
+            foreach (AstroObject ao in GameObject.FindObjectsOfType<AstroObject>())
             {
                 // Ignore the sun station debris, we handle it as a child of the sun station
                 if (ao.gameObject.name == "SS_Debris_Body") continue;
@@ -168,7 +168,7 @@ namespace NewHorizons.Utility.OuterWilds
                     break;
                 case AstroObject.Name.SunStation:
                     // there are multiple debris with the same name
-                    otherChildren.AddRange(Object.FindObjectsOfType<AstroObject>()
+                    otherChildren.AddRange(GameObject.FindObjectsOfType<AstroObject>()
                         .Select(x => x.gameObject)
                         .Where(x => x.name == "SS_Debris_Body"));
                     break;
@@ -177,7 +177,7 @@ namespace NewHorizons.Utility.OuterWilds
                     if (primary._customName.Equals("Sun Station"))
                     {
                         // there are multiple debris with the same name
-                        otherChildren.AddRange(Object.FindObjectsOfType<AstroObject>()
+                        otherChildren.AddRange(GameObject.FindObjectsOfType<AstroObject>()
                             .Select(x => x.gameObject)
                             .Where(x => x.name == "SS_Debris_Body"));
                     }
