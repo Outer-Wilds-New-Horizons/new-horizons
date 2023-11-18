@@ -19,12 +19,12 @@ namespace NewHorizons.Utility.Files
         // key is path + applied effects
         private static readonly Dictionary<string, Texture> _textureCache = new();
         public static bool CheckCachedTexture(string key, out Texture existingTexture) => _textureCache.TryGetValue(key, out existingTexture);
-        public static void TrackCachedTexture(string key, Texture texture)
+        public static void TrackCachedTexture(string key, Texture texture, bool cacheToDisk = true)
         {
             _textureCache[key] = texture;
 
-            // Save files to thing
-            if (texture is Texture2D texture2D)
+            // Save files to disk
+            if (cacheToDisk && texture is Texture2D texture2D)
             {
                 try
                 {
@@ -50,7 +50,7 @@ namespace NewHorizons.Utility.Files
                 }
                 catch (Exception e)
                 {
-
+                    NHLogger.LogError($"Failed to cache image {key} to disk");
                 }
             }
         }
@@ -62,6 +62,8 @@ namespace NewHorizons.Utility.Files
         /// <param name="starSystem"></param>
         public static void OnSceneLoaded(string starSystem)
         {
+            NHLogger.LogVerbose($"Loading disk image cache for {starSystem}");
+
             // Read the lookup file for this star system
             var lookupPath = Path.Combine(Main.Instance.ModHelper.Manifest.ModFolderPath, "Cache", starSystem, "lookup.json");
             if (File.Exists(lookupPath))
@@ -73,8 +75,15 @@ namespace NewHorizons.Utility.Files
                 {
                     var key = pair.Key;
                     var cacheData = pair.Value;
-                    LoadTexture(key, Path.Combine(Main.Instance.ModHelper.Manifest.ModFolderPath, "Cache", starSystem, cacheData.relativePath),
-                        cacheData.useMipmaps, cacheData.wrap, cacheData.linear);
+                    try
+                    {
+                        LoadTexture(key, Path.Combine(Main.Instance.ModHelper.Manifest.ModFolderPath, "Cache", starSystem, cacheData.relativePath),
+                            cacheData.useMipmaps, cacheData.wrap, cacheData.linear);
+                    }
+                    catch (Exception e)
+                    {
+                        NHLogger.LogWarning($"Failed to load cached image {key} {e}");
+                    }
                 }
             }
 
@@ -107,6 +116,7 @@ namespace NewHorizons.Utility.Files
 
         // needed for backwards compat :P
         public static Texture2D GetTexture(IModBehaviour mod, string filename, bool useMipmaps, bool wrap) => GetTexture(mod, filename, useMipmaps, wrap, false);
+        
         // bug: cache only considers file path, not wrap/mips/linear. oh well
         public static Texture2D GetTexture(IModBehaviour mod, string filename, bool useMipmaps = true, bool wrap = false, bool linear = false)
         {
@@ -127,7 +137,7 @@ namespace NewHorizons.Utility.Files
             }
         }
 
-        private static Texture2D LoadTexture(string key, string path, bool useMipmaps = true, bool wrap = false, bool linear = false)
+        private static Texture2D LoadTexture(string key, string path, bool useMipmaps, bool wrap, bool linear)
         {
             if (_textureCache.TryGetValue(key, out var existingTexture))
             {
@@ -141,7 +151,10 @@ namespace NewHorizons.Utility.Files
                 texture.name = key;
                 texture.wrapMode = wrap ? TextureWrapMode.Repeat : TextureWrapMode.Clamp;
                 texture.LoadImage(data);
-                TrackCachedTexture(key, texture);
+
+                // Since this texture was loaded from the disk it makes no sense to cache it to disk
+                TrackCachedTexture(key, texture, false);
+
                 return texture;
             }
         }
