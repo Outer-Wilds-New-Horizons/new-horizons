@@ -50,7 +50,7 @@ namespace NewHorizons.Utility.Files
                 }
                 catch (Exception e)
                 {
-                    NHLogger.LogError($"Failed to cache image {key} to disk");
+                    NHLogger.LogError($"Failed to cache image {key} to disk {e}");
                 }
             }
         }
