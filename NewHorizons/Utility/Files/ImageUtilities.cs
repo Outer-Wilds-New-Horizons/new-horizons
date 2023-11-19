@@ -102,7 +102,7 @@ namespace NewHorizons.Utility.Files
             var key = path.Substring(Main.Instance.ModHelper.OwmlConfig.ModsPath.Length);
             if (File.Exists(path))
             {
-                key += File.GetLastWriteTime(path).ToString(CultureInfo.InvariantCulture);
+                key += File.GetLastWriteTimeUtc(path).ToString(CultureInfo.InvariantCulture);
             }
             return key;
         }
