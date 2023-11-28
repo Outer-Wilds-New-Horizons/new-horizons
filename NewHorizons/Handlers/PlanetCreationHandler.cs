@@ -16,7 +16,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-
+using NewHorizons.Streaming;
+using Newtonsoft.Json;
+using NewHorizons.External.Modules.VariableSize;
 
 namespace NewHorizons.Handlers
 {
@@ -30,9 +32,22 @@ namespace NewHorizons.Handlers
         // Custom bodies being created
         private static Dictionary<NHAstroObject, NewHorizonsBody> _customBodyDict;
 
+        // Farthest distance from the center of the solar system
+        public static float SolarSystemRadius { get; private set; }
+        public static float DefaultFurthestOrbit => 30000f;
+
+        public static List<Action<GameObject, string>> CustomBuilders = new();
+
         public static void Init(List<NewHorizonsBody> bodies)
         {
-            Main.FurthestOrbit = 30000;
+            // Start by destroying all planets if need be
+            if (Main.SystemDict[Main.Instance.CurrentStarSystem].Config.destroyStockPlanets)
+            {
+                PlanetDestructionHandler.RemoveStockPlanets();
+            }
+
+            // Base game value
+            SolarSystemRadius = DefaultFurthestOrbit;
 
             _existingBodyDict = new();
             _customBodyDict = new();
@@ -55,7 +70,7 @@ namespace NewHorizons.Handlers
                 var starLightGO = UnityEngine.Object.Instantiate(sun.GetComponentInChildren<SunLightController>().gameObject);
                 foreach (var comp in starLightGO.GetComponents<Component>())
                 {
-                    if (!(comp is SunLightController) && !(comp is SunLightParamUpdater) && !(comp is Light) && !(comp is Transform))
+                    if (comp is not (SunLightController or SunLightParamUpdater or Light or Transform))
                     {
                         UnityEngine.Object.Destroy(comp);
                     }
@@ -133,10 +148,6 @@ namespace NewHorizons.Handlers
             NHLogger.Log("Done loading bodies");
 
             SingularityBuilder.PairAllSingularities();
-
-            // Events.FireOnNextUpdate(PlanetDestroyer.RemoveAllProxies);
-
-            if (Main.SystemDict[Main.Instance.CurrentStarSystem].Config.destroyStockPlanets) PlanetDestructionHandler.RemoveStockPlanets();
         }
 
         public static bool LoadBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)
@@ -151,8 +162,20 @@ namespace NewHorizons.Handlers
             }
             catch (Exception)
             {
-                if (body?.Config?.name == null) NHLogger.LogError($"How is there no name for {body}");
-                else existingPlanet = SearchUtilities.Find(body.Config.name.Replace(" ", "") + "_Body", false);
+                if (body?.Config?.name == null)
+                {
+                    NHLogger.LogError($"How is there no name for {body}");
+                }
+                else
+                {
+                    existingPlanet = SearchUtilities.Find(body.Config.name.Replace(" ", "") + "_Body", false);
+                }
+            }
+
+            if (existingPlanet == null && body.Config.destroy)
+            {
+                NHLogger.LogError($"{body.Config.name} was meant to be destroyed, but was not found");
+                return false;
             }
 
             if (existingPlanet != null)
@@ -162,8 +185,14 @@ namespace NewHorizons.Handlers
                     if (body.Config.destroy)
                     {
                         var ao = existingPlanet.GetComponent<AstroObject>();
-                        if (ao != null) Delay.FireInNUpdates(() => PlanetDestructionHandler.RemoveBody(ao), 2);
-                        else Delay.FireInNUpdates(() => PlanetDestructionHandler.DisableBody(existingPlanet, false), 2);
+                        if (ao != null)
+                        {
+                            Delay.FireInNUpdates(() => PlanetDestructionHandler.DisableAstroObject(ao), 2);
+                        }
+                        else
+                        {
+                            Delay.FireInNUpdates(() => PlanetDestructionHandler.DisableGameObject(existingPlanet), 2);
+                        }
                     }
                     else if (body.Config.isQuantumState)
                     {
@@ -245,13 +274,10 @@ namespace NewHorizons.Handlers
                     try
                     {
                         NHLogger.Log($"Creating [{body.Config.name}]");
-                        var planetObject = GenerateBody(body, defaultPrimaryToSun);
-                        planetObject?.SetActive(true);
-                        if (planetObject == null) 
-                        { 
-                            body.UnloadCache(); 
-                            return false; 
-                        }
+                        var planetObject = GenerateBody(body, defaultPrimaryToSun) 
+                            ?? throw new NullReferenceException("Something went wrong when generating the body but no errors were logged.");
+                        
+                        planetObject.SetActive(true);
 
                         var ao = planetObject.GetComponent<NHAstroObject>();
 
@@ -342,16 +368,25 @@ namespace NewHorizons.Handlers
             body.Config.Base.showMinimap = false;
             body.Config.Base.hasMapMarker = false;
 
-            var owRigidBody = RigidBodyBuilder.Make(go, body.Config);
-            var ao = AstroObjectBuilder.Make(go, null, body.Config);
+            const float sphereOfInfluence = 2000f;
+            
+            var owRigidBody = RigidBodyBuilder.Make(go, sphereOfInfluence, body.Config);
+            var ao = AstroObjectBuilder.Make(go, null, body.Config, false);
 
-            var sector = SectorBuilder.Make(go, owRigidBody, 2000f);
+            var sector = SectorBuilder.Make(go, owRigidBody, sphereOfInfluence);
             ao._rootSector = sector;
             ao._type = AstroObject.Type.None;
 
             BrambleDimensionBuilder.Make(body, go, ao, sector, owRigidBody);
 
             go = SharedGenerateBody(body, go, sector, owRigidBody);
+            
+            // Not included in SharedGenerate to not mess up gravity on base game planets
+            if (body.Config.Base.surfaceGravity != 0)
+            {
+                GravityBuilder.Make(go, ao, owRigidBody, body.Config);
+            }
+
             body.Object = go;
 
             AstroObjectLocator.RegisterCustomAstroObject(ao);
@@ -378,7 +413,8 @@ namespace NewHorizons.Handlers
                     if (defaultPrimaryToSun)
                     {
                         NHLogger.LogError($"Couldn't find {body.Config.Orbit.primaryBody}, defaulting to center of solar system");
-                        primaryBody = Locator.GetCenterOfTheUniverse().GetAttachedOWRigidbody().GetComponent<AstroObject>();
+                        // TODO: Make this work in other systems. We tried using Locator.GetCenterOfUniverse before but that doesn't work since its too early now
+                        primaryBody = SearchUtilities.Find("Sun_Body")?.GetComponent<AstroObject>();
                     }
                     else
                     {
@@ -408,10 +444,10 @@ namespace NewHorizons.Handlers
                 };
             }
 
-            var owRigidBody = RigidBodyBuilder.Make(go, body.Config);
-            var ao = AstroObjectBuilder.Make(go, primaryBody, body.Config);
-
             var sphereOfInfluence = GetSphereOfInfluence(body);
+            
+            var owRigidBody = RigidBodyBuilder.Make(go, sphereOfInfluence, body.Config);
+            var ao = AstroObjectBuilder.Make(go, primaryBody, body.Config, false);
 
             var sector = SectorBuilder.Make(go, owRigidBody, sphereOfInfluence * 2f);
             ao._rootSector = sector;
@@ -456,9 +492,12 @@ namespace NewHorizons.Handlers
             // Spawning on other planets is a bit hacky so we do it last
             if (body.Config.Spawn != null)
             {
-                NHLogger.LogVerbose("Making spawn point");
+                NHLogger.LogVerbose($"Making spawn point on {body.Config.name}");
                 var spawnPoint = SpawnPointBuilder.Make(go, body.Config.Spawn, owRigidBody);
-                if (Main.SystemDict[body.Config.starSystem].SpawnPoint == null || (body.Config.Spawn.playerSpawn?.isDefault ?? false))
+                var isVanillaSystem = body.Config.starSystem == "SolarSystem" || body.Config.starSystem == "EyeOfTheUniverse";
+                var needsSpawnPoint = Main.SystemDict[body.Config.starSystem].SpawnPoint == null || isVanillaSystem;
+                var isDefaultSpawn = body.Config.Spawn.playerSpawn?.isDefault ?? true; // Backwards compat
+                if (needsSpawnPoint || isDefaultSpawn)
                 {
                     Main.SystemDict[body.Config.starSystem].SpawnPoint = spawnPoint;
                 }
@@ -477,7 +516,7 @@ namespace NewHorizons.Handlers
             var remnant = otherBodies.Where(x => x.Config.isStellarRemnant && x.Config.name == body.Config.name).FirstOrDefault();
             // TODO: add proxies for quantum states
             //var quantumStates = otherBodies.Where(x => x.Config.isQuantumState && x.Config.name == body.Config.name).ToArray();
-            if (!(body.Config.Cloak != null && body.Config.Cloak.radius != 0f))
+            if (!(body.Config.Cloak != null && body.Config.Cloak.radius != 0f) && !body.Config.Base.hideProxy)
             {
                 Delay.FireOnNextUpdate(() =>
                 {
@@ -566,10 +605,6 @@ namespace NewHorizons.Handlers
                         remnantGO.SetActive(false);
                         starEvolutionController.SetStellarRemnant(remnantGO);
                     }
-                    else
-                    {
-                        starEvolutionController.willExplode = false;
-                    }
                 }
             }
 
@@ -611,7 +646,7 @@ namespace NewHorizons.Handlers
 
             if (body.Config.Water != null)
             {
-                WaterBuilder.Make(go, sector, rb, body.Config.Water);
+                WaterBuilder.Make(go, sector, rb, body.Config);
             }
 
             if (body.Config.Sand != null)
@@ -632,18 +667,23 @@ namespace NewHorizons.Handlers
                 if (!string.IsNullOrEmpty(body.Config.Atmosphere?.clouds?.texturePath))
                 {
                     CloudsBuilder.Make(go, sector, body.Config.Atmosphere, willHaveCloak, body.Mod);
-                    if (body.Config.Atmosphere.clouds.cloudsPrefab != External.Modules.CloudPrefabType.Transparent) SunOverrideBuilder.Make(go, sector, body.Config.Atmosphere, body.Config.Water, surfaceSize);
+                    if (body.Config.Atmosphere.clouds.cloudsPrefab != External.Modules.CloudPrefabType.Transparent)
+                    {
+                        SunOverrideBuilder.Make(go, sector, body.Config.Atmosphere, body.Config.Water, surfaceSize);
+                    }
                 }
-
-                if (body.Config.Atmosphere.hasRain || body.Config.Atmosphere.hasSnow)
-                    EffectsBuilder.Make(go, sector, body.Config, surfaceSize);
 
                 if (body.Config.Atmosphere.fogSize != 0)
                 {
-                    fog = FogBuilder.Make(go, sector, body.Config.Atmosphere);
+                    fog = FogBuilder.Make(go, sector, body.Config.Atmosphere, body.Mod);
                 }
 
                 atmosphere = AtmosphereBuilder.Make(go, sector, body.Config.Atmosphere, surfaceSize).GetComponentInChildren<LODGroup>();
+            }
+
+            if (body.Config.ParticleFields != null)
+            {
+                EffectsBuilder.Make(go, sector, body.Config);
             }
 
             if (body.Config.Props != null)
@@ -659,6 +699,21 @@ namespace NewHorizons.Handlers
             if (body.Config.Funnel != null)
             {
                 FunnelBuilder.Make(go, sector, rb, body.Config.Funnel);
+            }
+
+            if (body.Config.extras != null)
+            {
+                foreach (var customBuilder in CustomBuilders)
+                {
+                    try
+                    {
+                        customBuilder.Invoke(go, JsonConvert.SerializeObject(body.Config.extras));
+                    }
+                    catch (Exception e)
+                    {
+                        NHLogger.LogError($"Failed to use custom builder on body {body.Config.name} - {e}");
+                    }
+                }
             }
 
             // Has to go last probably
@@ -688,6 +743,37 @@ namespace NewHorizons.Handlers
                 var aoName = ao.GetAstroObjectName();
                 var aoType = ao.GetAstroObjectType();
 
+                // When updating orbits of the twins be sure the FocalBody is gone
+                // Don't do it if it's already an NHAstroObject since that means this was already done
+                if (ao is not NHAstroObject && (aoName == AstroObject.Name.TowerTwin || aoName == AstroObject.Name.CaveTwin))
+                {
+                    var hourglassTwinsFocal = SearchUtilities.Find("FocalBody");
+
+                    // Have to copy the HGT sector bc it has some ruleset stuff on it we want
+                    var clonedSectorHGT = hourglassTwinsFocal.FindChild("Sector_HGT").Instantiate().Rename("Sector_HGT");
+                    clonedSectorHGT.transform.parent = go.transform;
+                    clonedSectorHGT.transform.localPosition = Vector3.zero;
+                    clonedSectorHGT.transform.localRotation = Quaternion.identity;
+
+                    // Don't need this part
+                    GameObject.Destroy(clonedSectorHGT.GetComponentInChildren<SectorStreaming>().gameObject);
+
+                    // Take the hourglass twins shader effect controller off the focal body so it can stay active
+                    var shaderController = hourglassTwinsFocal.GetComponentInChildren<HourglassTwinsShaderController>();
+                    if (shaderController != null) shaderController.transform.parent = null;
+
+                    hourglassTwinsFocal.SetActive(false);
+
+                    // Remove the drift tracker since its unneeded now
+                    Component.Destroy(go.GetComponent<DriftTracker>());
+
+                    // Fix sectors
+                    VanillaStreamingFix.UnparentSectorStreaming(ao.GetRootSector(), ao.gameObject, AstroObject.Name.HourglassTwins, Sector.Name.HourglassTwins);
+                    // Not to be confused with Sector.GetRootSector, this returns the highest sector on the astro object not in the chain
+                    // CaveTwin/TowerTwin sectors both have HGT as parent so we want to get rid of that link
+                    ao.GetRootSector().SetParentSector(null);
+                }
+
                 var owrb = go.GetComponent<OWRigidbody>();
 
                 var im = go.GetComponent<InitialMotion>();
@@ -702,7 +788,7 @@ namespace NewHorizons.Handlers
                 }
 
                 // Just destroy the existing AO after copying everything over
-                var newAO = AstroObjectBuilder.Make(go, primary, body.Config);
+                var newAO = AstroObjectBuilder.Make(go, primary, body.Config, true);
                 newAO._gravityVolume = ao._gravityVolume;
                 newAO._moon = ao._moon;
                 newAO._name = ao._name;
@@ -841,9 +927,11 @@ namespace NewHorizons.Handlers
                 go.transform.position = position;
             }
 
-            if (go.transform.position.magnitude > Main.FurthestOrbit)
+            // Uses the ratio of the interlopers furthest point to what the base game considers the edge of the solar system
+            var distanceToCenter = go.transform.position.magnitude * (24000 / 30000f);
+            if (distanceToCenter > SolarSystemRadius)
             {
-                Main.FurthestOrbit = go.transform.position.magnitude + 30000f;
+                SolarSystemRadius = distanceToCenter;
             }
         }
 

@@ -12,10 +12,10 @@ namespace NewHorizons.Patches.EyeScenePatches
                 PlayerData.SaveEyeCompletion();
 
                 // Switch to default just in case another mod warps back.
-                if (Main.Instance.CurrentStarSystem == "EyeOfTheUniverse") Main.Instance._currentStarSystem = Main.Instance.DefaultStarSystem;
+                if (Main.Instance.CurrentStarSystem == "EyeOfTheUniverse") Main.Instance.CurrentStarSystem = Main.Instance.DefaultStarSystem;
             }
             // Switch to eye just in case another mod warps there.
-            else if (scene == OWScene.EyeOfTheUniverse) Main.Instance._currentStarSystem = "EyeOfTheUniverse";
+            else if (scene == OWScene.EyeOfTheUniverse) Main.Instance.CurrentStarSystem = "EyeOfTheUniverse";
         }
 
         [HarmonyPrefix]

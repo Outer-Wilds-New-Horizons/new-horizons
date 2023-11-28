@@ -1,6 +1,68 @@
 {
   "$schema": "https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/main/NewHorizons/Schemas/translation_schema.json",
+  "DialogueDictionary": {
+    "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_1": "探査艇にワープドライブが搭載されました！",
+    "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_2": "航行記録に新たに追加された“インターステラーモード”にて、別の星系をロックオンします。",
+    "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_3": "あとはシートベルトを締めて、それから自動操縦ボタンを押すだけでワープできます！"
+  },
   "UIDictionary": {
+    "INTERSTELLAR_MODE": "インターステラーモード",
+    "FREQ_STATUE": "Nomai像",
+    "FREQ_WARP_CORE": "反重力流束",
+    "FREQ_UNKNOWN": "???",
+    "ENGAGE_WARP_PROMPT": "{0}へのワープを開始",
+    "WARP_LOCKED": "自動操縦のロックオン先：\n{0}",
+    "LOCK_AUTOPILOT_WARP": "星系に自動操縦をロックオンする",
+    "RICH_PRESENCE_EXPLORING": "{0}を探検中。",
+    "RICH_PRESENCE_WARPING": "{0}へワープ中。",
+    "OUTDATED_VERSION_WARNING": "警告\n\nNew Horizonsはバージョン{0}以上でのみ動作します。このOuter Wildsのバージョンは{1}です。\n\nOuter Wildsをアップデートするか、もしくはNew Horizonsをアンインストールしてください。",
+    "JSON_FAILED_TO_LOAD": "無効なファイル：{0}",
+    "DEBUG_RAYCAST": "Raycast",
+    "DEBUG_PLACE": "Place Object",
+    "DEBUG_PLACE_TEXT": "Place Nomai Text",
+    "DEBUG_UNDO": "Undo",
+    "DEBUG_REDO": "Redo",
     "Vessel": "船"
+  },
+  "OtherDictionary": {
+    "NOMAI_SHUTTLE_COMPUTER": "<![CDATA[<color=orange>シャトル</color>]]>は現在<![CDATA[<color=lightblue>{0}</color>]]>に停泊している。"
+  },
+  "AchievementTranslations": {
+    "NH_EATEN_OUTSIDE_BRAMBLE": {
+      "Name": "収容違反",
+      "Description": "闇のイバラの外で食べられる。"
+    },
+    "NH_MULTIPLE_SYSTEM": {
+      "Name": "旅人",
+      "Description": "5つの異なる星系を連続して訪れる。"
+    },
+    "NH_NEW_FREQ": {
+      "Name": "異常な周波数",
+      "Description": "新たな周波数を発見する。"
+    },
+    "NH_PROBE_LOST": {
+      "Name": "失われた接続",
+      "Description": "偵察機との接続が断たれる。"
+    },
+    "NH_WARP_DRIVE": {
+      "Name": "不正確な伝承",
+      "Description": "探査艇のワープドライブを使う。"
+    },
+    "NH_VESSEL_WARP": {
+      "Name": "正確な伝承",
+      "Description": "船でどこかの星系へワープする。"
+    },
+    "NH_RAFTING": {
+      "Name": "イカダといかり",
+      "Description": "イカダに乗る。"
+    },
+    "NH_SUCKED_INTO_LAVA_BY_TORNADO": {
+      "Name": "ダイクロン",
+      "Description": "竜巻で溶岩へと吸い込まれる。"
+    },
+    "NH_TALK_TO_FIVE_CHARACTERS": {
+      "Name": "社会",
+      "Description": "誰か5人と話す。"
+    }
   }
 }

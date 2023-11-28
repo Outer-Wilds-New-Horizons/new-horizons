@@ -1,3 +1,4 @@
+using Epic.OnlineServices;
 using NewHorizons.Components.ShipLog;
 using NewHorizons.External;
 using NewHorizons.OtherMods.CustomShipLogModes;
@@ -64,11 +65,15 @@ namespace NewHorizons.Handlers
             }
         }
 
+        /// <summary>
+        /// Can the player warp to any system at all
+        /// </summary>
+        /// <returns></returns>
         public static bool CanWarp()
         {
             foreach (var system in _systems)
             {
-                if (system.Config.canEnterViaWarpDrive && system.Spawn?.shipSpawn != null && HasUnlockedSystem(system.UniqueID))
+                if (CanWarpToSystem(system.UniqueID))
                 {
                     return true;
                 }
@@ -76,6 +81,11 @@ namespace NewHorizons.Handlers
             return false;
         }
 
+        /// <summary>
+        /// Do they have the fact required for a system
+        /// </summary>
+        /// <param name="system"></param>
+        /// <returns></returns>
         public static bool HasUnlockedSystem(string system)
         {
             if (_starSystemToFactID == null || _starSystemToFactID.Count == 0)
@@ -87,6 +97,26 @@ namespace NewHorizons.Handlers
 
             // It's unlocked if known
             return ShipLogHandler.KnowsFact(factID);
+        }
+
+        /// <summary>
+        /// Is it actually a valid warp target
+        /// </summary>
+        /// <param name="system"></param>
+        /// <returns></returns>
+        public static bool CanWarpToSystem(string system)
+        {
+            var config = Main.SystemDict[system];
+
+            var canWarpTo = false;
+            if (system.Equals("SolarSystem")) canWarpTo = true;
+            else if (system.Equals("EyeOfTheUniverse")) canWarpTo = false;
+            else if (config.Spawn?.shipSpawn != null) canWarpTo = true;
+
+            return canWarpTo
+                    && Main.SystemDict[system].Config.canEnterViaWarpDrive
+                    && system != Main.Instance.CurrentStarSystem
+                    && HasUnlockedSystem(system);
         }
 
         public static void OnRevealFact(string factID)
@@ -107,5 +137,7 @@ namespace NewHorizons.Handlers
             _starSystemToFactID.Add(system, factID);
             _factIDToStarSystem.Add(factID, system);
         }
+
+        public static bool IsWarpDriveLockedOn() => StarChartHandler.ShipLogStarChartMode.GetTargetStarSystem() != null;
     }
 }

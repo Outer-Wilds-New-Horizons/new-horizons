@@ -1,4 +1,6 @@
 using NewHorizons.Builder.Props.TranslatorText;
+using NewHorizons.Components;
+using NewHorizons.External.Modules;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.WarpPad;
 using NewHorizons.Utility;
@@ -137,10 +139,13 @@ namespace NewHorizons.Builder.Props
 
             transmitter.GetComponent<BoxShape>().enabled = true;
 
+            // Prevents the transmitter from sending you straight back if you use the return function of the receiver #563
+            transmitterObject.AddComponent<NomaiWarpTransmitterCooldown>();
+
             transmitterObject.SetActive(true);
         }
 
-        private static void CreateComputer(GameObject planetGO, Sector sector, NomaiWarpComputerLoggerInfo computerInfo, NomaiWarpReceiver receiver)
+        private static void CreateComputer(GameObject planetGO, Sector sector, GeneralPropInfo computerInfo, NomaiWarpReceiver receiver)
         {
             var computerObject = DetailBuilder.Make(planetGO, sector, TranslatorTextBuilder.ComputerPrefab, new DetailInfo(computerInfo));
 

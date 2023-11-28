@@ -18,16 +18,23 @@ public class AddPhysics : MonoBehaviour
     [Tooltip("The radius that the added sphere collider will use for physics collision.\n" +
         "If there's already good colliders on the detail, you can make this 0.")]
     public float Radius = 1f;
+    [Tooltip("If true, this detail will stay still until it touches something.\n" +
+        "Good for zero-g props.")]
+    public bool SuspendUntilImpact;
+
+    private OWRigidbody _body;
+    private ImpactSensor _impactSensor;
 
     private IEnumerator Start()
     {
+        // detectors dont detect unless we wait for some reason
         yield return new WaitForSeconds(.1f);
 
         var parentBody = GetComponentInParent<OWRigidbody>();
 
         // hack: make all mesh colliders convex
         // triggers are already convex
-        // prints errors for non readable meshes but whatever
+        // doesnt work for some non readable meshes but whatever
         foreach (var meshCollider in GetComponentsInChildren<MeshCollider>(true))
             meshCollider.convex = true;
 
@@ -37,8 +44,8 @@ public class AddPhysics : MonoBehaviour
         bodyGo.transform.position = transform.position;
         bodyGo.transform.rotation = transform.rotation;
 
-        var owRigidbody = bodyGo.AddComponent<OWRigidbody>();
-        owRigidbody._simulateInSector = Sector;
+        _body = bodyGo.AddComponent<OWRigidbody>();
+        _body._simulateInSector = Sector;
 
         bodyGo.layer = Layer.PhysicalDetector;
         bodyGo.tag = "DynamicPropDetector";
@@ -53,7 +60,7 @@ public class AddPhysics : MonoBehaviour
         fluidDetector._buoyancy = Locator.GetProbe().GetOWRigidbody()._attachedFluidDetector._buoyancy;
         fluidDetector._splashEffects = Locator.GetProbe().GetOWRigidbody()._attachedFluidDetector._splashEffects;
 
-        var impactSensor = bodyGo.AddComponent<ImpactSensor>();
+        _impactSensor = bodyGo.AddComponent<ImpactSensor>();
         var audioSource = bodyGo.AddComponent<AudioSource>();
         audioSource.maxDistance = 30;
         audioSource.dopplerLevel = 0;
@@ -66,22 +73,71 @@ public class AddPhysics : MonoBehaviour
         var objectImpactAudio = bodyGo.AddComponent<ObjectImpactAudio>();
         objectImpactAudio._minPitch = 0.4f;
         objectImpactAudio._maxPitch = 0.6f;
-        objectImpactAudio._impactSensor = impactSensor;
+        objectImpactAudio._impactSensor = _impactSensor;
 
         bodyGo.SetActive(true);
 
         transform.parent = bodyGo.transform;
-        owRigidbody.SetMass(Mass);
-        owRigidbody.SetVelocity(parentBody.GetPointVelocity(transform.position));
+        _body.SetMass(Mass);
+        _body.SetVelocity(parentBody.GetPointVelocity(_body.GetWorldCenterOfMass()));
+        _body.SetAngularVelocity(parentBody.GetAngularVelocity());
 
         // #536 - Physics objects in bramble dimensions not disabled on load
         // sectors wait 3 frames and then call OnSectorOccupantsUpdated
         // however we wait .1 real seconds which is longer
         // so we have to manually call this
-        if (owRigidbody._simulateInSector != null)
-            owRigidbody.OnSectorOccupantsUpdated();
+        if (_body._simulateInSector) _body.OnSectorOccupantsUpdated();
 
+        if (SuspendUntilImpact)
+        {
+            // copied from OWRigidbody.Suspend
+            _body._suspensionBody = parentBody;
+            _body.MakeKinematic();
+            _body._transform.parent = parentBody.transform;
+            _body._suspended = true;
+            _body._unsuspendNextUpdate = false;
+
+            // match velocity doesnt work so just make it not targetable
+            _body.SetIsTargetable(false);
+
+            _impactSensor.OnImpact += OnImpact;
+            Locator.GetProbe().OnAnchorProbe += OnAnchorProbe;
+        }
+        else
+        {
+            Destroy(this);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (_impactSensor) _impactSensor.OnImpact -= OnImpact;
+        Locator.GetProbe().OnAnchorProbe -= OnAnchorProbe;
+    }
+
+    private void OnImpact(ImpactData impact)
+    {
+        _body.UnsuspendImmediate(false);
+        _body.SetIsTargetable(true);
         Destroy(this);
+    }
+
+    private void OnAnchorProbe()
+    {
+        var attachedOWRigidbody = Locator.GetProbe().GetAttachedOWRigidbody(true);
+        if (attachedOWRigidbody == _body)
+        {
+            OnImpact(null);
+
+            // copied from ProbeAnchor.AnchorToObject
+            var _probeBody = Locator.GetProbe().GetOWRigidbody();
+            var hitPoint = _probeBody.GetWorldCenterOfMass();
+            if (attachedOWRigidbody.GetMass() < 100f)
+            {
+                Vector3 vector = _probeBody.GetVelocity() - attachedOWRigidbody.GetPointVelocity(_probeBody.GetPosition());
+                attachedOWRigidbody.GetRigidbody().AddForceAtPosition(vector.normalized * 0.005f, hitPoint, ForceMode.Impulse);
+            }
+        }
     }
 
     private void OnDrawGizmosSelected()

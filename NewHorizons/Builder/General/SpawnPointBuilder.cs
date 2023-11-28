@@ -1,9 +1,10 @@
 using NewHorizons.Builder.Props;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
-using NewHorizons.Utility.OWML;
 using NewHorizons.Utility.OuterWilds;
+using NewHorizons.Utility.OWML;
 using System;
+using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
@@ -12,63 +13,52 @@ namespace NewHorizons.Builder.General
     public static class SpawnPointBuilder
     {
         private static bool suitUpQueued = false;
+        public static SpawnPoint ShipSpawn { get; private set; }
+        public static Vector3 ShipSpawnOffset { get; private set; }
+
         public static SpawnPoint Make(GameObject planetGO, SpawnModule module, OWRigidbody owRigidBody)
         {
             SpawnPoint playerSpawn = null;
 
-            if (!Main.Instance.IsWarpingFromVessel && !Main.Instance.IsWarpingFromShip && module.playerSpawn != null)
+            // Make the spawn point even if it won't be used this loop
+            if (module.playerSpawn != null)
             {
                 GameObject spawnGO = GeneralPropBuilder.MakeNew("PlayerSpawnPoint", planetGO, null, module.playerSpawn);
                 spawnGO.layer = Layer.PlayerSafetyCollider;
 
                 playerSpawn = spawnGO.AddComponent<SpawnPoint>();
+                playerSpawn._attachedBody = owRigidBody;
+                playerSpawn._spawnLocation = SpawnLocation.None;
+                // #601 we need to actually set the right trigger volumes here
                 playerSpawn._triggerVolumes = new OWTriggerVolume[0];
 
-                spawnGO.transform.position += spawnGO.transform.up * 4f;
+                // This was a stupid hack to stop players getting stuck in the ground and now we have to keep it forever
+                spawnGO.transform.position += spawnGO.transform.TransformDirection(module.playerSpawn.offset ?? Vector3.up * 4f);
             }
+
             if (module.shipSpawn != null)
             {
-                GameObject spawnGO = GeneralPropBuilder.MakeNew("ShipSpawnPoint", planetGO, null, module.shipSpawn);
+                var spawnGO = GeneralPropBuilder.MakeNew("ShipSpawnPoint", planetGO, null, module.shipSpawn);
+                spawnGO.SetActive(false);
                 spawnGO.layer = Layer.PlayerSafetyCollider;
 
-                var spawnPoint = spawnGO.AddComponent<SpawnPoint>();
-                spawnPoint._isShipSpawn = true;
-                spawnPoint._triggerVolumes = new OWTriggerVolume[0];
+                ShipSpawn = spawnGO.AddComponent<SpawnPoint>();
+                ShipSpawn._isShipSpawn = true;
+                ShipSpawn._attachedBody = owRigidBody;
+                ShipSpawn._spawnLocation = SpawnLocation.None;
 
-                var ship = SearchUtilities.Find("Ship_Body");
-                if (ship != null)
-                {
-                    ship.transform.position = spawnGO.transform.position;
-                    ship.transform.rotation = spawnGO.transform.rotation;
+                // #601 we need to actually set the right trigger volumes here
+                ShipSpawn._triggerVolumes = new OWTriggerVolume[0];
 
-                    // Move it up a bit more when aligning to surface
-                    if (module.shipSpawn.alignRadial.GetValueOrDefault())
-                    {
-                        ship.transform.position += ship.transform.up * 4f;
-                    }
+                ShipSpawnOffset = module.shipSpawn.offset ?? (module.shipSpawn.alignRadial.GetValueOrDefault() ? Vector3.up * 4 : Vector3.zero);
 
-                    ship.GetRequiredComponent<MatchInitialMotion>().SetBodyToMatch(owRigidBody);
-
-                    if (Main.Instance.IsWarpingFromShip)
-                    {
-                        NHLogger.LogVerbose("Overriding player spawn to be inside ship");
-                        GameObject playerSpawnGO = new GameObject("PlayerSpawnPoint");
-                        playerSpawnGO.transform.parent = ship.transform;
-                        playerSpawnGO.layer = Layer.PlayerSafetyCollider;
-
-                        playerSpawnGO.transform.localPosition = new Vector3(0, 0, 0);
-
-                        playerSpawn = playerSpawnGO.AddComponent<SpawnPoint>();
-                        playerSpawn._triggerVolumes = new OWTriggerVolume[0];
-                        playerSpawnGO.transform.localRotation = Quaternion.Euler(0, 0, 0);
-                    }
-                }
+                spawnGO.SetActive(true);
             }
 
             if ((Main.Instance.IsWarpingFromVessel || (!Main.Instance.IsWarpingFromShip && (module.playerSpawn?.startWithSuit ?? false))) && !suitUpQueued)
             {
                 suitUpQueued = true;
-                Delay.RunWhen(() => Main.IsSystemReady, () => SuitUp());
+                Delay.RunWhen(() => Main.IsSystemReady, SuitUp);
             }
 
             NHLogger.Log($"Made spawnpoint on [{planetGO.name}]");
@@ -96,6 +86,7 @@ namespace NewHorizons.Builder.General
                     {
                         handler.Method.Invoke(handler.Target, new object[] { command });
                     }
+                    spv._interactVolume._listInteractions.First(x => x.promptText == UITextType.SuitUpPrompt).interactionEnabled = true;
                 }
             }
         }

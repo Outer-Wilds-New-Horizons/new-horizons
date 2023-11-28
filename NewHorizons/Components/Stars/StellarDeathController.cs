@@ -35,12 +35,19 @@ namespace NewHorizons.Components.Stars
         public void Activate()
         {
             enabled = true;
-            shockwave.enabled = _renderingEnabled;
-            for (int i = 0; i < explosionParticles.Length; i++)
+
+            var proxy = IsProxy() ? this.GetComponentInParent<NHProxy>() : null;
+
+            if (proxy == null || proxy._renderingEnabled)
             {
-                explosionParticles[i].Play();
-                _cachedParticleRenderers[i].enabled = _renderingEnabled;
+                shockwave.enabled = _renderingEnabled;
+                for (int i = 0; i < explosionParticles.Length; i++)
+                {
+                    explosionParticles[i].Play();
+                    _cachedParticleRenderers[i].enabled = _renderingEnabled;
+                }
             }
+
             _time = 0.0f;
             _currentSupernovaScale = supernovaScale.Evaluate(0.0f);
             _localSupernovaMat = new Material(supernovaMaterial);
@@ -84,6 +91,7 @@ namespace NewHorizons.Components.Stars
             {
                 float dt = Mathf.InverseLerp(12000f, 0.0f, distanceToPlayer);
                 audioSource.SetLocalVolume(Mathf.Lerp(0.0f, 1f, dt * dt) * Mathf.InverseLerp(0.0f, 5f, _time));
+                audioSource.maxDistance = shockwaveScale.Evaluate(shockwaveTime);
             }
 
             RumbleManager.UpdateSupernova(distanceToPlayer);
@@ -97,7 +105,10 @@ namespace NewHorizons.Components.Stars
 
         public void SetParticlesVisibility(bool visible)
         {
-            foreach (var particleRenderer in _cachedParticleRenderers) particleRenderer.enabled = visible;
+            foreach (var particleRenderer in _cachedParticleRenderers)
+            {
+                particleRenderer.enabled = visible;
+            }
         }
 
         public void SetRenderingEnabled(bool renderingEnabled)

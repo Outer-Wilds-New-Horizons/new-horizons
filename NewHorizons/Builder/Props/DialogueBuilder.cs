@@ -7,6 +7,7 @@ using NewHorizons.Utility.OWML;
 using OWML.Common;
 using System.IO;
 using System.Xml;
+using System.Xml.Linq;
 using UnityEngine;
 
 namespace NewHorizons.Builder.Props
@@ -15,6 +16,14 @@ namespace NewHorizons.Builder.Props
     {
         // Returns the character dialogue tree and remote dialogue trigger, if applicable.
         public static (CharacterDialogueTree, RemoteDialogueTrigger) Make(GameObject go, Sector sector, DialogueInfo info, IModBehaviour mod)
+        {
+            var xml = File.ReadAllText(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, info.xmlFile));
+            var dialogueName = Path.GetFileNameWithoutExtension(info.xmlFile);
+            return Make(go, sector, info, xml, dialogueName);
+        }
+
+        // Create dialogue directly from xml string instead of loading it from a file
+        public static (CharacterDialogueTree, RemoteDialogueTrigger) Make(GameObject go, Sector sector, DialogueInfo info, string xml, string dialogueName)
         {
             NHLogger.LogVerbose($"[DIALOGUE] Created a new character dialogue [{info.rename}] on [{info.parentPath}]");
 
@@ -26,7 +35,7 @@ namespace NewHorizons.Builder.Props
                 return (null, null);
             }
 
-            var dialogue = MakeConversationZone(go, sector, info, mod.ModHelper);
+            var dialogue = MakeConversationZone(go, sector, info, xml, dialogueName);
             
             RemoteDialogueTrigger remoteTrigger = null;
             if (info.remoteTrigger != null)
@@ -76,7 +85,7 @@ namespace NewHorizons.Builder.Props
             return remoteDialogueTrigger;
         }
 
-        private static CharacterDialogueTree MakeConversationZone(GameObject planetGO, Sector sector, DialogueInfo info, IModHelper mod)
+        private static CharacterDialogueTree MakeConversationZone(GameObject planetGO, Sector sector, DialogueInfo info, string xml, string dialogueName)
         {
             var conversationZone = GeneralPropBuilder.MakeNew("ConversationZone", planetGO, sector, info, defaultParentPath: info.pathToAnimController);
 
@@ -100,13 +109,11 @@ namespace NewHorizons.Builder.Props
 
             var dialogueTree = conversationZone.AddComponent<NHCharacterDialogueTree>();
 
-            var xml = File.ReadAllText(Path.Combine(mod.Manifest.ModFolderPath, info.xmlFile));
             var text = new TextAsset(xml)
             {
                 // Text assets need a name to be used with VoiceMod
-                name = Path.GetFileNameWithoutExtension(info.xmlFile)
+                name = dialogueName
             };
-
             dialogueTree.SetTextXml(text);
             AddTranslation(xml);
 
@@ -147,6 +154,7 @@ namespace NewHorizons.Builder.Props
             var controller = character.GetComponent<CharacterAnimController>();
             var traveler = character.GetComponent<TravelerController>();
             var travelerEye = character.GetComponent<TravelerEyeController>();
+            var hearthianRecorder = character.GetComponent<HearthianRecorderEffects>();
 
             var lookOnlyWhenTalking = info.lookAtRadius <= 0;
 
@@ -195,6 +203,34 @@ namespace NewHorizons.Builder.Props
                     dialogue.OnStartConversation += nomaiController.StartWatchingPlayer;
                     dialogue.OnEndConversation += nomaiController.StopWatchingPlayer;
                 }
+            }
+            else if (hearthianRecorder != null)
+            {
+                Delay.FireOnNextUpdate(() =>
+                {
+                    // #520
+                    if (hearthianRecorder._characterDialogueTree != null)
+                    {
+                        hearthianRecorder._characterDialogueTree.OnStartConversation -= hearthianRecorder.OnPlayRecorder;
+                        hearthianRecorder._characterDialogueTree.OnEndConversation -= hearthianRecorder.OnStopRecorder;
+                    }
+
+                    // Recorder props have their own dialogue on them already
+                    // Make sure to delete it when we're trying to connect new dialogue to it
+                    var existingDialogue = hearthianRecorder.GetComponent<CharacterDialogueTree>();
+                    if (existingDialogue != dialogue && existingDialogue != null)
+                    {
+                        // Can't delete the existing dialogue because its a required component but we can make it unable to select at least
+                        GameObject.Destroy(hearthianRecorder.GetComponent<OWCollider>());
+                        GameObject.Destroy(hearthianRecorder.GetComponent<SphereCollider>());
+                        GameObject.Destroy(existingDialogue._interactVolume);
+                        existingDialogue.enabled = false;
+                    }
+
+                    hearthianRecorder._characterDialogueTree = dialogue;
+                    hearthianRecorder._characterDialogueTree.OnStartConversation += hearthianRecorder.OnPlayRecorder;
+                    hearthianRecorder._characterDialogueTree.OnEndConversation += hearthianRecorder.OnStopRecorder;
+                });
             }
             else
             {

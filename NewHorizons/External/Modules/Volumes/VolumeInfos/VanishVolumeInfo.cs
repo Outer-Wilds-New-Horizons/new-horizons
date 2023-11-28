@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using System;
 using System.ComponentModel;
 
 namespace NewHorizons.External.Modules.Volumes.VolumeInfos
@@ -12,9 +13,11 @@ namespace NewHorizons.External.Modules.Volumes.VolumeInfos
         [DefaultValue(true)] public bool shrinkBodies = true;
 
         /// <summary>
-        /// Whether this volume only affects the player and ship.
+        /// Whether this volume only affects the player, ship, probe/scout, model rocket ship, and nomai shuttle.
         /// </summary>
-        public bool onlyAffectsPlayerAndShip;
+        public bool onlyAffectsPlayerRelatedBodies;
+
+        [Obsolete] public bool onlyAffectsPlayerAndShip;
     }
 
 }

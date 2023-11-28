@@ -235,7 +235,11 @@ namespace NewHorizons.Builder.Props
             // account for scale (this will fix the issue with screen fog caused by scaled down nodes)
 
             // Set the main scale
-            brambleNode.transform.localScale = Vector3.one * config.scale;
+            // Can't just use localScale of root, that makes the preview fog lights get pulled in too much
+            foreach(Transform child in brambleNode.transform)
+            {
+                child.localScale = Vector3.one * config.scale;
+            }
             innerFogWarpVolume._warpRadius *= config.scale;
             innerFogWarpVolume._exitRadius *= config.scale;
 
@@ -257,10 +261,20 @@ namespace NewHorizons.Builder.Props
 
                 // Seed fog works differently, so it doesn't need to be fixed
                 // (it's also located on a different child path, so the below FindChild calls wouldn't work)
+                // Default size is 70
                 var fog = brambleNode.FindChild("Effects/InnerWarpFogSphere");
-                var fogMaterial = fog.GetComponent<MeshRenderer>().material;
-                fogMaterial.SetFloat("_Radius", fogMaterial.GetFloat("_Radius") * config.scale);
-                fogMaterial.SetFloat("_Density", fogMaterial.GetFloat("_Density") / config.scale);
+                //fog.transform.localScale = Vector3.one * config.scale * 70f; This is already scaled by its parent, don't know why we scale it again
+
+                // Copy shared material to not be shared
+                var fogRenderer = fog.GetComponent<MeshRenderer>();
+                fogRenderer.material = new Material(fogRenderer.sharedMaterial);
+                fogRenderer.material.SetFloat("_Radius", fogRenderer.material.GetFloat("_Radius") * config.scale);
+                fogRenderer.material.SetFloat("_Density", fogRenderer.material.GetFloat("_Density") / config.scale);
+                // Fixes bramble nodes being a weird colour until you approach the first time #372
+                if (config.fogTint != null)
+                {
+                    fog.GetComponent<OWRenderer>().SetColor(config.fogTint.ToColor());
+                }
             }
 
             // Set colors
@@ -391,7 +405,8 @@ namespace NewHorizons.Builder.Props
                 }
             }
 
-            StreamingHandler.SetUpStreaming(brambleNode, sector);
+            // If the outer fog warp volume is null we're exposed to the solar system so treat it as a keepLoaded type prop
+            StreamingHandler.SetUpStreaming(brambleNode, outerFogWarpVolume == null ? null : sector);
 
             // Done!
             brambleNode.SetActive(true);

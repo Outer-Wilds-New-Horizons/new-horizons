@@ -1,7 +1,7 @@
 using NewHorizons.External;
 using NewHorizons.External.Modules.Props;
-using NewHorizons.External.SerializableData;
 using NewHorizons.External.Modules.TranslatorText;
+using NewHorizons.External.SerializableData;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using NewHorizons.Utility.Geometry;
@@ -14,7 +14,6 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 using UnityEngine;
-
 using Random = UnityEngine.Random;
 
 namespace NewHorizons.Builder.Props.TranslatorText
@@ -26,9 +25,10 @@ namespace NewHorizons.Builder.Props.TranslatorText
         private static Material _childArcMaterial;
         private static GameObject _scrollPrefab;
         public static GameObject ComputerPrefab { get; private set; }
-        private static GameObject _preCrashComputerPrefab;
-        private static GameObject _cairnPrefab;
-        private static GameObject _cairnVariantPrefab;
+        public static GameObject PreCrashComputerPrefab { get; private set; }
+        private static GameObject _cairnBHPrefab;
+        private static GameObject _cairnTHPrefab;
+        private static GameObject _cairnCTPrefab;
         private static GameObject _recorderPrefab;
         private static GameObject _preCrashRecorderPrefab;
         private static GameObject _trailmarkerPrefab;
@@ -88,19 +88,24 @@ namespace NewHorizons.Builder.Props.TranslatorText
                 ComputerPrefab = SearchUtilities.Find("VolcanicMoon_Body/Sector_VM/Interactables_VM/Prefab_NOM_Computer").InstantiateInactive().Rename("Prefab_NOM_Computer").DontDestroyOnLoad();
             }
 
-            if (_preCrashComputerPrefab == null)
+            if (PreCrashComputerPrefab == null)
             {
-                _preCrashComputerPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_EscapePodCrashSite/Sector_CrashFragment/EscapePod_Socket/Interactibles_EscapePod/Prefab_NOM_Vessel_Computer").InstantiateInactive().Rename("Prefab_NOM_Vessel_Computer").DontDestroyOnLoad();
+                PreCrashComputerPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_EscapePodCrashSite/Sector_CrashFragment/EscapePod_Socket/Interactibles_EscapePod/Prefab_NOM_Vessel_Computer").InstantiateInactive().Rename("Prefab_NOM_Vessel_Computer").DontDestroyOnLoad();
             }
 
-            if (_cairnPrefab == null)
+            if (_cairnBHPrefab == null)
             {
-                _cairnPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_Crossroads/Interactables_Crossroads/Trailmarkers/Prefab_NOM_BH_Cairn_Arc (1)").InstantiateInactive().Rename("Prefab_NOM_Cairn").DontDestroyOnLoad();
+                _cairnBHPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_Crossroads/Interactables_Crossroads/Trailmarkers/Prefab_NOM_BH_Cairn_Arc (1)").InstantiateInactive().Rename("Prefab_NOM_BH_Cairn").DontDestroyOnLoad();
             }
 
-            if (_cairnVariantPrefab == null)
+            if (_cairnTHPrefab == null)
             {
-                _cairnVariantPrefab = SearchUtilities.Find("TimberHearth_Body/Sector_TH/Sector_NomaiMines/Interactables_NomaiMines/Prefab_NOM_TH_Cairn_Arc").InstantiateInactive().Rename("Prefab_NOM_Cairn").DontDestroyOnLoad();
+                _cairnTHPrefab = SearchUtilities.Find("TimberHearth_Body/Sector_TH/Sector_NomaiMines/Interactables_NomaiMines/Prefab_NOM_TH_Cairn_Arc").InstantiateInactive().Rename("Prefab_NOM_TH_Cairn").DontDestroyOnLoad();
+            }
+
+            if (_cairnCTPrefab == null)
+            {
+                _cairnCTPrefab = SearchUtilities.Find("CaveTwin_Body/Sector_CaveTwin/Sector_NorthHemisphere/Sector_NorthSurface/Sector_TimeLoopExperiment/Interactables_TimeLoopExperiment/Prefab_NOM_CT_Cairn_Arc").InstantiateInactive().Rename("Prefab_NOM_CT_Cairn").DontDestroyOnLoad();
             }
 
             if (_recorderPrefab == null)
@@ -131,6 +136,11 @@ namespace NewHorizons.Builder.Props.TranslatorText
                 return null;
             }
 
+            return Make(planetGO, sector, info, nhBody, xmlContent);
+        }
+
+        public static GameObject Make(GameObject planetGO, Sector sector, TranslatorTextInfo info, NewHorizonsBody nhBody, string xmlContent)
+        {
             switch (info.type)
             {
                 case NomaiTextType.Wall:
@@ -232,7 +242,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
                     }
                 case NomaiTextType.PreCrashComputer:
                     {
-                        var computerObject = DetailBuilder.Make(planetGO, sector, _preCrashComputerPrefab, new DetailInfo(info));
+                        var computerObject = DetailBuilder.Make(planetGO, sector, PreCrashComputerPrefab, new DetailInfo(info));
                         computerObject.SetActive(false);
 
                         var computer = computerObject.GetComponent<NomaiVesselComputer>();
@@ -269,11 +279,12 @@ namespace NewHorizons.Builder.Props.TranslatorText
                         
                         return computerObject;
                     }
-                case NomaiTextType.Cairn:
-                case NomaiTextType.CairnVariant:
+                case NomaiTextType.CairnBrittleHollow:
+                case NomaiTextType.CairnTimberHearth:
+                case NomaiTextType.CairnEmberTwin:
                     {
-                        var cairnPrefab = info.type == NomaiTextType.CairnVariant ? _cairnVariantPrefab : _cairnPrefab;
-                        var cairnObject = GeneralPropBuilder.MakeFromPrefab(cairnPrefab, _cairnPrefab.name, planetGO, sector, info);
+                        var cairnPrefab = info.type == NomaiTextType.CairnTimberHearth ? _cairnTHPrefab : (info.type == NomaiTextType.CairnEmberTwin ? _cairnCTPrefab : _cairnBHPrefab);
+                        var cairnObject = GeneralPropBuilder.MakeFromPrefab(cairnPrefab, cairnPrefab.name, planetGO, sector, info);
 
                         // Idk do we have to set it active before finding things?
                         cairnObject.SetActive(true);
@@ -394,7 +405,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
             }
         }
 
-        private static NomaiWallText MakeWallText(GameObject go, Sector sector, TranslatorTextInfo info, string xmlPath, NewHorizonsBody nhBody)
+        private static NomaiWallText MakeWallText(GameObject go, Sector sector, TranslatorTextInfo info, string xmlContent, NewHorizonsBody nhBody)
         {
             GameObject nomaiWallTextObj = new GameObject("NomaiWallText");
             nomaiWallTextObj.SetActive(false);
@@ -411,13 +422,13 @@ namespace NewHorizons.Builder.Props.TranslatorText
 
             nomaiWallText._location = EnumUtils.Parse<NomaiText.Location>(info.location.ToString());
 
-            var text = new TextAsset(xmlPath);
+            var text = new TextAsset(xmlContent);
 
             // Text assets need a name to be used with VoiceMod
             text.name = Path.GetFileNameWithoutExtension(info.xmlFile);
 
-            BuildArcs(xmlPath, nomaiWallText, nomaiWallTextObj, info, nhBody);
-            AddTranslation(xmlPath);
+            BuildArcs(xmlContent, nomaiWallText, nomaiWallTextObj, info, nhBody);
+            AddTranslation(xmlContent);
             nomaiWallText._nomaiTextAsset = text;
 
             nomaiWallText.SetTextAsset(text);
@@ -535,7 +546,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
 
                 // make an entry in the cache for all these spirals
 
-                if (nhBody.Cache != null) 
+                if (nhBody?.Cache != null) 
                 {
                     var cacheData = arranger.spirals.Select(spiralManipulator => new ArcCacheData() 
                     { 
@@ -620,6 +631,12 @@ namespace NewHorizons.Builder.Props.TranslatorText
             XmlDocument xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(xmlPath);
             XmlNode rootNode = xmlDocument.SelectSingleNode("NomaiObject");
+            
+            if (rootNode == null)
+            {
+                NHLogger.LogError($"Couldn't find NomaiObject in [{xmlPath}]");
+                return dict;
+            }
 
             foreach (object obj in rootNode.SelectNodes("TextBlock"))
             {

@@ -1,4 +1,5 @@
 using NewHorizons.Handlers;
+using NewHorizons.Utility.Files;
 using NewHorizons.Utility.OWML;
 using OWML.Common;
 using OWML.Common.Menus;
@@ -47,6 +48,7 @@ namespace NewHorizons.Utility.DebugTools
 
             SearchUtilities.Find("/PauseMenu/PauseMenuManagers").GetComponent<PauseMenuManager>().OnSkipToNextTimeLoop();
 
+            Main.Instance.ForceClearCaches = true;
             Main.Instance.ChangeCurrentStarSystem(Main.Instance.CurrentStarSystem);
 
             Main.SecondsElapsedInLoop = -1f;

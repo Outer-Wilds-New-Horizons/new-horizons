@@ -82,6 +82,14 @@ public static class SchemaExporter
             {
                 case "Celestial Body Schema":
                     schema.Definitions["OrbitModule"].Properties["semiMajorAxis"].Default = 5000f;
+                    schema.Definitions["NomaiTextType"].Enumeration.Remove("cairn");
+                    schema.Definitions["NomaiTextType"].EnumerationNames.Remove("Cairn");
+                    schema.Definitions["NomaiTextType"].Enumeration.Remove("cairnVariant");
+                    schema.Definitions["NomaiTextType"].EnumerationNames.Remove("CairnVariant");
+                    schema.Definitions["QuantumGroupType"].Enumeration.Remove("FailedValidation");
+                    schema.Definitions["QuantumGroupType"].EnumerationNames.Remove("FailedValidation");
+                    schema.Definitions["StellarRemnantType"].Enumeration.Remove("Pulsar");
+                    schema.Definitions["StellarRemnantType"].EnumerationNames.Remove("Pulsar");
                     break;
                 case "Star System Schema":
                     schema.Definitions["NomaiCoordinates"].Properties["x"].UniqueItems = true;

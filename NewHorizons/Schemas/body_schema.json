@@ -132,6 +132,13 @@
       "description": "Add water to this planet",
       "$ref": "#/definitions/WaterModule"
     },
+    "ParticleFields": {
+      "type": "array",
+      "description": "Add particle effects in a field around the planet.\nAlso known as Vection Fields.",
+      "items": {
+        "$ref": "#/definitions/ParticleFieldModule"
+      }
+    },
     "Volumes": {
       "description": "Add various volumes on this body",
       "$ref": "#/definitions/VolumesModule"
@@ -345,7 +352,6 @@
           "type": "number",
           "description": "How dense the fog is, if you put fog.",
           "format": "float",
-          "maximum": 1.0,
           "minimum": 0.0
         },
         "fogSize": {
@@ -358,6 +364,10 @@
           "description": "Colour of fog on the planet, if you put fog.",
           "$ref": "#/definitions/MColor"
         },
+        "fogRampPath": {
+          "type": "string",
+          "description": "Relative filepath to the fog color ramp texture, if you put fog.\nx axis is angle to sun (left at midnight, right at noon), y axis is distance to camera (close at bottom, far at top)."
+        },
         "hasOxygen": {
           "type": "boolean",
           "description": "Lets you survive on the planet without a suit."
@@ -368,11 +378,7 @@
         },
         "hasRain": {
           "type": "boolean",
-          "description": "Does this planet have rain?"
-        },
-        "hasSnow": {
-          "type": "boolean",
-          "description": "Does this planet have snow?"
+          "description": "Does this planet have rain? \nThis is equivalent to effects of setting a rain particle/vection field, rain audio volume, and visor effect volume, combined for convenience.\nFor more control over the rain, use those individual components."
         },
         "size": {
           "type": "number",
@@ -484,18 +490,26 @@
       "type": "string",
       "description": "",
       "x-enumNames": [
-        "None",
-        "Water",
-        "Cloud",
-        "Sand",
-        "Plasma"
+        "NONE",
+        "AIR",
+        "WATER",
+        "TRACTOR_BEAM",
+        "CLOUD",
+        "SAND",
+        "PLASMA",
+        "FOG",
+        "GEYSER"
       ],
       "enum": [
         "none",
+        "air",
         "water",
+        "tractorBeam",
         "cloud",
         "sand",
-        "plasma"
+        "plasma",
+        "fog",
+        "geyser"
       ]
     },
     "MGradient": {
@@ -560,7 +574,16 @@
         "gravityVolumePriority": {
           "type": "integer",
           "description": "Optional. You can force this planet's gravity to be felt over other gravity/zero-gravity sources by increasing this number.",
-          "format": "int32"
+          "format": "int32",
+          "default": 0
+        },
+        "pushable": {
+          "type": "boolean",
+          "description": "Apply physics to this planet when you bump into it. Will have a spherical collider the size of surfaceSize. \nFor custom colliders they have to all be convex and you can leave surface size as 0.\nThis is meant for stuff like satellites which are relatively simple and can be de-orbited.\nIf you are using an orbit line but a tracking line, it will be removed when the planet is bumped in to."
+        },
+        "hideProxy": {
+          "type": "boolean",
+          "description": "Set this to true to have no proxy be generated for this planet. \nThis is a small representation of the planet that appears when it is outside of the regular Unity camera range."
         }
       }
     },
@@ -736,7 +759,36 @@
       "properties": {
         "radius": {
           "type": "number",
-          "description": "Radius of the cloaking field around the planet. It's a bit finicky so experiment with different values. If you\ndon't want a cloak, leave this as 0.",
+          "description": "Radius of the cloaking field around the planet. For the Stranger this is 3000",
+          "format": "float"
+        },
+        "cloakScaleDist": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "description": "Not sure what this is. For the Stranger it is 2000. Optional (will default to be proportional to the cloak radius).",
+          "format": "float"
+        },
+        "innerCloakRadius": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "format": "float"
+        },
+        "nearCloakRadius": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "format": "float"
+        },
+        "farCloakRadius": {
+          "type": [
+            "null",
+            "number"
+          ],
           "format": "float"
         },
         "audio": {
@@ -765,7 +817,7 @@
       "properties": {
         "curve": {
           "type": "array",
-          "description": "Scale this object over time",
+          "description": "Scale this object over time. Time value is in minutes.",
           "items": {
             "$ref": "#/definitions/TimeValuePair"
           }
@@ -954,7 +1006,7 @@
       "properties": {
         "curve": {
           "type": "array",
-          "description": "Scale this object over time",
+          "description": "Scale this object over time. Time value is in minutes.",
           "items": {
             "$ref": "#/definitions/TimeValuePair"
           }
@@ -996,9 +1048,20 @@
           "description": "Rotation period in minutes.",
           "format": "float"
         },
+        "initialRotation": {
+          "type": "number",
+          "description": "Offsets the planet's starting sidereal rotation. In degrees.",
+          "format": "float",
+          "maximum": 360.0,
+          "minimum": 0.0
+        },
         "isTidallyLocked": {
           "type": "boolean",
           "description": "Should the body always have one side facing its primary?"
+        },
+        "isStatic": {
+          "type": "boolean",
+          "description": "Is the body meant to stay in one place without moving? If staticPosition is not set, the initial position\nwill be determined using its orbital parameters."
         },
         "alignmentAxis": {
           "description": "If it is tidally locked, this direction will face towards the primary. Ex: Interloper uses `0, -1, 0`. Most planets\nwill want something like `-1, 0, 0`.",
@@ -1013,10 +1076,6 @@
           "type": "boolean",
           "description": "Should the orbit line be dotted?"
         },
-        "isStatic": {
-          "type": "boolean",
-          "description": "Is the body meant to stay in one place without moving? If staticPosition is not set, the initial position\nwill be determined using its orbital parameters."
-        },
         "tint": {
           "description": "Colour of the orbit-line in the map view.",
           "$ref": "#/definitions/MColor"
@@ -1024,6 +1083,16 @@
         "trackingOrbitLine": {
           "type": "boolean",
           "description": "Should we just draw a line behind its orbit instead of the entire circle/ellipse?"
+        },
+        "orbitLineFadeEndDistance": {
+          "type": "number",
+          "description": "If the camera is farther than this distance the orbit line will fade out. Leave empty to not have it fade out.",
+          "format": "float"
+        },
+        "orbitLineFadeStartDistance": {
+          "type": "number",
+          "description": "If the camera is closer than this distance the orbit line will fade out. Leave empty to not have it fade out.",
+          "format": "float"
         },
         "semiMajorAxis": {
           "type": "number",
@@ -1190,6 +1259,20 @@
           "items": {
             "$ref": "#/definitions/AudioSourceInfo"
           }
+        },
+        "gravityCannons": {
+          "type": "array",
+          "description": "Add a gravity cannon to this planet. Must be paired to a new shuttle, which can be placed on this planet or elsewhere.",
+          "items": {
+            "$ref": "#/definitions/GravityCannonInfo"
+          }
+        },
+        "shuttles": {
+          "type": "array",
+          "description": "Add a Nomai shuttle to this planet. Can be paired to a gravity cannon on this planet or elsewhere.",
+          "items": {
+            "$ref": "#/definitions/ShuttleInfo"
+          }
         }
       }
     },
@@ -1230,7 +1313,7 @@
         },
         "path": {
           "type": "string",
-          "description": "Either the path in the scene hierarchy of the item to copy or the path to the object in the supplied asset bundle"
+          "description": "Either the path in the scene hierarchy of the item to copy or the path to the object in the supplied asset bundle. \nIf empty, will make an empty game object. This can be useful for adding other props to it as its children."
         },
         "removeChildren": {
           "type": "array",
@@ -1277,9 +1360,27 @@
           "format": "float",
           "default": 1.0
         },
+        "physicsSuspendUntilImpact": {
+          "type": "boolean",
+          "description": "If true, this detail will stay still until it touches something.\nGood for zero-g props.",
+          "default": false
+        },
         "ignoreSun": {
           "type": "boolean",
           "description": "Set to true if this object's lighting should ignore the effects of sunlight"
+        },
+        "activationCondition": {
+          "type": "string",
+          "description": "Activates this game object when the dialogue condition is met"
+        },
+        "deactivationCondition": {
+          "type": "string",
+          "description": "Deactivates this game object when the dialogue condition is met"
+        },
+        "blinkWhenActiveChanged": {
+          "type": "boolean",
+          "description": "Should the player close their eyes while the activation state changes. Only relevant if activationCondition or deactivationCondition are set.",
+          "default": true
         }
       }
     },
@@ -1314,7 +1415,7 @@
         },
         "pathToAnimController": {
           "type": "string",
-          "description": "If this dialogue is meant for a character, this is the relative path from the planet to that character's\nCharacterAnimController, TravelerController, TravelerEyeController (eye of the universe), FacePlayerWhenTalking, or SolanumAnimController.\n\nIf none of those components are present it will add a FacePlayerWhenTalking component."
+          "description": "If this dialogue is meant for a character, this is the relative path from the planet to that character's\nCharacterAnimController, TravelerController, TravelerEyeController (eye of the universe), FacePlayerWhenTalking, \nHearthianRecorderEffects or SolanumAnimController.\n\nIf it's a Recorder this will also delete the existing dialogue already attached to that prop.\n\nIf none of those components are present it will add a FacePlayerWhenTalking component."
         },
         "radius": {
           "type": "number",
@@ -1627,26 +1728,28 @@
       "x-enumNames": [
         "Wall",
         "Scroll",
+        "Whiteboard",
         "Computer",
-        "Cairn",
+        "PreCrashComputer",
         "Recorder",
         "PreCrashRecorder",
-        "PreCrashComputer",
-        "Trailmarker",
-        "CairnVariant",
-        "Whiteboard"
+        "CairnBrittleHollow",
+        "CairnTimberHearth",
+        "CairnEmberTwin",
+        "Trailmarker"
       ],
       "enum": [
         "wall",
         "scroll",
+        "whiteboard",
         "computer",
-        "cairn",
+        "preCrashComputer",
         "recorder",
         "preCrashRecorder",
-        "preCrashComputer",
-        "trailmarker",
-        "cairnVariant",
-        "whiteboard"
+        "cairnBH",
+        "cairnTH",
+        "cairnCT",
+        "trailmarker"
       ]
     },
     "NomaiTextLocation": {
@@ -1944,13 +2047,11 @@
       "description": "",
       "x-enumNames": [
         "Sockets",
-        "States",
-        "FailedValidation"
+        "States"
       ],
       "enum": [
         "sockets",
-        "states",
-        "FailedValidation"
+        "states"
       ]
     },
     "QuantumSocketInfo": {
@@ -2069,6 +2170,40 @@
           "description": "Fluid type for sounds/effects when colliding with this tornado.",
           "default": "cloud",
           "$ref": "#/definitions/NHFluidType"
+        },
+        "hazardType": {
+          "description": "The type of hazard for this volume. Leave empty for this tornado to not be hazardous.",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/HazardType"
+            }
+          ]
+        },
+        "damagePerSecond": {
+          "type": "number",
+          "description": "The amount of damage you will take per second while inside this tornado. Only used it hazardType is set.",
+          "format": "float",
+          "default": 10.0
+        },
+        "firstContactDamageType": {
+          "description": "The type of damage you will take when you first touch this volume. Leave empty for this tornado to not cause damage on first contact.",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/InstantDamageType"
+            }
+          ]
+        },
+        "firstContactDamage": {
+          "type": "number",
+          "description": "The amount of damage you will take when you first touch this volume. Only relevant if firstContactDamageType is set.",
+          "format": "float",
+          "default": 10.0
         }
       }
     },
@@ -2084,6 +2219,46 @@
         "upwards",
         "downwards",
         "hurricane"
+      ]
+    },
+    "HazardType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "NONE",
+        "GENERAL",
+        "DARKMATTER",
+        "HEAT",
+        "FIRE",
+        "SANDFALL",
+        "ELECTRICITY",
+        "RAPIDS",
+        "RIVERHEAT"
+      ],
+      "enum": [
+        "none",
+        "general",
+        "ghostMatter",
+        "heat",
+        "fire",
+        "sandfall",
+        "electricity",
+        "rapids",
+        "riverHeat"
+      ]
+    },
+    "InstantDamageType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Impact",
+        "Puncture",
+        "Electrical"
+      ],
+      "enum": [
+        "impact",
+        "puncture",
+        "electrical"
       ]
     },
     "VolcanoInfo": {
@@ -2559,7 +2734,7 @@
         },
         "computer": {
           "description": "Will create a modern Nomai computer linked to this receiver.",
-          "$ref": "#/definitions/NomaiWarpComputerLoggerInfo"
+          "$ref": "#/definitions/NomaiComputerInfo"
         },
         "detailed": {
           "type": "boolean",
@@ -2567,7 +2742,7 @@
         }
       }
     },
-    "NomaiWarpComputerLoggerInfo": {
+    "NomaiComputerInfo": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -2689,7 +2864,7 @@
           "description": "An optional rename of this object"
         },
         "track": {
-          "description": "The audio track of this audio source",
+          "description": "The audio track of this audio source.\nMost of the time you'll use environment (the default) for sound effects and music for music. ",
           "default": "environment",
           "$ref": "#/definitions/NHAudioMixerTrackName"
         }
@@ -2734,6 +2909,134 @@
         "muffleIndoors",
         "slideReelMusic"
       ]
+    },
+    "GravityCannonInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "shuttleID": {
+          "type": "string",
+          "description": "Unique ID for the shuttle that pairs with this gravity cannon"
+        },
+        "retrieveReveal": {
+          "type": "string",
+          "description": "Ship log fact revealed when retrieving the shuttle to this pad. Optional."
+        },
+        "launchReveal": {
+          "type": "string",
+          "description": "Ship log fact revealed when launching from this pad. Optional."
+        },
+        "detailed": {
+          "type": "boolean",
+          "description": "Hide the lattice cage around the platform. Defaults to true.",
+          "default": true
+        },
+        "computer": {
+          "description": "Will create a modern Nomai computer linked to this gravity cannon.",
+          "$ref": "#/definitions/NomaiComputerInfo"
+        },
+        "controls": {
+          "description": "Position of the interface used to launc the shuttle",
+          "$ref": "#/definitions/GeneralPropInfo"
+        }
+      }
+    },
+    "GeneralPropInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        }
+      }
+    },
+    "ShuttleInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "id": {
+          "type": "string",
+          "description": "Unique ID for this shuttle"
+        }
+      }
     },
     "ReferenceFrameModule": {
       "type": "object",
@@ -2843,7 +3146,7 @@
       "properties": {
         "curve": {
           "type": "array",
-          "description": "Scale this object over time",
+          "description": "Scale this object over time. Time value is in minutes.",
           "items": {
             "$ref": "#/definitions/TimeValuePair"
           }
@@ -3001,6 +3304,10 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "offset": {
+          "description": "Offsets the player/ship by this local vector when spawning. Used to prevent spawning in the floor. Optional: defaults to (0, 4, 0).",
+          "$ref": "#/definitions/MVector3"
+        },
         "rotation": {
           "description": "Rotation of the object",
           "$ref": "#/definitions/MVector3"
@@ -3042,6 +3349,10 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "offset": {
+          "description": "Offsets the player/ship by this local vector when spawning. Used to prevent spawning in the floor. Optional: defaults to (0, 4, 0).",
+          "$ref": "#/definitions/MVector3"
+        },
         "rotation": {
           "description": "Rotation of the object",
           "$ref": "#/definitions/MVector3"
@@ -3077,7 +3388,7 @@
       "properties": {
         "curve": {
           "type": "array",
-          "description": "Scale this object over time",
+          "description": "Scale this object over time. Time value is in minutes.",
           "items": {
             "$ref": "#/definitions/TimeValuePair"
           }
@@ -3166,6 +3477,10 @@
           "description": "The type of stellar remnant your star will leave behind.",
           "default": "default",
           "$ref": "#/definitions/StellarRemnantType"
+        },
+        "solarFlareSettings": {
+          "description": "Allows overriding solar flare graphical settings.",
+          "$ref": "#/definitions/SolarFlareModule"
         }
       }
     },
@@ -3192,7 +3507,6 @@
         "Default",
         "WhiteDwarf",
         "NeutronStar",
-        "Pulsar",
         "BlackHole",
         "Custom"
       ],
@@ -3200,10 +3514,39 @@
         "default",
         "whiteDwarf",
         "neutronStar",
-        "pulsar",
         "blackHole",
         "custom"
       ]
+    },
+    "SolarFlareModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "scaleFactor": {
+          "type": "number",
+          "description": "Size multiuplier for solar flares. Defaults to 1.",
+          "format": "float",
+          "default": 1
+        },
+        "lifeLength": {
+          "type": "number",
+          "description": "How long a solar flare is visible for. Defaults to 15.",
+          "format": "float",
+          "default": 15.0
+        },
+        "minTimeBetweenFlares": {
+          "type": "number",
+          "description": "Solar flares are emitted randomly. This is the minimum ammount of time between solar flares.",
+          "format": "float",
+          "default": 5.0
+        },
+        "maxTimeBetweenFlares": {
+          "type": "number",
+          "description": "Solar flares are emitted randomly. This is the maximum ammount of time between solar flares.",
+          "format": "float",
+          "default": 30.0
+        }
+      }
     },
     "WaterModule": {
       "type": "object",
@@ -3211,7 +3554,7 @@
       "properties": {
         "curve": {
           "type": "array",
-          "description": "Scale this object over time",
+          "description": "Scale this object over time. Time value is in minutes.",
           "items": {
             "$ref": "#/definitions/TimeValuePair"
           }
@@ -3225,17 +3568,113 @@
           "type": "number",
           "description": "Density of the water sphere. The higher the density, the harder it is to go through this fluid.",
           "format": "float",
-          "default": 1.2
+          "default": 30.0
         },
         "buoyancy": {
           "type": "number",
           "description": "Buoyancy density of the water sphere",
           "format": "float",
-          "default": 1.0
+          "default": 1.1
         },
         "tint": {
           "description": "Tint of the water",
           "$ref": "#/definitions/MColor"
+        }
+      }
+    },
+    "ParticleFieldModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "description": "Particle type for this vection field.",
+          "$ref": "#/definitions/ParticleFieldType"
+        },
+        "followTarget": {
+          "description": "What the particle field activates based on.",
+          "default": "player",
+          "$ref": "#/definitions/FollowTarget"
+        },
+        "densityByHeightCurve": {
+          "type": "array",
+          "description": "Density by height curve. Determines how many particles are emitted at different heights.\nDefaults to a curve based on minimum and maximum heights of various other modules.",
+          "items": {
+            "$ref": "#/definitions/HeightDensityPair"
+          }
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        }
+      }
+    },
+    "ParticleFieldType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Rain",
+        "SnowflakesHeavy",
+        "SnowflakesLight",
+        "Embers",
+        "Clouds",
+        "Leaves",
+        "Bubbles",
+        "Fog",
+        "CrystalMotes",
+        "RockMotes",
+        "IceMotes",
+        "SandMotes",
+        "Crawlies",
+        "Fireflies",
+        "Plankton",
+        "Pollen",
+        "Current"
+      ],
+      "enum": [
+        "rain",
+        "snowflakesHeavy",
+        "snowflakesLight",
+        "embers",
+        "clouds",
+        "leaves",
+        "bubbles",
+        "fog",
+        "crystalMotes",
+        "rockMotes",
+        "iceMotes",
+        "sandMotes",
+        "crawlies",
+        "fireflies",
+        "plankton",
+        "pollen",
+        "current"
+      ]
+    },
+    "FollowTarget": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Player",
+        "Probe"
+      ],
+      "enum": [
+        "player",
+        "probe"
+      ]
+    },
+    "HeightDensityPair": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "height": {
+          "type": "number",
+          "description": "A specific radius",
+          "format": "float"
+        },
+        "density": {
+          "type": "number",
+          "description": "The particle count for this radius.",
+          "format": "float"
         }
       }
     },
@@ -3250,9 +3689,16 @@
             "$ref": "#/definitions/AudioVolumeInfo"
           }
         },
+        "dayNightAudioVolumes": {
+          "type": "array",
+          "description": "Add day night audio volumes to this planet. These volumes play a different clip depending on the time of day.",
+          "items": {
+            "$ref": "#/definitions/DayNightAudioVolumeInfo"
+          }
+        },
         "destructionVolumes": {
           "type": "array",
-          "description": "Add destruction volumes to this planet.",
+          "description": "Add destruction volumes to this planet.\nDestroys bodies if they enter this volume. Can kill the player and recall the scout probe.",
           "items": {
             "$ref": "#/definitions/DestructionVolumeInfo"
           }
@@ -3266,42 +3712,42 @@
         },
         "hazardVolumes": {
           "type": "array",
-          "description": "Add hazard volumes to this planet.",
+          "description": "Add hazard volumes to this planet.\nCauses damage to player when inside this volume.",
           "items": {
             "$ref": "#/definitions/HazardVolumeInfo"
           }
         },
         "interferenceVolumes": {
           "type": "array",
-          "description": "Add interference volumes to this planet.",
+          "description": "Add interference volumes to this planet.\nHides HUD markers of ship scout/probe and prevents scout photos if you are not inside the volume together with ship or scout probe.",
           "items": {
             "$ref": "#/definitions/VolumeInfo"
           }
         },
         "insulatingVolumes": {
           "type": "array",
-          "description": "Add insulating volumes to this planet. These will stop electricty hazard volumes from affecting you (just like the jellyfish).",
+          "description": "Add insulating volumes to this planet.\nThese will stop electricty hazard volumes from affecting you (just like the jellyfish).",
           "items": {
             "$ref": "#/definitions/VolumeInfo"
           }
         },
         "lightSourceVolumes": {
           "type": "array",
-          "description": "Add light source volumes to this planet. These will activate rafts and other light detectors.",
+          "description": "Add light source volumes to this planet.\nThese will activate rafts and other light detectors.",
           "items": {
             "$ref": "#/definitions/VolumeInfo"
           }
         },
         "mapRestrictionVolumes": {
           "type": "array",
-          "description": "Add map restriction volumes to this planet.",
+          "description": "Add map restriction volumes to this planet.\nThe map will be disabled when inside this volume.",
           "items": {
             "$ref": "#/definitions/VolumeInfo"
           }
         },
         "notificationVolumes": {
           "type": "array",
-          "description": "Add notification volumes to this planet.",
+          "description": "Add notification volumes to this planet.\nSends a notification to the player just like ghost matter does when you get too close\nand also to the ship just like when you damage a component on the ship.",
           "items": {
             "$ref": "#/definitions/NotificationVolumeInfo"
           }
@@ -3319,7 +3765,7 @@
         },
         "referenceFrameBlockerVolumes": {
           "type": "array",
-          "description": "Add reference frame blocker volumes to this planet. These will stop the player from seeing/targeting any reference frames.",
+          "description": "Add reference frame blocker volumes to this planet.\nThese will stop the player from seeing/targeting any reference frames.",
           "items": {
             "$ref": "#/definitions/VolumeInfo"
           }
@@ -3344,7 +3790,7 @@
         },
         "speedTrapVolumes": {
           "type": "array",
-          "description": "Add speed trap volumes to this planet. Slows down the player when they enter this volume.",
+          "description": "Add speed trap volumes to this planet.\nSlows down the player when they enter this volume.",
           "items": {
             "$ref": "#/definitions/SpeedTrapVolumeInfo"
           }
@@ -3382,13 +3828,13 @@
       "properties": {
         "layer": {
           "type": "integer",
-          "description": "The layer of this volume.",
+          "description": "The layer of this volume.\n\nLayers separate the priority system. The priority of volumes in one layer will not affect or override volumes in another. The highest priority volume in each layer will stack like normal.\nThe exception is layer 0. A higher-priority volume in layer 0 will override lower-priority volumes in ALL other layers. A lower-priority volume in layer 0 will stack with other layers like normal.\n            \nEx: A player could be affected by the sun on layer 9 priority 0 and planet gravity on layer 3 priority 2. They would experience the gravity of both volumes since they are on different layers.\nIf there was a zero-g volume on layer 0 priority 1, since it is on layer 0 it will override the gravity from the sun (priority 0 which is less than 1) but they will still feel the \ngravity of the planet (priority 2 is greater than 1). The zero-g volume will also still be applied because it is on a different layer.\n            \nDefault value here is 0 which means this volume's priority will be evaluated against all other priority volumes regardless of their layer.",
           "format": "int32",
           "default": 0
         },
         "priority": {
           "type": "integer",
-          "description": "The priority for this volume's effects to be applied. \nEx, a player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.",
+          "description": "The priority of this volume.\n\nVolumes of higher priority will override volumes of lower priority. Volumes of the same priority will stack like normal.\nEx: A player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.\n            \nDefault value here is 1 instead of 0 so it automatically overrides planet gravity, which is 0 by default. ",
           "format": "int32",
           "default": 1
         },
@@ -3423,7 +3869,7 @@
           "$ref": "#/definitions/NHClipSelectionType"
         },
         "track": {
-          "description": "The audio track of this audio volume",
+          "description": "The audio track of this audio volume.\nMost of the time you'll use environment (the default) for sound effects and music for music. ",
           "default": "environment",
           "$ref": "#/definitions/NHAudioMixerTrackName"
         },
@@ -3474,6 +3920,79 @@
         "manual"
       ]
     },
+    "DayNightAudioVolumeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "layer": {
+          "type": "integer",
+          "description": "The layer of this volume.\n\nLayers separate the priority system. The priority of volumes in one layer will not affect or override volumes in another. The highest priority volume in each layer will stack like normal.\nThe exception is layer 0. A higher-priority volume in layer 0 will override lower-priority volumes in ALL other layers. A lower-priority volume in layer 0 will stack with other layers like normal.\n            \nEx: A player could be affected by the sun on layer 9 priority 0 and planet gravity on layer 3 priority 2. They would experience the gravity of both volumes since they are on different layers.\nIf there was a zero-g volume on layer 0 priority 1, since it is on layer 0 it will override the gravity from the sun (priority 0 which is less than 1) but they will still feel the \ngravity of the planet (priority 2 is greater than 1). The zero-g volume will also still be applied because it is on a different layer.\n            \nDefault value here is 0 which means this volume's priority will be evaluated against all other priority volumes regardless of their layer.",
+          "format": "int32",
+          "default": 0
+        },
+        "priority": {
+          "type": "integer",
+          "description": "The priority of this volume.\n\nVolumes of higher priority will override volumes of lower priority. Volumes of the same priority will stack like normal.\nEx: A player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.\n            \nDefault value here is 1 instead of 0 so it automatically overrides planet gravity, which is 0 by default. ",
+          "format": "int32",
+          "default": 1
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume.",
+          "format": "float",
+          "default": 1.0
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "dayAudio": {
+          "type": "string",
+          "description": "The audio to use during the day. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list. Leave empty for no daytime audio."
+        },
+        "nightAudio": {
+          "type": "string",
+          "description": "The audio to use during the day. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list. Leave empty for no nightime audio."
+        },
+        "sun": {
+          "type": "string",
+          "description": "The name of the astro object used to determine if it is day or night."
+        },
+        "dayWindow": {
+          "type": "number",
+          "description": "Angle in degrees defining daytime. Inside this window it will be day and outside it will be night.",
+          "format": "float",
+          "default": 180.0,
+          "maximum": 360.0,
+          "minimum": 0.0
+        },
+        "volume": {
+          "type": "number",
+          "description": "The loudness of the audio",
+          "format": "float",
+          "default": 1.0,
+          "maximum": 1.0,
+          "minimum": 0.0
+        },
+        "track": {
+          "description": "The audio track of this audio volume.\nMost of the time you'll use environment (the default) for sound effects and music for music. ",
+          "default": "environment",
+          "$ref": "#/definitions/NHAudioMixerTrackName"
+        }
+      }
+    },
     "DestructionVolumeInfo": {
       "type": "object",
       "additionalProperties": false,
@@ -3483,9 +4002,9 @@
           "description": "Whether the bodies will shrink when they enter this volume or just disappear instantly.",
           "default": true
         },
-        "onlyAffectsPlayerAndShip": {
+        "onlyAffectsPlayerRelatedBodies": {
           "type": "boolean",
-          "description": "Whether this volume only affects the player and ship."
+          "description": "Whether this volume only affects the player, ship, probe/scout, model rocket ship, and nomai shuttle."
         },
         "radius": {
           "type": "number",
@@ -3560,13 +4079,13 @@
       "properties": {
         "layer": {
           "type": "integer",
-          "description": "The layer of this volume.",
+          "description": "The layer of this volume.\n\nLayers separate the priority system. The priority of volumes in one layer will not affect or override volumes in another. The highest priority volume in each layer will stack like normal.\nThe exception is layer 0. A higher-priority volume in layer 0 will override lower-priority volumes in ALL other layers. A lower-priority volume in layer 0 will stack with other layers like normal.\n            \nEx: A player could be affected by the sun on layer 9 priority 0 and planet gravity on layer 3 priority 2. They would experience the gravity of both volumes since they are on different layers.\nIf there was a zero-g volume on layer 0 priority 1, since it is on layer 0 it will override the gravity from the sun (priority 0 which is less than 1) but they will still feel the \ngravity of the planet (priority 2 is greater than 1). The zero-g volume will also still be applied because it is on a different layer.\n            \nDefault value here is 0 which means this volume's priority will be evaluated against all other priority volumes regardless of their layer.",
           "format": "int32",
           "default": 0
         },
         "priority": {
           "type": "integer",
-          "description": "The priority for this volume's effects to be applied. \nEx, a player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.",
+          "description": "The priority of this volume.\n\nVolumes of higher priority will override volumes of lower priority. Volumes of the same priority will stack like normal.\nEx: A player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.\n            \nDefault value here is 1 instead of 0 so it automatically overrides planet gravity, which is 0 by default. ",
           "format": "int32",
           "default": 1
         },
@@ -3665,46 +4184,6 @@
           "format": "float"
         }
       }
-    },
-    "HazardType": {
-      "type": "string",
-      "description": "",
-      "x-enumNames": [
-        "NONE",
-        "GENERAL",
-        "DARKMATTER",
-        "HEAT",
-        "FIRE",
-        "SANDFALL",
-        "ELECTRICITY",
-        "RAPIDS",
-        "RIVERHEAT"
-      ],
-      "enum": [
-        "none",
-        "general",
-        "ghostMatter",
-        "heat",
-        "fire",
-        "sandfall",
-        "electricity",
-        "rapids",
-        "riverHeat"
-      ]
-    },
-    "InstantDamageType": {
-      "type": "string",
-      "description": "",
-      "x-enumNames": [
-        "Impact",
-        "Puncture",
-        "Electrical"
-      ],
-      "enum": [
-        "impact",
-        "puncture",
-        "electrical"
-      ]
     },
     "VolumeInfo": {
       "type": "object",
@@ -3848,14 +4327,14 @@
       "properties": {
         "destructionVolumes": {
           "type": "array",
-          "description": "Add probe destruction volumes to this planet. These will delete your probe.",
+          "description": "Add probe destruction volumes to this planet.\nThese will delete your probe just like the eye of the universe does.",
           "items": {
             "$ref": "#/definitions/VolumeInfo"
           }
         },
         "safetyVolumes": {
           "type": "array",
-          "description": "Add probe safety volumes to this planet. These will stop the probe destruction volumes from working.",
+          "description": "Add probe safety volumes to this planet.\nThese will stop the probe destruction volumes from working.",
           "items": {
             "$ref": "#/definitions/VolumeInfo"
           }
@@ -3957,14 +4436,14 @@
       "properties": {
         "antiTravelMusicRulesets": {
           "type": "array",
-          "description": "Add anti travel music rulesets to this planet.",
+          "description": "Add anti travel music rulesets to this planet.\nThis means no space/traveling music while inside the ruleset/volume.\nUsually used on planets.",
           "items": {
             "$ref": "#/definitions/VolumeInfo"
           }
         },
         "playerImpactRulesets": {
           "type": "array",
-          "description": "Add player impact rulesets to this planet.",
+          "description": "Add player impact rulesets to this planet. ",
           "items": {
             "$ref": "#/definitions/PlayerImpactRulesetInfo"
           }
@@ -4185,13 +4664,13 @@
       "properties": {
         "layer": {
           "type": "integer",
-          "description": "The layer of this volume.",
+          "description": "The layer of this volume.\n\nLayers separate the priority system. The priority of volumes in one layer will not affect or override volumes in another. The highest priority volume in each layer will stack like normal.\nThe exception is layer 0. A higher-priority volume in layer 0 will override lower-priority volumes in ALL other layers. A lower-priority volume in layer 0 will stack with other layers like normal.\n            \nEx: A player could be affected by the sun on layer 9 priority 0 and planet gravity on layer 3 priority 2. They would experience the gravity of both volumes since they are on different layers.\nIf there was a zero-g volume on layer 0 priority 1, since it is on layer 0 it will override the gravity from the sun (priority 0 which is less than 1) but they will still feel the \ngravity of the planet (priority 2 is greater than 1). The zero-g volume will also still be applied because it is on a different layer.\n            \nDefault value here is 0 which means this volume's priority will be evaluated against all other priority volumes regardless of their layer.",
           "format": "int32",
           "default": 0
         },
         "priority": {
           "type": "integer",
-          "description": "The priority for this volume's effects to be applied. \nEx, a player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.",
+          "description": "The priority of this volume.\n\nVolumes of higher priority will override volumes of lower priority. Volumes of the same priority will stack like normal.\nEx: A player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.\n            \nDefault value here is 1 instead of 0 so it automatically overrides planet gravity, which is 0 by default. ",
           "format": "int32",
           "default": 1
         },
@@ -4239,13 +4718,13 @@
       "properties": {
         "layer": {
           "type": "integer",
-          "description": "The layer of this volume.",
+          "description": "The layer of this volume.\n\nLayers separate the priority system. The priority of volumes in one layer will not affect or override volumes in another. The highest priority volume in each layer will stack like normal.\nThe exception is layer 0. A higher-priority volume in layer 0 will override lower-priority volumes in ALL other layers. A lower-priority volume in layer 0 will stack with other layers like normal.\n            \nEx: A player could be affected by the sun on layer 9 priority 0 and planet gravity on layer 3 priority 2. They would experience the gravity of both volumes since they are on different layers.\nIf there was a zero-g volume on layer 0 priority 1, since it is on layer 0 it will override the gravity from the sun (priority 0 which is less than 1) but they will still feel the \ngravity of the planet (priority 2 is greater than 1). The zero-g volume will also still be applied because it is on a different layer.\n            \nDefault value here is 0 which means this volume's priority will be evaluated against all other priority volumes regardless of their layer.",
           "format": "int32",
           "default": 0
         },
         "priority": {
           "type": "integer",
-          "description": "The priority for this volume's effects to be applied. \nEx, a player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.",
+          "description": "The priority of this volume.\n\nVolumes of higher priority will override volumes of lower priority. Volumes of the same priority will stack like normal.\nEx: A player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.\n            \nDefault value here is 1 instead of 0 so it automatically overrides planet gravity, which is 0 by default. ",
           "format": "int32",
           "default": 1
         },
@@ -4313,13 +4792,13 @@
         },
         "layer": {
           "type": "integer",
-          "description": "The layer of this volume.",
+          "description": "The layer of this volume.\n\nLayers separate the priority system. The priority of volumes in one layer will not affect or override volumes in another. The highest priority volume in each layer will stack like normal.\nThe exception is layer 0. A higher-priority volume in layer 0 will override lower-priority volumes in ALL other layers. A lower-priority volume in layer 0 will stack with other layers like normal.\n            \nEx: A player could be affected by the sun on layer 9 priority 0 and planet gravity on layer 3 priority 2. They would experience the gravity of both volumes since they are on different layers.\nIf there was a zero-g volume on layer 0 priority 1, since it is on layer 0 it will override the gravity from the sun (priority 0 which is less than 1) but they will still feel the \ngravity of the planet (priority 2 is greater than 1). The zero-g volume will also still be applied because it is on a different layer.\n            \nDefault value here is 0 which means this volume's priority will be evaluated against all other priority volumes regardless of their layer.",
           "format": "int32",
           "default": 0
         },
         "priority": {
           "type": "integer",
-          "description": "The priority for this volume's effects to be applied. \nEx, a player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.",
+          "description": "The priority of this volume.\n\nVolumes of higher priority will override volumes of lower priority. Volumes of the same priority will stack like normal.\nEx: A player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.\n            \nDefault value here is 1 instead of 0 so it automatically overrides planet gravity, which is 0 by default. ",
           "format": "int32",
           "default": 1
         }
@@ -4419,7 +4898,7 @@
       "properties": {
         "curve": {
           "type": "array",
-          "description": "Scale this object over time",
+          "description": "Scale this object over time. Time value is in minutes.",
           "items": {
             "$ref": "#/definitions/TimeValuePair"
           }

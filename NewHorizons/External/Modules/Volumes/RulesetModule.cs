@@ -9,10 +9,12 @@ namespace NewHorizons.External.Modules.Volumes
     {
         /// <summary>
         /// Add anti travel music rulesets to this planet.
+        /// This means no space/traveling music while inside the ruleset/volume.
+        /// Usually used on planets.
         /// </summary>
         public VolumeInfo[] antiTravelMusicRulesets;
         /// <summary>
-        /// Add player impact rulesets to this planet.
+        /// Add player impact rulesets to this planet. 
         /// </summary>
         public PlayerImpactRulesetInfo[] playerImpactRulesets;
         /// <summary>

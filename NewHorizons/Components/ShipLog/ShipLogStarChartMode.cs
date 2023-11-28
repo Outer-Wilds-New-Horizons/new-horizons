@@ -54,20 +54,7 @@ namespace NewHorizons.Components.ShipLog
             _nextCardIndex = 0;
             foreach (var starSystem in Main.SystemDict.Keys)
             {
-                // Get rid of the warp option for the current system
-                if (starSystem == Main.Instance.CurrentStarSystem) continue;
-
-                var config = Main.SystemDict[starSystem];
-
-                // Conditions to allow warping into that system (either no planets (stock system) or has a ship spawn point)
-                var flag = false;
-                if (starSystem.Equals("SolarSystem")) flag = true;
-                else if (starSystem.Equals("EyeOfTheUniverse")) flag = false;
-                else if (config.Spawn?.shipSpawn != null) flag = true;
-
-                if (!StarChartHandler.HasUnlockedSystem(starSystem)) continue;
-
-                if (flag && Main.SystemDict[starSystem].Config.canEnterViaWarpDrive)
+                if (StarChartHandler.CanWarpToSystem(starSystem))
                 {
                     AddSystemCard(starSystem);
                 }
@@ -134,9 +121,18 @@ namespace NewHorizons.Components.ShipLog
                 }
                 else
                 {
-                    var path = Path.Combine("planets", uniqueID + ".png");
+                    var mod = Main.SystemDict[uniqueID].Mod;
+
+                    var path = Path.Combine("systems", uniqueID + ".png");
+
+                    // Else check the old location
+                    if (!File.Exists(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, path)))
+                    {
+                        path = Path.Combine("planets", uniqueID + ".png");
+                    }
+
                     NHLogger.LogVerbose($"ShipLogStarChartManager - Trying to load {path}");
-                    texture = ImageUtilities.GetTexture(Main.SystemDict[uniqueID].Mod, path);
+                    texture = ImageUtilities.GetTexture(mod, path);
                 }
             }
             catch (Exception) { }
@@ -250,7 +246,7 @@ namespace NewHorizons.Components.ShipLog
             if (!name.Equals(uniqueID)) return name;
 
             // Else we return a default name
-            if (uniqueID.Equals("SolarSystem")) return "Hearthian System";
+            if (uniqueID.Equals("SolarSystem")) return "The Outer Wilds";
 
             var splitString = uniqueID.Split('.');
             if (splitString.Length > 1) splitString = splitString.Skip(1).ToArray();

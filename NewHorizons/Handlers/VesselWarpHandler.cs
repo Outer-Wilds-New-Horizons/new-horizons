@@ -62,6 +62,7 @@ namespace NewHorizons.Handlers
         public static void TeleportToVessel()
         {
             var playerSpawner = Object.FindObjectOfType<PlayerSpawner>();
+            NHLogger.LogVerbose("Debug warping into vessel");
             playerSpawner.DebugWarp(_vesselSpawnPoint);
             Builder.General.SpawnPointBuilder.SuitUp();
 
@@ -168,7 +169,7 @@ namespace NewHorizons.Handlers
             var attachWarpExitToVessel = system.Config.Vessel?.warpExit?.attachToVessel ?? false;
             var warpExitParent = vesselWarpController._targetWarpPlatform.transform.parent;
 
-            var warpExit = GeneralPropBuilder.MakeFromExisting(vesselWarpController._targetWarpPlatform.gameObject, planetGO, null, system.Config.Vessel?.warpExit, parentOverride: attachWarpExitToVessel ? warpExitParent : null);
+            var warpExit = GeneralPropBuilder.MakeFromExisting(vesselWarpController._targetWarpPlatform.gameObject, planetGO, null, system.Config.Vessel?.warpExit, defaultParent: attachWarpExitToVessel ? warpExitParent : null);
             if (attachWarpExitToVessel)
             {
                 warpExit.transform.parent = warpExitParent;

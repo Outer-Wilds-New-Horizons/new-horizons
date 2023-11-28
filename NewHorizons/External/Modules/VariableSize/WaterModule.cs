@@ -15,12 +15,12 @@ namespace NewHorizons.External.Modules.VariableSize
         /// <summary>
         /// Density of the water sphere. The higher the density, the harder it is to go through this fluid.
         /// </summary>
-        [DefaultValue(1.2f)] public float density = 1.2f;
+        [DefaultValue(30f)] public float density = 30f;
 
         /// <summary>
         /// Buoyancy density of the water sphere
         /// </summary>
-        [DefaultValue(1f)] public float buoyancy = 1f;
+        [DefaultValue(1.1f)] public float buoyancy = 1.1f;
 
         /// <summary>
         /// Tint of the water

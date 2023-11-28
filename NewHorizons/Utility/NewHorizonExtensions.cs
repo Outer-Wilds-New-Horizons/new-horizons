@@ -1,4 +1,5 @@
 using NewHorizons.External.Configs;
+using NewHorizons.External.Modules.VariableSize;
 using NewHorizons.External.SerializableData;
 using NewHorizons.External.SerializableEnums;
 using NewHorizons.Utility.OWML;
@@ -12,6 +13,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using static NewHorizons.External.Modules.ParticleFieldModule;
 using NomaiCoordinates = NewHorizons.External.Configs.StarSystemConfig.NomaiCoordinates;
 
 namespace NewHorizons.Utility
@@ -255,13 +257,13 @@ namespace NewHorizons.Utility
         }
     
 		public static FluidVolume.Type ConvertToOW(this NHFluidType fluidType, FluidVolume.Type @default = FluidVolume.Type.NONE)
-            => EnumUtils.Parse(fluidType.ToString().ToUpper(), @default);
+            => EnumUtils.Parse(fluidType.ToString(), @default);
 
         public static OWAudioMixer.TrackName ConvertToOW(this NHAudioMixerTrackName trackName, OWAudioMixer.TrackName @default = OWAudioMixer.TrackName.Environment)
-            => EnumUtils.Parse(trackName.ToString().ToUpper(), @default);
+            => EnumUtils.Parse(trackName.ToString(), @default);
         
         public static OWAudioSource.ClipSelectionOnPlay ConvertToOW(this NHClipSelectionType clipSelection, OWAudioSource.ClipSelectionOnPlay @default = OWAudioSource.ClipSelectionOnPlay.RANDOM)
-            => EnumUtils.Parse(clipSelection.ToString().ToUpper(), @default);
+            => EnumUtils.Parse(clipSelection.ToString(), @default);
 	
         public static void SmoothLookDir(this GameObject go, Vector3 direction, float dt, float angularVelocity)
         {
@@ -276,6 +278,32 @@ namespace NewHorizons.Utility
         public static void LookDir(this GameObject go, Vector3 direction)
         {
             go.transform.rotation = Quaternion.FromToRotation(Vector3.forward, direction);
+        }
+
+        public static AnimationCurve ToAnimationCurve(this TimeValuePair[] pairs)
+        {
+            var curve = new AnimationCurve();
+            if (pairs != null)
+            {
+                foreach (var pair in pairs)
+                {
+                    curve.AddKey(new Keyframe(pair.time, pair.value));
+                }
+            }
+            return curve;
+        }
+
+        public static AnimationCurve ToAnimationCurve(this HeightDensityPair[] pairs)
+        {
+            var curve = new AnimationCurve();
+            if (pairs != null)
+            {
+                foreach (var pair in pairs)
+                {
+                    curve.AddKey(new Keyframe(pair.height, pair.density));
+                }
+            }
+            return curve;
         }
     }
 }

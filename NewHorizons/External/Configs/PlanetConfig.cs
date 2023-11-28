@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using UnityEngine;
 
 namespace NewHorizons.External.Configs
 {
@@ -168,6 +169,12 @@ namespace NewHorizons.External.Configs
         public WaterModule Water;
 
         /// <summary>
+        /// Add particle effects in a field around the planet.
+        /// Also known as Vection Fields.
+        /// </summary>
+        public ParticleFieldModule[] ParticleFields;
+
+        /// <summary>
         /// Add various volumes on this body
         /// </summary>
         public VolumesModule Volumes;
@@ -217,7 +224,7 @@ namespace NewHorizons.External.Configs
             if (Base.centerOfSolarSystem) Orbit.isStatic = true;
             if (Atmosphere?.clouds?.lightningGradient != null) Atmosphere.clouds.hasLightning = true;
             if (Bramble?.dimension != null && Orbit?.staticPosition == null) throw new Exception($"Dimension {name} must have Orbit.staticPosition defined.");
-            if (Bramble?.dimension != null) canShowOnTitle = false; 
+            if (Bramble?.dimension != null) canShowOnTitle = false;
             if (Orbit?.staticPosition != null) Orbit.isStatic = true;
 
             // For each quantum group, verify the following:
@@ -341,6 +348,29 @@ namespace NewHorizons.External.Configs
                 // useBasicCloudShader is obsolete
                 if (Atmosphere.clouds != null && Atmosphere.clouds.useBasicCloudShader)
                     Atmosphere.clouds.cloudsPrefab = CloudPrefabType.Basic;
+
+                if (Atmosphere.hasRain)
+                {
+                    if (ParticleFields == null) ParticleFields = new ParticleFieldModule[0];
+                    ParticleFields = ParticleFields.Append(new ParticleFieldModule
+                    {
+                        type = ParticleFieldModule.ParticleFieldType.Rain,
+                        rename = "RainEmitter"
+                    }).ToArray();
+                }
+
+                if (Atmosphere.hasSnow)
+                {
+                    if (ParticleFields == null) ParticleFields = new ParticleFieldModule[0];
+                    for (int i = 0; i < 5; i++)
+                    {
+                        ParticleFields = ParticleFields.Append(new ParticleFieldModule
+                        {
+                            type = ParticleFieldModule.ParticleFieldType.SnowflakesHeavy,
+                            rename = "SnowEmitter"
+                        }).ToArray();
+                    }
+                }
             }
 
             if (Props?.tornados != null)
@@ -429,6 +459,9 @@ namespace NewHorizons.External.Configs
             if (Star != null)
             {
                 if (!Star.goSupernova) Star.stellarDeathType = StellarDeathType.None;
+
+                // Gave up on supporting pulsars
+                if (Star.stellarRemnantType == StellarRemnantType.Pulsar) Star.stellarRemnantType = StellarRemnantType.NeutronStar;
             }
 
             // Signals no longer use two different variables for audio
@@ -463,7 +496,7 @@ namespace NewHorizons.External.Configs
                     if (ring.curve != null) ring.scaleCurve = ring.curve;
                 }
             }
-            
+
             if (Base.zeroGravityRadius != 0f)
             {
                 Volumes ??= new VolumesModule();
@@ -579,6 +612,34 @@ namespace NewHorizons.External.Configs
                     }
                 }
             }
+            if (Props?.nomaiText != null)
+            {
+                foreach (var nomaiText in Props.nomaiText)
+                {
+                    if (nomaiText.type == Modules.TranslatorText.NomaiTextType.Cairn)
+                    {
+                        nomaiText.type = Modules.TranslatorText.NomaiTextType.CairnBrittleHollow;
+                    }
+                    else if (nomaiText.type == Modules.TranslatorText.NomaiTextType.CairnVariant)
+                    {
+                        nomaiText.type = Modules.TranslatorText.NomaiTextType.CairnTimberHearth;
+                    }
+                }
+            }
+            if (Props?.translatorText != null)
+            {
+                foreach (var translatorText in Props.translatorText)
+                {
+                    if (translatorText.type == Modules.TranslatorText.NomaiTextType.Cairn)
+                    {
+                        translatorText.type = Modules.TranslatorText.NomaiTextType.CairnBrittleHollow;
+                    }
+                    else if (translatorText.type == Modules.TranslatorText.NomaiTextType.CairnVariant)
+                    {
+                        translatorText.type = Modules.TranslatorText.NomaiTextType.CairnTimberHearth;
+                    }
+                }
+            }
 
             if (Base.hasCometTail)
             {
@@ -586,6 +647,14 @@ namespace NewHorizons.External.Configs
                 if (Base.cometTailRotation != null)
                 {
                     CometTail.rotationOverride = Base.cometTailRotation;
+                }
+            }
+
+            if (Volumes?.destructionVolumes != null)
+            {
+                foreach (var destructionVolume in Volumes.destructionVolumes)
+                {
+                    if (destructionVolume.onlyAffectsPlayerAndShip) destructionVolume.onlyAffectsPlayerRelatedBodies = true;
                 }
             }
         }
