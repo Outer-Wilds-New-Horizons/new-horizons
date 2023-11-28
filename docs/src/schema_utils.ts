@@ -167,7 +167,7 @@ export const SchemaTools = {
                                 type: "JSON",
                                 val: { title: key, ...val }
                             }
-                        } as Schema)
+                        }) as Schema
                 );
             case "XML":
                 let node = schema.internalSchema.val;
@@ -190,7 +190,7 @@ export const SchemaTools = {
                                         type: "XML",
                                         val: d
                                     }
-                                } as Schema)
+                                }) as Schema
                         );
                 } else {
                     return [];

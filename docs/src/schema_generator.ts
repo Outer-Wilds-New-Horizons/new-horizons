@@ -1,19 +1,17 @@
 import { Schema, SchemaTools } from "./schema_utils";
 import * as fs from "node:fs";
 
-
 const addFrontmatter = (content: string, frontmatter: Record<string, boolean | string>) => {
-    const entries = Object.entries(frontmatter).map(([key, value]) => `${key}: ${value}`)
+    const entries = Object.entries(frontmatter).map(([key, value]) => `${key}: ${value}`);
 
     if (entries.length === 0) {
-        return content
+        return content;
     }
 
-    return `---\n${entries.join('\n')}\n---\n\n${content}`
-}
+    return `---\n${entries.join("\n")}\n---\n\n${content}`;
+};
 
 export const generateSchema = (fileName: string) => {
-
     const schema = SchemaTools.readSchema(fileName);
 
     const dir = `src/content/docs/schemas/${schema.slug}`;
@@ -28,8 +26,7 @@ export const generateSchema = (fileName: string) => {
         editUrl: false
     };
 
-    const content = `import Schema from "/src/components/Schemas/Schema.astro";\n\n<Schema fileName="${schema.fileName}" />\n`
+    const content = `import Schema from "/src/components/Schemas/Schema.astro";\n\n<Schema fileName="${schema.fileName}" />\n`;
 
-    fs.writeFileSync(`${dir}/index.mdx`, addFrontmatter(content, frontMatter))
-
+    fs.writeFileSync(`${dir}/index.mdx`, addFrontmatter(content, frontMatter));
 };

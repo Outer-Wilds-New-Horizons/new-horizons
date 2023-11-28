@@ -13,7 +13,7 @@ You may also notice blue and yellow logs start appearing in your console, this i
 
 There are two templates for New Horizons addons.
 The [New Horizons Addon Template](https://github.com/xen-42/ow-new-horizons-config-template) is used for addons that **don't use custom code**,
-this is ideal for simple projects and people just starting out.  
+this is ideal for simple projects and people just starting out.
 
 The [Outer Wilds Mod Template](https://github.com/ow-mods/ow-mod-template) is used for mods that use custom code,
 **you must enable "Use New Horizons" in order for it to work with New Horizons**.
@@ -31,17 +31,17 @@ rectangular-to-polar coordinate transformation, useful for fixing abnormalities 
 
 These mods are useful when developing your addon
 
-- [Unity Explorer](https://outerwildsmods.com/mods/unityexplorer) - Used to find the paths of game objects for copying and can be used to manually position props, ship log entries, and more.
-- [Collider Visualizer](https://outerwildsmods.com/mods/collidervisualizer) - Useful when creating dialogue triggers or reveal volumes.
-- [Save Editor](https://outerwildsmods.com/mods/saveeditor) - Useful when creating a custom [ship log](/ship-log), can be used to reveal all custom facts so you can see them in the ship's computer.
-- [Time Saver](https://outerwildsmods.com/mods/timesaver/) - Lets you skip some repeated cutscenes and get into the game faster.
+-   [Unity Explorer](https://outerwildsmods.com/mods/unityexplorer) - Used to find the paths of game objects for copying and can be used to manually position props, ship log entries, and more.
+-   [Collider Visualizer](https://outerwildsmods.com/mods/collidervisualizer) - Useful when creating dialogue triggers or reveal volumes.
+-   [Save Editor](https://outerwildsmods.com/mods/saveeditor) - Useful when creating a custom [ship log](/ship-log), can be used to reveal all custom facts so you can see them in the ship's computer.
+-   [Time Saver](https://outerwildsmods.com/mods/timesaver/) - Lets you skip some repeated cutscenes and get into the game faster.
 
 ## Helpful Tools
 
 These tools/references are highly recommended
 
-- [VSCode](https://code.visualstudio.com/)
-- [VSCode XML Addon](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-xml)
-- [XML Basics Tutorial](https://www.w3schools.com/xml/xml_whatis.asp)
-- [JSON Basics Tutorial](https://www.tutorialspoint.com/json/index.htm)
-- [The Examples Mod](https://github.com/xen-42/ow-new-horizons-examples)
+-   [VSCode](https://code.visualstudio.com/)
+-   [VSCode XML Addon](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-xml)
+-   [XML Basics Tutorial](https://www.w3schools.com/xml/xml_whatis.asp)
+-   [JSON Basics Tutorial](https://www.tutorialspoint.com/json/index.htm)
+-   [The Examples Mod](https://github.com/xen-42/ow-new-horizons-examples)

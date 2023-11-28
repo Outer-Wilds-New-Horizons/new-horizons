@@ -1,7 +1,6 @@
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
 
-import sitemap from "@astrojs/sitemap";
 import { generateSchema } from "./src/schema_generator";
 
 generateSchema("body_schema.json");

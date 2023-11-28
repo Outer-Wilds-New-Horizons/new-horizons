@@ -8,6 +8,7 @@ description: API reference for New Horizons
 Put this in a C# file somewhere in your mod:
 
 <!-- Auto update this would be cool -->
+
 ```cs
 public interface INewHorizons
 {
