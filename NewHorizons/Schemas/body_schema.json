@@ -1935,60 +1935,60 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "ambientLightColor": {
-          "description": "Ambient light colour when viewing this slide.",
-          "$ref": "#/definitions/MColor"
-        },
-        "ambientLightIntensity": {
-          "type": "number",
-          "description": "Ambient light intensity when viewing this slide.",
-          "format": "float"
-        },
-        "ambientLightRange": {
-          "type": "number",
-          "description": "Ambient light range when viewing this slide.",
-          "format": "float"
-        },
-        "backdropAudio": {
-          "type": "string",
-          "description": "The name of the AudioClip that will continuously play while watching these slides"
-        },
-        "backdropFadeTime": {
-          "type": "number",
-          "description": "The time to fade into the backdrop audio",
-          "format": "float"
-        },
-        "beatAudio": {
-          "type": "string",
-          "description": "The name of the AudioClip for a one-shot sound when opening the slide."
-        },
-        "beatDelay": {
-          "type": "number",
-          "description": "The time delay until the one-shot audio",
-          "format": "float"
-        },
-        "blackFrameDuration": {
-          "type": "number",
-          "description": "Before viewing this slide, there will be a black frame for this many seconds.",
-          "format": "float"
-        },
         "imagePath": {
           "type": "string",
           "description": "The path to the image file for this slide."
         },
+        "ambientLightIntensity": {
+          "type": "number",
+          "description": "Ambient light intensity when viewing this slide. (Base game default: 1)",
+          "format": "float"
+        },
+        "ambientLightRange": {
+          "type": "number",
+          "description": "Ambient light range when viewing this slide. (Base game default: 20)",
+          "format": "float"
+        },
+        "ambientLightColor": {
+          "description": "Ambient light colour when viewing this slide. (Base game default: white)",
+          "$ref": "#/definitions/MColor"
+        },
+        "spotIntensityMod": {
+          "type": "number",
+          "description": "Spotlight intensity modifier when viewing this slide. (Base game default: 0)",
+          "format": "float"
+        },
+        "backdropAudio": {
+          "type": "string",
+          "description": "The name of the AudioClip that will continuously play while watching these slides (Base game default: Reel_1_Backdrop_A)"
+        },
+        "backdropFadeTime": {
+          "type": "number",
+          "description": "The time to fade into the backdrop audio (Base game default: 2)",
+          "format": "float"
+        },
+        "beatAudio": {
+          "type": "string",
+          "description": "The name of the AudioClip for a one-shot sound when opening the slide. (Base game default: Reel_1_Beat_A)"
+        },
+        "beatDelay": {
+          "type": "number",
+          "description": "The time delay until the one-shot audio (Base game default: 0)",
+          "format": "float"
+        },
+        "blackFrameDuration": {
+          "type": "number",
+          "description": "Before viewing this slide, there will be a black frame for this many seconds. (Base game default: 0)",
+          "format": "float"
+        },
         "playTimeDuration": {
           "type": "number",
-          "description": "Play-time duration for auto-projector slides.",
+          "description": "Play-time duration for auto-projector slides. (Base game default: 0)",
           "format": "float"
         },
         "reveal": {
           "type": "string",
-          "description": "Ship log fact revealed when viewing this slide"
-        },
-        "spotIntensityMod": {
-          "type": "number",
-          "description": "Spotlight intensity modifier when viewing this slide.",
-          "format": "float"
+          "description": "Ship log fact revealed when viewing this slide (Base game default: \"\")"
         }
       }
     },
