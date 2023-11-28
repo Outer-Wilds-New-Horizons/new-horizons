@@ -110,6 +110,7 @@ namespace NewHorizons.Builder.Props
             // Now we replace the slides
             int slidesCount = info.slides.Length;
             var slideCollection = new SlideCollection(slidesCount);
+            slideCollection.streamingAssetIdentifier = string.Empty; // NREs if null
 
             // The base game ones only have 15 slides max
             var textures = new Texture2D[slidesCount >= 15 ? 15 : slidesCount];
@@ -177,7 +178,8 @@ namespace NewHorizons.Builder.Props
             // Now we replace the slides
             int slidesCount = info.slides.Length;
             var slideCollection = new SlideCollection(slidesCount);
-            
+            slideCollection.streamingAssetIdentifier = string.Empty; // NREs if null
+
             var imageLoader = AddAsyncLoader(projectorObj, mod, info.slides, ref slideCollection);
             imageLoader.imageLoadedEvent.AddListener((Texture2D tex, int index) => { slideCollection.slides[index]._image = ImageUtilities.Invert(tex); });
 
@@ -215,6 +217,7 @@ namespace NewHorizons.Builder.Props
             var slides = info.slides;
             var slidesCount = slides.Length;
             var slideCollection = new SlideCollection(slidesCount); // TODO: uh I think that info.slides[i].playTimeDuration is not being read here... note to self for when I implement support for that: 0.7 is what to default to if playTimeDuration turns out to be 0
+            slideCollection.streamingAssetIdentifier = string.Empty; // NREs if null
 
             var imageLoader = AddAsyncLoader(g, mod, info.slides, ref slideCollection);
             imageLoader.imageLoadedEvent.AddListener((Texture2D tex, int index) => { slideCollection.slides[index]._image = tex; });
@@ -262,6 +265,7 @@ namespace NewHorizons.Builder.Props
             var slides = info.slides;
             var slidesCount = slides.Length;
             var slideCollection = new SlideCollection(slidesCount);
+            slideCollection.streamingAssetIdentifier = string.Empty; // NREs if null
 
             var imageLoader = AddAsyncLoader(standingTorch, mod, slides, ref slideCollection);
 
