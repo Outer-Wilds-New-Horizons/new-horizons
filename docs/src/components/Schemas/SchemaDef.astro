@@ -1,5 +1,6 @@
 ---
 import { SchemaTools } from '../../schema_utils';
+import Breadcrumb from './Breadcrumb.astro';
 import Content from './Content.astro';
 
 interface Props {
@@ -9,12 +10,13 @@ interface Props {
 
 const { fileName, def } = Astro.props; 
 
-const schema = SchemaTools.readSchema(`../NewHorizons/Schemas/${fileName}`);
+const schema = SchemaTools.readSchema(fileName);
 const defs = SchemaTools.getDefs(schema);
 
 const targetDef = defs.find(d => d.slug === def);
 
 ---
 
+<Breadcrumb schema={targetDef!} />
 <Content schema={targetDef!} level={0} isDef />
 

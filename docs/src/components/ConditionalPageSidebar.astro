@@ -4,7 +4,7 @@ import Default from "@astrojs/starlight/components/PageSidebar.astro";
 import { SchemaTools } from "../schema_utils";
 import type { MarkdownHeading } from "astro";
 
-const isSchema = Astro.props.slug.startsWith("schemas/");
+const isSchema = Astro.props.slug.startsWith("schemas/") && !Astro.props.slug.endsWith("/defs");
 
 type TocItem = Exclude<ReturnType<Exclude<Props["toc"], undefined>["items"]["find"]>, undefined>;
 
@@ -29,15 +29,17 @@ function generateToC(
 let props = Astro.props;
 
 if (isSchema) {
-    console.log("Is Schema!");
     const schemaFileName = props.entry.data.head[0]?.attrs?.fileName as string | undefined;
     if (schemaFileName) {
-        const schema = SchemaTools.readSchema(schemaFileName);
+        let schema = SchemaTools.readSchema(schemaFileName);
+        const defName = props.entry.data.head[0]?.attrs?.def as string | undefined;
+        if (defName) {
+            schema = SchemaTools.getDefs(schema).find(d => d.slug === defName)!;
+        }
         const headings = SchemaTools.getHeaders(schema);
         props.headings = headings;
         props.toc!.items = generateToC(headings, props.entry.data.title);
     }
-    console.log(props.toc);
 }
 ---
 

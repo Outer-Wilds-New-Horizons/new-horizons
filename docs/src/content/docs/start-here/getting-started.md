@@ -96,7 +96,7 @@ With the schema you get:
 -   Automatic error detection for incorrect data types or values
 -   Autocomplete, also called IntelliSense
 
-The schema we're using here is the [Celestial Body Schema](/schemas/body_schema), but there are many others available in the Schemas section of the left sidebar.
+The schema we're using here is the [Celestial Body Schema](/schemas/body-schema), but there are many others available in the Schemas section of the left sidebar.
 
 ### Testing The Planet
 

@@ -85,6 +85,7 @@ export const SchemaTools = {
                         return documentation.elements?.[0]?.text;
                     }
                 }
+                def: string;
         }
     },
 
@@ -222,7 +223,7 @@ export const SchemaTools = {
         }
     },
 
-    getProps: (schema: Schema): [string, Schema][] => {
+    getProps: (schema: Schema, level: number): [string, Schema][] => {
         switch (schema.internalSchema.type) {
             case "JSON":
                 const internalSchema = schema.internalSchema.val;
@@ -231,7 +232,7 @@ export const SchemaTools = {
                         e[0],
                         {
                             fileName: schema.fileName,
-                            slug: `${schema.slug}-${getSchemaSlug(e[0])}`,
+                            slug: `${level === 0 ? "" : `${schema.slug}-`}${getSchemaSlug(e[0])}`,
                             rootSlug: schema.rootSlug,
                             internalSchema: {
                                 type: "JSON",
@@ -245,7 +246,7 @@ export const SchemaTools = {
                             "Items",
                             {
                                 fileName: schema.fileName,
-                                slug: `${schema.slug}-items`,
+                                slug: `${level === 0 ? "" : `${schema.slug}-`}items`,
                                 rootSlug: schema.rootSlug,
                                 internalSchema: {
                                     type: "JSON",

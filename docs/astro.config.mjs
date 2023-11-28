@@ -3,6 +3,8 @@ import starlight from "@astrojs/starlight";
 
 import { generateSchema } from "./src/schema_generator";
 
+const url = "https://nh.outerwildsmods.com";
+
 generateSchema("body_schema.json");
 generateSchema("star_system_schema.json");
 generateSchema("translation_schema.json");
@@ -11,9 +13,25 @@ generateSchema("dialogue_schema.xsd");
 generateSchema("text_schema.xsd");
 generateSchema("shiplog_schema.xsd");
 
+const ogMeta = (name, val) => ({
+    tag: "meta",
+    attrs: {
+        property: `og:${name}`,
+        content: val
+    }
+});
+
+const twMeta = (name, val) => ({
+    tag: "meta",
+    attrs: {
+        name: `twitter:${name}`,
+        content: val
+    }
+});
+
 // https://astro.build/config
 export default defineConfig({
-    site: "https://nh.outerwildsmods.com",
+    site: url,
     compressHTML: true,
     integrations: [
         starlight({
@@ -21,6 +39,7 @@ export default defineConfig({
             description:
                 "Documentation on how to use the New Horizons planet creation tool for Outer Wilds.",
             defaultLocale: "en-us",
+            favicon: "/favicon.png",
             components: {
                 PageSidebar: "/src/components/ConditionalPageSidebar.astro"
             },
@@ -33,6 +52,14 @@ export default defineConfig({
                 github: "https://github.com/Outer-Wilds-New-Horizons/new-horizons",
                 discord: "https://discord.gg/wusTQYbYTc"
             },
+            head: [
+                ogMeta("image", `${url}/og_image.webp`),
+                ogMeta("image:width", "1200"),
+                ogMeta("image:height", "400"),
+                twMeta("card", "summary"),
+                twMeta("image", `${url}/og_image.webp`),
+                { tag: "meta", attrs: { name: "theme-color", content: "#ffab8a" } }
+            ],
             sidebar: [
                 {
                     label: "Start Here",

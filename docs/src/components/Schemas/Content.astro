@@ -1,5 +1,6 @@
 ---
-import { Schema, SchemaTools } from '../../schema_utils';
+import { SchemaTools } from "../../schema_utils";
+import type { Schema } from "../../schema_utils";
 
 export interface Props {
     schema: Schema;
@@ -19,20 +20,25 @@ const type = SchemaTools.getType(schema);
 const link = `https://raw.githubusercontent.com/Outer-Wilds-New-Horizons/new-horizons/main/NewHorizons/Schemas/${schema.fileName}`;
 const refSlug = SchemaTools.getRefSlug(schema);
 const enumVals = SchemaTools.getEnumValues(schema);
-const props = SchemaTools.getProps(schema);
+const props = SchemaTools.getProps(schema, level);
 
 const HeadingTag = levelMap[level] ?? "h6";
 ---
 
 <div data-level={level} class="wrapper">
     <div class="header">
-        {
-            level !== 0 && (
-                <HeadingTag class="title" id={schema.slug}>
-                    {SchemaTools.getTitle(schema)}
-                </HeadingTag>
-            )
-        }
+            {
+                level !== 0 && (
+                    <HeadingTag class="title" id={schema.slug}>
+                        {level !== 0 && (
+                            <a aria-hidden="true" tabindex="-1" class="anchor" href={`${Astro.url}#${schema.slug}`}>
+                                #
+                            </a>
+                        )}
+                        {SchemaTools.getTitle(schema)}
+                    </HeadingTag>
+                )
+            }
         <div class="badges">
             {level === 0 && <span>Schema Type: {schema.internalSchema.type}</span>}
             {
@@ -47,15 +53,10 @@ const HeadingTag = levelMap[level] ?? "h6";
     {
         level === 0 && !isDef && (
             <div class="tool-links">
-                <p>
-                    <a href={`/schemas/${schema.slug}/defs`}>View Definitions</a>
-                </p>
-                <p>|</p>
-                <p>
-                    <a rel="noreferer" target="_blank" href={link}>
-                        View Raw
-                    </a>
-                </p>
+                <a href={`/schemas/${schema.slug}/defs`}>View Definitions</a>|
+                <a rel="noreferer" target="_blank" href={link}>
+                    View Raw
+                </a>
             </div>
         )
     }
@@ -76,7 +77,9 @@ const HeadingTag = levelMap[level] ?? "h6";
     }
     {
         refSlug && (
-            <a href={`/schemas/${schema.rootSlug}/defs/${refSlug}`}>See Definitions/{refSlug}</a>
+            <a href={`/schemas/${schema.rootSlug}/defs/${refSlug.toLowerCase()}`}>
+                See Definitions/{refSlug}
+            </a>
         )
     }
     {
@@ -99,7 +102,7 @@ const HeadingTag = levelMap[level] ?? "h6";
             color: unset;
         }
         50% {
-            color: var(--sl-theme-accent);
+            color: var(--sl-color-accent);
         }
         100% {
             color: unset;
@@ -107,14 +110,29 @@ const HeadingTag = levelMap[level] ?? "h6";
     }
 
     .title:target {
-        transition: color;
         animation: flash 600ms cubic-bezier(0.45, 0.05, 0.55, 0.95) 3;
+    }
+
+    .title:hover a.anchor {
+        display: initial;
+    }
+
+    a.anchor {
+        text-decoration: none;
+        float: left;
+        margin-left: -26px;
+        padding-right: 5px; 
+        display: none;
+    }
+
+    a.anchor:hover {
+        display: initial;
+        color: var(--sl-color-accent);
     }
 
     div.header {
         display: flex;
         flex-direction: column;
-        gap: 1rem;
     }
 
     div.wrapper[data-level="2"] {
@@ -133,35 +151,33 @@ const HeadingTag = levelMap[level] ?? "h6";
         box-sizing: border-box;
         display: flex;
         flex-direction: column;
-        gap: 2rem;
     }
 
     div.children {
         display: flex;
         flex-direction: column;
-        gap: 2rem;
     }
 
     div.tool-links {
         display: flex;
-        gap: 1rem;
-    }
-
-    ul {
-        margin-top: 0.5rem;
     }
 
     span {
-        background-color: hsl(var(--sl-hue-accent) 50% 10%);
+        background-color: var(--sl-color-accent-low);
         font-size: small;
         padding: 0.5rem;
-        margin-right: 0.3rem;
-        border: solid 2px var(--sl-color-accent-low);
+        border: solid 2px var(--sl-color-accent);
         border-radius: 5rem;
     }
 
     span.required {
-        background-color: hsl(var(--sl-hue-yellow) 50% 10%);
-        border-color: var(--sl-color-yellow-low);
+        --hue-yellow: 53;
+        background-color: hsl(var(--hue-yellow) 50% 20%);
+        border-color: hsl(var(--hue-yellow) 50% 50%);
+    }
+
+    :root[data-theme="light"] span.required {
+        background-color: yellow;
+        border-color: darkgoldenrod;
     }
 </style>
