@@ -1,5 +1,6 @@
 using NewHorizons.External.SerializableData;
 using Newtonsoft.Json;
+using System.ComponentModel;
 
 namespace NewHorizons.External.Modules.Props.EchoesOfTheEye
 {
@@ -14,67 +15,73 @@ namespace NewHorizons.External.Modules.Props.EchoesOfTheEye
         // SlideAmbientLightModule
 
         /// <summary>
-        /// Ambient light intensity when viewing this slide. (Base game default: 1)
+        /// Ambient light intensity when viewing this slide.
+        /// Set this to add ambient light module. Base game default is 1.
         /// </summary>
         public float ambientLightIntensity;
 
         /// <summary>
-        /// Ambient light range when viewing this slide. (Base game default: 20)
+        /// Ambient light range when viewing this slide.
         /// </summary>
-        public float ambientLightRange;
+        [DefaultValue(20f)] public float ambientLightRange = 20f;
 
         /// <summary>
-        /// Ambient light colour when viewing this slide. (Base game default: white)
+        /// Ambient light colour when viewing this slide. Defaults to white.
         /// </summary>
         public MColor ambientLightColor;
 
         /// <summary>
-        /// Spotlight intensity modifier when viewing this slide. (Base game default: 0)
+        /// Spotlight intensity modifier when viewing this slide.
         /// </summary>
-        public float spotIntensityMod;
+        [DefaultValue(0f)] public float spotIntensityMod = 0f;
 
         // SlideBackdropAudioModule
 
         /// <summary>
-        /// The name of the AudioClip that will continuously play while watching these slides (Base game default: Reel_1_Backdrop_A)
+        /// The name of the AudioClip that will continuously loop while watching these slides.
+        /// Set this to include backdrop audio module. Base game default is Reel_1_Backdrop_A.
         /// </summary>
         public string backdropAudio;
 
         /// <summary>
-        /// The time to fade into the backdrop audio (Base game default: 2)
+        /// The time to fade into the backdrop audio.
         /// </summary>
-        public float backdropFadeTime;
+        [DefaultValue(2f)] public float backdropFadeTime = 2f;
 
         // SlideBeatAudioModule
 
         /// <summary>
-        /// The name of the AudioClip for a one-shot sound when opening the slide. (Base game default: Reel_1_Beat_A)
+        /// The name of the AudioClip for a one-shot sound when opening the slide.
+        /// Set this to include beat audio module. Base game default is Reel_1_Beat_A.
         /// </summary>
         public string beatAudio;
 
         /// <summary>
-        /// The time delay until the one-shot audio (Base game default: 0)
+        /// The time delay until the one-shot audio.
         /// </summary>
-        public float beatDelay;
+        [DefaultValue(0f)] public float beatDelay = 0f;
 
         // SlideBlackFrameModule
 
         /// <summary>
-        /// Before viewing this slide, there will be a black frame for this many seconds. (Base game default: 0)
+        /// Before viewing this slide, there will be a black frame for this many seconds.
+        /// Set this to include black frame module. Base game default is 0.
         /// </summary>
         public float blackFrameDuration;
 
         // SlidePlayTimeModule
 
         /// <summary>
-        /// Play-time duration for auto-projector slides. (Base game default: 0)
+        /// Play-time duration for auto-projector slides.
+        /// Set this to include play time module. Base game default is 0.
         /// </summary>
         public float playTimeDuration;
 
         // SlideShipLogEntryModule
 
         /// <summary>
-        /// Ship log fact revealed when viewing this slide (Base game default: "")
+        /// Ship log fact revealed when viewing this slide.
+        /// Set this to include ship log entry module. Base game default is "".
         /// </summary>
         public string reveal;
     }

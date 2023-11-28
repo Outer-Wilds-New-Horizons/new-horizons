@@ -335,7 +335,7 @@ namespace NewHorizons.Builder.Props
         private static void AddModules(SlideInfo slideInfo, ref Slide slide, IModBehaviour mod)
         {
             var modules = new List<SlideFunctionModule>();
-            if (!String.IsNullOrEmpty(slideInfo.beatAudio))
+            if (!string.IsNullOrEmpty(slideInfo.beatAudio))
             {
                 var audioBeat = new SlideBeatAudioModule
                 {
@@ -344,7 +344,7 @@ namespace NewHorizons.Builder.Props
                 };
                 modules.Add(audioBeat);
             }
-            if (!String.IsNullOrEmpty(slideInfo.backdropAudio))
+            if (!string.IsNullOrEmpty(slideInfo.backdropAudio))
             {
                 var audioBackdrop = new SlideBackdropAudioModule
                 {
@@ -353,13 +353,13 @@ namespace NewHorizons.Builder.Props
                 };
                 modules.Add(audioBackdrop);
             }
-            if (slideInfo.ambientLightIntensity > 0)
+            if (slideInfo.ambientLightIntensity != 0)
             {
                 var ambientLight = new SlideAmbientLightModule
                 {
                     _intensity = slideInfo.ambientLightIntensity,
                     _range = slideInfo.ambientLightRange,
-                    _color = slideInfo.ambientLightColor.ToColor(),
+                    _color = slideInfo.ambientLightColor?.ToColor() ?? Color.white,
                     _spotIntensityMod = slideInfo.spotIntensityMod
                 };
                 modules.Add(ambientLight);
@@ -380,7 +380,7 @@ namespace NewHorizons.Builder.Props
                 };
                 modules.Add(blackFrame);
             }
-            if (!String.IsNullOrEmpty(slideInfo.reveal))
+            if (!string.IsNullOrEmpty(slideInfo.reveal))
             {
                 var shipLogEntry = new SlideShipLogEntryModule
                 {
