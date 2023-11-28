@@ -39,10 +39,10 @@ To see all the different things you can put into a config file check out the [St
 You can warp to custom star systems via the Nomai vessel. Each coordinate has to be 2-6 points long.
 These are the points for each coordinate node. When making your unique coordinate you should only use each point once.
 
-![nomaiCoordinateIndexes](/star_systems/nomai_coordinate_indexes.webp)
+![nomaiCoordinateIndexes](@/assets/docs-images/star_systems/nomai_coordinate_indexes.webp)
 
 ### Hearthian Solar System Vessel Coordinates
 
 You can use these coordinates to warp back to the hearthian solar system.
 
-![hearthianSolarSystemCoordinates](/star_systems/hearthian_solar_system_coordinates.webp)
+![hearthianSolarSystemCoordinates](@/assets/docs-images/star_systems/hearthian_solar_system_coordinates.webp)

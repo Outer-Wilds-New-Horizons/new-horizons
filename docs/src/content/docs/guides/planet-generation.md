@@ -15,7 +15,7 @@ Heightmaps are a way to generate unique terrain on your planet. First you specif
 
 Here's an example heightmap of earth from the Real Solar System addon.
 
-![Earth's Heightmap](/planet_gen/earth_heightmap.webp)
+![Earth's Heightmap](@/assets/docs-images/planet_gen/earth_heightmap.webp)
 
 ```json
 {

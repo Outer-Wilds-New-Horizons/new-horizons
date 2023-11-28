@@ -20,7 +20,7 @@ Making an entirely separate addon can get a little complicated, so New Horizons 
 
 To get started, navigate to your mod manager and click the ⋮ symbol, then select "Show In Explorer".
 
-![Select "Show in explorer"](/getting_started/mod_manager_show_in_explorer.webp)
+![Select "Show in explorer"](@/assets/docs-images/getting_started/mod_manager_show_in_explorer.webp)
 
 Now, create a new folder named "planets". As the name suggests, New Horizons will search the files in this folder for planets to generate.
 

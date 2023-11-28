@@ -72,7 +72,7 @@ public class CreateAssetBundles
 3. Create your object in the Unity scene and save it as a prefab.
 4. Add all files used (models, prefabs, textures, materials, etc.) to an asset bundle by selecting them and using the dropdown in the bottom right. Here I am adding a rover model to my "rss" asset bundle for the Real Solar System add-on.
 
-![setting asset bundle](/details/asset_bundle.webp)
+![setting asset bundle](@/assets/docs-images/details/asset_bundle.webp)
 
 1. In the top left click the "Assets" drop-down and select "Build AssetBundles". This should create your asset bundle in a folder in the root directory called "StreamingAssets".
 2. Copy the asset bundle and asset bundle .manifest files from StreamingAssets into your mod's "planets" folder. If you did everything properly they should work in game. To double-check everything is included, open the .manifest file in a text editor to see the files included and their paths.

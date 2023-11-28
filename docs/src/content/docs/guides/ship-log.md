@@ -13,7 +13,7 @@ An entry is a card you see in rumor mode, it represents a specific area or conce
 village or the southern observatory on Brittle Hollow.  
 An entry is split up into facts, a fact can either be a rumor fact or an explore fact.
 
-![entryExample](/ship_log/entry_example.webp)
+![entryExample](@/assets/docs-images/ship_log/entry_example.webp)
 _In red you can see an entry, in green you can see the entry's facts_
 
 #### Curiosities
@@ -22,14 +22,14 @@ Curiosities are entries that represent big ideas in the story, such as the ATP o
 Non-curiosity entries have a Curiosity attribute that can be set to make the color of that entry match the color of the
 curiosity (Like how everything regarding the Vessel is red)
 
-![curiosityExample](/ship_log/curiosity_example.webp)
+![curiosityExample](@/assets/docs-images/ship_log/curiosity_example.webp)
 _The Ash Twin Project is an example of a curiosity (internally it's called TIME_LOOP)_
 
 #### Child Entries
 
 Entries can be children of other entries, meaning they'll be smaller.
 
-![childEntryExample](/ship_log/child_entry_example.webp)
+![childEntryExample](@/assets/docs-images/ship_log/child_entry_example.webp)
 _The murals at the old settlement on Brittle Hollow are examples of child entries_
 
 ### Rumor Facts
@@ -37,13 +37,13 @@ _The murals at the old settlement on Brittle Hollow are examples of child entrie
 A rumor fact represents the information you might hear about a specific area or concept, usually, you get these through
 dialogue or maybe by observing a faraway planet.
 
-![rumorFactExample](/ship_log/rumor_example.webp)
+![rumorFactExample](@/assets/docs-images/ship_log/rumor_example.webp)
 
 ### Explore Facts
 
 Explore facts represent the information you learn about a specific area or concept.
 
-![exploreFactExample](/ship_log/explore_example.webp)
+![exploreFactExample](@/assets/docs-images/ship_log/explore_example.webp)
 
 ## The XML
 
@@ -180,7 +180,7 @@ For example, if I want to change an entry with the ID of `EXAMPLE_ENTRY` and ano
 
 To help with this, download the unity explorer mod and manually position entries (they're located under `Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/ShipLogPivot/ShipLogCanvas/MapMode/ScaleRoot/PanRoot`), then simply use the dev tools to dump all the entries to a json string you can copy and paste into your config.
 
-![autoDetectiveMode](/ship_log/auto_rumor_mode.webp)
+![autoDetectiveMode](@/assets/docs-images/ship_log/auto_rumor_mode.webp)
 _A set of entries laid out with auto mode_
 
 ### Images
@@ -228,7 +228,7 @@ Colors for each curiosity is given in a list **within the star system config**, 
 }
 ```
 
-![curiosityColorChange](/ship_log/change_color.webp)
+![curiosityColorChange](@/assets/docs-images/ship_log/change_color.webp)
 _The curiosity's color is changed to blue_
 
 ## Map Mode Options
@@ -246,7 +246,7 @@ those planets are put in a column, then, each planet orbiting _those_ planets ar
 are. The order of each planet is determined by their semi-major axis, if two planets have the same semi-major axis then
 they're sorted by order loaded in.
 
-![autoMapMode](/ship_log/auto_map_mode.webp)
+![autoMapMode](@/assets/docs-images/ship_log/auto_map_mode.webp)
 _An example system laid out with auto mode_
 
 ##### Offset
@@ -318,7 +318,7 @@ second row (you can't select the sun, so it doesn't have a row or column). So, b
 We say this planet is to the right of the sun station (putting in a position that is already occupied will override what
 is in that position).
 
-![navigationIndices](/ship_log/map_indices.webp)
+![navigationIndices](@/assets/docs-images/ship_log/map_indices.webp)
 
 ##### Overriding Vanilla Planets
 
@@ -544,4 +544,4 @@ Adding an entry location is similar to adding a Reveal Volume:
 }
 ```
 
-![entryLocationExample](/ship_log/entry_position.webp)
+![entryLocationExample](@/assets/docs-images/ship_log/entry_position.webp)
