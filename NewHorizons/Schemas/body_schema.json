@@ -1941,54 +1941,58 @@
         },
         "ambientLightIntensity": {
           "type": "number",
-          "description": "Ambient light intensity when viewing this slide. (Base game default: 1)",
+          "description": "Ambient light intensity when viewing this slide.\nSet this to add ambient light module. Base game default is 1.",
           "format": "float"
         },
         "ambientLightRange": {
           "type": "number",
-          "description": "Ambient light range when viewing this slide. (Base game default: 20)",
-          "format": "float"
+          "description": "Ambient light range when viewing this slide.",
+          "format": "float",
+          "default": 20.0
         },
         "ambientLightColor": {
-          "description": "Ambient light colour when viewing this slide. (Base game default: white)",
+          "description": "Ambient light colour when viewing this slide. Defaults to white.",
           "$ref": "#/definitions/MColor"
         },
         "spotIntensityMod": {
           "type": "number",
-          "description": "Spotlight intensity modifier when viewing this slide. (Base game default: 0)",
-          "format": "float"
+          "description": "Spotlight intensity modifier when viewing this slide.",
+          "format": "float",
+          "default": 0.0
         },
         "backdropAudio": {
           "type": "string",
-          "description": "The name of the AudioClip that will continuously play while watching these slides (Base game default: Reel_1_Backdrop_A)"
+          "description": "The name of the AudioClip that will continuously loop while watching these slides.\nSet this to include backdrop audio module. Base game default is Reel_1_Backdrop_A."
         },
         "backdropFadeTime": {
           "type": "number",
-          "description": "The time to fade into the backdrop audio (Base game default: 2)",
-          "format": "float"
+          "description": "The time to fade into the backdrop audio.",
+          "format": "float",
+          "default": 2.0
         },
         "beatAudio": {
           "type": "string",
-          "description": "The name of the AudioClip for a one-shot sound when opening the slide. (Base game default: Reel_1_Beat_A)"
+          "description": "The name of the AudioClip for a one-shot sound when opening the slide.\nSet this to include beat audio module. Base game default is Reel_1_Beat_A."
         },
         "beatDelay": {
           "type": "number",
-          "description": "The time delay until the one-shot audio (Base game default: 0)",
-          "format": "float"
+          "description": "The time delay until the one-shot audio.",
+          "format": "float",
+          "default": 0.0
         },
         "blackFrameDuration": {
           "type": "number",
-          "description": "Before viewing this slide, there will be a black frame for this many seconds. (Base game default: 0)",
+          "description": "Before viewing this slide, there will be a black frame for this many seconds.\nSet this to include black frame module. Base game default is 0.",
           "format": "float"
         },
         "playTimeDuration": {
           "type": "number",
-          "description": "Play-time duration for auto-projector slides. (Base game default: 0)",
+          "description": "Play-time duration for auto-projector slides.\nSet this to include play time module. Base game default is 0.",
           "format": "float"
         },
         "reveal": {
           "type": "string",
-          "description": "Ship log fact revealed when viewing this slide (Base game default: \"\")"
+          "description": "Ship log fact revealed when viewing this slide.\nSet this to include ship log entry module. Base game default is \"\"."
         }
       }
     },
