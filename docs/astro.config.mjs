@@ -4,9 +4,16 @@ import starlight from "@astrojs/starlight";
 import { generateSchema } from "./src/schema_generator";
 
 generateSchema("body_schema.json");
+generateSchema("star_system_schema.json");
+generateSchema("translation_schema.json");
+generateSchema("addon_manifest_schema.json");
+generateSchema("dialogue_schema.xsd");
+generateSchema("text_schema.xsd");
+generateSchema("shiplog_schema.xsd");
 
 // https://astro.build/config
 export default defineConfig({
+    site: "https://nh.outerwildsmods.com",
     compressHTML: true,
     integrations: [
         starlight({
@@ -14,6 +21,9 @@ export default defineConfig({
             description:
                 "Documentation on how to use the New Horizons planet creation tool for Outer Wilds.",
             defaultLocale: "en-us",
+            components: {
+                PageSidebar: "/src/components/ConditionalPageSidebar.astro"
+            },
             customCss: ["/src/styles/custom.css"],
             logo: {
                 src: "/src/assets/icon.webp",

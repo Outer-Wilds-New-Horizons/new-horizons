@@ -1,7 +1,10 @@
-import { Schema, SchemaTools } from "./schema_utils";
+import { SchemaTools } from "./schema_utils";
 import * as fs from "node:fs";
 
-const addFrontmatter = (content: string, frontmatter: Record<string, boolean | string>) => {
+const addFrontmatter = (
+    content: string,
+    frontmatter: Record<string, boolean | string | object>
+) => {
     const entries = Object.entries(frontmatter).map(([key, value]) => `${key}: ${value}`);
 
     if (entries.length === 0) {
@@ -23,7 +26,8 @@ export const generateSchema = (fileName: string) => {
     const frontMatter = {
         title: SchemaTools.getTitle(schema) as string,
         description: SchemaTools.getDescription(schema) as string,
-        editUrl: false
+        editUrl: false,
+        head: `\n  - tag: meta\n    attrs:\n      fileName: ${schema.fileName}`
     };
 
     const content = `import Schema from "/src/components/Schemas/Schema.astro";\n\n<Schema fileName="${schema.fileName}" />\n`;
