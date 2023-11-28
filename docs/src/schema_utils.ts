@@ -303,7 +303,7 @@ export const SchemaTools = {
 
     getHeaders: (schema: Schema, level?: number) => {
         let headers: MarkdownHeading[] = [];
-        const props = SchemaTools.getProps(schema);
+        const props = SchemaTools.getProps(schema, level ?? 0);
         for (const prop of props) {
             headers.push({ depth: level ?? 2, slug: prop[1].slug, text: prop[0] });
             headers = headers.concat(SchemaTools.getHeaders(prop[1], (level ?? 2) + 1));
