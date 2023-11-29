@@ -148,4 +148,4 @@ You can swap these around too. The following would scatter 12 Mars rovers across
 
 ## Use the schema
 
-To view additional options for detailing, check [the schema](/schemas/body-schema/defs/PropModule#PropModule-details)
+To view additional options for detailing, check [the schema](/schemas/body-schema/defs/propmodule#details)

@@ -129,7 +129,7 @@ To use the dialogue XML you have created, you simply need to reference it in the
 
 ## Dialogue Config
 
-To view the options for the dialogue prop, check [the schema](/schemas/body-schema/defs/PropModule#PropModule-dialogue)
+To view the options for the dialogue prop, check [the schema](/schemas/body-schema/defs/propmodule#dialogue)
 
 ## Controlling Conditions
 
@@ -146,7 +146,7 @@ You can set condition in dialogue with the `<SetCondition>` and `<SetPersistentC
 
 ## Dialogue Options
 
-There are many control structures for dialogue options to hide/reveal them if conditions are met. Take a look at [the DialogueOption schema](/schemas/dialogue-schema/defs/DialogueOption#DialogueOption-DialogueTarget) for more info.
+There are many control structures for dialogue options to hide/reveal them if conditions are met. Take a look at [the DialogueOption schema](/schemas/dialogue-schema/defs/dialogueoption#DialogueOption-DialogueTarget) for more info.
 
 ## Controlling Flow
 
