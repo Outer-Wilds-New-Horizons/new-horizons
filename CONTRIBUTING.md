@@ -67,4 +67,4 @@ These will automatically be converted from strings to the proper enum type.
 
 ## Contributing to Documentation
 
-If you wish to contribute to the documentation, take a look at [Setup.md](docs/Setup.md) in the docs folder.
+If you wish to contribute to the documentation, take a look at [CONTRIBUTING.md](docs/CONTRIBUTING.md) in the docs folder.
