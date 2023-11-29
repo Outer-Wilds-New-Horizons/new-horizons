@@ -17,7 +17,7 @@ Here's an example heightmap of earth from the Real Solar System addon.
 
 ![Earth's Heightmap](@/assets/docs-images/planet_gen/earth_heightmap.webp)
 
-```json
+```json title="cool_planet.json"
 {
     "name": "My Cool Planet",
     "HeightMap": {
@@ -44,7 +44,7 @@ The following modules support variable sizing, meaning they can change scale ove
 
 To do this, simply specify a `curve` property on the module
 
-```json
+```json title="cool_water_planet.json"
 {
     "name": "My Cool Planet",
     "Water": {
@@ -69,7 +69,7 @@ This makes the water on this planet shrink over the course of 22 minutes.
 In order to create a quantum planet, first create a normal planet. Then, create a second planet config with the same `name` as the first and `isQuantumState` set to `true`.
 This makes the second planet a quantum state of the first, anything you specify here will only apply when the planet is in this state.
 
-```json
+```json title="cool_planet_sun_state.json"
 {
     "name": "MyPlanet",
     "Orbit": {
@@ -79,7 +79,7 @@ This makes the second planet a quantum state of the first, anything you specify 
 }
 ```
 
-```json
+```json title="cool_planet_th_state.json"
 {
     "name": "MyPlanet",
     "isQuantumState": true,
@@ -94,7 +94,7 @@ This makes the second planet a quantum state of the first, anything you specify 
 
 To create a binary system of planets (like ash twin and ember twin), first create a config with `FocalPoint` set
 
-```json
+```json title="center.json"
 {
     "name": "My Focal Point",
     "Orbit": {
@@ -110,7 +110,7 @@ To create a binary system of planets (like ash twin and ember twin), first creat
 
 Now in each config set the `primaryBody` to the focal point
 
-```json
+```json title="a.json"
 {
     "name": "Planet A",
     "Orbit": {
@@ -122,7 +122,7 @@ Now in each config set the `primaryBody` to the focal point
 }
 ```
 
-```json
+```json title="b.json"
 {
     "name": "Planet B",
     "Orbit": {

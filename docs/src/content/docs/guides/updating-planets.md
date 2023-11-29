@@ -9,7 +9,7 @@ Only some of the above modules are supported (currently) for existing planets. T
 
 You can also delete parts of an existing planet. Here's part of an example config which would delete the rising sand from Ember Twin:
 
-```json
+```json title="ember_twin.json"
 {
     "name": "Ember Twin",
     "removeChildren": ["SandSphere_Rising"]
@@ -22,7 +22,7 @@ In `childrenToDestroy` you list the relative paths for the children of the plane
 
 You do this (but with the appropriate name) as its own config.
 
-```json
+```json title="ember_twin.json"
 {
     "name": "Ember Twin",
     "destroy": true

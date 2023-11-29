@@ -9,7 +9,7 @@ This guide will explain how to use the API to add new features to New Horizons.
 
 Addon developers will add a key to the `extras` object in the root of the config
 
-```json
+```json title="wetrock.json"
 {
     "name": "Wetrock",
     "extras": {

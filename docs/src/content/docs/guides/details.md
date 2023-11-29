@@ -49,7 +49,7 @@ If for whatever reason you want to set up a Unity project manually instead of us
 1. Start up a Unity 2019.4.39f1 project
 2. In the "Assets" folder in Unity, create a new folder called "Editor". In it create a file called "CreateAssetBundle.cs" with the following code in it:
 
-```cs
+```cs title="Editor/CreateAssetBundle.cs"
 using UnityEditor;
 using UnityEngine;
 using System.IO;

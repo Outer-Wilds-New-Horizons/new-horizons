@@ -13,7 +13,7 @@ The name of your star system config must be the same as the unique id used in th
 
 A star system config file will look something like this:
 
-```json
+```json title="my_star_system.json"
 {
     "$schema": "https://raw.githubusercontent.com/Outer-Wilds-New-Horizons/new-horizons/main/NewHorizons/Schemas/star_system_schema.json",
     "travelAudio": "assets/Travel.mp3",

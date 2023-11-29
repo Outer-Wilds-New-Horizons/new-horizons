@@ -31,7 +31,7 @@ A remote trigger is used to have an NPC talk to you from a distance; ex: Slate s
 
 Here's an example dialogue XML:
 
-```xml
+```xml title="ExampleDialogue.xml"
 <!-- Example Dialogue -->
 <!-- All files must have `DialogueTree` as the root element, the xmlns:xsi=... and xsi:noNamespaceSchemaLocation=... is optional but provides improved error checking if your editor supports it -->
 <DialogueTree xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"

@@ -53,7 +53,7 @@ navigate to ShipLogManager.
 
 ### Example File
 
-```xml
+```xml title="ExampleShipLog.xml"
 <!-- Example File -->
 <!-- All files must have "AstroObjectEntry" as their root element, the xmlns:xsi=... and xsi:noNamespaceSchemaLocation=... is optional but heavily encouraged to reduce errors -->
 <AstroObjectEntry xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"

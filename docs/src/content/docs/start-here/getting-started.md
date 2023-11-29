@@ -30,7 +30,7 @@ To get started, create a new file in this folder called `wetrock.json`, we'll ex
 Open this file in VSCode (you can do so by right-clicking the file and clicking "Open with Code")
 Once in VSCode, paste this code into the file:
 
-```json
+```json title="wetrock.json"
 {
     "name": "Wetrock",
     "$schema": "https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/main/NewHorizons/Schemas/body_schema.json",

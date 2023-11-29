@@ -11,7 +11,7 @@ In this folder you can put json files with the name of the language you want to 
 
 Here's an example, for `russian.json`:
 
-```json
+```json title="russian.json"
 {
     "$schema": "https://raw.githubusercontent.com/Outer-Wilds-New-Horizons/new-horizons/main/NewHorizons/Schemas/translation_schema.json",
     "DialogueDictionary": {
