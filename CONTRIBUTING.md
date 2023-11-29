@@ -11,7 +11,7 @@ Then, clone your fork and checkout your new branch.
 ## Building
 
 To build a development release of New Horizons, use the `Debug` build target.  
-This will automatically build to your mods directory in OWML (so long as it's in `%APPDATA%/OuterWildsModManager/OWML`).  
+This will automatically build to your mods directory in OWML (so long as it's in `%APPDATA%/OuterWildsModManager/OWML`).
 
 ### Getting Line Numbers
 
@@ -19,6 +19,7 @@ To save yourself the pain of decoding where in a function an error occured, you 
 Then (so long as you build targeting `Debug`), line numbers will be shown in any error that comes from New Horizons
 
 ## Provide examples
+
 When adding a new feature, include a complete set of planet config files that will sufficiently demonstrate the functionality of the feature/bug fix/improvement. This way reviewers can just copy paste these files into the New Horizons planets folder.
 
 ## Updating The Schema

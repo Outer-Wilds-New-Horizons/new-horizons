@@ -36,7 +36,7 @@ jobs:
           name: ${{ inputs.schemas_artifact }}
           path: NewHorizons/Schemas
       - name: Build Site
-        uses: withastro/action@v0
+        uses: withastro/action@v1
         with:
           path: ./docs
 
@@ -50,4 +50,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1
-
