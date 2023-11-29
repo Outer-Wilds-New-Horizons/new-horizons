@@ -1,7 +1,7 @@
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
 
-import rehypeExternalLinks from 'rehype-external-links';
+import rehypeExternalLinks from "rehype-external-links";
 
 import { generateSchema } from "./src/schema_generator";
 
@@ -15,9 +15,9 @@ const schemas = [
     "dialogue_schema.xsd",
     "text_schema.xsd",
     "shiplog_schema.xsd"
-]
+];
 
-schemas.forEach(schema => {
+schemas.forEach((schema) => {
     console.log(`Generating pages for ${schema}...`);
     generateSchema(schema);
 });
