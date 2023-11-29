@@ -31,7 +31,7 @@ const HeadingTag = levelMap[level] ?? "h6";
                 level !== 0 && (
                     <HeadingTag class="title" id={schema.slug}>
                         {level !== 0 && (
-                            <a aria-hidden="true" tabindex="-1" class="anchor" href={`${Astro.url}#${schema.slug}`}>
+                            <a aria-hidden="true" tabindex="-1" class="anchor" href={`#${schema.slug}`}>
                                 #
                             </a>
                         )}
