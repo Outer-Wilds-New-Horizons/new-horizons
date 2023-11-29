@@ -60,7 +60,7 @@ const HeadingTag = levelMap[level] ?? "h6";
             </div>
         )
     }
-    {description && <p>{description}</p>}
+    {description ? <p>{description}</p> : <p>No Description Found</p>}
     {
         enumVals.length !== 0 && (
             <>
@@ -160,6 +160,7 @@ const HeadingTag = levelMap[level] ?? "h6";
 
     div.tool-links {
         display: flex;
+        gap: .5rem;
     }
 
     span {
