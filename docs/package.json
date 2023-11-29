@@ -14,6 +14,7 @@
     "dependencies": {
         "@astrojs/starlight": "^0.13.1",
         "astro": "3.6.1",
+        "rehype-external-links": "^3.0.0",
         "sharp": "^0.32.6"
     },
     "devDependencies": {

@@ -3,6 +3,26 @@ title: Helpful Resources
 description: Helpful resources for developing New Horizons addons
 ---
 
+## Schemas Are Your Friend
+
+The [schemas](/schemas/body-schema) are the best place to go for up-to-date info on what you can do with New Horizons.
+
+They're automatically generated directly from the code, so they're always up-to-date.
+
+You can also use them to get autocomplete and tooltips in your code editor.
+
+### JSON Schemas
+
+JSON schemas are automatically supported by VSCode, so you can get autocomplete and tooltips for the schemas, just specify it using `$schema` in your JSON file.
+
+You can get the URL to the schema by clicking the "View Raw" button on the schema page. Copy the link and paste it into your `$schema` field.
+
+### XML Schemas
+
+If you're using VSCode, you can use the [XML addon](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-xml) to get autocomplete and tooltips for the schemas.
+
+You can get the URL to the schema by clicking the "View Raw" button on the schema page. Copy the link and paste it into your `xsi:noNamespaceSchemaLocation` field.
+
 ## Reloading Configs In-Game
 
 It can get annoying when you have to keep closing and opening the game over and over again to test changes, that's why New Horizons has a "Reload Configs" feature.
@@ -35,6 +55,7 @@ These mods are useful when developing your addon
 -   [Collider Visualizer](https://outerwildsmods.com/mods/collidervisualizer) - Useful when creating dialogue triggers or reveal volumes.
 -   [Save Editor](https://outerwildsmods.com/mods/saveeditor) - Useful when creating a custom [ship log](/ship-log), can be used to reveal all custom facts so you can see them in the ship's computer.
 -   [Time Saver](https://outerwildsmods.com/mods/timesaver/) - Lets you skip some repeated cutscenes and get into the game faster.
+-   [The Examples Mod](https://github.com/Outer-Wilds-New-Horizons/nh-examples) - A mod that contains examples of how to use New Horizons features.
 
 ## Helpful Tools
 
@@ -44,4 +65,4 @@ These tools/references are highly recommended
 -   [VSCode XML Addon](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-xml)
 -   [XML Basics Tutorial](https://www.w3schools.com/xml/xml_whatis.asp)
 -   [JSON Basics Tutorial](https://www.tutorialspoint.com/json/index.htm)
--   [The Examples Mod](https://github.com/xen-42/ow-new-horizons-examples)
+-   [OWML Docs](https://owml.outerwildsmods.com/)

@@ -1,17 +1,26 @@
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
 
+import rehypeExternalLinks from 'rehype-external-links';
+
 import { generateSchema } from "./src/schema_generator";
 
 const url = "https://nh.outerwildsmods.com";
 
-generateSchema("body_schema.json");
-generateSchema("star_system_schema.json");
-generateSchema("translation_schema.json");
-generateSchema("addon_manifest_schema.json");
-generateSchema("dialogue_schema.xsd");
-generateSchema("text_schema.xsd");
-generateSchema("shiplog_schema.xsd");
+const schemas = [
+    "body_schema.json",
+    "star_system_schema.json",
+    "translation_schema.json",
+    "addon_manifest_schema.json",
+    "dialogue_schema.xsd",
+    "text_schema.xsd",
+    "shiplog_schema.xsd"
+]
+
+schemas.forEach(schema => {
+    console.log(`Generating pages for ${schema}...`);
+    generateSchema(schema);
+});
 
 const ogMeta = (name, val) => ({
     tag: "meta",
@@ -33,6 +42,9 @@ const twMeta = (name, val) => ({
 export default defineConfig({
     site: url,
     compressHTML: true,
+    markdown: {
+        rehypePlugins: [rehypeExternalLinks]
+    },
     integrations: [
         starlight({
             title: "New Horizons",
