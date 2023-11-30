@@ -141,7 +141,7 @@ the schema file. Doing this varies per-editor, and you may also have to right-cl
 
 You can load your XML file to your planet by doing adding the following to your planet's config
 
-```json
+```json {3}
 {
     "ShipLog": {
         "xmlFile": "planets/example.xml"
@@ -188,7 +188,7 @@ _A set of entries laid out with auto mode_
 Custom entry images are a bit different from other custom images, instead of pointing to each file for each entry, you
 point to a folder:
 
-```json
+```json {4}
 {
     "ShipLog": {
         "xmlFile": "planets/example.xml",
@@ -253,7 +253,7 @@ _An example system laid out with auto mode_
 
 The `offset` option lets you adjust a planet's offset from the last planet.
 
-```json
+```json {5}
 {
     "ShipLog": {
         "xmlFile": "planets/example.xml",
@@ -276,7 +276,7 @@ Manual layout **requires** you to fill out both `manualPosition` and `manualNavi
 Setting the `manualPosition` option in the `mapMode` object sets its position (if manual position isn't set, it assumes
 the planet is using automatic mode)
 
-```json
+```json {5-8}
 {
     "ShipLog": {
         "xmlFile": "planets/example.xml",
@@ -297,7 +297,7 @@ This setting tells Outer Wilds how to handle navigation for this object, the x a
 column of this planet. For example, the sun station is at navigationPosition (0, 1) as it is in the first column on the
 second row (you can't select the sun, so it doesn't have a row or column). So, by making a navigation position of:
 
-```json
+```json {9-12}
 {
     "ShipLog": {
         "xmlFile": "planets/example.xml",
@@ -348,7 +348,7 @@ outline.
 
 How much to scale this planet in the map mode screen (you may have to change offset to compensate)
 
-```json
+```json {5}
 {
     "ShipLog": {
         "xmlFile": "planets/example.xml",
@@ -370,7 +370,7 @@ Don't include this planet in map mode at all, simply ignore it
 Details are images that go on top of a planet in map mode, and changes states with the planet (like the sand funnel
 between Ash Twin and Ember Twin)
 
-```json
+```json {5-20}
 {
     "ShipLog": {
         "xmlFile": "planets/example.xml",
@@ -406,7 +406,7 @@ Of course, having a custom ship log is neat and all, but what use is it if the p
 
 You can set facts to reveal as soon as the player enters the system by adding the `initialReveal` property
 
-```json
+```json {4}
 {
     "ShipLog": {
         "xmlFile": "planets/example.xml",
@@ -439,7 +439,7 @@ You can set a fact to reveal as soon as a signal is identified by editing the si
 
 You can set a fact to reveal in dialogue with the `<RevealFacts>` tag
 
-```xml
+```xml {7-9}
 <!-- Example Dialogue -->
 <DialogueNode>
     <Name>1</Name>

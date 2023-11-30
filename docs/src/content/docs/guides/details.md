@@ -85,7 +85,7 @@ Making a planet's entire surface from a Unity prefab is the exact same thing as 
 
 To add a Mars rover to the red planet in [RSS](https://github.com/xen-42/outer-wilds-real-solar-system), its model was put in an asset bundle as explained above, and then the following was put into the `Props` module:
 
-```json
+```json {5-6}
 {
     "Props": {
         "Details": [

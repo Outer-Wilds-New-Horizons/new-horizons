@@ -6,8 +6,8 @@ settings:
 
 dependencies:
     "@astrojs/starlight":
-        specifier: ^0.13.1
-        version: 0.13.1(astro@3.6.3)
+        specifier: ^0.14.0
+        version: 0.14.0(astro@3.6.3)
     astro:
         specifier: 3.6.3
         version: 3.6.3
@@ -172,10 +172,10 @@ packages:
             zod: 3.22.4
         dev: false
 
-    /@astrojs/starlight@0.13.1(astro@3.6.3):
+    /@astrojs/starlight@0.14.0(astro@3.6.3):
         resolution:
             {
-                integrity: sha512-cJ3WQcX3KAedH1uRApxp6usacCcRd76jsWT1V2j4rqWU817PBFrhF7xAsvm4aQaWPryqmsFOmBwSg+iOLsGNew==
+                integrity: sha512-wrve52CIIymvntjf2QCfCFpYrmZTyD1qObkvLImeGDVAAyNdUnNlj6MU6SkqQg2fQkJcX9Kh4zkwepm79zYveQ==
             }
         peerDependencies:
             astro: ^3.2.0
@@ -2271,7 +2271,7 @@ packages:
         hasBin: true
         dependencies:
             caniuse-lite: 1.0.30001565
-            electron-to-chromium: 1.4.596
+            electron-to-chromium: 1.4.597
             node-releases: 2.0.13
             update-browserslist-db: 1.0.13(browserslist@4.22.1)
         dev: false
@@ -2780,10 +2780,10 @@ packages:
             }
         dev: false
 
-    /electron-to-chromium@1.4.596:
+    /electron-to-chromium@1.4.597:
         resolution:
             {
-                integrity: sha512-zW3zbZ40Icb2BCWjm47nxwcFGYlIgdXkAx85XDO7cyky9J4QQfq8t0W19/TLZqq3JPQXtlv8BPIGmfa9Jb4scg==
+                integrity: sha512-0XOQNqHhg2YgRVRUrS4M4vWjFCFIP2ETXcXe/0KIQBjXE9Cpy+tgzzYfuq6HGai3hWq0YywtG+5XK8fyG08EjA==
             }
         dev: false
 

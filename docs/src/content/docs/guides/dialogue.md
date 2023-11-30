@@ -135,7 +135,7 @@ To view the options for the dialogue prop, check [the schema](/schemas/body-sche
 
 You can set condition in dialogue with the `<SetCondition>` and `<SetPersistentCondition>` tags
 
-```xml
+```xml {3-4}
 <DialogueNode>
  <!-- ... -->
  <SetCondition>EXAMPLE_CONDITION</SetCondition>

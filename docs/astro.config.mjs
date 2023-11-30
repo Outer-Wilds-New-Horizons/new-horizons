@@ -3,7 +3,7 @@ import starlight from "@astrojs/starlight";
 
 import rehypeExternalLinks from "rehype-external-links";
 
-import { generateSchema } from "./src/schema_generator";
+import makeSchemasPlugin from "./src/plugins/schema-plugin";
 
 const url = "https://nh.outerwildsmods.com";
 
@@ -16,11 +16,6 @@ const schemas = [
     "text_schema.xsd",
     "shiplog_schema.xsd"
 ];
-
-schemas.forEach((schema) => {
-    console.log(`Generating pages for ${schema}...`);
-    generateSchema(schema);
-});
 
 const ogMeta = (name, val) => ({
     tag: "meta",
@@ -52,6 +47,7 @@ export default defineConfig({
                 "Documentation on how to use the New Horizons planet creation tool for Outer Wilds.",
             defaultLocale: "en-us",
             favicon: "/favicon.png",
+            plugins: [makeSchemasPlugin({ schemas })],
             components: {
                 PageSidebar: "/src/components/ConditionalPageSidebar.astro"
             },

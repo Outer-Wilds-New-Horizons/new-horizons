@@ -1,7 +1,7 @@
 ---
 import type { Props } from "@astrojs/starlight/props";
 import Default from "@astrojs/starlight/components/PageSidebar.astro";
-import { SchemaTools } from "../schema_utils";
+import { SchemaTools } from "@/util/schema_utils";
 import type { MarkdownHeading } from "astro";
 
 const isSchema = Astro.props.slug.startsWith("schemas/") && !Astro.props.slug.endsWith("/defs");
@@ -29,10 +29,10 @@ function generateToC(
 let props = Astro.props;
 
 if (isSchema) {
-    const schemaFileName = props.entry.data.head[0]?.attrs?.fileName as string | undefined;
+    const schemaFileName = props.entry.data.schemaFile;
     if (schemaFileName) {
         let schema = SchemaTools.readSchema(schemaFileName);
-        const defName = props.entry.data.head[0]?.attrs?.def as string | undefined;
+        const defName = props.entry.data.defName;
         if (defName) {
             schema = SchemaTools.getDefs(schema).find(d => d.slug === defName)!;
         }

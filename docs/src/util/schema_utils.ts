@@ -85,7 +85,6 @@ export const SchemaTools = {
                         return documentation.elements?.[0]?.text;
                     }
                 }
-                def: string;
         }
     },
 
@@ -227,6 +226,10 @@ export const SchemaTools = {
         switch (schema.internalSchema.type) {
             case "JSON":
                 const internalSchema = schema.internalSchema.val;
+                let requiredList: string[] = [];
+                if (internalSchema.required && Array.isArray(internalSchema.required)) {
+                    requiredList = internalSchema.required;
+                }
                 if (internalSchema.type === "object") {
                     return Object.entries(internalSchema.properties ?? {}).map((e) => [
                         e[0],
@@ -236,7 +239,7 @@ export const SchemaTools = {
                             rootSlug: schema.rootSlug,
                             internalSchema: {
                                 type: "JSON",
-                                val: { title: e[0], ...e[1] }
+                                val: { title: e[0], required: requiredList.includes(e[0]), ...e[1] }
                             }
                         } as Schema
                     ]);

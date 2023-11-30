@@ -79,7 +79,7 @@ This makes the second planet a quantum state of the first, anything you specify 
 }
 ```
 
-```json title="cool_planet_th_state.json"
+```json {3} title="cool_planet_th_state.json"
 {
     "name": "MyPlanet",
     "isQuantumState": true,
@@ -94,7 +94,7 @@ This makes the second planet a quantum state of the first, anything you specify 
 
 To create a binary system of planets (like ash twin and ember twin), first create a config with `FocalPoint` set
 
-```json title="center.json"
+```json {7-10} title="center.json"
 {
     "name": "My Focal Point",
     "Orbit": {

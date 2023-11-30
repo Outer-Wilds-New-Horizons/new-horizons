@@ -32,7 +32,8 @@ const generateDef = (def: Schema) => {
         title,
         description,
         editUrl: false,
-        head: `\n  - tag: meta\n    attrs:\n      fileName: ${def.fileName}\n      def: ${title}`
+        schemaFile: def.fileName,
+        defName: title
     };
 
     const content = `import SchemaDef from "/src/components/Schemas/SchemaDef.astro";\n\n<SchemaDef fileName="${def.fileName}" def="${title}" />\n`;
@@ -51,7 +52,7 @@ const generateDefList = (schema: Schema) => {
         title: `${SchemaTools.getTitle(schema)} definitions`,
         description: "List of all definitions in the ${SchemaTools.getTitle(schema)} schema",
         editUrl: false,
-        head: `\n  - tag: meta\n    attrs:\n      fileName: ${schema.fileName}`
+        schemaFile: schema.fileName
     };
 
     const content = `import DefinitionList from "/src/components/Schemas/DefinitionList.astro";\n\n<DefinitionList fileName="${schema.fileName}" />\n`;
@@ -72,7 +73,7 @@ export const generateSchema = (fileName: string) => {
         title: SchemaTools.getTitle(schema) as string,
         description: SchemaTools.getDescription(schema) as string,
         editUrl: false,
-        head: `\n  - tag: meta\n    attrs:\n      fileName: ${schema.fileName}`
+        schemaFile: schema.fileName
     };
 
     const content = `import Schema from "/src/components/Schemas/Schema.astro";\n\n<Schema fileName="${schema.fileName}" />\n`;
