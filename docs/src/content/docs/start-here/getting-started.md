@@ -1,9 +1,6 @@
 ---
 title: Getting Started
 description: A guide for getting started with New Horizons
-next:
-    link: /guides/creating-addons
-    label: Creating Addons
 ---
 
 ## What Is New Horizons?

@@ -13,7 +13,7 @@
     },
     "dependencies": {
         "@astrojs/starlight": "^0.14.0",
-        "astro": "3.6.3",
+        "astro": "3.6.4",
         "rehype-external-links": "^3.0.0",
         "sharp": "^0.33.0"
     },
