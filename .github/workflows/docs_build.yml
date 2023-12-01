@@ -13,6 +13,7 @@ on:
     paths:
       - docs/**
       - NewHorizons/Schemas/*
+      - .github/workflows/docs_build.yml
 
 permissions:
   contents: read
