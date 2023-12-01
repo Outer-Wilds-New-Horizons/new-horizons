@@ -36,6 +36,10 @@ jobs:
         with:
           name: ${{ inputs.schemas_artifact }}
           path: NewHorizons/Schemas
+      - name: PNPM Sucks
+        run: |
+          cp docs/package.json .
+          cp docs/pnpm-lock.yaml .
       - name: Setup PNPM
         uses: pnpm/action-setup@v2
       - name: Build Site
