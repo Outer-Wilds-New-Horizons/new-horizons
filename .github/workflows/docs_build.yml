@@ -36,11 +36,17 @@ jobs:
         with:
           name: ${{ inputs.schemas_artifact }}
           path: NewHorizons/Schemas
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v2
       - name: Build Site
-        uses: withastro/action@v1
+        working-directory: docs
+        run: |
+          pnpm install
+          pnpm build
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v2
         with:
-          path: ./docs
-          package-manager: npm
+            path: ./docs/dist
 
   deploy:
     needs: build
