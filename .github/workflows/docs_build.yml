@@ -36,21 +36,14 @@ jobs:
         with:
           name: ${{ inputs.schemas_artifact }}
           path: NewHorizons/Schemas
-      - name: PNPM Sucks
+      - name: Move Stuff Becuase PNPM Can't FUCKING INSTALL IF YOU DONT HAVE PACKAGE JSON IN THE ROOT
         run: |
           cp docs/package.json .
           cp docs/pnpm-lock.yaml .
-      - name: Setup PNPM
-        uses: pnpm/action-setup@v2
       - name: Build Site
-        working-directory: docs
-        run: |
-          pnpm install
-          pnpm build
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v2
+        uses: withastro/action@v1
         with:
-            path: ./docs/dist
+          path: ./docs
 
   deploy:
     needs: build
