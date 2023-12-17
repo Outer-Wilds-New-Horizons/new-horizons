@@ -3,6 +3,7 @@ using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.Props.Shuttle;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
+using OWML.Common;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -68,14 +69,14 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        public static GameObject Make(GameObject planetGO, Sector sector, ShuttleInfo info)
+        public static GameObject Make(GameObject planetGO, Sector sector, IModBehaviour mod, ShuttleInfo info)
         {
             InitPrefab();
 
             if (_prefab == null || planetGO == null || sector == null) return null;
 
             var detailInfo = new DetailInfo(info) { keepLoaded = true };
-            var shuttleObject = DetailBuilder.Make(planetGO, sector, _prefab, detailInfo);
+            var shuttleObject = DetailBuilder.Make(planetGO, sector, mod, _prefab, detailInfo);
             shuttleObject.SetActive(false);
 
             StreamingHandler.SetUpStreaming(shuttleObject, sector);

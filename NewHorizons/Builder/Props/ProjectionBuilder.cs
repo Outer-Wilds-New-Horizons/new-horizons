@@ -203,7 +203,7 @@ namespace NewHorizons.Builder.Props
             if (_visionTorchDetectorPrefab == null) return null;
 
             // spawn a trigger for the vision torch
-            var g = DetailBuilder.Make(planetGO, sector, _visionTorchDetectorPrefab, new DetailInfo(info) { scale = 2, rename = !string.IsNullOrEmpty(info.rename) ? info.rename : "VisionStaffDetector" });
+            var g = DetailBuilder.Make(planetGO, sector, mod, _visionTorchDetectorPrefab, new DetailInfo(info) { scale = 2, rename = !string.IsNullOrEmpty(info.rename) ? info.rename : "VisionStaffDetector" });
 
             if (g == null)
             {
@@ -240,7 +240,7 @@ namespace NewHorizons.Builder.Props
             if (_standingVisionTorchPrefab == null) return null;
 
             // Spawn the torch itself
-            var standingTorch = DetailBuilder.Make(planetGO, sector, _standingVisionTorchPrefab, new DetailInfo(info));
+            var standingTorch = DetailBuilder.Make(planetGO, sector, mod, _standingVisionTorchPrefab, new DetailInfo(info));
 
             if (standingTorch == null)
             {

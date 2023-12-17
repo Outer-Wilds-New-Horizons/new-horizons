@@ -16,6 +16,9 @@ namespace NewHorizons
 
         [Obsolete("Create(Dictionary<string, object> config) is deprecated, please use LoadConfigs(IModBehaviour mod) instead")]
         void Create(Dictionary<string, object> config, IModBehaviour mod);
+
+        [Obsolete("SpawnObject(GameObject planet, Sector sector, string propToCopyPath, Vector3 position, Vector3 eulerAngles, float scale, bool alignRadial) is deprecated, please use SpawnObject(IModBehaviour mod, GameObject planet, Sector sector, string propToCopyPath, Vector3 position, Vector3 eulerAngles, float scale, bool alignRadial) instead")]
+        GameObject SpawnObject(GameObject planet, Sector sector, string propToCopyPath, Vector3 position, Vector3 eulerAngles, float scale, bool alignWithNormal);
         #endregion
 
         /// <summary>
@@ -105,7 +108,7 @@ namespace NewHorizons
         /// Allows you to spawn a copy of a prop by specifying its path.
         /// This is the same as using Props->details in a config, but also returns the spawned gameObject to you.
         /// </summary>
-        GameObject SpawnObject(GameObject planet, Sector sector, string propToCopyPath, Vector3 position, Vector3 eulerAngles, 
+        GameObject SpawnObject(IModBehaviour mod, GameObject planet, Sector sector, string propToCopyPath, Vector3 position, Vector3 eulerAngles, 
             float scale, bool alignWithNormal);
 
         /// <summary>
@@ -172,6 +175,37 @@ namespace NewHorizons
         /// <param name="entryPositions">A dictionary of each fact id to its 2D position in the ship log. Optional.</param>
         /// <param name="curiousityColours">A dictionary of each curiousity ID to its colour and highlight colour in the ship log. Optional.</param>
         void AddShipLogXML(IModBehaviour mod, XElement xml, string planetName, string imageFolder = null, Dictionary<string, Vector2> entryPositions = null, Dictionary<string, (Color colour, Color highlight)> curiousityColours = null);
+        #endregion
+
+        #region Translations
+        /// <summary>
+        /// Look up shiplog-related translated text for the given text key.
+        /// Defaults to English if no translation in the current language is available, and just the key if no English translation is available.
+        /// </summary>
+        /// <param name="text">The text key to look up.</param>
+        /// <returns></returns>
+        string GetTranslationForShipLog(string text);
+        /// <summary>
+        /// Look up dialogue-related translated text for the given text key.
+        /// Defaults to English if no translation in the current language is available, and just the key if no English translation is available.
+        /// </summary>
+        /// <param name="text">The text key to look up.</param>
+        /// <returns></returns>
+        string GetTranslationForDialogue(string text);
+        /// <summary>
+        /// Look up UI-related translated text for the given text key.
+        /// Defaults to English if no translation in the current language is available, and just the key if no English translation is available.
+        /// </summary>
+        /// <param name="text">The text key to look up.</param>
+        /// <returns></returns>
+        string GetTranslationForUI(string text);
+        /// <summary>
+        /// Look up miscellaneous translated text for the given text key.
+        /// Defaults to English if no translation in the current language is available, and just the key if no English translation is available.
+        /// </summary>
+        /// <param name="text">The text key to look up.</param>
+        /// <returns></returns>
+        string GetTranslationForOtherText(string text);
         #endregion
     }
 }
