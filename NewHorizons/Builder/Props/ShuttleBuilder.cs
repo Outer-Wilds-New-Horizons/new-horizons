@@ -11,7 +11,6 @@ namespace NewHorizons.Builder.Props
     public static class ShuttleBuilder
     {
         private static GameObject _prefab;
-        private static GameObject _orbPrefab;
         private static GameObject _bodyPrefab;
 
         public static Dictionary<NomaiShuttleController.ShuttleID, NomaiShuttleController> Shuttles { get; } = new();
@@ -52,9 +51,9 @@ namespace NewHorizons.Builder.Props
                 neutralSlot._attractive = true;
                 neutralSlot._muteAudio = true;
                 nhShuttleController._neutralSlot = neutralSlot;
-                // TODO: at some point delay rigidbody parenting so we dont have to find orb via references. mainly to fix orbs on existing details and rafts not rotating with planets
-                _orbPrefab = shuttleController._orb.gameObject?.InstantiateInactive()?.Rename("Prefab_QM_Shuttle_InterfaceOrbSmall")?.DontDestroyOnLoad();
-                nhShuttleController._orb = _orbPrefab.GetComponent<NomaiInterfaceOrb>();
+
+                var orb = shuttleController._orb.gameObject;
+                nhShuttleController._orb = orb.GetComponent<NomaiInterfaceOrb>();
                 nhShuttleController._orb._sector = nhShuttleController._interiorSector;
                 nhShuttleController._orb._slotRoot = slots;
                 nhShuttleController._orb._safetyRails = slots.GetComponentsInChildren<OWRail>();
@@ -87,7 +86,7 @@ namespace NewHorizons.Builder.Props
             shuttleController._cannon = Locator.GetGravityCannon(id);
 
             GameObject slots = shuttleObject.FindChild("Sector_NomaiShuttleInterior/Interactibles_NomaiShuttleInterior/ControlPanel/Slots");
-            GameObject orbObject = _orbPrefab.InstantiateInactive().Rename("InterfaceOrbSmall");
+            GameObject orbObject = shuttleController._orb.gameObject;
             orbObject.transform.SetParent(slots.transform, false);
             orbObject.transform.localPosition = new Vector3(-0.0153f, -0.2386f, 0.0205f);
             shuttleController._orb = orbObject.GetComponent<NomaiInterfaceOrb>();

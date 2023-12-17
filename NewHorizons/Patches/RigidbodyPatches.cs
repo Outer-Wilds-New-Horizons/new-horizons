@@ -7,6 +7,9 @@ namespace NewHorizons.Patches;
 
 /// <summary>
 /// From QSB
+/// 
+/// By delaying rigidbody stuff here we make copying objects with orbs work properly
+/// Should also improve rafts
 /// </summary>
 [HarmonyPatch(typeof(OWRigidbody))]
 public static class OWRigidbodyPatches
