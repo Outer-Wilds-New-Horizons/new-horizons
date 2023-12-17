@@ -27,6 +27,14 @@ namespace NewHorizons.Builder.Props
             SceneManager.sceneUnloaded += SceneManager_sceneUnloaded;
         }
 
+        #region obsolete
+        // Never change method signatures, people directly reference the NH dll and it can break backwards compatability
+        // In particular, Outer Wives needs this method signature
+        [Obsolete]
+        public static GameObject Make(GameObject go, Sector sector, GameObject prefab, DetailInfo detail)
+            => Make(go, sector, null, prefab, detail);
+        #endregion
+
         private static void SceneManager_sceneUnloaded(Scene scene)
         {
             foreach (var prefab in _fixedPrefabCache.Values)
@@ -77,11 +85,6 @@ namespace NewHorizons.Builder.Props
                 return Make(planetGO, sector, mod, prefab, info);
             }
         }
-
-        // Never change method signatures, people directly reference the NH dll and it can break backwards compatability
-        // In particular, Outer Wives needs this method signature
-        public static GameObject Make(GameObject go, Sector sector, GameObject prefab, DetailInfo detail)
-            => Make(go, sector, null, prefab, detail);
 
         /// <summary>
         /// Create a detail using a prefab.
