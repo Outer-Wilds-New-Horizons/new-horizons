@@ -78,6 +78,11 @@ namespace NewHorizons.Builder.Props
             }
         }
 
+        // Never change method signatures, people directly reference the NH dll and it can break backwards compatability
+        // In particular, Outer Wives needs this method signature
+        public static GameObject Make(GameObject go, Sector sector, GameObject prefab, DetailInfo detail)
+            => Make(go, sector, null, prefab, detail);
+
         /// <summary>
         /// Create a detail using a prefab.
         /// </summary>
