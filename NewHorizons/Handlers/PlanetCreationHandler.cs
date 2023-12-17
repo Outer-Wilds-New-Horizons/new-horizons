@@ -377,7 +377,7 @@ namespace NewHorizons.Handlers
             ao._rootSector = sector;
             ao._type = AstroObject.Type.None;
 
-            BrambleDimensionBuilder.Make(body, go, ao, sector, owRigidBody);
+            BrambleDimensionBuilder.Make(body, go, ao, sector, body.Mod, owRigidBody);
 
             go = SharedGenerateBody(body, go, sector, owRigidBody);
             

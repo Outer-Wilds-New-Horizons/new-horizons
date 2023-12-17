@@ -437,6 +437,7 @@ namespace NewHorizons
                 // Some builders have to be reset each loop
                 SignalBuilder.Init();
                 BrambleDimensionBuilder.Init();
+                ItemBuilder.Init();
                 AstroObjectLocator.Init();
                 StreamingHandler.Init();
                 AudioTypeHandler.Init();

@@ -1381,6 +1381,157 @@
           "type": "boolean",
           "description": "Should the player close their eyes while the activation state changes. Only relevant if activationCondition or deactivationCondition are set.",
           "default": true
+        },
+        "item": {
+          "description": "Should this detail be treated as an interactible item",
+          "$ref": "#/definitions/ItemInfo"
+        },
+        "itemSocket": {
+          "description": "Should this detail be treated as a socket for an interactible item",
+          "$ref": "#/definitions/ItemSocketInfo"
+        }
+      }
+    },
+    "ItemInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of the item to be displayed in the UI. Defaults to the name of the detail object."
+        },
+        "itemType": {
+          "type": "string",
+          "description": "The type of the item, which determines its orientation when held and what sockets it fits into. This can be a custom string, or a vanilla ItemType (Scroll, WarpCode, SharedStone, ConversationStone, Lantern, SlideReel, DreamLantern, or VisionTorch). Defaults to the item name."
+        },
+        "interactRange": {
+          "type": "number",
+          "description": "The furthest distance where the player can interact with this item. Defaults to two meters, same as most vanilla items. Set this to zero to disable all interaction by default.",
+          "format": "float",
+          "default": 2.0
+        },
+        "droppable": {
+          "type": "boolean",
+          "description": "Whether the item can be dropped. Defaults to true.",
+          "default": true
+        },
+        "dropOffset": {
+          "description": "A relative offset to apply to the item's position when dropping it on the ground.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "dropNormal": {
+          "description": "The direction the item will be oriented when dropping it on the ground. Defaults to up (0, 1, 0).",
+          "$ref": "#/definitions/MVector3"
+        },
+        "pickupAudio": {
+          "type": "string",
+          "description": "The audio to play when this item is picked up. Only applies to custom/non-vanilla item types.\nCan be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+        },
+        "dropAudio": {
+          "type": "string",
+          "description": "The audio to play when this item is dropped. Only applies to custom/non-vanilla item types.\nCan be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+        },
+        "socketAudio": {
+          "type": "string",
+          "description": "The audio to play when this item is inserted into a socket. Only applies to custom/non-vanilla item types.\nCan be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+        },
+        "unsocketAudio": {
+          "type": "string",
+          "description": "The audio to play when this item is removed from a socket. Only applies to custom/non-vanilla item types.\nCan be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+        },
+        "pickupCondition": {
+          "type": "string",
+          "description": "A dialogue condition to set when picking up this item."
+        },
+        "clearPickupConditionOnDrop": {
+          "type": "boolean",
+          "description": "Whether the pickup condition should be cleared when dropping the item. Defaults to true.",
+          "default": true
+        },
+        "pickupFact": {
+          "type": "string",
+          "description": "A ship log fact to reveal when picking up this item."
+        },
+        "pathToInitialSocket": {
+          "type": "string",
+          "description": "A relative path from the planet to a socket that this item will be automatically inserted into."
+        }
+      }
+    },
+    "ItemSocketInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "socketPath": {
+          "type": "string",
+          "description": "The relative path to a child game object of this detail that will act as the socket point for the item. Will be used instead of this socket's positioning info if set."
+        },
+        "itemType": {
+          "type": "string",
+          "description": "The type of item allowed in this socket. This can be a custom string, or a vanilla ItemType (Scroll, WarpCode, SharedStone, ConversationStone, Lantern, SlideReel, DreamLantern, or VisionTorch)."
+        },
+        "interactRange": {
+          "type": "number",
+          "description": "The furthest distance where the player can interact with this item socket. Defaults to two meters, same as most vanilla item sockets. Set this to zero to disable all interaction by default.",
+          "format": "float",
+          "default": 2.0
+        },
+        "useGiveTakePrompts": {
+          "type": "boolean",
+          "description": "Whether to use \"Give Item\" / \"Take Item\" prompts instead of \"Insert Item\" / \"Remove Item\"."
+        },
+        "insertCondition": {
+          "type": "string",
+          "description": "A dialogue condition to set when inserting an item into this socket."
+        },
+        "clearInsertConditionOnRemoval": {
+          "type": "boolean",
+          "description": "Whether the insert condition should be cleared when removing the socketed item. Defaults to true.",
+          "default": true
+        },
+        "insertFact": {
+          "type": "string",
+          "description": "A ship log fact to reveal when inserting an item into this socket."
+        },
+        "removalCondition": {
+          "type": "string",
+          "description": "A dialogue condition to set when removing an item from this socket, or when the socket is empty."
+        },
+        "clearRemovalConditionOnInsert": {
+          "type": "boolean",
+          "description": "Whether the removal condition should be cleared when inserting a socketed item. Defaults to true.",
+          "default": true
+        },
+        "removalFact": {
+          "type": "string",
+          "description": "A ship log fact to reveal when removing an item from this socket, or when the socket is empty."
         }
       }
     },
@@ -1935,60 +2086,64 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "ambientLightColor": {
-          "description": "Ambient light colour when viewing this slide.",
-          "$ref": "#/definitions/MColor"
+        "imagePath": {
+          "type": "string",
+          "description": "The path to the image file for this slide."
         },
         "ambientLightIntensity": {
           "type": "number",
-          "description": "Ambient light intensity when viewing this slide.",
+          "description": "Ambient light intensity when viewing this slide.\nSet this to add ambient light module. Base game default is 1.",
           "format": "float"
         },
         "ambientLightRange": {
           "type": "number",
           "description": "Ambient light range when viewing this slide.",
-          "format": "float"
+          "format": "float",
+          "default": 20.0
         },
-        "backdropAudio": {
-          "type": "string",
-          "description": "The name of the AudioClip that will continuously play while watching these slides"
-        },
-        "backdropFadeTime": {
-          "type": "number",
-          "description": "The time to fade into the backdrop audio",
-          "format": "float"
-        },
-        "beatAudio": {
-          "type": "string",
-          "description": "The name of the AudioClip for a one-shot sound when opening the slide."
-        },
-        "beatDelay": {
-          "type": "number",
-          "description": "The time delay until the one-shot audio",
-          "format": "float"
-        },
-        "blackFrameDuration": {
-          "type": "number",
-          "description": "Before viewing this slide, there will be a black frame for this many seconds.",
-          "format": "float"
-        },
-        "imagePath": {
-          "type": "string",
-          "description": "The path to the image file for this slide."
-        },
-        "playTimeDuration": {
-          "type": "number",
-          "description": "Play-time duration for auto-projector slides.",
-          "format": "float"
-        },
-        "reveal": {
-          "type": "string",
-          "description": "Ship log fact revealed when viewing this slide"
+        "ambientLightColor": {
+          "description": "Ambient light colour when viewing this slide. Defaults to white.",
+          "$ref": "#/definitions/MColor"
         },
         "spotIntensityMod": {
           "type": "number",
           "description": "Spotlight intensity modifier when viewing this slide.",
+          "format": "float",
+          "default": 0.0
+        },
+        "backdropAudio": {
+          "type": "string",
+          "description": "The name of the AudioClip that will continuously loop while watching these slides.\nSet this to include backdrop audio module. Base game default is Reel_1_Backdrop_A."
+        },
+        "backdropFadeTime": {
+          "type": "number",
+          "description": "The time to fade into the backdrop audio.",
+          "format": "float",
+          "default": 2.0
+        },
+        "beatAudio": {
+          "type": "string",
+          "description": "The name of the AudioClip for a one-shot sound when opening the slide.\nSet this to include beat audio module. Base game default is Reel_1_Beat_A."
+        },
+        "beatDelay": {
+          "type": "number",
+          "description": "The time delay until the one-shot audio.",
+          "format": "float",
+          "default": 0.0
+        },
+        "blackFrameDuration": {
+          "type": "number",
+          "description": "Before viewing this slide, there will be a black frame for this many seconds.\nSet this to include black frame module. Base game default is 0.",
           "format": "float"
+        },
+        "playTimeDuration": {
+          "type": "number",
+          "description": "Play-time duration for auto-projector slides.\nSet this to include play time module. Base game default is 0.",
+          "format": "float"
+        },
+        "reveal": {
+          "type": "string",
+          "description": "Ship log fact revealed when viewing this slide.\nSet this to include ship log entry module. Base game default is \"\"."
         }
       }
     },

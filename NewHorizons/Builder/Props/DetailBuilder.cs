@@ -27,6 +27,14 @@ namespace NewHorizons.Builder.Props
             SceneManager.sceneUnloaded += SceneManager_sceneUnloaded;
         }
 
+        #region obsolete
+        // Never change method signatures, people directly reference the NH dll and it can break backwards compatability
+        // In particular, Outer Wives needs this method signature
+        [Obsolete]
+        public static GameObject Make(GameObject go, Sector sector, GameObject prefab, DetailInfo detail)
+            => Make(go, sector, null, prefab, detail);
+        #endregion
+
         private static void SceneManager_sceneUnloaded(Scene scene)
         {
             foreach (var prefab in _fixedPrefabCache.Values)
@@ -52,24 +60,16 @@ namespace NewHorizons.Builder.Props
         /// <summary>
         /// Create a detail using an asset bundle or a path in the scene hierarchy of the item to copy.
         /// </summary>
-        public static GameObject Make(GameObject go, Sector sector, IModBehaviour mod, DetailInfo detail)
+        public static GameObject Make(GameObject planetGO, Sector sector, IModBehaviour mod, DetailInfo info)
         {
-            if (detail.assetBundle != null)
+            if (info.assetBundle != null)
             {
                 // Shouldn't happen
                 if (mod == null) return null;
 
-                return Make(go, sector, AssetBundleUtilities.LoadPrefab(detail.assetBundle, detail.path, mod), detail);
+                return Make(planetGO, sector, mod, AssetBundleUtilities.LoadPrefab(info.assetBundle, info.path, mod), info);
             }
-            else
-                return Make(go, sector, detail);
-        }
 
-        /// <summary>
-        /// Create a detail using a path in the scene hierarchy of the item to copy.
-        /// </summary>
-        public static GameObject Make(GameObject planetGO, Sector sector, DetailInfo info)
-        {
             if (_emptyPrefab == null) _emptyPrefab = new GameObject("Empty");
 
             // Allow for empty game objects so you can set up conditional activation on them and parent other props to them
@@ -82,14 +82,14 @@ namespace NewHorizons.Builder.Props
             }
             else
             {
-                return Make(planetGO, sector, prefab, info);
+                return Make(planetGO, sector, mod, prefab, info);
             }
         }
 
         /// <summary>
         /// Create a detail using a prefab.
         /// </summary>
-        public static GameObject Make(GameObject go, Sector sector, GameObject prefab, DetailInfo detail)
+        public static GameObject Make(GameObject go, Sector sector, IModBehaviour mod, GameObject prefab, DetailInfo detail)
         {
             if (prefab == null) return null;
 
@@ -161,6 +161,16 @@ namespace NewHorizons.Builder.Props
                         NHLogger.LogError($"Failed to instantiate component at {t.GetPath()}. This usually means there's a missing script.");
                     }
                 }
+            }
+
+            if (detail.item != null)
+            {
+                ItemBuilder.MakeItem(prop, go, sector, detail.item, mod);
+            }
+
+            if (detail.itemSocket != null)
+            {
+                ItemBuilder.MakeSocket(prop, go, sector, detail.itemSocket);
             }
 
             // Items should always be kept loaded else they will vanish in your hand as you leave the sector
