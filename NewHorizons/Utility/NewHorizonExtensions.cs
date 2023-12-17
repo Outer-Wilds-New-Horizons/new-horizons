@@ -305,5 +305,39 @@ namespace NewHorizons.Utility
             }
             return curve;
         }
+
+        // From QSB
+        public static void RaiseEvent<T>(this T instance, string eventName, params object[] args)
+        {
+            const BindingFlags flags = BindingFlags.Instance
+                | BindingFlags.Static
+                | BindingFlags.Public
+                | BindingFlags.NonPublic
+                | BindingFlags.DeclaredOnly;
+            if (typeof(T)
+                    .GetField(eventName, flags)?
+                    .GetValue(instance) is not MulticastDelegate multiDelegate)
+            {
+                return;
+            }
+
+            multiDelegate.SafeInvoke(args);
+        }
+
+        // From QSB
+        public static void SafeInvoke(this MulticastDelegate multicast, params object[] args)
+        {
+            foreach (var del in multicast.GetInvocationList())
+            {
+                try
+                {
+                    del.DynamicInvoke(args);
+                }
+                catch (TargetInvocationException ex)
+                {
+                    NHLogger.LogError($"Error invoking delegate! {ex.InnerException}");
+                }
+            }
+        }
     }
 }
