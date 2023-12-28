@@ -12,18 +12,18 @@
         "format": "prettier --write ."
     },
     "dependencies": {
-        "@astrojs/starlight": "^0.14.0",
-        "astro": "3.6.4",
+        "@astrojs/starlight": "^0.15.1",
+        "astro": "4.0.8",
         "rehype-external-links": "^3.0.0",
-        "sharp": "^0.33.0"
+        "sharp": "^0.33.1"
     },
     "devDependencies": {
         "@apidevtools/json-schema-ref-parser": "^11.1.0",
-        "eslint": "^8.54.0",
-        "eslint-plugin-prettier": "^5.0.1",
+        "eslint": "^8.56.0",
+        "eslint-plugin-prettier": "^5.1.2",
         "fast-xml-parser": "^4.3.2",
-        "prettier": "^3.1.0",
-        "prettier-plugin-astro": "^0.12.2",
+        "prettier": "^3.1.1",
+        "prettier-plugin-astro": "^0.12.3",
         "xml-js": "^1.6.11"
     }
 }

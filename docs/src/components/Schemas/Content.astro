@@ -22,6 +22,8 @@ const refSlug = SchemaTools.getRefSlug(schema);
 const enumVals = SchemaTools.getEnumValues(schema);
 const props = SchemaTools.getProps(schema, level);
 
+const descSplit = description?.toString().split("  \n").map(l => l.trim()).filter(l => l.length !== 0);
+
 const HeadingTag = levelMap[level] ?? "h6";
 ---
 
@@ -60,7 +62,7 @@ const HeadingTag = levelMap[level] ?? "h6";
             </div>
         )
     }
-    {description ? <p>{description}</p> : <p>No Description Found</p>}
+    {descSplit?.map(l => <p>{l}</p>) ?? <p>No Description Found</p>}
     {
         enumVals.length !== 0 && (
             <>
