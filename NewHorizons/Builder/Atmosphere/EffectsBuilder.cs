@@ -1,6 +1,7 @@
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
+using System;
 using UnityEngine;
 
 namespace NewHorizons.Builder.Atmosphere
@@ -52,7 +53,26 @@ namespace NewHorizons.Builder.Atmosphere
             if (_fogEmitterPrefab == null) _fogEmitterPrefab = SearchUtilities.Find("DB_EscapePodDimension_Body/Sector_EscapePodDimension/Effects_EscapePodDimension/Effects_DB_Fog (1)").InstantiateInactive().Rename("Prefab_Effects_Fog").DontDestroyOnLoad();
         }
 
+
+        #region obsolete
+        // Never change method signatures, people directly reference the NH dll and it can break backwards compatability
+        // Dreamstalker needed this one
+        [Obsolete]
+        public static void Make(GameObject planetGO, Sector sector, PlanetConfig config, float surfaceHeight)
+            => Make(planetGO, sector, config, surfaceHeight);
+        #endregion
+
         public static void Make(GameObject planetGO, Sector sector, PlanetConfig config)
+            => Make(planetGO, sector, config, null);
+
+        /// <summary>
+        /// Nullable surface height for backwards compat
+        /// </summary>
+        /// <param name="planetGO"></param>
+        /// <param name="sector"></param>
+        /// <param name="config"></param>
+        /// <param name="surfaceHeight"></param>
+        private static void Make(GameObject planetGO, Sector sector, PlanetConfig config, float? surfaceHeight)
         {
             InitPrefabs();
 
@@ -69,11 +89,13 @@ namespace NewHorizons.Builder.Atmosphere
             sectorCullGroup._waitForStreaming = false;
 
             var (minHeight, maxHeight) = GetDefaultHeightRange(config);
+            // min height override for backwards compat
+            minHeight = surfaceHeight ?? minHeight;
 
             foreach (var particleField in config.ParticleFields)
             {
                 var prefab = GetPrefabByType(particleField.type);
-                var emitter = Object.Instantiate(prefab, effectsGO.transform);
+                var emitter = GameObject.Instantiate(prefab, effectsGO.transform);
                 emitter.name = !string.IsNullOrWhiteSpace(particleField.rename) ? particleField.rename : prefab.name.Replace("Prefab_", "");
                 emitter.transform.position = planetGO.transform.position;
 
