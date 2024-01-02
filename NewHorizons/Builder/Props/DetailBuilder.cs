@@ -28,7 +28,7 @@ namespace NewHorizons.Builder.Props
         }
 
         #region obsolete
-        // Never change method signatures, people directly reference the NH dll and it can break backwards compatability
+        // Never change method signatures, people directly reference the NH dll and it can break backwards compatibility
         // In particular, Outer Wives needs this method signature
         [Obsolete]
         public static GameObject Make(GameObject go, Sector sector, GameObject prefab, DetailInfo detail)

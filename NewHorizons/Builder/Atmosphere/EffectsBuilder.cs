@@ -55,7 +55,7 @@ namespace NewHorizons.Builder.Atmosphere
 
 
         #region obsolete
-        // Never change method signatures, people directly reference the NH dll and it can break backwards compatability
+        // Never change method signatures, people directly reference the NH dll and it can break backwards compatibility
         // Dreamstalker needed this one
         [Obsolete]
         public static void Make(GameObject planetGO, Sector sector, PlanetConfig config, float surfaceHeight)
