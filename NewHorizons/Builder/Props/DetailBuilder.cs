@@ -32,7 +32,12 @@ namespace NewHorizons.Builder.Props
         // In particular, Outer Wives needs this method signature
         [Obsolete]
         public static GameObject Make(GameObject go, Sector sector, GameObject prefab, DetailInfo detail)
-            => Make(go, sector, null, prefab, detail);
+            => Make(go, sector, mod: null, prefab, detail);
+
+        // Dreamstalker needed this one
+        [Obsolete]
+        public static GameObject Make(GameObject go, Sector sector, DetailInfo detail)
+            => Make(go, sector, mod: null, detail);
         #endregion
 
         private static void SceneManager_sceneUnloaded(Scene scene)
