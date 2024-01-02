@@ -2,7 +2,8 @@
 import type { JSONSchema } from "@apidevtools/json-schema-ref-parser/dist/lib/types";
 import type { MarkdownHeading } from "astro";
 import { readFileSync } from "fs";
-import { Element, xml2js } from "xml-js";
+import { xml2js } from "xml-js";
+import type { Element } from "xml-js";
 
 export type InternalSchema = { type: "JSON"; val: JSONSchema } | { type: "XML"; val: Element };
 
