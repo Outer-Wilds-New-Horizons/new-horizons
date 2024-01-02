@@ -59,11 +59,11 @@ namespace NewHorizons.Builder.Atmosphere
         // Dreamstalker needed this one
         [Obsolete]
         public static void Make(GameObject planetGO, Sector sector, PlanetConfig config, float surfaceHeight)
-            => Make(planetGO, sector, config, surfaceHeight);
+            => InternalMake(planetGO, sector, config, surfaceHeight);
         #endregion
 
         public static void Make(GameObject planetGO, Sector sector, PlanetConfig config)
-            => Make(planetGO, sector, config, null);
+            => InternalMake(planetGO, sector, config, null);
 
         /// <summary>
         /// Nullable surface height for backwards compat
@@ -72,7 +72,7 @@ namespace NewHorizons.Builder.Atmosphere
         /// <param name="sector"></param>
         /// <param name="config"></param>
         /// <param name="surfaceHeight"></param>
-        private static void Make(GameObject planetGO, Sector sector, PlanetConfig config, float? surfaceHeight)
+        private static void InternalMake(GameObject planetGO, Sector sector, PlanetConfig config, float? surfaceHeight)
         {
             InitPrefabs();
 
