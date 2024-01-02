@@ -1,6 +1,7 @@
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWML;
 using System;
 using UnityEngine;
 
@@ -92,27 +93,30 @@ namespace NewHorizons.Builder.Atmosphere
             // min height override for backwards compat
             minHeight = surfaceHeight ?? minHeight;
 
-            foreach (var particleField in config.ParticleFields)
+            if (config.ParticleFields != null)
             {
-                var prefab = GetPrefabByType(particleField.type);
-                var emitter = GameObject.Instantiate(prefab, effectsGO.transform);
-                emitter.name = !string.IsNullOrWhiteSpace(particleField.rename) ? particleField.rename : prefab.name.Replace("Prefab_", "");
-                emitter.transform.position = planetGO.transform.position;
-
-                var vfe = emitter.GetComponent<VectionFieldEmitter>();
-                var pvc = emitter.GetComponent<PlanetaryVectionController>();
-                pvc._vectionFieldEmitter = vfe;
-                pvc._densityByHeight = particleField.densityByHeightCurve != null ? particleField.densityByHeightCurve.ToAnimationCurve() : new AnimationCurve(new Keyframe[]
+                foreach (var particleField in config.ParticleFields)
                 {
-                    new Keyframe(minHeight - 0.5f, 0),
-                    new Keyframe(minHeight, 10f),
-                    new Keyframe(maxHeight, 0f)
-                });
-                pvc._followTarget = particleField.followTarget == ParticleFieldModule.FollowTarget.Probe ? PlanetaryVectionController.FollowTarget.Probe : PlanetaryVectionController.FollowTarget.Player;
-                pvc._activeInSector = sector;
-                pvc._exclusionSectors = new Sector[] { };
+                    var prefab = GetPrefabByType(particleField.type);
+                    var emitter = GameObject.Instantiate(prefab, effectsGO.transform);
+                    emitter.name = !string.IsNullOrWhiteSpace(particleField.rename) ? particleField.rename : prefab.name.Replace("Prefab_", "");
+                    emitter.transform.position = planetGO.transform.position;
 
-                emitter.SetActive(true);
+                    var vfe = emitter.GetComponent<VectionFieldEmitter>();
+                    var pvc = emitter.GetComponent<PlanetaryVectionController>();
+                    pvc._vectionFieldEmitter = vfe;
+                    pvc._densityByHeight = particleField.densityByHeightCurve != null ? particleField.densityByHeightCurve.ToAnimationCurve() : new AnimationCurve(new Keyframe[]
+                    {
+                        new Keyframe(minHeight - 0.5f, 0),
+                        new Keyframe(minHeight, 10f),
+                        new Keyframe(maxHeight, 0f)
+                    });
+                    pvc._followTarget = particleField.followTarget == ParticleFieldModule.FollowTarget.Probe ? PlanetaryVectionController.FollowTarget.Probe : PlanetaryVectionController.FollowTarget.Player;
+                    pvc._activeInSector = sector;
+                    pvc._exclusionSectors = new Sector[] { };
+
+                    emitter.SetActive(true);
+                }
             }
 
             effectsGO.transform.position = planetGO.transform.position;
