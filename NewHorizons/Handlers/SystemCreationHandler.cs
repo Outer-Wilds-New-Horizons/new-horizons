@@ -7,6 +7,8 @@ using NewHorizons.Utility.OWML;
 using NewHorizons.Utility.OuterWilds;
 using UnityEngine;
 using Object = UnityEngine.Object;
+using NewHorizons.OtherMods;
+
 namespace NewHorizons.Handlers
 {
     public static class SystemCreationHandler
@@ -31,7 +33,8 @@ namespace NewHorizons.Handlers
             // No time loop or travel audio at the eye
             if (Main.Instance.CurrentStarSystem == "EyeOfTheUniverse") return;
 
-            if (system.Config.enableTimeLoop)
+            // Small mod compat change for StopTime - do nothing if it's enabled
+            if (system.Config.enableTimeLoop && !OtherModUtil.IsEnabled("_nebula.StopTime"))
             {
                 var timeLoopController = new GameObject("TimeLoopController");
                 timeLoopController.AddComponent<TimeLoopController>();
