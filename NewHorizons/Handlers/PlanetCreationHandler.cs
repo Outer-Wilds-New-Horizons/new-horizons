@@ -949,7 +949,13 @@ namespace NewHorizons.Handlers
                 {
                     flag = false;
                     // idk why we wait here but we do
-                    Delay.FireInNUpdates(() => childObj.gameObject.SetActive(false), 2);
+                    Delay.FireInNUpdates(() =>
+                    {
+                        if (childObj != null && childObj.gameObject != null)
+                        {
+                            childObj.gameObject.SetActive(false);
+                        }
+                    }, 2);
                 }
 
                 if (flag) NHLogger.LogWarning($"Couldn't find \"{childPath}\".");
