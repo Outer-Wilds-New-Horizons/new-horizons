@@ -8,5 +8,6 @@
   "owmlVersion": "2.9.8",
   "dependencies": [ "JohnCorby.VanillaFix", "_nebula.MenuFramework", "xen.CommonCameraUtility", "dgarro.CustomShipLogModes" ],
   "conflicts": [ "Raicuparta.QuantumSpaceBuddies", "PacificEngine.OW_CommonResources" ],
-  "pathsToPreserve": [ "planets", "systems", "translations" ]
+  "pathsToPreserve": [ "planets", "systems", "translations" ],
+  "donateLink": "https://www.patreon.com/ownh"
 }
