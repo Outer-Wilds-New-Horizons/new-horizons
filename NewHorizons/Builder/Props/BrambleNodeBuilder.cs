@@ -402,6 +402,11 @@ namespace NewHorizons.Builder.Props
                     signalGO.GetComponent<AudioSignal>()._sourceRadius = 1;
                     signalGO.transform.position = brambleNode.transform.position;
                     signalGO.transform.parent = brambleNode.transform;
+
+                    //Don't need the unknown signal detection bits
+                    Component.Destroy(signalGO.GetComponent<AudioSignalDetectionTrigger>());
+                    Component.Destroy(signalGO.GetComponent<OWTriggerVolume>());
+                    Component.Destroy(signalGO.GetComponent<SphereShape>());
                 }
             }
 
