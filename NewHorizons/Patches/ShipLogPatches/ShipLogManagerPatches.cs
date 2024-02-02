@@ -29,7 +29,7 @@ namespace NewHorizons.Patches.ShipLogPatches
 
             NHLogger.Log($"Beginning Ship Log Generation For: {currentStarSystem}");
 
-            if (currentStarSystem != "SolarSystem")
+            if (currentStarSystem != "SolarSystem" && currentStarSystem != "EyeOfTheUniverse")
             {
                 __instance._shipLogXmlAssets = new TextAsset[] { };
                 foreach (ShipLogEntryLocation logEntryLocation in Object.FindObjectsOfType<ShipLogEntryLocation>())
