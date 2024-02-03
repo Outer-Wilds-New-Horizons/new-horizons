@@ -77,6 +77,20 @@ namespace NewHorizons.Handlers
                     }
 
                     SpawnBody(ship.GetAttachedOWRigidbody(), SpawnPointBuilder.ShipSpawn, pos);
+
+                    // Bug affecting mods with massive stars (8600m+ radius)
+                    // TH has an orbital radius of 8600m, meaning the base game ship spawn ends up inside the star
+                    // This places the ship into the star's fluid volumes (destruction volume and atmosphere)
+                    // When the ship is teleported out, it doesn't update it's detected fluid volumes and gets affected by drag forever
+                    // Can fix by turning the volumes off and on again
+                    foreach (var volume in ship.GetComponentInChildren<ShipFluidDetector>()._activeVolumes)
+                    {
+                        if (volume.gameObject.activeInHierarchy)
+                        {
+                            volume.gameObject.SetActive(false);
+                            volume.gameObject.SetActive(true);
+                        }
+                    }
                 }
             }
             else if (Main.Instance.CurrentStarSystem != "SolarSystem" && !Main.Instance.IsWarpingFromShip)
