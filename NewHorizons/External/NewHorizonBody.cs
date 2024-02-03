@@ -26,6 +26,15 @@ namespace NewHorizons.External
 
         public GameObject Object;
 
+        public bool RequiresDLC()
+        {
+            var detailPaths = Config.Props.details.Select(x => x.path);
+            return Config.Cloak != null 
+                || Config.Props?.rafts != null 
+                || Config.Props?.slideShows != null 
+                || detailPaths.Any(x => x.StartsWith("Ringworld") || x.StartsWith("Dreamworld"));
+        }
+
         #region Cache
         public void LoadCache()
         {
