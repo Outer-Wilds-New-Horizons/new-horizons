@@ -78,6 +78,7 @@ namespace NewHorizons.Handlers
 
                     // #748 Before moving the ship, reset all its landing pad sensors
                     // Else they might think its still touching TH
+                    // Doing this before moving the ship so that if they start contacting in the new spawn point then that gets preserved
                     foreach (var landingPadSensor in ship.GetComponentsInChildren<LandingPadSensor>())
                     {
                         landingPadSensor._contactBody = null;
@@ -90,6 +91,7 @@ namespace NewHorizons.Handlers
                     // This places the ship into the star's fluid volumes (destruction volume and atmosphere)
                     // When the ship is teleported out, it doesn't update it's detected fluid volumes and gets affected by drag forever
                     // Can fix by turning the volumes off and on again
+                    // Done after re-positioning else it'd just get re-added to the old volumes
                     foreach (var volume in ship.GetComponentInChildren<ShipFluidDetector>()._activeVolumes)
                     {
                         if (volume.gameObject.activeInHierarchy)
