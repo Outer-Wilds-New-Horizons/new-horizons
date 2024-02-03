@@ -100,6 +100,16 @@ namespace NewHorizons.Handlers
                             volume.gameObject.SetActive(true);
                         }
                     }
+                    // Also applies to force volumes
+                    foreach (var volume in ship.GetComponentInChildren<AlignmentForceDetector>()._activeVolumes)
+                    {
+                        if (volume.gameObject.activeInHierarchy)
+                        {
+                            volume.gameObject.SetActive(false);
+                            volume.gameObject.SetActive(true);
+                        }
+                    }
+                    // For some reason none of this seems to apply to the Player
                 }
             }
             else if (Main.Instance.CurrentStarSystem != "SolarSystem" && !Main.Instance.IsWarpingFromShip)
