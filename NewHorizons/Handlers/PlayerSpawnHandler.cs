@@ -76,6 +76,13 @@ namespace NewHorizons.Handlers
                         pos += SpawnPointBuilder.ShipSpawn.transform.TransformDirection(SpawnPointBuilder.ShipSpawnOffset);
                     }
 
+                    // #748 Before moving the ship, reset all its landing pad sensors
+                    // Else they might think its still touching TH
+                    foreach (var landingPadSensor in ship.GetComponentsInChildren<LandingPadSensor>())
+                    {
+                        landingPadSensor._contactBody = null;
+                    }
+
                     SpawnBody(ship.GetAttachedOWRigidbody(), SpawnPointBuilder.ShipSpawn, pos);
 
                     // Bug affecting mods with massive stars (8600m+ radius)
