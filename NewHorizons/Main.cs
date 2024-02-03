@@ -50,9 +50,10 @@ namespace NewHorizons
         private static bool _wasConfigured = false;
         private static string _defaultSystemOverride;
 
-        public static Dictionary<string, NewHorizonsSystem> SystemDict = new Dictionary<string, NewHorizonsSystem>();
-        public static Dictionary<string, List<NewHorizonsBody>> BodyDict = new Dictionary<string, List<NewHorizonsBody>>();
-        public static List<IModBehaviour> MountedAddons = new List<IModBehaviour>();
+        public static Dictionary<string, NewHorizonsSystem> SystemDict = new();
+        public static Dictionary<string, List<NewHorizonsBody>> BodyDict = new();
+        public static List<IModBehaviour> MountedAddons = new();
+        public static Dictionary<IModBehaviour, AddonConfig> AddonConfigs = new();
 
         public static float SecondsElapsedInLoop = -1;
 
@@ -747,6 +748,15 @@ namespace NewHorizons
             {
                 MenuHandler.RegisterOneTimePopup(mod, TranslationHandler.GetTranslation(addonConfig.popupMessage, TranslationHandler.TextType.UI), addonConfig.repeatPopup);
             }
+            if (addonConfig.preloadAssetBundles != null)
+            {
+                foreach (var bundle in addonConfig.preloadAssetBundles)
+                {
+                    AssetBundleUtilities.PreloadBundle(bundle, mod);
+                }
+            }
+
+            AddonConfigs[mod] = addonConfig;
         }
 
         private void LoadTranslations(string folder, IModBehaviour mod)
