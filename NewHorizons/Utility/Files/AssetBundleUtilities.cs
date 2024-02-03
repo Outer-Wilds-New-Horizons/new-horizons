@@ -10,7 +10,9 @@ namespace NewHorizons.Utility.Files
 {
     public static class AssetBundleUtilities
     {
-        public static Dictionary<string, (AssetBundle bundle, bool keepLoaded)> AssetBundles = new Dictionary<string, (AssetBundle, bool)>();
+        public static Dictionary<string, (AssetBundle bundle, bool keepLoaded)> AssetBundles = new();
+
+        private static readonly List<AssetBundleCreateRequest> _loadingBundles = new();
 
         public static void ClearCache()
         {
@@ -37,12 +39,20 @@ namespace NewHorizons.Utility.Files
             string key = Path.GetFileName(assetBundleRelativeDir);
             var completePath = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, assetBundleRelativeDir);
             var request = AssetBundle.LoadFromFileAsync(completePath);
+            _loadingBundles.Add(request);
+            NHLogger.Log($"Preloading bundle {assetBundleRelativeDir} - {_loadingBundles.Count} left");
             request.completed += _ =>
             {
-                NHLogger.Log($"Finished loading async bundle {assetBundleRelativeDir}");
+                _loadingBundles.Remove(request);
+                NHLogger.Log($"Finshed preloading bundle {assetBundleRelativeDir} - {_loadingBundles.Count} left");
                 AssetBundles[key] = (request.assetBundle, true);
             };
         }
+
+        /// <summary>
+        /// are preloaded bundles done loading?
+        /// </summary>
+        public static bool AreRequiredAssetsLoaded() => _loadingBundles.Count == 0;
 
         public static T Load<T>(string assetBundleRelativeDir, string pathInBundle, IModBehaviour mod) where T : UnityEngine.Object
         {
