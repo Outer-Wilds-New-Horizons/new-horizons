@@ -2,6 +2,7 @@ using NewHorizons.Builder.General;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OWML;
 using System.Collections;
+using System.Linq;
 using UnityEngine;
 
 namespace NewHorizons.Handlers
@@ -92,7 +93,10 @@ namespace NewHorizons.Handlers
                     // When the ship is teleported out, it doesn't update it's detected fluid volumes and gets affected by drag forever
                     // Can fix by turning the volumes off and on again
                     // Done after re-positioning else it'd just get re-added to the old volumes
-                    foreach (var volume in ship.GetComponentInChildren<ShipFluidDetector>()._activeVolumes)
+                    
+                    // .ToList is because it makes a copy of the array, else it errors:
+                    // "InvalidOperationException: Collection was modified; enumeration operation may not execute."
+                    foreach (var volume in ship.GetComponentInChildren<ShipFluidDetector>()._activeVolumes.ToList())
                     {
                         if (volume.gameObject.activeInHierarchy)
                         {
@@ -101,7 +105,7 @@ namespace NewHorizons.Handlers
                         }
                     }
                     // Also applies to force volumes
-                    foreach (var volume in ship.GetComponentInChildren<AlignmentForceDetector>()._activeVolumes)
+                    foreach (var volume in ship.GetComponentInChildren<AlignmentForceDetector>()._activeVolumes.ToList())
                     {
                         if (volume.gameObject.activeInHierarchy)
                         {
@@ -109,7 +113,8 @@ namespace NewHorizons.Handlers
                             volume.gameObject.SetActive(true);
                         }
                     }
-                    // For some reason none of this seems to apply to the Player
+                    // For some reason none of this seems to apply to the Player.
+                    // If somebody ever makes a sound volume thats somehow always applying to the player tho then itd probably be this
                 }
             }
             else if (Main.Instance.CurrentStarSystem != "SolarSystem" && !Main.Instance.IsWarpingFromShip)
