@@ -31,5 +31,17 @@ namespace NewHorizons.External.Configs
         /// If popupMessage is set, should it repeat every time the game starts or only once
         /// </summary>
         public bool repeatPopup;
+
+        /// <summary>
+        /// These asset bundles will be loaded on the title screen and stay loaded. Will improve initial load time at the cost of increased memory use.
+        /// The path is the relative directory of the asset bundle in the mod folder.
+        /// </summary>
+        public string[] preloadAssetBundles;
+
+        /// <summary>
+        /// The path to the addons subtitle for the main menu.
+        /// Defaults to "subtitle.png".
+        /// </summary>
+        public string subtitlePath = "subtitle.png";
     }
 }
