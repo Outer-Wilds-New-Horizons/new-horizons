@@ -1,3 +1,4 @@
+using Autodesk.Fbx;
 using HarmonyLib;
 using NewHorizons.Utility.Files;
 using NewHorizons.Utility.OWML;
@@ -26,6 +27,9 @@ namespace NewHorizons.Patches.EyeScenePatches
                 Main.Instance.IsWarpingBackToEye = true;
                 __instance._sceneToLoad = SubmitActionLoadScene.LoadableScenes.GAME;
             }
+
+            // Don't bother going through this stuff if we don't have to
+            if (AssetBundleUtilities.AreRequiredAssetsLoaded()) return true;
             
             // modified from patched function
             SubmitActionConfirm_ConfirmSubmit(__instance);            
