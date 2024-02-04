@@ -61,9 +61,17 @@ namespace NewHorizons.Handlers
 
         private void AddSubtitles()
         {
-            foreach (var mod in Main.MountedAddons.Where(mod => File.Exists($"{mod.ModHelper.Manifest.ModFolderPath}subtitle.png")))
+            foreach (var mod in Main.MountedAddons)
             {
-                AddSubtitle(mod, "subtitle.png");
+                if (Main.AddonConfigs.TryGetValue(mod, out var addonConfig) && File.Exists(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, addonConfig.subtitlePath)))
+                {
+                    AddSubtitle(mod, addonConfig.subtitlePath);
+                }
+                // Else default to subtitle.png
+                else if (File.Exists(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, "subtitle.png")))
+                {
+                    AddSubtitle(mod, "subtitle.png");
+                }
             }
         }
 

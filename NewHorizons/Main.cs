@@ -50,9 +50,10 @@ namespace NewHorizons
         private static bool _wasConfigured = false;
         private static string _defaultSystemOverride;
 
-        public static Dictionary<string, NewHorizonsSystem> SystemDict = new Dictionary<string, NewHorizonsSystem>();
-        public static Dictionary<string, List<NewHorizonsBody>> BodyDict = new Dictionary<string, List<NewHorizonsBody>>();
-        public static List<IModBehaviour> MountedAddons = new List<IModBehaviour>();
+        public static Dictionary<string, NewHorizonsSystem> SystemDict = new();
+        public static Dictionary<string, List<NewHorizonsBody>> BodyDict = new();
+        public static List<IModBehaviour> MountedAddons = new();
+        public static Dictionary<IModBehaviour, AddonConfig> AddonConfigs = new();
 
         public static float SecondsElapsedInLoop = -1;
 
@@ -98,6 +99,8 @@ namespace NewHorizons
         private bool _playerAwake;
         public bool PlayerSpawned { get; set; }
         public bool ForceClearCaches { get; set; } // for reloading configs
+
+        public bool FlagDLCRequired { get; set; }
 
         public ShipWarpController ShipWarpController { get; private set; }
 
@@ -690,6 +693,14 @@ namespace NewHorizons
                         var relativeDirectory = file.Replace(folder, "");
                         var body = LoadConfig(mod, relativeDirectory);
 
+                        // Only bother checking if they need the DLC if they don't have it
+                        if (!HasDLC && !FlagDLCRequired && body.RequiresDLC())
+                        {
+                            FlagDLCRequired = true;
+                            var popupText = TranslationHandler.GetTranslation("DLC_REQUIRED", TranslationHandler.TextType.UI).Replace("{0}", mod.ModHelper.Manifest.Name);
+                            MenuHandler.RegisterOneTimePopup(this, popupText, true);
+                        }
+
                         if (body != null)
                         {
                             // Wanna track the spawn point of each system
@@ -737,6 +748,15 @@ namespace NewHorizons
             {
                 MenuHandler.RegisterOneTimePopup(mod, TranslationHandler.GetTranslation(addonConfig.popupMessage, TranslationHandler.TextType.UI), addonConfig.repeatPopup);
             }
+            if (addonConfig.preloadAssetBundles != null)
+            {
+                foreach (var bundle in addonConfig.preloadAssetBundles)
+                {
+                    AssetBundleUtilities.PreloadBundle(bundle, mod);
+                }
+            }
+
+            AddonConfigs[mod] = addonConfig;
         }
 
         private void LoadTranslations(string folder, IModBehaviour mod)
@@ -921,8 +941,15 @@ namespace NewHorizons
             {
                 CurrentStarSystem = _defaultSystemOverride;
 
-                // Sometimes the override will not support spawning regularly, so always warp in
-                IsWarpingFromShip = true;
+                if (BodyDict.TryGetValue(_defaultSystemOverride, out var bodies) && bodies.Any(x => x.Config?.Spawn?.shipSpawn != null))
+                {
+                    // #738 - Sometimes the override will not support spawning regularly, so always warp in if possible
+                    IsWarpingFromShip = true;
+                }
+                else
+                {
+                    IsWarpingFromShip = false;
+                }
             }
             else
             {

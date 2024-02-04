@@ -28,7 +28,6 @@ using static NewHorizons.External.Modules.ShipLogModule;
 
 namespace NewHorizons
 {
-
     public class NewHorizonsApi : INewHorizons
     {
         [Obsolete("Create(Dictionary<string, object> config) is deprecated, please use LoadConfigs(IModBehaviour mod) instead")]
