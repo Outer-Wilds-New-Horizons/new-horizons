@@ -32,7 +32,7 @@ namespace NewHorizons.External
             return Config.Cloak != null 
                 || Config.Props?.rafts != null 
                 || Config.Props?.slideShows != null 
-                || detailPaths.Any(x => x.StartsWith("Ringworld") || x.StartsWith("Dreamworld"));
+                || detailPaths.Any(x => x.StartsWith("RingWorld_Body") || x.StartsWith("DreamWorld_Body"));
         }
 
         #region Cache
