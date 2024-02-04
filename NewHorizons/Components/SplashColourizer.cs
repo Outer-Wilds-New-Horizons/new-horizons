@@ -30,6 +30,8 @@ public class SplashColourizer : MonoBehaviour
 
     private bool _probeInsideVolume;
 
+    private List<Texture> _customTextures = new();
+
     public void Awake()
     {
         var volume = new GameObject("Volume");
@@ -210,6 +212,12 @@ public class SplashColourizer : MonoBehaviour
                     var meshRenderers = prefab.GetComponentsInChildren<MeshRenderer>(true);
                     foreach (var meshRenderer in meshRenderers)
                     {
+                        if (_customTextures.Contains(meshRenderer.material.mainTexture))
+                        {
+                            // Might be some shared material stuff? This image is already tinted, so skip it
+                            continue;
+                        }
+
                         // Can't access the textures in memory so we need to have our own copies
                         var texture = ImageUtilities.GetTexture(Main.Instance, $"Assets/textures/{meshRenderer.material.mainTexture.name}.png");
                         if (texture == null)
@@ -218,6 +226,9 @@ public class SplashColourizer : MonoBehaviour
                             GameObject.Destroy(prefab);
                             flagError = true;
                         }
+
+                        _customTextures.Add(texture);
+
                         meshRenderer.material = new(meshRenderer.material)
                         {
                             color = Color.white,
@@ -252,6 +263,16 @@ public class SplashColourizer : MonoBehaviour
 
     public void SetProbeSplashEffects(bool entering)
     {
+        _probeInsideVolume = entering;
+
+        if (_probeDetector != null)
+        {
+            SetSplashEffects(_probeDetector, entering);
+        }
+    }
+
+    public void Update()
+    {
         // Probe detector keeps being null, I hate my life
         if (_probeDetector == null)
         {
@@ -260,13 +281,6 @@ public class SplashColourizer : MonoBehaviour
             {
                 CachePrefabs(_probeDetector);
             }
-        }
-
-        _probeInsideVolume = entering;
-
-        if (_probeDetector != null)
-        {
-            SetSplashEffects(_probeDetector, entering);
         }
     }
 }
