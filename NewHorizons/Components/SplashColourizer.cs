@@ -1,7 +1,6 @@
 using NewHorizons.External.Configs;
 using NewHorizons.External.SerializableData;
 using NewHorizons.Utility;
-using NewHorizons.Utility.DebugTools.Menu;
 using NewHorizons.Utility.Files;
 using NewHorizons.Utility.OuterWilds;
 using NewHorizons.Utility.OWML;
@@ -48,17 +47,6 @@ public class SplashColourizer : MonoBehaviour
         _prefabHolder.SetActive(false);
     }
 
-    public void Setup(float radius, MColor waterColour, MColor cloudColour, MColor plasmaColour, MColor sandColour)
-    {
-        _radius = radius;
-        if (_sphereShape != null) _sphereShape.radius = _radius;
-
-        _waterColour = waterColour;
-        _cloudColour = cloudColour;
-        _plasmaColour = plasmaColour;
-        _sandColour = sandColour;
-    }
-
     public static void Make(GameObject planet, PlanetConfig config, float soi)
     {
         var water = config.Water?.tint;
@@ -69,16 +57,23 @@ public class SplashColourizer : MonoBehaviour
         if (water != null || cloud != null || plasma != null || sand != null)
         {
             var size = Mathf.Max(
-                soi / 2f,
+                soi / 1.5f,
                 config.Water?.size ?? 0f,
                 config.Atmosphere?.clouds?.outerCloudRadius ?? 0f,
                 config.Lava?.size ?? 0f,
                 config.Star?.size ?? 0f,
                 config.Sand?.size ?? 0f
-                ) * 2f;
+                ) * 1.5f;
 
             var colourizer = planet.AddComponent<SplashColourizer>();
-            colourizer.Setup(size, water, cloud, plasma, sand);
+
+            colourizer._radius = size;
+            if (colourizer._sphereShape != null) colourizer._sphereShape.radius = size;
+
+            colourizer._waterColour = water;
+            colourizer._cloudColour = cloud;
+            colourizer._plasmaColour = plasma;
+            colourizer._sandColour = sand;
         }
     }
 
@@ -251,6 +246,8 @@ public class SplashColourizer : MonoBehaviour
 
     public void SetSplashEffects(FluidDetector detector, bool entering)
     {
+        NHLogger.LogVerbose($"Body {detector.name} {(entering ? "entered" : "left")} colourizing volume on {name}");
+
         foreach (var splashEffect in detector._splashEffects)
         {
             var prefabs = entering ? _cachedModifiedPrefabs : _cachedOriginalPrefabs;
