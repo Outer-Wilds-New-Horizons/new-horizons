@@ -110,7 +110,12 @@ namespace NewHorizons
         public StarSystemEvent OnStarSystemLoaded = new();
         public StarSystemEvent OnPlanetLoaded = new();
 
-        public static bool HasDLC { get => EntitlementsManager.IsDlcOwned() == EntitlementsManager.AsyncOwnershipStatus.Owned; }
+        /// <summary>
+        /// Depending on platform, the AsyncOwnershipStatus might not be ready by the time we go to check it.
+        /// If that happens, I guess we just have to assume they do own the DLC.
+        /// Better to false positive than false negative and annoy people every time they launch the game when they do own the DLC
+        /// </summary>
+        public static bool HasDLC { get => EntitlementsManager.IsDlcOwned() != EntitlementsManager.AsyncOwnershipStatus.NotOwned; }
 
         public static StarSystemConfig GetCurrentSystemConfig => SystemDict[Instance.CurrentStarSystem].Config;
 
