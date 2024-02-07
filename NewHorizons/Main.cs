@@ -735,6 +735,12 @@ namespace NewHorizons
 
             var addonConfig = mod.ModHelper.Storage.Load<AddonConfig>(file, false);
 
+            if (addonConfig == null)
+            {
+                NHLogger.LogError($"Addon manifest for {mod.ModHelper.Manifest.Name} could not load, check your JSON");
+                return;
+            }
+
             if (addonConfig.achievements != null)
             {
                 AchievementHandler.RegisterAddon(addonConfig, mod as ModBehaviour);
