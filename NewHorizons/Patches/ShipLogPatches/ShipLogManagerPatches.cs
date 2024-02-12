@@ -123,6 +123,9 @@ namespace NewHorizons.Patches.ShipLogPatches
             else
             {
                 EntryLocationBuilder.InitializeLocations();
+                // Start method disables the ShipLogManager
+                // Else it thinks its meant to be waiting to post a SHIP LOG UPDATED notif (and then does so) #779
+                __instance.enabled = false;
                 return false;
             }
         }
