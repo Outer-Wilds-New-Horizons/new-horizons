@@ -110,6 +110,7 @@ namespace NewHorizons.Builder.Props
             // Now we replace the slides
             int slidesCount = info.slides.Length;
             var slideCollection = new SlideCollection(slidesCount);
+            slideCollection.streamingAssetIdentifier = string.Empty; // NREs if null
 
             // The base game ones only have 15 slides max
             var textures = new Texture2D[slidesCount >= 15 ? 15 : slidesCount];
@@ -177,7 +178,8 @@ namespace NewHorizons.Builder.Props
             // Now we replace the slides
             int slidesCount = info.slides.Length;
             var slideCollection = new SlideCollection(slidesCount);
-            
+            slideCollection.streamingAssetIdentifier = string.Empty; // NREs if null
+
             var imageLoader = AddAsyncLoader(projectorObj, mod, info.slides, ref slideCollection);
             imageLoader.imageLoadedEvent.AddListener((Texture2D tex, int index) => { slideCollection.slides[index]._image = ImageUtilities.Invert(tex); });
 
@@ -203,7 +205,7 @@ namespace NewHorizons.Builder.Props
             if (_visionTorchDetectorPrefab == null) return null;
 
             // spawn a trigger for the vision torch
-            var g = DetailBuilder.Make(planetGO, sector, _visionTorchDetectorPrefab, new DetailInfo(info) { scale = 2, rename = !string.IsNullOrEmpty(info.rename) ? info.rename : "VisionStaffDetector" });
+            var g = DetailBuilder.Make(planetGO, sector, mod, _visionTorchDetectorPrefab, new DetailInfo(info) { scale = 2, rename = !string.IsNullOrEmpty(info.rename) ? info.rename : "VisionStaffDetector" });
 
             if (g == null)
             {
@@ -215,6 +217,7 @@ namespace NewHorizons.Builder.Props
             var slides = info.slides;
             var slidesCount = slides.Length;
             var slideCollection = new SlideCollection(slidesCount); // TODO: uh I think that info.slides[i].playTimeDuration is not being read here... note to self for when I implement support for that: 0.7 is what to default to if playTimeDuration turns out to be 0
+            slideCollection.streamingAssetIdentifier = string.Empty; // NREs if null
 
             var imageLoader = AddAsyncLoader(g, mod, info.slides, ref slideCollection);
             imageLoader.imageLoadedEvent.AddListener((Texture2D tex, int index) => { slideCollection.slides[index]._image = tex; });
@@ -240,7 +243,7 @@ namespace NewHorizons.Builder.Props
             if (_standingVisionTorchPrefab == null) return null;
 
             // Spawn the torch itself
-            var standingTorch = DetailBuilder.Make(planetGO, sector, _standingVisionTorchPrefab, new DetailInfo(info));
+            var standingTorch = DetailBuilder.Make(planetGO, sector, mod, _standingVisionTorchPrefab, new DetailInfo(info));
 
             if (standingTorch == null)
             {
@@ -262,6 +265,7 @@ namespace NewHorizons.Builder.Props
             var slides = info.slides;
             var slidesCount = slides.Length;
             var slideCollection = new SlideCollection(slidesCount);
+            slideCollection.streamingAssetIdentifier = string.Empty; // NREs if null
 
             var imageLoader = AddAsyncLoader(standingTorch, mod, slides, ref slideCollection);
 
@@ -331,7 +335,7 @@ namespace NewHorizons.Builder.Props
         private static void AddModules(SlideInfo slideInfo, ref Slide slide, IModBehaviour mod)
         {
             var modules = new List<SlideFunctionModule>();
-            if (!String.IsNullOrEmpty(slideInfo.beatAudio))
+            if (!string.IsNullOrEmpty(slideInfo.beatAudio))
             {
                 var audioBeat = new SlideBeatAudioModule
                 {
@@ -340,7 +344,7 @@ namespace NewHorizons.Builder.Props
                 };
                 modules.Add(audioBeat);
             }
-            if (!String.IsNullOrEmpty(slideInfo.backdropAudio))
+            if (!string.IsNullOrEmpty(slideInfo.backdropAudio))
             {
                 var audioBackdrop = new SlideBackdropAudioModule
                 {
@@ -349,13 +353,13 @@ namespace NewHorizons.Builder.Props
                 };
                 modules.Add(audioBackdrop);
             }
-            if (slideInfo.ambientLightIntensity > 0)
+            if (slideInfo.ambientLightIntensity != 0)
             {
                 var ambientLight = new SlideAmbientLightModule
                 {
                     _intensity = slideInfo.ambientLightIntensity,
                     _range = slideInfo.ambientLightRange,
-                    _color = slideInfo.ambientLightColor.ToColor(),
+                    _color = slideInfo.ambientLightColor?.ToColor() ?? Color.white,
                     _spotIntensityMod = slideInfo.spotIntensityMod
                 };
                 modules.Add(ambientLight);
@@ -376,7 +380,7 @@ namespace NewHorizons.Builder.Props
                 };
                 modules.Add(blackFrame);
             }
-            if (!String.IsNullOrEmpty(slideInfo.reveal))
+            if (!string.IsNullOrEmpty(slideInfo.reveal))
             {
                 var shipLogEntry = new SlideShipLogEntryModule
                 {

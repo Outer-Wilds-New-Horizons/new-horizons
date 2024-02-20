@@ -50,9 +50,10 @@ namespace NewHorizons
         private static bool _wasConfigured = false;
         private static string _defaultSystemOverride;
 
-        public static Dictionary<string, NewHorizonsSystem> SystemDict = new Dictionary<string, NewHorizonsSystem>();
-        public static Dictionary<string, List<NewHorizonsBody>> BodyDict = new Dictionary<string, List<NewHorizonsBody>>();
-        public static List<IModBehaviour> MountedAddons = new List<IModBehaviour>();
+        public static Dictionary<string, NewHorizonsSystem> SystemDict = new();
+        public static Dictionary<string, List<NewHorizonsBody>> BodyDict = new();
+        public static List<IModBehaviour> MountedAddons = new();
+        public static Dictionary<IModBehaviour, AddonConfig> AddonConfigs = new();
 
         public static float SecondsElapsedInLoop = -1;
 
@@ -99,6 +100,8 @@ namespace NewHorizons
         public bool PlayerSpawned { get; set; }
         public bool ForceClearCaches { get; set; } // for reloading configs
 
+        public bool FlagDLCRequired { get; set; }
+
         public ShipWarpController ShipWarpController { get; private set; }
 
         // API events
@@ -107,7 +110,12 @@ namespace NewHorizons
         public StarSystemEvent OnStarSystemLoaded = new();
         public StarSystemEvent OnPlanetLoaded = new();
 
-        public static bool HasDLC { get => EntitlementsManager.IsDlcOwned() == EntitlementsManager.AsyncOwnershipStatus.Owned; }
+        /// <summary>
+        /// Depending on platform, the AsyncOwnershipStatus might not be ready by the time we go to check it.
+        /// If that happens, I guess we just have to assume they do own the DLC.
+        /// Better to false positive than false negative and annoy people every time they launch the game when they do own the DLC
+        /// </summary>
+        public static bool HasDLC { get => EntitlementsManager.IsDlcOwned() != EntitlementsManager.AsyncOwnershipStatus.NotOwned; }
 
         public static StarSystemConfig GetCurrentSystemConfig => SystemDict[Instance.CurrentStarSystem].Config;
 
@@ -350,9 +358,12 @@ namespace NewHorizons
                     GravityCannonBuilder.InitPrefab();
                     ShuttleBuilder.InitPrefab();
 
-                    ProjectionBuilder.InitPrefabs();
-                    CloakBuilder.InitPrefab();
-                    RaftBuilder.InitPrefab();
+                    if (HasDLC)
+                    {
+                        ProjectionBuilder.InitPrefabs();
+                        CloakBuilder.InitPrefab();
+                        RaftBuilder.InitPrefab();
+                    }
 
                     WarpPadBuilder.InitPrefabs();
                 }
@@ -434,6 +445,7 @@ namespace NewHorizons
                 // Some builders have to be reset each loop
                 SignalBuilder.Init();
                 BrambleDimensionBuilder.Init();
+                ItemBuilder.Init();
                 AstroObjectLocator.Init();
                 StreamingHandler.Init();
                 AudioTypeHandler.Init();
@@ -686,6 +698,14 @@ namespace NewHorizons
                         var relativeDirectory = file.Replace(folder, "");
                         var body = LoadConfig(mod, relativeDirectory);
 
+                        // Only bother checking if they need the DLC if they don't have it
+                        if (!HasDLC && !FlagDLCRequired && body.RequiresDLC())
+                        {
+                            FlagDLCRequired = true;
+                            var popupText = TranslationHandler.GetTranslation("DLC_REQUIRED", TranslationHandler.TextType.UI).Replace("{0}", mod.ModHelper.Manifest.Name);
+                            MenuHandler.RegisterOneTimePopup(this, popupText, true);
+                        }
+
                         if (body != null)
                         {
                             // Wanna track the spawn point of each system
@@ -720,6 +740,12 @@ namespace NewHorizons
 
             var addonConfig = mod.ModHelper.Storage.Load<AddonConfig>(file, false);
 
+            if (addonConfig == null)
+            {
+                NHLogger.LogError($"Addon manifest for {mod.ModHelper.Manifest.Name} could not load, check your JSON");
+                return;
+            }
+
             if (addonConfig.achievements != null)
             {
                 AchievementHandler.RegisterAddon(addonConfig, mod as ModBehaviour);
@@ -733,6 +759,15 @@ namespace NewHorizons
             {
                 MenuHandler.RegisterOneTimePopup(mod, TranslationHandler.GetTranslation(addonConfig.popupMessage, TranslationHandler.TextType.UI), addonConfig.repeatPopup);
             }
+            if (addonConfig.preloadAssetBundles != null)
+            {
+                foreach (var bundle in addonConfig.preloadAssetBundles)
+                {
+                    AssetBundleUtilities.PreloadBundle(bundle, mod);
+                }
+            }
+
+            AddonConfigs[mod] = addonConfig;
         }
 
         private void LoadTranslations(string folder, IModBehaviour mod)
@@ -917,8 +952,15 @@ namespace NewHorizons
             {
                 CurrentStarSystem = _defaultSystemOverride;
 
-                // Sometimes the override will not support spawning regularly, so always warp in
-                IsWarpingFromShip = true;
+                if (BodyDict.TryGetValue(_defaultSystemOverride, out var bodies) && bodies.Any(x => x.Config?.Spawn?.shipSpawn != null))
+                {
+                    // #738 - Sometimes the override will not support spawning regularly, so always warp in if possible
+                    IsWarpingFromShip = true;
+                }
+                else
+                {
+                    IsWarpingFromShip = false;
+                }
             }
             else
             {

@@ -2,6 +2,7 @@ using NewHorizons.Builder.General;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OWML;
 using System.Collections;
+using System.Linq;
 using UnityEngine;
 
 namespace NewHorizons.Handlers
@@ -76,7 +77,44 @@ namespace NewHorizons.Handlers
                         pos += SpawnPointBuilder.ShipSpawn.transform.TransformDirection(SpawnPointBuilder.ShipSpawnOffset);
                     }
 
+                    // #748 Before moving the ship, reset all its landing pad sensors
+                    // Else they might think its still touching TH
+                    // Doing this before moving the ship so that if they start contacting in the new spawn point then that gets preserved
+                    foreach (var landingPadSensor in ship.GetComponentsInChildren<LandingPadSensor>())
+                    {
+                        landingPadSensor._contactBody = null;
+                    }
+
                     SpawnBody(ship.GetAttachedOWRigidbody(), SpawnPointBuilder.ShipSpawn, pos);
+
+                    // Bug affecting mods with massive stars (8600m+ radius)
+                    // TH has an orbital radius of 8600m, meaning the base game ship spawn ends up inside the star
+                    // This places the ship into the star's fluid volumes (destruction volume and atmosphere)
+                    // When the ship is teleported out, it doesn't update it's detected fluid volumes and gets affected by drag forever
+                    // Can fix by turning the volumes off and on again
+                    // Done after re-positioning else it'd just get re-added to the old volumes
+                    
+                    // .ToList is because it makes a copy of the array, else it errors:
+                    // "InvalidOperationException: Collection was modified; enumeration operation may not execute."
+                    foreach (var volume in ship.GetComponentInChildren<ShipFluidDetector>()._activeVolumes.ToList())
+                    {
+                        if (volume.gameObject.activeInHierarchy)
+                        {
+                            volume.gameObject.SetActive(false);
+                            volume.gameObject.SetActive(true);
+                        }
+                    }
+                    // Also applies to force volumes
+                    foreach (var volume in ship.GetComponentInChildren<AlignmentForceDetector>()._activeVolumes.ToList())
+                    {
+                        if (volume.gameObject.activeInHierarchy)
+                        {
+                            volume.gameObject.SetActive(false);
+                            volume.gameObject.SetActive(true);
+                        }
+                    }
+                    // For some reason none of this seems to apply to the Player.
+                    // If somebody ever makes a sound volume thats somehow always applying to the player tho then itd probably be this
                 }
             }
             else if (Main.Instance.CurrentStarSystem != "SolarSystem" && !Main.Instance.IsWarpingFromShip)

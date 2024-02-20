@@ -1,29 +1,29 @@
 name: Create/Update Release
 
 on:
-    pull_request:
-        branches: [main]
-        types:
-            - ready_for_review
-            - edited
-            - labeled
+  pull_request:
+    branches: [main]
+    types:
+      - ready_for_review
+      - edited
+      - labeled
 
 jobs:
-    Update_Release:
-        name: Create/Update Release
-        if: contains(github.event.pull_request.labels.*.name, 'update-pr')
-        runs-on: ubuntu-latest
-        steps:
-            - name: Create/Update Release
-              uses: ncipollo/release-action@v1
-              with:
-                  allowUpdates: true
-                  name: Version ${{ github.event.pull_request.title }}
-                  tag: v${{ github.event.pull_request.title }}
-                  commit: main
-                  body: |
-                      ${{ github.event.pull_request.body }} 
+  Update_Release:
+    name: Create/Update Release
+    if: contains(github.event.pull_request.labels.*.name, 'update-pr')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create/Update Release
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          name: Version ${{ github.event.pull_request.title }}
+          tag: v${{ github.event.pull_request.title }}
+          commit: main
+          body: |
+            ${{ github.event.pull_request.body }} 
 
-                      **Generated From PR: ${{ github.event.pull_request.html_url }}**
-                  draft: true
-                  prerelease: false
+            **Generated From PR: ${{ github.event.pull_request.html_url }}**
+          draft: true
+          prerelease: false

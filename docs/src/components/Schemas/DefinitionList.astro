@@ -1,0 +1,21 @@
+---
+import { SchemaTools } from '@/util/schema_utils';
+import Breadcrumb from '@/components/Schemas/Breadcrumb.astro';
+
+interface Props {
+    fileName: string;
+}
+
+const { fileName } = Astro.props;
+
+const schema = SchemaTools.readSchema(fileName);
+
+const defs = SchemaTools.getDefs(schema);
+
+---
+
+<Breadcrumb schema={schema} onlyDefs />
+
+<ul>
+    {defs.map((def) => <li><a href={`/schemas/${schema.slug}/defs/${def.slug.toLowerCase()}`}>{def.slug}</a></li>)}
+</ul>

@@ -377,7 +377,7 @@ namespace NewHorizons.Handlers
             ao._rootSector = sector;
             ao._type = AstroObject.Type.None;
 
-            BrambleDimensionBuilder.Make(body, go, ao, sector, owRigidBody);
+            BrambleDimensionBuilder.Make(body, go, ao, sector, body.Mod, owRigidBody);
 
             go = SharedGenerateBody(body, go, sector, owRigidBody);
             
@@ -949,7 +949,13 @@ namespace NewHorizons.Handlers
                 {
                     flag = false;
                     // idk why we wait here but we do
-                    Delay.FireInNUpdates(() => childObj.gameObject.SetActive(false), 2);
+                    Delay.FireInNUpdates(() =>
+                    {
+                        if (childObj != null && childObj.gameObject != null)
+                        {
+                            childObj.gameObject.SetActive(false);
+                        }
+                    }, 2);
                 }
 
                 if (flag) NHLogger.LogWarning($"Couldn't find \"{childPath}\".");

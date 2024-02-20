@@ -1,0 +1,52 @@
+---
+import type { Props } from "@astrojs/starlight/props";
+import Default from "@astrojs/starlight/components/PageSidebar.astro";
+import { SchemaTools } from "@/util/schema_utils";
+import type { MarkdownHeading } from "astro";
+
+const isSchema = Astro.props.slug.startsWith("schemas/") && !Astro.props.slug.endsWith("/defs");
+
+type TocItem = Exclude<ReturnType<Exclude<Props["toc"], undefined>["items"]["find"]>, undefined>;
+
+const injectChild = (items: TocItem[], item: TocItem): void => {
+    const lastItem = items.at(-1);
+    if (!lastItem || lastItem.depth >= item.depth) {
+        items.push(item);
+    } else {
+        return injectChild(lastItem.children, item);
+    }
+}
+
+function generateToC(
+    headings: MarkdownHeading[],
+    title: string
+) {
+    const toc: Array<TocItem> = [{ depth: 2, slug: "_top", text: title, children: [] }];
+    for (const heading of headings) injectChild(toc, { ...heading, children: [] });
+    return toc;
+}
+
+let props = Astro.props;
+
+if (isSchema) {
+    const schemaFileName = props.entry.data.schemaFile;
+    if (schemaFileName) {
+        let schema = SchemaTools.readSchema(schemaFileName);
+        const defName = props.entry.data.defName;
+        if (defName) {
+            schema = SchemaTools.getDefs(schema).find(d => d.slug === defName)!;
+        }
+        const headings = SchemaTools.getHeaders(schema);
+        props.headings = headings;
+        props.toc!.items = generateToC(headings, props.entry.data.title);
+    }
+}
+---
+
+{
+    (
+        <Default {...props}>
+            <slot />
+        </Default>
+    )
+}

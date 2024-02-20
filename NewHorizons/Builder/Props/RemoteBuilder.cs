@@ -149,7 +149,7 @@ namespace NewHorizons.Builder.Props
             {
                 try
                 {
-                    MakeWhiteboard(go, sector, id, decal, info.whiteboard, nhBody);
+                    MakeWhiteboard(go, sector, nhBody.Mod, id, decal, info.whiteboard, nhBody);
                 }
                 catch (Exception ex)
                 {
@@ -173,9 +173,9 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        public static void MakeWhiteboard(GameObject go, Sector sector, NomaiRemoteCameraPlatform.ID id, Texture2D decal, RemoteWhiteboardInfo info, NewHorizonsBody nhBody)
+        public static void MakeWhiteboard(GameObject go, Sector sector, IModBehaviour mod, NomaiRemoteCameraPlatform.ID id, Texture2D decal, RemoteWhiteboardInfo info, NewHorizonsBody nhBody)
         {
-            var whiteboard = DetailBuilder.Make(go, sector, _whiteboardPrefab, new DetailInfo(info));
+            var whiteboard = DetailBuilder.Make(go, sector, mod, _whiteboardPrefab, new DetailInfo(info));
             whiteboard.SetActive(false);
 
             var decalMat = new Material(_decalMaterial);
@@ -215,7 +215,7 @@ namespace NewHorizons.Builder.Props
 
         public static void MakePlatform(GameObject go, Sector sector, NomaiRemoteCameraPlatform.ID id, Texture2D decal, PlatformInfo info, IModBehaviour mod)
         {
-            var platform = DetailBuilder.Make(go, sector, _remoteCameraPlatformPrefab, new DetailInfo(info));
+            var platform = DetailBuilder.Make(go, sector, mod, _remoteCameraPlatformPrefab, new DetailInfo(info));
             platform.SetActive(false);
 
             var decalMat = new Material(_decalMaterial);

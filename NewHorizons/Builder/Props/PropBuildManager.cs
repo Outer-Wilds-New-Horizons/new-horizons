@@ -39,7 +39,7 @@ namespace NewHorizons.Builder.Props
                 {
                     try
                     {
-                        ShuttleBuilder.Make(go, sector, shuttleInfo);
+                        ShuttleBuilder.Make(go, sector, nhBody.Mod, shuttleInfo);
                     }
                     catch (Exception ex)
                     {
@@ -283,7 +283,7 @@ namespace NewHorizons.Builder.Props
                 {
                     try
                     {
-                        WarpPadBuilder.Make(go, sector, warpReceiver);
+                        WarpPadBuilder.Make(go, sector, nhBody.Mod, warpReceiver);
                     }
                     catch (Exception ex)
                     {
@@ -297,7 +297,7 @@ namespace NewHorizons.Builder.Props
                 {
                     try
                     {
-                        WarpPadBuilder.Make(go, sector, warpTransmitter);
+                        WarpPadBuilder.Make(go, sector, nhBody.Mod, warpTransmitter);
                     }
                     catch (Exception ex)
                     {

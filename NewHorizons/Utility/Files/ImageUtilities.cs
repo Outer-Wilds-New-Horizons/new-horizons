@@ -33,6 +33,11 @@ namespace NewHorizons.Utility.Files
         // bug: cache only considers file path, not wrap/mips/linear. oh well
         public static Texture2D GetTexture(IModBehaviour mod, string filename, bool useMipmaps = true, bool wrap = false, bool linear = false)
         {
+            if (mod == null)
+            {
+                NHLogger.LogError("Couldn't get texture, mod is null.");
+                return null;
+            }
             // Copied from OWML but without the print statement lol
             var path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, filename);
             var key = GetKey(path);

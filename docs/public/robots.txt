@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /audio-enum/
+Disallow: /404.html
+
+Sitemap: https://nh.outerwildsmods.com/sitemap-index.xml

@@ -1,0 +1,28 @@
+---
+import type { Schema } from "@/util/schema_utils";
+import { SchemaTools } from "@/util/schema_utils";
+
+export interface Props {
+    schema: Schema;
+    onlyDefs?: boolean;
+}
+
+const { schema, onlyDefs } = Astro.props;
+---
+
+<div>
+    <a href={`/schemas/${schema.rootSlug}`}
+        >{onlyDefs ? SchemaTools.getTitle(schema) : schema.rootTitle}</a
+    >
+    / <a href={`/schemas/${schema.rootSlug}/defs`}>Definitions</a>
+    {!(onlyDefs ?? false) && <> / {schema.slug}</>}
+</div>
+
+<style>
+    div {
+        padding: 1rem;
+        background-color: hsla(var(--color-gray-10), 1);
+        border: solid 2px hsla(var(--color-gray-20), 1);
+        border-radius: 1rem;
+    }
+</style>
