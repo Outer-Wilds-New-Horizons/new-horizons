@@ -45,15 +45,15 @@ namespace NewHorizons.Builder.ShipLog
                 }
             }
 
-            if (flagManualPositionUsed)
+            if (flagAutoPositionUsed)
             {
                 if (flagAutoPositionUsed && flagManualPositionUsed)
-                    NHLogger.LogWarning("Can't mix manual and automatic layout of ship log map mode, defaulting to manual");
-                return ConstructMapModeManual(bodies, transformParent, greyScaleMaterial, currentNav, layer);
-            }
-            else if (flagAutoPositionUsed)
-            {
+                    NHLogger.LogWarning("Can't mix manual and automatic layout of ship log map mode, defaulting to automatic");
                 return ConstructMapModeAuto(bodies, transformParent, greyScaleMaterial, layer);
+            }
+            else if (flagManualPositionUsed)
+            {
+                return ConstructMapModeManual(bodies, transformParent, greyScaleMaterial, currentNav, layer);
             }
 
             return null;
@@ -475,7 +475,12 @@ namespace NewHorizons.Builder.ShipLog
 
         private static void MakeNode(ref MapModeObject node, GameObject parent, Material greyScaleMaterial, int layer)
         {
-            const float padding = 100f;
+            // Space between this node and the previous node
+            // Take whatever scale will prevent overlap
+            var lastSiblingScale = node.lastSibling?.mainBody?.Config?.ShipLog?.mapMode?.scale ?? 1f;
+            var scale = node.mainBody?.Config?.ShipLog?.mapMode?.scale ?? 1f;
+            float padding = 100f * (scale + lastSiblingScale) / 2f;
+
             Vector2 position = Vector2.zero;
             if (node.lastSibling != null)
             {
