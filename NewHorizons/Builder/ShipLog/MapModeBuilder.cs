@@ -45,13 +45,31 @@ namespace NewHorizons.Builder.ShipLog
                 }
             }
 
-            if (flagAutoPositionUsed)
+            var isBaseSolarSystem = systemName == "SolarSystem";
+
+            // Default to MANUAL in Base Solar System (we can't automatically fix them so it might just break, but AUTO breaks even more!)
+            var useManual = (flagManualPositionUsed && !flagAutoPositionUsed) || (flagAutoPositionUsed && flagManualPositionUsed && isBaseSolarSystem);
+
+            // Default to AUTO in other solar systems (since we can actually fix them)
+            var useAuto = (flagAutoPositionUsed && !flagManualPositionUsed) || (flagAutoPositionUsed && flagManualPositionUsed && !isBaseSolarSystem);
+
+            if (flagAutoPositionUsed && flagManualPositionUsed)
             {
-                if (flagAutoPositionUsed && flagManualPositionUsed)
-                    NHLogger.LogWarning("Can't mix manual and automatic layout of ship log map mode, defaulting to automatic");
+                if (useAuto)
+                {
+                    NHLogger.LogWarning("Can't mix manual and automatic layout of ship log map mode, defaulting to AUTOMATIC");
+                }
+                else
+                {
+                    NHLogger.LogWarning("Can't mix manual and automatic layout of ship log map mode, defaulting to MANUAL");
+                }
+            }
+
+            if (useAuto)
+            {
                 return ConstructMapModeAuto(bodies, transformParent, greyScaleMaterial, layer);
             }
-            else if (flagManualPositionUsed)
+            else if (useManual)
             {
                 return ConstructMapModeManual(bodies, transformParent, greyScaleMaterial, currentNav, layer);
             }
