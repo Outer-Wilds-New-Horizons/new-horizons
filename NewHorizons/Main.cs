@@ -192,7 +192,7 @@ namespace NewHorizons
                 Config =
                 {
                     destroyStockPlanets = false,
-                    factRequiredForWarp = "OPC_EYE_COORDINATES_X1",
+                    //factRequiredForWarp = "OPC_EYE_COORDINATES_X1",
                     Vessel = new StarSystemConfig.VesselModule()
                     {
                         coords = new StarSystemConfig.NomaiCoordinates
@@ -201,7 +201,8 @@ namespace NewHorizons
                             y = new int[4] { 3, 0, 1, 4 },
                             z = new int[6] { 1, 2, 3, 0, 5, 4 }
                         }
-                    }
+                    },
+                    canEnterViaWarpDrive = false
                 }
             };
 
