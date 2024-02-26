@@ -12,6 +12,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Xml;
 using UnityEngine;
 using static NewHorizons.External.Modules.ParticleFieldModule;
 using NomaiCoordinates = NewHorizons.External.Configs.StarSystemConfig.NomaiCoordinates;
@@ -24,7 +25,7 @@ namespace NewHorizons.Utility
         {
             NullValueHandling = NullValueHandling.Ignore,
             DefaultValueHandling = DefaultValueHandling.Ignore,
-            Formatting = Formatting.Indented,
+            Formatting = Newtonsoft.Json.Formatting.Indented,
         };
 
         private static StringBuilder stringBuilder = new StringBuilder();
@@ -36,7 +37,7 @@ namespace NewHorizons.Utility
             {
                 using (JsonTextWriter jsonTextWriter = new JsonTextWriter(stringWriter)
                 {
-                    Formatting = Formatting.Indented,
+                    Formatting = Newtonsoft.Json.Formatting.Indented,
                     IndentChar = '\t',
                     Indentation = 1
                 })
@@ -338,6 +339,16 @@ namespace NewHorizons.Utility
                     NHLogger.LogError($"Error invoking delegate! {ex.InnerException}");
                 }
             }
+        }
+
+        public static List<XmlNode> GetChildNodes(this XmlNode parentNode, string tagName)
+        {
+            return parentNode.ChildNodes.Cast<XmlNode>().Where(node => node.LocalName == tagName).ToList();
+        }
+
+        public static XmlNode GetChildNode(this XmlNode parentNode, string tagName)
+        {
+            return parentNode.ChildNodes.Cast<XmlNode>().First(node => node.LocalName == tagName);
         }
     }
 }
