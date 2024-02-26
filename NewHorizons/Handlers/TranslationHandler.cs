@@ -121,22 +121,36 @@ namespace NewHorizons.Handlers
             }
         }
 
+        public static (string, string) FixKeyValue(string key, string value)
+        {
+            key = key.Replace("&lt;", "<").Replace("&gt;", ">").Replace("<![CDATA[", "").Replace("]]>", "");
+            value = value.Replace("&lt;", "<").Replace("&gt;", ">").Replace("<![CDATA[", "").Replace("]]>", "");
+
+            return (key, value);
+        }
+
         public static void AddDialogue(string rawText, bool trimRawTextForKey = false, params string[] rawPreText)
         {
             var key = string.Join(string.Empty, rawPreText) + (trimRawTextForKey? rawText.Trim() : rawText);
 
-            var text = GetTranslation(rawText, TextType.DIALOGUE);
+            var value = GetTranslation(rawText, TextType.DIALOGUE);
 
-            TextTranslation.Get().m_table.Insert(key, text);
+            // Manually insert directly into the dictionary, otherwise it logs errors about duplicates but we want to allow replacing
+            (key, value) = FixKeyValue(key, value);
+
+            TextTranslation.Get().m_table.theTable[key] = value;
         }
 
         public static void AddShipLog(string rawText, params string[] rawPreText)
         {
             var key = string.Join(string.Empty, rawPreText) + rawText;
 
-            string text = GetTranslation(rawText, TextType.SHIPLOG);
+            string value = GetTranslation(rawText, TextType.SHIPLOG);
 
-            TextTranslation.Get().m_table.InsertShipLog(key, text);
+            // Manually insert directly into the dictionary, otherwise it logs errors about duplicates but we want to allow replacing
+            (key, value) = FixKeyValue(key, value);
+
+            TextTranslation.Get().m_table.theShipLogTable[key] = value;
         }
 
         public static int AddUI(string rawText)
@@ -154,7 +168,7 @@ namespace NewHorizons.Handlers
             }
             catch (Exception) { }
 
-            TextTranslation.Get().m_table.Insert_UI(key, text);
+            TextTranslation.Get().m_table.theUITable[key] = text;
 
             return key;
         }
