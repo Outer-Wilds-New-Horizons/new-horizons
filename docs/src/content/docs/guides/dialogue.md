@@ -159,3 +159,44 @@ Defining `<DialogueTarget>` in the `<DialogueNode>` tag instead of a `<DialogueO
 ### DialogueTargetShipLogCondition
 
 Used in tandem with `DialogueTarget`, makes it so you must have a [ship log fact](/guides/ship-log#explore-facts) to go to the next node.
+
+### Adding to existing dialogue
+
+Here's an example of how to add new dialogue to Slate, without overwriting their existing dialogue. This will also allow multiple mods to all add new dialogue to the same character.
+
+```xml {3-4}
+<DialogueTree>
+    <DialogueNode>
+        <Name>Scientist5</Name>
+        <DialogueOptionsList>
+            <DialogueOption>
+                <Text>Hi how are you?</Text>
+                <DialogueTarget>example_new_slate_Text</DialogueTarget>
+            </DialogueOption>
+        </DialogueOptionsList>
+    </DialogueNode>
+    <DialogueNode>
+        <Name>example_new_slate_Text</Name>
+        <Dialogue>
+            <Page>I'm good!</Page>
+        </Dialogue>
+    </DialogueNode>
+</DialogueTree>
+```
+
+NH will merge together `<DialogueNode>` nodes that have the same `<Name>` field, adding their `<DialogueOptionsList>` together. No other changes will be merged.
+
+NH can also add new `<DialogueNode>` nodes into the text, however you have to add `<DialogueOption>`s that link to them for them to ever be read by the player.
+
+Be careful to use unique names to ensure optimal compatibility between mods. Consider prefixing the names of your nodes with the name of your mod.
+
+To use this additional dialogue you need to reference it in a planet config file:
+
+```json
+"dialogue": [
+    {
+        "pathToExistingDialogue": "Sector_TH/Sector_Village/Sector_StartingCamp/Characters_StartingCamp/Villager_HEA_Slate/ConversationZone_RSci",
+        "xmlFile": "planets/text/Slate.xml"
+    }
+]
+```
