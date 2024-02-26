@@ -3,22 +3,27 @@ using UnityEngine;
 namespace NewHorizons.Components.Volumes
 {
     [RequireComponent(typeof(OWTriggerVolume))]
-    public abstract class BaseVolume : MonoBehaviour
+    public abstract class BaseVolume : SectoredMonoBehaviour
     {
         private OWTriggerVolume _triggerVolume;
 
-        public virtual void Awake()
+        public override void Awake()
         {
+            base.Awake();
             _triggerVolume = this.GetRequiredComponent<OWTriggerVolume>();
             _triggerVolume.OnEntry += OnTriggerVolumeEntry;
             _triggerVolume.OnExit += OnTriggerVolumeExit;
         }
 
-        public virtual void OnDestroy()
+        public override void OnDestroy()
         {
-            if (_triggerVolume == null) return;
-            _triggerVolume.OnEntry -= OnTriggerVolumeEntry;
-            _triggerVolume.OnExit -= OnTriggerVolumeExit;
+            base.OnDestroy();
+
+            if (_triggerVolume != null)
+            {
+                _triggerVolume.OnEntry -= OnTriggerVolumeEntry;
+                _triggerVolume.OnExit -= OnTriggerVolumeExit;
+            }
         }
 
         public abstract void OnTriggerVolumeEntry(GameObject hitObj);

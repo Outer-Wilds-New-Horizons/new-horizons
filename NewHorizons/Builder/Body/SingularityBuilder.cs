@@ -11,6 +11,7 @@ using NewHorizons.Builder.Props;
 using NewHorizons.Utility.OWML;
 using NewHorizons.Utility.OuterWilds;
 using NewHorizons.External.SerializableData;
+using NewHorizons.Builder.Volumes;
 
 namespace NewHorizons.Builder.Body
 {
@@ -134,6 +135,17 @@ namespace NewHorizons.Builder.Body
                 }
                 NHLogger.LogVerbose($"Pairing singularities [{blackHoleID}], [{whiteHoleID}]");
                 blackHoleVolume._whiteHole = whiteHoleVolume;
+
+                // If warping to a vanilla planet, we add a streaming volume to pre-load it
+                var streamingGroup = whiteHoleVolume.GetAttachedOWRigidbody().GetComponentInChildren<StreamingGroup>();
+                if (streamingGroup != null)
+                {
+                    var streamingVolume = VolumeBuilder.Make<StreamingWarpVolume>(blackHoleVolume.GetAttachedOWRigidbody().gameObject, blackHoleVolume.GetComponentInParent<Sector>(), 
+                        new External.Modules.Volumes.VolumeInfos.VolumeInfo() { radius = 100f });
+                    streamingVolume.streamingGroup = streamingGroup;
+                    streamingVolume.transform.parent = blackHoleVolume.transform;
+                    streamingVolume.transform.localPosition = Vector3.zero;
+                }
             }
         }
 
