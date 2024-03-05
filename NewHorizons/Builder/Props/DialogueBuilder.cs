@@ -68,8 +68,6 @@ namespace NewHorizons.Builder.Props
 
         private static CharacterDialogueTree AddToExistingDialogue(DialogueInfo info, string xml)
         {
-            AddTranslation(xml);
-
             var existingDialogue = SearchUtilities.Find(info.pathToExistingDialogue)?.GetComponent<CharacterDialogueTree>();
 
             if (existingDialogue == null)
@@ -124,6 +122,9 @@ namespace NewHorizons.Builder.Props
             };
 
             existingDialogue.SetTextXml(newTextAsset);
+
+            var characterName = existingDialogueTree.SelectSingleNode("NameField").InnerText;
+            AddTranslation(xml, characterName);
 
             return existingDialogue;
         }
@@ -374,14 +375,20 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        private static void AddTranslation(string xml)
+        private static void AddTranslation(string xml, string characterName = null)
         {
             var xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(xml);
             var xmlNode = xmlDocument.SelectSingleNode("DialogueTree");
             var xmlNodeList = xmlNode.SelectNodes("DialogueNode");
-            string characterName = xmlNode.SelectSingleNode("NameField").InnerText;
-            TranslationHandler.AddDialogue(characterName);
+
+            // When adding dialogue to existing stuff, we have to pass in the character name
+            // Otherwise we translate it if its from a new dialogue object
+            if (characterName == null)
+            {
+                characterName = xmlNode.SelectSingleNode("NameField").InnerText;
+                TranslationHandler.AddDialogue(characterName);
+            }
 
             foreach (object obj in xmlNodeList)
             {
