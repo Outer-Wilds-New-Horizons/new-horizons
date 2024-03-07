@@ -123,6 +123,7 @@ namespace NewHorizons.Builder.Props
 
             existingDialogue.SetTextXml(newTextAsset);
 
+            // Chracter name is required for adding translations, something to do with how OW prefixes its dialogue
             var characterName = existingDialogueTree.SelectSingleNode("NameField").InnerText;
             AddTranslation(xml, characterName);
 
