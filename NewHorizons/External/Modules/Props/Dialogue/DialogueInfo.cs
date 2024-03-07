@@ -32,6 +32,11 @@ namespace NewHorizons.External.Modules.Props.Dialogue
         public string pathToAnimController;
 
         /// <summary>
+        /// If this dialogue is adding to existing character dialogue, put a path to the game object with the dialogue on it here
+        /// </summary>
+        public string pathToExistingDialogue;
+
+        /// <summary>
         /// Radius of the spherical collision volume where you get the "talk to" prompt when looking at. If you use a
         /// remoteTrigger, you can set this to 0 to make the dialogue only trigger remotely.
         /// </summary>

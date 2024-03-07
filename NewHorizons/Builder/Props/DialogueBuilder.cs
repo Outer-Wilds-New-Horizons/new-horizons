@@ -5,9 +5,9 @@ using NewHorizons.Utility;
 using NewHorizons.Utility.OuterWilds;
 using NewHorizons.Utility.OWML;
 using OWML.Common;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml;
-using System.Xml.Linq;
 using UnityEngine;
 
 namespace NewHorizons.Builder.Props
@@ -25,6 +25,18 @@ namespace NewHorizons.Builder.Props
         // Create dialogue directly from xml string instead of loading it from a file
         public static (CharacterDialogueTree, RemoteDialogueTrigger) Make(GameObject go, Sector sector, DialogueInfo info, string xml, string dialogueName)
         {
+            if (string.IsNullOrEmpty(info.pathToExistingDialogue))
+            {
+                return MakeNewDialogue(go, sector, info, xml, dialogueName);
+            }
+            else
+            {
+                return (AddToExistingDialogue(info, xml), null);
+            }
+        }
+
+        private static (CharacterDialogueTree, RemoteDialogueTrigger) MakeNewDialogue(GameObject go, Sector sector, DialogueInfo info, string xml, string dialogueName)
+        { 
             NHLogger.LogVerbose($"[DIALOGUE] Created a new character dialogue [{info.rename}] on [{info.parentPath}]");
 
             // In stock I think they disable dialogue stuff with conditions
@@ -52,6 +64,69 @@ namespace NewHorizons.Builder.Props
             }
 
             return (dialogue, remoteTrigger);
+        }
+
+        private static CharacterDialogueTree AddToExistingDialogue(DialogueInfo info, string xml)
+        {
+            var existingDialogue = SearchUtilities.Find(info.pathToExistingDialogue)?.GetComponent<CharacterDialogueTree>();
+
+            if (existingDialogue == null)
+            {
+                NHLogger.LogError($"Couldn't find dialogue at {info.pathToExistingDialogue}!");
+                return null;
+            }
+
+            var existingText = existingDialogue._xmlCharacterDialogueAsset.text;
+
+            var existingDialogueDoc = new XmlDocument();
+            existingDialogueDoc.LoadXml(existingText);
+            var existingDialogueTree = existingDialogueDoc.DocumentElement.SelectSingleNode("//DialogueTree");
+
+            var existingDialogueNodesByName = new Dictionary<string, XmlNode>();
+            foreach (XmlNode existingDialogueNode in existingDialogueTree.GetChildNodes("DialogueNode"))
+            {
+                var name = existingDialogueNode.GetChildNode("Name").InnerText;
+                existingDialogueNodesByName[name] = existingDialogueNode;
+            }
+
+            var additionalDialogueDoc = new XmlDocument();
+            additionalDialogueDoc.LoadXml(xml);
+            var newDialogueNodes = additionalDialogueDoc.DocumentElement.SelectSingleNode("//DialogueTree").GetChildNodes("DialogueNode");
+
+            foreach (XmlNode newDialogueNode in newDialogueNodes)
+            {
+                var name = newDialogueNode.GetChildNode("Name").InnerText;
+
+                if (existingDialogueNodesByName.TryGetValue(name, out var existingNode))
+                {
+                    // We just have to merge the dialogue options
+                    var dialogueOptions = newDialogueNode.GetChildNode("DialogueOptionsList").GetChildNodes("DialogueOption");
+                    var existingDialogueOptionsList = existingNode.GetChildNode("DialogueOptionsList");
+                    foreach (XmlNode node in dialogueOptions)
+                    {
+                        var importedNode = existingDialogueOptionsList.OwnerDocument.ImportNode(node, true);
+                        existingDialogueOptionsList.AppendChild(importedNode);
+                    }
+                }
+                else
+                {
+                    // We add the new dialogue node to the existing dialogue
+                    var importedNode = existingDialogueTree.OwnerDocument.ImportNode(newDialogueNode, true);
+                    existingDialogueTree.AppendChild(importedNode);
+                }
+            }
+
+            var newTextAsset = new TextAsset(existingDialogueDoc.OuterXml)
+            {
+                name = existingDialogue._xmlCharacterDialogueAsset.name
+            };
+
+            existingDialogue.SetTextXml(newTextAsset);
+
+            var characterName = existingDialogueTree.SelectSingleNode("NameField").InnerText;
+            AddTranslation(xml, characterName);
+
+            return existingDialogue;
         }
 
         private static RemoteDialogueTrigger MakeRemoteDialogueTrigger(GameObject planetGO, Sector sector, DialogueInfo info, CharacterDialogueTree dialogue)
@@ -300,14 +375,20 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        private static void AddTranslation(string xml)
+        private static void AddTranslation(string xml, string characterName = null)
         {
             var xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(xml);
             var xmlNode = xmlDocument.SelectSingleNode("DialogueTree");
             var xmlNodeList = xmlNode.SelectNodes("DialogueNode");
-            string characterName = xmlNode.SelectSingleNode("NameField").InnerText;
-            TranslationHandler.AddDialogue(characterName);
+
+            // When adding dialogue to existing stuff, we have to pass in the character name
+            // Otherwise we translate it if its from a new dialogue object
+            if (characterName == null)
+            {
+                characterName = xmlNode.SelectSingleNode("NameField").InnerText;
+                TranslationHandler.AddDialogue(characterName);
+            }
 
             foreach (object obj in xmlNodeList)
             {
