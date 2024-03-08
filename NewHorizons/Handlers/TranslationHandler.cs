@@ -96,6 +96,9 @@ namespace NewHorizons.Handlers
                 if (!_dialogueTranslationDictionary.ContainsKey(language)) _dialogueTranslationDictionary.Add(language, new Dictionary<string, string>());
                 foreach (var originalKey in config.DialogueDictionary.Keys)
                 {
+                    // Fix new lines in dialogue translations, remove whitespace from keys else if the dialogue has weird whitespace and line breaks it gets really annoying
+                    // to write translation keys for (can't just copy paste out of xml, have to start adding \\n and \\r and stuff
+                    // If any of these issues become relevant to other dictionaries we can bring this code over, but for now why fix what isnt broke
                     var key = originalKey.Replace("\\n", "\n").TruncateWhitespace().Replace("&lt;", "<").Replace("&gt;", ">").Replace("<![CDATA[", "").Replace("]]>", "");
                     var value = config.DialogueDictionary[originalKey].Replace("\\n", "\n").Replace("&lt;", "<").Replace("&gt;", ">").Replace("<![CDATA[", "").Replace("]]>", "");
 
