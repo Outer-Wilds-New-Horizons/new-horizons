@@ -1,8 +1,10 @@
 using NewHorizons.External.Configs;
+using NewHorizons.Utility;
 using NewHorizons.Utility.OWML;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace NewHorizons.Handlers
 {
@@ -49,8 +51,17 @@ namespace NewHorizons.Handlers
 
             // Get the translated text
             if (dictionary.TryGetValue(language, out var table))
+            {
                 if (table.TryGetValue(text, out var translatedText))
+                {
                     return translatedText;
+                }
+                // Try without whitespace if its missing
+                else if (table.TryGetValue(text.TruncateWhitespace(), out translatedText))
+                {
+                    return translatedText;
+                }
+            }
 
             if (warn) NHLogger.LogVerbose($"Defaulting to english for {text}");
 
@@ -85,8 +96,8 @@ namespace NewHorizons.Handlers
                 if (!_dialogueTranslationDictionary.ContainsKey(language)) _dialogueTranslationDictionary.Add(language, new Dictionary<string, string>());
                 foreach (var originalKey in config.DialogueDictionary.Keys)
                 {
-                    var key = originalKey.Replace("&lt;", "<").Replace("&gt;", ">").Replace("<![CDATA[", "").Replace("]]>", "");
-                    var value = config.DialogueDictionary[originalKey].Replace("&lt;", "<").Replace("&gt;", ">").Replace("<![CDATA[", "").Replace("]]>", "");
+                    var key = originalKey.Replace("\\n", "\n").TruncateWhitespace().Replace("&lt;", "<").Replace("&gt;", ">").Replace("<![CDATA[", "").Replace("]]>", "");
+                    var value = config.DialogueDictionary[originalKey].Replace("\\n", "\n").Replace("&lt;", "<").Replace("&gt;", ">").Replace("<![CDATA[", "").Replace("]]>", "");
 
                     if (!_dialogueTranslationDictionary[language].ContainsKey(key)) _dialogueTranslationDictionary[language].Add(key, value);
                     else _dialogueTranslationDictionary[language][key] = value;
