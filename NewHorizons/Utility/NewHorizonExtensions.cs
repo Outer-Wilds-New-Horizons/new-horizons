@@ -350,5 +350,11 @@ namespace NewHorizons.Utility
         {
             return parentNode.ChildNodes.Cast<XmlNode>().First(node => node.LocalName == tagName);
         }
+
+        public static string TruncateWhitespace(this string text)
+        {
+            // return Regex.Replace(text.Trim(), @"[^\S\r\n]+", "GUH");
+            return Regex.Replace(text.Trim(), @"\s+", " ").ToLowerInvariant();
+        }
     }
 }
