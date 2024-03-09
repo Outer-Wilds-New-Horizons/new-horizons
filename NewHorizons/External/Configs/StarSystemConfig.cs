@@ -118,6 +118,11 @@ namespace NewHorizons.External.Configs
         public string[] initialReveal;
 
         /// <summary>
+        /// The planet to focus on when entering the ship log for the first time in a loop. If not set this will be the planet at navtigation position (1, 0)
+        /// </summary>
+        public string shipLogStartingPlanetID;
+
+        /// <summary>
         /// List colors of curiosity entries
         /// </summary>
         public CuriosityColorInfo[] curiosities;
