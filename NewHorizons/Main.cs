@@ -382,7 +382,7 @@ namespace NewHorizons
             {
                 IsWarpingBackToEye = false;
                 OWTime.Pause(OWTime.PauseType.Loading);
-                LoadManager.LoadScene(OWScene.EyeOfTheUniverse);
+                LoadManager.LoadScene(OWScene.EyeOfTheUniverse); // LoadScene loads one frame later in Update. will this break since we unpause before that in the next line? 
                 OWTime.Unpause(OWTime.PauseType.Loading);
                 return;
             }
@@ -931,7 +931,7 @@ namespace NewHorizons
                 {
                     // Slide reel unloading is tied to being removed from the sector, so we do that here to prevent a softlock
                     Locator.GetPlayerSectorDetector().RemoveFromAllSectors();
-                    LoadManager.LoadScene(sceneToLoad);
+                    LoadManager.LoadScene(sceneToLoad); // this used to be LoadSceneImmediate, but that breaks with qsb. hopefully it doesnt break nh
                 });
             }
         }
