@@ -382,7 +382,7 @@ namespace NewHorizons
             {
                 IsWarpingBackToEye = false;
                 OWTime.Pause(OWTime.PauseType.Loading);
-                LoadManager.LoadSceneImmediate(OWScene.EyeOfTheUniverse);
+                LoadManager.LoadScene(OWScene.EyeOfTheUniverse);
                 OWTime.Unpause(OWTime.PauseType.Loading);
                 return;
             }
@@ -931,7 +931,7 @@ namespace NewHorizons
                 {
                     // Slide reel unloading is tied to being removed from the sector, so we do that here to prevent a softlock
                     Locator.GetPlayerSectorDetector().RemoveFromAllSectors();
-                    LoadManager.LoadSceneImmediate(sceneToLoad);
+                    LoadManager.LoadScene(sceneToLoad);
                 });
             }
         }
