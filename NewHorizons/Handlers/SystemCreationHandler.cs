@@ -34,7 +34,8 @@ namespace NewHorizons.Handlers
             if (Main.Instance.CurrentStarSystem == "EyeOfTheUniverse") return;
 
             // Small mod compat change for StopTime - do nothing if it's enabled
-            if (system.Config.enableTimeLoop && !OtherModUtil.IsEnabled("_nebula.StopTime"))
+            // Do not add our custom time loop controller in the base game system: It will handle itself
+            if (Main.Instance.CurrentStarSystem != "SolarSystem" && system.Config.enableTimeLoop && !OtherModUtil.IsEnabled("_nebula.StopTime"))
             {
                 var timeLoopController = new GameObject("TimeLoopController");
                 timeLoopController.AddComponent<TimeLoopController>();
