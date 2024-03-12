@@ -1,3 +1,4 @@
+using NewHorizons.Utility.OWML;
 using UnityEngine;
 
 namespace NewHorizons.Components.Volumes
@@ -23,6 +24,23 @@ namespace NewHorizons.Components.Volumes
 
         public void FixedUpdate()
         {
+            // Bug report on Astral Codec mod page - Huge lag inside streaming warp volume, possible NRE?
+            if (_probe == null)
+            {
+                _probe = Locator.GetProbe();
+                if (_probe == null)
+                {
+                    NHLogger.LogError($"How is your scout probe null? Destroying {nameof(StreamingWarpVolume)}");
+                    GameObject.DestroyImmediate(gameObject);
+                }
+            }
+
+            if (streamingGroup == null)
+            {
+                NHLogger.LogError($"{nameof(StreamingWarpVolume)} has no streaming group. Destroying {nameof(StreamingWarpVolume)}");
+                GameObject.DestroyImmediate(gameObject);
+            }
+
             bool probeActive = _probe.IsLaunched() && !_probe.IsAnchored();
 
             bool shouldBeLoadingRequiredAssets = _playerInVolume || (_probeInVolume && probeActive);
