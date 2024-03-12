@@ -72,6 +72,7 @@ namespace NewHorizons.Handlers
             _subtitleDisplay.transform.localPosition = new Vector3(0, 0, 0);
             _subtitleDisplay.transform.localScale = new Vector3(0.75f, 0.75f, 0.75f);
             _graphic = _subtitleDisplay.gameObject.GetAddComponent<Graphic>();
+            _subtitleDisplay.gameObject.GetAddComponent<LayoutElement>().minWidth = SUBTITLE_WIDTH;
 
             AddSubtitles();
         }
@@ -126,6 +127,8 @@ namespace NewHorizons.Handlers
             if (_subtitleDisplay.sprite == null)
             {
                 _subtitleDisplay.sprite = possibleSubtitles[0];
+                // Always call this in case we stop changing subtitles after
+                ChangeSubtitle();
             }
 
             // don't fade transition subtitles if there's only one subtitle
