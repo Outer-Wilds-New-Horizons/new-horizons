@@ -250,6 +250,12 @@ namespace NewHorizons.Builder.Props
             foreach(Transform child in brambleNode.transform)
             {
                 child.localScale = Vector3.one * config.scale;
+
+                // The fog on bramble seeds has a specific scale we need to copy over
+                if (child.name == "VolumetricFogSphere (2)")
+                {
+                    child.localScale *= 6.3809f;
+                }
             }
             innerFogWarpVolume._warpRadius *= config.scale;
             innerFogWarpVolume._exitRadius *= config.scale;
