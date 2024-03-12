@@ -39,9 +39,6 @@ namespace NewHorizons.Patches.VolumePatches
             }
             else
             {
-                // Base game is hardcoded to this
-                // Except for capsule volumes so either those are unused or whoever said this is a liar!
-                __result = 50f;
                 return true;
             }
         }
