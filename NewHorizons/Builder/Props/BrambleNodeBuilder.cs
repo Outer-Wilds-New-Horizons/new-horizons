@@ -33,12 +33,17 @@ namespace NewHorizons.Builder.Props
         private static GameObject _brambleSeedPrefab;
         private static GameObject _brambleNodePrefab;
 
+        private static HashSet<FogWarpVolume> _nhFogWarpVolumes = new();
+
+        public static bool IsNHFogWarpVolume(FogWarpVolume volume) => _nhFogWarpVolumes.Contains(volume);
+
         public static void Init(PlanetConfig[] dimensionConfigs)
         {
             _unpairedNodes.Clear();
             _propagatedSignals.Clear();
             namedNodes.Clear();
             builtBrambleNodes.Clear();
+            _nhFogWarpVolumes.Clear();
 
             PropagateSignals(dimensionConfigs);
         }
@@ -188,6 +193,12 @@ namespace NewHorizons.Builder.Props
             foreach (var collider in brambleNode.GetComponentsInChildren<Collider>(true))
             {
                 collider.enabled = true; 
+            }
+
+            // We track all the fog warp volumes that NH created so we can only effect those in patches, this way we leave base game stuff alone.
+            foreach (var fogWarpVolume in brambleNode.GetComponentsInChildren<FogWarpVolume>(true).Append(brambleNode.GetComponent<FogWarpVolume>()))
+            {
+                _nhFogWarpVolumes.Add(fogWarpVolume);
             }
 
             var innerFogWarpVolume = brambleNode.GetComponent<InnerFogWarpVolume>();
