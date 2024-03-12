@@ -31,14 +31,14 @@ namespace NewHorizons.Components.Volumes
                 if (_probe == null)
                 {
                     NHLogger.LogError($"How is your scout probe null? Destroying {nameof(StreamingWarpVolume)}");
-                    Component.DestroyImmediate(this);
+                    GameObject.DestroyImmediate(gameObject);
                 }
             }
 
             if (streamingGroup == null)
             {
                 NHLogger.LogError($"{nameof(StreamingWarpVolume)} has no streaming group. Destroying {nameof(StreamingWarpVolume)}");
-                Component.DestroyImmediate(this);
+                GameObject.DestroyImmediate(gameObject);
             }
 
             bool probeActive = _probe.IsLaunched() && !_probe.IsAnchored();
