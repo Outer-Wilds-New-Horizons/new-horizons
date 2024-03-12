@@ -17,7 +17,8 @@ namespace NewHorizons.Patches.VolumePatches
                 return true;
             }
 
-            __result = Mathf.Approximately(__instance._exitRadius / __instance._warpRadius, 2f); // Check the ratio between these to determine if seed, instead of just < 10
+            // Check the ratio between these to determine if seed, instead of just < 10
+            __result = Mathf.Approximately(__instance._exitRadius / __instance._warpRadius, 2f);
             return false;
         }
 
