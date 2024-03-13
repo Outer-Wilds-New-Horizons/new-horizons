@@ -33,12 +33,17 @@ namespace NewHorizons.Builder.Props
         private static GameObject _brambleSeedPrefab;
         private static GameObject _brambleNodePrefab;
 
+        private static HashSet<FogWarpVolume> _nhFogWarpVolumes = new();
+
+        public static bool IsNHFogWarpVolume(FogWarpVolume volume) => _nhFogWarpVolumes.Contains(volume);
+
         public static void Init(PlanetConfig[] dimensionConfigs)
         {
             _unpairedNodes.Clear();
             _propagatedSignals.Clear();
             namedNodes.Clear();
             builtBrambleNodes.Clear();
+            _nhFogWarpVolumes.Clear();
 
             PropagateSignals(dimensionConfigs);
         }
@@ -190,6 +195,12 @@ namespace NewHorizons.Builder.Props
                 collider.enabled = true; 
             }
 
+            // We track all the fog warp volumes that NH created so we can only effect those in patches, this way we leave base game stuff alone.
+            foreach (var fogWarpVolume in brambleNode.GetComponentsInChildren<FogWarpVolume>(true).Append(brambleNode.GetComponent<FogWarpVolume>()))
+            {
+                _nhFogWarpVolumes.Add(fogWarpVolume);
+            }
+
             var innerFogWarpVolume = brambleNode.GetComponent<InnerFogWarpVolume>();
             var outerFogWarpVolume = GetOuterFogWarpVolumeFromAstroObject(go);
             var fogLight = brambleNode.GetComponent<FogLight>();
@@ -239,6 +250,12 @@ namespace NewHorizons.Builder.Props
             foreach(Transform child in brambleNode.transform)
             {
                 child.localScale = Vector3.one * config.scale;
+
+                // The fog on bramble seeds has a specific scale we need to copy over
+                if (child.name == "VolumetricFogSphere (2)")
+                {
+                    child.localScale *= 6.3809f;
+                }
             }
             innerFogWarpVolume._warpRadius *= config.scale;
             innerFogWarpVolume._exitRadius *= config.scale;
