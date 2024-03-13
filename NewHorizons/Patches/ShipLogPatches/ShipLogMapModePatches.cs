@@ -26,7 +26,7 @@ namespace NewHorizons.Patches.ShipLogPatches
             else
             {
                 __instance._astroObjects = navMatrix;
-                __instance._startingAstroObjectID = navMatrix[1][0].GetID();
+                __instance._startingAstroObjectID = Main.SystemDict[Main.Instance.CurrentStarSystem].Config.shipLogStartingPlanetID ?? navMatrix[1][0].GetID();
                 if (Main.Instance.CurrentStarSystem != "SolarSystem")
                 {
                     List<GameObject> delete = panRoot.GetAllChildren().Where(g => g.name.Contains("_ShipLog") == false).ToList();

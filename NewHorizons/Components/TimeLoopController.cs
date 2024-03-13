@@ -13,6 +13,9 @@ namespace NewHorizons.Components
 
         public void Update()
         {
+            // So that mods can turn the time loop on/off using the TimLoop.SetTimeLoopEnabled method
+            if (!TimeLoop._timeLoopEnabled) return;
+
             // Stock gives like 33 seconds after the sun collapses
             if (_supernovaHappened && Time.time > _supernovaTime + 50f)
             {
