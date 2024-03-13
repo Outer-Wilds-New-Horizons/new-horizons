@@ -1402,13 +1402,19 @@
         },
         "itemType": {
           "type": "string",
-          "description": "The type of the item, which determines its orientation when held and what sockets it fits into. This can be a custom string, or a vanilla ItemType (Scroll, WarpCode, SharedStone, ConversationStone, Lantern, SlideReel, DreamLantern, or VisionTorch). Defaults to the item name."
+          "description": "The type of the item, which determines its orientation when held and what sockets it fits into. This can be a custom string, or a vanilla ItemType (Scroll, WarpCore, SharedStone, ConversationStone, Lantern, SlideReel, DreamLantern, or VisionTorch). Defaults to the item name."
         },
         "interactRange": {
           "type": "number",
           "description": "The furthest distance where the player can interact with this item. Defaults to two meters, same as most vanilla items. Set this to zero to disable all interaction by default.",
           "format": "float",
           "default": 2.0
+        },
+        "colliderRadius": {
+          "type": "number",
+          "description": "The radius that the added sphere collider will use for collision and hover detection.\nIf there's already a collider on the detail, you can make this 0.",
+          "format": "float",
+          "default": 0.5
         },
         "droppable": {
           "type": "boolean",
