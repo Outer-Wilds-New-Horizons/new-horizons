@@ -297,6 +297,40 @@ namespace NewHorizons.Utility.Files
             return newImage;
         }
 
+        public static Color LerpColor(Color start, Color end, float amount)
+        {
+            return new Color(Mathf.Lerp(start.r, end.r, amount), Mathf.Lerp(start.g, end.g, amount), Mathf.Lerp(start.b, end.b, amount));
+        }
+
+        public static Texture2D LerpGreyscaleImageAlongX(Texture2D image, Color lightTintStart, Color darkTintStart, Color lightTintEnd, Color darkTintEnd)
+        {
+            var key = $"{image.name} > lerp greyscale {lightTintStart} {darkTintStart} {lightTintEnd} {darkTintEnd}";
+            if (_textureCache.TryGetValue(key, out var existingTexture)) return (Texture2D)existingTexture;
+
+            var pixels = image.GetPixels();
+            for (int i = 0; i < pixels.Length; i++)
+            {
+                var amount = (i % image.width) / (float) image.width;
+                var lightTint = LerpColor(lightTintStart, lightTintEnd, amount);
+                var darkTint = LerpColor(darkTintStart, darkTintEnd, amount);
+
+                pixels[i].r = Mathf.Lerp(darkTint.r, lightTint.r, pixels[i].r);
+                pixels[i].g = Mathf.Lerp(darkTint.g, lightTint.g, pixels[i].g);
+                pixels[i].b = Mathf.Lerp(darkTint.b, lightTint.b, pixels[i].b);
+            }
+
+            var newImage = new Texture2D(image.width, image.height, image.format, image.mipmapCount != 1);
+            newImage.name = key;
+            newImage.SetPixels(pixels);
+            newImage.Apply();
+
+            newImage.wrapMode = image.wrapMode;
+
+            _textureCache.Add(key, newImage);
+
+            return newImage;
+        }
+
         public static Texture2D ClearTexture(int width, int height, bool wrap = false)
         {
             var key = $"Clear {width} {height} {wrap}";
