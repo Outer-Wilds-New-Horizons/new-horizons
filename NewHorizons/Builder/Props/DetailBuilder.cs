@@ -142,6 +142,13 @@ namespace NewHorizons.Builder.Props
                             FixSectoredComponent(component, sector, existingSectors, detail.keepLoaded);
                         }
 
+                        // Asset bundle is a real string -> Object loaded from unity
+                        // If they're adding dialogue we have to manually register the xml text
+                        if (!string.IsNullOrEmpty(detail.assetBundle) && component is CharacterDialogueTree dialogue)
+                        {
+                            DialogueBuilder.AddTranslation(dialogue._xmlCharacterDialogueAsset.text, null);
+                        }
+
                         FixComponent(component, go, detail.ignoreSun);
                     }
                     catch(Exception e)
