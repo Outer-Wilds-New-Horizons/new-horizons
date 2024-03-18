@@ -303,17 +303,6 @@ namespace NewHorizons.Builder.Props
                 s.SetParentSector(sector);
             }
 
-            else if (component is SectorCullGroup sectorCullGroup)
-            {
-                sectorCullGroup._controllingProxy = null;
-                
-                // fixes sector cull group deactivating renderers on map view enter and fast foward
-                // TODO: does this actually work? what? how?
-                sectorCullGroup._inMapView = false;
-                sectorCullGroup._isFastForwarding = false;
-                sectorCullGroup.SetVisible(sectorCullGroup.ShouldBeVisible(), true, false);
-            }
-
             else if(component is SectoredMonoBehaviour behaviour && !existingSectors.Contains(behaviour._sector))
             {
                 // not using SetSector here because it registers the events twice
