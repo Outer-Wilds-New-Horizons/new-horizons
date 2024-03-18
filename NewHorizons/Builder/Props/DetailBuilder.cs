@@ -142,6 +142,13 @@ namespace NewHorizons.Builder.Props
                             FixSectoredComponent(component, sector, existingSectors, detail.keepLoaded);
                         }
 
+                        // Asset bundle is a real string -> Object loaded from unity
+                        // If they're adding dialogue we have to manually register the xml text
+                        if (!string.IsNullOrEmpty(detail.assetBundle) && component is CharacterDialogueTree dialogue)
+                        {
+                            DialogueBuilder.AddTranslation(dialogue._xmlCharacterDialogueAsset.text, null);
+                        }
+
                         FixComponent(component, go, detail.ignoreSun);
                     }
                     catch(Exception e)
@@ -294,17 +301,6 @@ namespace NewHorizons.Builder.Props
             if (component is Sector s && s.GetParentSector() != null && !existingSectors.Contains(s.GetParentSector()))
             {
                 s.SetParentSector(sector);
-            }
-
-            else if (component is SectorCullGroup sectorCullGroup)
-            {
-                sectorCullGroup._controllingProxy = null;
-                
-                // fixes sector cull group deactivating renderers on map view enter and fast foward
-                // TODO: does this actually work? what? how?
-                sectorCullGroup._inMapView = false;
-                sectorCullGroup._isFastForwarding = false;
-                sectorCullGroup.SetVisible(sectorCullGroup.ShouldBeVisible(), true, false);
             }
 
             else if(component is SectoredMonoBehaviour behaviour && !existingSectors.Contains(behaviour._sector))

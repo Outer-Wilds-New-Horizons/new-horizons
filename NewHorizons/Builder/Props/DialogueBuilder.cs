@@ -376,7 +376,7 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        private static void AddTranslation(string xml, string characterName = null)
+        public static void AddTranslation(string xml, string characterName = null)
         {
             var xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(xml);
