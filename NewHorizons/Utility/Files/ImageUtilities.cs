@@ -95,6 +95,10 @@ namespace NewHorizons.Utility.Files
             _textureCache.Clear();
         }
 
+        /// <summary>
+        /// used specifically for projected slides.
+        /// also adds a border (to prevent weird visual bug) and makes the texture linear (otherwise the projected image is too bright).
+        /// </summary>
         public static Texture2D Invert(Texture2D texture)
         {
             var key = $"{texture.name} > invert";
@@ -122,7 +126,7 @@ namespace NewHorizons.Utility.Files
                 }
             }
 
-            var newTexture = new Texture2D(texture.width, texture.height, texture.format, texture.mipmapCount != 1);
+            var newTexture = new Texture2D(texture.width, texture.height, texture.format, texture.mipmapCount != 1, true);
             newTexture.name = key;
             newTexture.SetPixels(pixels);
             newTexture.Apply();
