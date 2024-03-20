@@ -30,7 +30,7 @@ namespace NewHorizons.Builder.ShipLog
             {
                 if (body.Config.ShipLog == null) continue;
 
-                if (body.Config.ShipLog?.mapMode != null && body.Config.ShipLog.mapMode.manualPosition == null)
+                if (body.Config.ShipLog.mapMode?.manualPosition == null)
                 {
                     flagAutoPositionUsed = true;
                 }
