@@ -263,7 +263,6 @@ namespace NewHorizons
             // Call this from the menu since we hadn't hooked onto the event yet
             Delay.FireOnNextUpdate(() => OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single));
             Delay.FireOnNextUpdate(() => _firstLoad = false);
-            Instance.ModHelper.Menus.PauseMenu.OnInit += DebugReload.InitializePauseMenu;
 
             MenuHandler.Init();
             AchievementHandler.Init();
@@ -273,6 +272,13 @@ namespace NewHorizons
             OnChangeStarSystem.AddListener(RichPresenceHandler.OnChangeStarSystem);
 
             LoadAddonManifest("Assets/addon-manifest.json", this);
+        }
+
+        public override void SetupPauseMenu()
+        {
+            base.SetupPauseMenu();
+            DebugReload.InitializePauseMenu();
+            DebugMenu.InitializePauseMenu();
         }
 
         public void OnDestroy()

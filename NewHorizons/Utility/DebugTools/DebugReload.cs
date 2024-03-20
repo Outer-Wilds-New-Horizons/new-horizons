@@ -10,12 +10,12 @@ namespace NewHorizons.Utility.DebugTools
     public static class DebugReload
     {
 
-        private static IModButton _reloadButton;
+        private static SubmitAction _reloadButton;
 
         public static void InitializePauseMenu()
         {
-            _reloadButton = Main.Instance.ModHelper.Menus.PauseMenu.OptionsButton.Duplicate(TranslationHandler.GetTranslation("Reload Configs", TranslationHandler.TextType.UI).ToUpper());
-            _reloadButton.OnClick += ReloadConfigs;
+            _reloadButton = Main.Instance.ModHelper.MenuHelper.PauseMenuManager.MakeSimpleButton(TranslationHandler.GetTranslation("Reload Configs", TranslationHandler.TextType.UI).ToUpper(), 3, true);
+            _reloadButton.OnSubmitAction += ReloadConfigs;
             UpdateReloadButton();
         }
 
@@ -23,8 +23,7 @@ namespace NewHorizons.Utility.DebugTools
         {
             if (_reloadButton != null)
             {
-                if (Main.Debug) _reloadButton.Show();
-                else _reloadButton.Hide();
+                _reloadButton.gameObject.SetActive(Main.Debug);
             }
         }
 

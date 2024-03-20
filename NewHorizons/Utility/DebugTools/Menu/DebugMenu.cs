@@ -15,7 +15,7 @@ namespace NewHorizons.Utility.DebugTools.Menu
 {
     class DebugMenu : MonoBehaviour
     {
-        private static IModButton pauseMenuButton;
+        private static SubmitAction pauseMenuButton;
 
         public GUIStyle _editorMenuStyle;
         public GUIStyle _tabBarStyle;
@@ -34,6 +34,8 @@ namespace NewHorizons.Utility.DebugTools.Menu
         // Submenus
         private List<DebugSubmenu> submenus;
         private int activeSubmenu = 0;
+
+        private static DebugMenu _instance;
         
         internal static JsonSerializerSettings jsonSettings = new JsonSerializerSettings
         {
@@ -57,13 +59,13 @@ namespace NewHorizons.Utility.DebugTools.Menu
         {
             if (!staticInitialized)
             {
+                _instance = this;
+
                 staticInitialized = true;
 
-                Main.Instance.ModHelper.Menus.PauseMenu.OnInit += PauseMenuInitHook;
+                // This is lying, these hooks dont exist in the new menu system
                 Main.Instance.ModHelper.Menus.PauseMenu.OnClosed += CloseMenu;
                 Main.Instance.ModHelper.Menus.PauseMenu.OnOpened += RestoreMenuOpennessState;
-
-                PauseMenuInitHook();
 
                 Main.Instance.OnChangeStarSystem.AddListener((string s) => {
                     if (saveButtonUnlocked)
@@ -84,18 +86,17 @@ namespace NewHorizons.Utility.DebugTools.Menu
             }
         }
 
-        private void PauseMenuInitHook()
+        public static void InitializePauseMenu()
         {
-            pauseMenuButton = Main.Instance.ModHelper.Menus.PauseMenu.OptionsButton.Duplicate(TranslationHandler.GetTranslation("Toggle Dev Tools Menu", TranslationHandler.TextType.UI).ToUpper());
-            InitMenu();
+            pauseMenuButton = Main.Instance.ModHelper.MenuHelper.PauseMenuManager.MakeSimpleButton(TranslationHandler.GetTranslation("Toggle Dev Tools Menu", TranslationHandler.TextType.UI).ToUpper(), 3, true);
+            _instance.InitMenu();
         }
 
         public static void UpdatePauseMenuButton()
         {
             if (pauseMenuButton != null)
             {
-                if (Main.Debug) pauseMenuButton.Show();
-                else pauseMenuButton.Hide();
+                pauseMenuButton.gameObject.SetActive(Main.Debug);
             }
         }
 
@@ -284,7 +285,7 @@ namespace NewHorizons.Utility.DebugTools.Menu
             UpdatePauseMenuButton();
 
             // TODO: figure out how to clear this event list so that we don't pile up useless instances of the DebugMenu that can't get garbage collected
-            pauseMenuButton.OnClick += ToggleMenu;
+            pauseMenuButton.OnSubmitAction += ToggleMenu;
 
             submenus.ForEach(submenu => submenu.OnInit(this));
 
