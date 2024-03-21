@@ -11,8 +11,8 @@ namespace NewHorizons.Handlers
 {
     class SubtitlesHandler : MonoBehaviour
     {
-        public static int SUBTITLE_HEIGHT = 97;
-        public static int SUBTITLE_WIDTH = 669; // nice
+        public static float SUBTITLE_HEIGHT = 97;
+        public static float SUBTITLE_WIDTH = 669; // nice
 
         public float fadeSpeed = 0.005f;
         public float fade = 1;
@@ -45,7 +45,7 @@ namespace NewHorizons.Handlers
                     if (eoteSprite != null)
                     {
                         // Don't make it appear first actually because we have mods to display!
-                        possibleSubtitles.Add(eoteSprite); 
+                        possibleSubtitles.Add(eoteSprite);
                     }
                     eoteSubtitleHasBeenInserted = true;
                 }
@@ -67,7 +67,7 @@ namespace NewHorizons.Handlers
             CheckForEOTE();
 
             // We add our subtitles as a child object so that their sizing doesnt shift the layout of the main menu
-            _subtitleDisplay = new GameObject().AddComponent<Image>();
+            _subtitleDisplay = new GameObject("SubtitleDisplay").AddComponent<Image>();
             _subtitleDisplay.transform.parent = transform;
             _subtitleDisplay.transform.localPosition = new Vector3(0, 0, 0);
             _subtitleDisplay.transform.localScale = new Vector3(0.75f, 0.75f, 0.75f);
@@ -173,9 +173,12 @@ namespace NewHorizons.Handlers
         {
             subtitleIndex = (subtitleIndex + 1) % possibleSubtitles.Count;
 
-            _subtitleDisplay.sprite = possibleSubtitles[subtitleIndex];
-            var ratio = SUBTITLE_WIDTH / _subtitleDisplay.sprite.texture.width;
-            _subtitleDisplay.rectTransform.sizeDelta = new Vector2(_subtitleDisplay.sprite.texture.width, _subtitleDisplay.sprite.texture.height) * ratio;
+            var subtitle = possibleSubtitles[subtitleIndex];
+            _subtitleDisplay.sprite = subtitle;
+            var width = subtitle.texture.width;
+            var height = subtitle.texture.height;
+            var ratio = SUBTITLE_WIDTH / width; // one of these needs to be a float so that compiler doesn't think "oh 2 integers! let's round to nearest whole"
+            _subtitleDisplay.rectTransform.sizeDelta = new Vector2(width, height) * ratio;
         }
     }
 }
