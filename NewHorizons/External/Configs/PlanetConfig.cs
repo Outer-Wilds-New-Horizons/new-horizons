@@ -213,7 +213,6 @@ namespace NewHorizons.External.Configs
             // Always have to have a base module
             if (Base == null) Base = new BaseModule();
             if (Orbit == null) Orbit = new OrbitModule();
-            if (ShipLog == null) ShipLog = new ShipLogModule();
             if (ReferenceFrame == null) ReferenceFrame = new ReferenceFrameModule();
         }
 
