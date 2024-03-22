@@ -16,7 +16,7 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="OuterWildsGameLibs" Version="1.1.14.768" />
-        <PackageReference Include="OWML" Version="2.10.3" />
+        <PackageReference Include="OWML" Version="2.11.1" />
         <Reference Include="../Lib/System.ComponentModel.Annotations.dll" />
     </ItemGroup>
     <ItemGroup>

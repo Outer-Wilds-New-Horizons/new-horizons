@@ -274,11 +274,11 @@ namespace NewHorizons
             LoadAddonManifest("Assets/addon-manifest.json", this);
         }
 
-        public override void SetupPauseMenu()
+        public override void SetupPauseMenu(IPauseMenuManager pauseMenu)
         {
-            base.SetupPauseMenu();
-            DebugReload.InitializePauseMenu();
-            DebugMenu.InitializePauseMenu();
+            base.SetupPauseMenu(pauseMenu);
+            DebugReload.InitializePauseMenu(pauseMenu);
+            DebugMenu.InitializePauseMenu(pauseMenu);
         }
 
         public void OnDestroy()

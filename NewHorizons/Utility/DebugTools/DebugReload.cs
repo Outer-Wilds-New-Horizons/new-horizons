@@ -3,6 +3,7 @@ using NewHorizons.Utility.Files;
 using NewHorizons.Utility.OWML;
 using OWML.Common;
 using OWML.Common.Menus;
+using OWML.Utils;
 using System;
 
 namespace NewHorizons.Utility.DebugTools
@@ -12,19 +13,16 @@ namespace NewHorizons.Utility.DebugTools
 
         private static SubmitAction _reloadButton;
 
-        public static void InitializePauseMenu()
+        public static void InitializePauseMenu(IPauseMenuManager pauseMenu)
         {
-            _reloadButton = Main.Instance.ModHelper.MenuHelper.PauseMenuManager.MakeSimpleButton(TranslationHandler.GetTranslation("Reload Configs", TranslationHandler.TextType.UI).ToUpper(), 3, true);
+            _reloadButton = pauseMenu.MakeSimpleButton(TranslationHandler.GetTranslation("Reload Configs", TranslationHandler.TextType.UI).ToUpper(), 3, true);
             _reloadButton.OnSubmitAction += ReloadConfigs;
             UpdateReloadButton();
         }
 
         public static void UpdateReloadButton()
         {
-            if (_reloadButton != null)
-            {
-                _reloadButton.gameObject.SetActive(Main.Debug);
-            }
+            _reloadButton?.SetButtonVisible(Main.Debug);
         }
 
         private static void ReloadConfigs()
