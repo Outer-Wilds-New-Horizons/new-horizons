@@ -30,7 +30,7 @@ namespace NewHorizons.Builder.ShipLog
             {
                 if (body.Config.ShipLog == null) continue;
 
-                if (body.Config.ShipLog?.mapMode?.manualPosition == null)
+                if (body.Config.ShipLog.mapMode?.manualPosition == null)
                 {
                     flagAutoPositionUsed = true;
                 }
@@ -43,6 +43,12 @@ namespace NewHorizons.Builder.ShipLog
                         return null;
                     }
                 }
+            }
+
+            // If they're both false, just default to auto (this means that no planets even have ship log info)
+            if (!flagManualPositionUsed && !flagAutoPositionUsed)
+            {
+                flagAutoPositionUsed = true;
             }
 
             var isBaseSolarSystem = systemName == "SolarSystem";
