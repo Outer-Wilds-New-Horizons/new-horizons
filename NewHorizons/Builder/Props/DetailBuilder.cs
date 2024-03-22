@@ -101,6 +101,7 @@ namespace NewHorizons.Builder.Props
             GameObject prop;
             bool isItem;
             bool invalidComponentFound = false;
+            bool isFromAssetBundle = !string.IsNullOrEmpty(detail.assetBundle);
 
             // We save copies with all their components fixed, good if the user is placing the same detail more than once
             if (detail?.path != null && _fixedPrefabCache.TryGetValue((sector, detail.path), out var storedPrefab))
@@ -139,12 +140,21 @@ namespace NewHorizons.Builder.Props
                         }
                         else
                         {
-                            FixSectoredComponent(component, sector, existingSectors, detail.keepLoaded);
+                            FixSectoredComponent(component, sector, existingSectors);
+                        }
+
+                        // Fix cull groups only when not from an asset bundle (because then they're there on purpose!)
+                        // keepLoaded should remove existing groups
+                        // renderers/colliders get enabled later so we dont have to do that here
+                        if (detail.keepLoaded && !isFromAssetBundle && component is SectorCullGroup or SectorCollisionGroup or SectorLightsCullGroup)
+                        {
+                            UnityEngine.Object.DestroyImmediate(component);
+                            continue;
                         }
 
                         // Asset bundle is a real string -> Object loaded from unity
                         // If they're adding dialogue we have to manually register the xml text
-                        if (!string.IsNullOrEmpty(detail.assetBundle) && component is CharacterDialogueTree dialogue)
+                        if (isFromAssetBundle && component is CharacterDialogueTree dialogue)
                         {
                             DialogueBuilder.AddTranslation(dialogue._xmlCharacterDialogueAsset.text, null);
                         }
@@ -278,16 +288,8 @@ namespace NewHorizons.Builder.Props
         /// <summary>
         /// Fix components that have sectors. Has a specific fix if there is a VisionTorchItem on the object.
         /// </summary>
-        private static void FixSectoredComponent(Component component, Sector sector, HashSet<Sector> existingSectors, bool keepLoaded)
+        private static void FixSectoredComponent(Component component, Sector sector, HashSet<Sector> existingSectors)
         {
-            // keepLoaded should remove existing groups
-            // renderers/colliders get enabled later so we dont have to do that here
-            if (keepLoaded && component is SectorCullGroup or SectorCollisionGroup or SectorLightsCullGroup)
-            {
-                UnityEngine.Object.DestroyImmediate(component);
-                return;
-            }
-
             // fix Sector stuff, eg SectorCullGroup (without this, props that have a SectorCullGroup component will become invisible inappropriately)
             if (component is ISectorGroup sectorGroup && !existingSectors.Contains(sectorGroup.GetSector()))
             {
@@ -295,15 +297,8 @@ namespace NewHorizons.Builder.Props
             }
 
             // Not doing else if here because idk if any of the classes below implement ISectorGroup
-            
-            // Null check else shuttles controls break
-            // parent sector is always null before Awake so this code actually never runs lol
-            if (component is Sector s && s.GetParentSector() != null && !existingSectors.Contains(s.GetParentSector()))
-            {
-                s.SetParentSector(sector);
-            }
 
-            else if(component is SectoredMonoBehaviour behaviour && !existingSectors.Contains(behaviour._sector))
+            if(component is SectoredMonoBehaviour behaviour && !existingSectors.Contains(behaviour._sector))
             {
                 // not using SetSector here because it registers the events twice
                 // perhaps this happens with ISectorGroup.SetSector or Sector.SetParentSector too? idk and nothing seems to break because of it yet
