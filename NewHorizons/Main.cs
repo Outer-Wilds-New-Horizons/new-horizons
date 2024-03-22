@@ -601,6 +601,7 @@ namespace NewHorizons
                 Locator.GetPlayerBody().gameObject.AddComponent<DebugRaycaster>();
                 Locator.GetPlayerBody().gameObject.AddComponent<DebugPropPlacer>();
                 Locator.GetPlayerBody().gameObject.AddComponent<DebugMenu>();
+                Locator.GetPlayerBody().gameObject.AddComponent<PlayerShipAtmosphereDetectorFix>();
 
                 PlayerSpawnHandler.OnSystemReady(shouldWarpInFromShip, shouldWarpInFromVessel);
 
