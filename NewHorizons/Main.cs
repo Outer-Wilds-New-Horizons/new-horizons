@@ -518,8 +518,10 @@ namespace NewHorizons
 
                     // We are in a custom system on the first loop -> The time loop isn't active, that's not very good
                     // TimeLoop uses the launch codes condition to know if the loop is active or not
+                    // We also skip them to loop 2, else if they enter a credits volume in this loop they get reset
                     if (CurrentStarSystem != "SolarSystem" && PlayerData.LoadLoopCount() == 1)
                     {
+                        PlayerData.SaveLoopCount(2);
                         PlayerData.SetPersistentCondition("LAUNCH_CODES_GIVEN", true);
                     }
                 }
