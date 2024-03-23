@@ -1,6 +1,7 @@
 using NewHorizons.External.Modules;
 using NewHorizons.External.Modules.VariableSize;
 using UnityEngine;
+
 namespace NewHorizons.Builder.Atmosphere
 {
     public static class SunOverrideBuilder
