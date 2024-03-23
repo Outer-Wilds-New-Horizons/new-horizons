@@ -140,16 +140,16 @@ namespace NewHorizons.Builder.Props
                         }
                         else
                         {
-                            FixSectoredComponent(component, sector, existingSectors);
-                        }
+                            // Fix cull groups only when not from an asset bundle (because then they're there on purpose!)
+                            // keepLoaded should remove existing groups
+                            // renderers/colliders get enabled later so we dont have to do that here
+                            if (detail.keepLoaded && !isFromAssetBundle && component is SectorCullGroup or SectorCollisionGroup or SectorLightsCullGroup)
+                            {
+                                UnityEngine.Object.DestroyImmediate(component);
+                                continue;
+                            }
 
-                        // Fix cull groups only when not from an asset bundle (because then they're there on purpose!)
-                        // keepLoaded should remove existing groups
-                        // renderers/colliders get enabled later so we dont have to do that here
-                        if (detail.keepLoaded && !isFromAssetBundle && component is SectorCullGroup or SectorCollisionGroup or SectorLightsCullGroup)
-                        {
-                            UnityEngine.Object.DestroyImmediate(component);
-                            continue;
+                            FixSectoredComponent(component, sector, existingSectors);
                         }
 
                         // Asset bundle is a real string -> Object loaded from unity
