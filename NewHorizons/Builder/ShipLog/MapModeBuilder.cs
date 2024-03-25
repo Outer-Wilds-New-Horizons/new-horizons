@@ -148,6 +148,7 @@ namespace NewHorizons.Builder.ShipLog
 
             astroObject._imageObj = CreateImage(gameObject, image, body.Config.name + " Revealed", layer);
             astroObject._outlineObj = CreateImage(gameObject, outline, body.Config.name + " Outline", layer);
+
             if (ShipLogHandler.BodyHasEntries(body))
             {
                 Image revealedImage = astroObject._imageObj.GetComponent<Image>();
@@ -162,6 +163,12 @@ namespace NewHorizons.Builder.ShipLog
 
             Rect imageRect = astroObject._imageObj.GetComponent<RectTransform>().rect;
             astroObject._unviewedObj.transform.localPosition = new Vector3(imageRect.width / 2 + unviewedIconOffset, imageRect.height / 2 + unviewedIconOffset, 0);
+
+            // Set all icons inactive, they will be conditionally activated when the map mode is opened for the first time
+            astroObject._unviewedObj.SetActive(false);
+            astroObject._imageObj.SetActive(false);
+            astroObject._outlineObj.SetActive(false);
+
             return astroObject;
         }
         #endregion
