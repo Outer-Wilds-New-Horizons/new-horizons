@@ -20,8 +20,9 @@ namespace NewHorizons.Patches.SignalPatches
         {
             var count = SignalBuilder.NumberOfFrequencies;
             __instance._frequencyFilterIndex += increment;
-            __instance._frequencyFilterIndex = __instance._frequencyFilterIndex >= count ? 1 : __instance._frequencyFilterIndex;
-            __instance._frequencyFilterIndex = __instance._frequencyFilterIndex < 1 ? count - 1 : __instance._frequencyFilterIndex;
+            // Base game does 1 here but we use frequency index 0 as "default" or "???"
+            __instance._frequencyFilterIndex = __instance._frequencyFilterIndex >= count ? 0 : __instance._frequencyFilterIndex;
+            __instance._frequencyFilterIndex = __instance._frequencyFilterIndex < 0 ? count - 1 : __instance._frequencyFilterIndex;
             var signalFrequency = AudioSignal.IndexToFrequency(__instance._frequencyFilterIndex);
 
             NHLogger.Log($"Changed freq to {signalFrequency} at {__instance._frequencyFilterIndex}");
