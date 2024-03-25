@@ -115,6 +115,23 @@ namespace NewHorizons.Handlers
                     }
                     // For some reason none of this seems to apply to the Player.
                     // If somebody ever makes a sound volume thats somehow always applying to the player tho then itd probably be this
+
+
+                    // Sometimes the ship isn't added to the volumes it's meant to now be in
+                    // We'll just toggle all volumes on the planet on and off 
+                    var shipDetector = Locator.GetShipDetector().GetComponent<AlignmentForceDetector>();
+                    var shipDetector2 = Locator.GetShipDetector().GetComponent<ShipFluidDetector>();
+                    foreach (var volume in SpawnPointBuilder.ShipSpawn.GetAttachedOWRigidbody().GetComponentsInChildren<EffectVolume>())
+                    {
+                        if (volume.GetOWTriggerVolume().GetDistanceToBoundary(ship.transform.position) <= 0)
+                        {
+                            // Add ship to volume
+                            // If it's already tracking it it will complain here but thats fine
+                            shipDetector.AddVolume(volume);
+                            shipDetector2.AddVolume(volume);
+                            volume.GetOWTriggerVolume().AddObjectToVolume(shipDetector.gameObject);
+                        }
+                    }
                 }
             }
             else if (Main.Instance.CurrentStarSystem != "SolarSystem" && !Main.Instance.IsWarpingFromShip)
