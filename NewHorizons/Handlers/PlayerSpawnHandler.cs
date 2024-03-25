@@ -123,7 +123,7 @@ namespace NewHorizons.Handlers
                     var shipDetector2 = Locator.GetShipDetector().GetComponent<ShipFluidDetector>();
                     foreach (var volume in SpawnPointBuilder.ShipSpawn.GetAttachedOWRigidbody().GetComponentsInChildren<EffectVolume>())
                     {
-                        if (volume.GetOWTriggerVolume().GetDistanceToBoundary(ship.transform.position) <= 0)
+                        if (volume.GetOWTriggerVolume().GetPenetrationDistance(ship.transform.position) > 0)
                         {
                             // Add ship to volume
                             // If it's already tracking it it will complain here but thats fine
