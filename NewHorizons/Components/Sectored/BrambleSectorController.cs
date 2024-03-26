@@ -54,54 +54,45 @@ namespace NewHorizons.Components.Sectored
             }
         }
 
-        private void EnableRenderers()
+        private void EnableRenderers() => ToggleRenderers(true);
+
+        private void DisableRenderers() => ToggleRenderers(false);
+
+        private void ToggleRenderers(bool visible)
         {
             foreach (var renderer in _renderers)
             {
-                renderer.forceRenderingOff = false;
+                if (renderer != null)
+                {
+                    renderer.forceRenderingOff = visible;
+                }
             }
 
             foreach (var tessellatedRenderer in _tessellatedRenderers)
             {
-                tessellatedRenderer.enabled = true;
+                if (tessellatedRenderer != null)
+                {
+                    tessellatedRenderer.enabled = visible;
+                }
             }
 
             foreach (var collider in _colliders)
             {
-                collider.enabled = true;
+                if (collider != null)
+                {
+                    collider.enabled = visible;
+                }
             }
 
             foreach (var light in _lights)
             {
-                light.enabled = true;
+                if (light != null)
+                {
+                    light.enabled = visible;
+                }
             }
 
-            _renderersShown = true;
-        }
-
-        private void DisableRenderers()
-        {
-            foreach (var renderer in _renderers)
-            {
-                renderer.forceRenderingOff = true;
-            }
-
-            foreach (var tessellatedRenderer in _tessellatedRenderers)
-            {
-                tessellatedRenderer.enabled = false;
-            }
-
-            foreach (var collider in _colliders)
-            {
-                collider.enabled = false;
-            }
-
-            foreach (var light in _lights)
-            {
-                light.enabled = false;
-            }
-
-            _renderersShown = false;
+            _renderersShown = visible;
         }
     }
 }
