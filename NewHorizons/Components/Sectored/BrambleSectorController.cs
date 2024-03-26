@@ -34,12 +34,15 @@ namespace NewHorizons.Components.Sectored
 
         private void Start()
         {
+            DisableRenderers();
+        }
+
+        private void GetRenderers()
+        {
             _renderers = gameObject.GetComponentsInChildren<Renderer>();
             _tessellatedRenderers = gameObject.GetComponentsInChildren<TessellatedRenderer>();
             _colliders = gameObject.GetComponentsInChildren<Collider>();
             _lights = gameObject.GetComponentsInChildren<Light>();
-
-            DisableRenderers();
         }
 
         private void OnSectorOccupantsUpdated()
@@ -60,36 +63,26 @@ namespace NewHorizons.Components.Sectored
 
         private void ToggleRenderers(bool visible)
         {
+            GetRenderers();
+
             foreach (var renderer in _renderers)
             {
-                if (renderer != null)
-                {
-                    renderer.forceRenderingOff = visible;
-                }
+                renderer.forceRenderingOff = !visible;
             }
 
             foreach (var tessellatedRenderer in _tessellatedRenderers)
             {
-                if (tessellatedRenderer != null)
-                {
-                    tessellatedRenderer.enabled = visible;
-                }
+                tessellatedRenderer.enabled = visible;
             }
 
             foreach (var collider in _colliders)
             {
-                if (collider != null)
-                {
-                    collider.enabled = visible;
-                }
+                collider.enabled = visible;
             }
 
             foreach (var light in _lights)
             {
-                if (light != null)
-                {
-                    light.enabled = visible;
-                }
+                light.enabled = visible;
             }
 
             _renderersShown = visible;
