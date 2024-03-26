@@ -421,7 +421,7 @@ namespace NewHorizons.Builder.Props
                     signalConfigCopy.parentPath = null;
                     signalConfigCopy.isRelativeToParent = false;
 
-                    var signalGO = SignalBuilder.Make(go, sector, signalConfig, mod);
+                    var signalGO = SignalBuilder.Make(go, sector, signalConfigCopy, mod);
                     signalGO.GetComponent<AudioSignal>()._identificationDistance = 0;
                     signalGO.GetComponent<AudioSignal>()._sourceRadius = 1;
                     signalGO.transform.position = brambleNode.transform.position;
