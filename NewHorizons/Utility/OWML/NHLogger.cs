@@ -19,10 +19,17 @@ namespace NewHorizons.Utility.OWML
             Main.Instance.ModHelper.Console.WriteLine($"{Enum.GetName(typeof(LogType), type)} : {text}", LogTypeToMessageType(type));
         }
 
+        public static void LogVerbose(params object[] obj) => LogVerbose(string.Join(", ", obj));
         public static void LogVerbose(object text) => Log(text, LogType.Verbose);
+
         public static void Log(object text) => Log(text, LogType.Log);
+        public static void Log(params object[] obj) => Log(string.Join(", ", obj));
+
         public static void LogWarning(object text) => Log(text, LogType.Warning);
+        public static void LogWarning(params object[] obj) => LogWarning(string.Join(", ", obj));
+
         public static void LogError(object text) => Log(text, LogType.Error);
+        public static void LogError(params object[] obj) => LogError(string.Join(", ", obj));
 
         public enum LogType
         {
