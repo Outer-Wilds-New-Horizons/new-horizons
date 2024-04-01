@@ -6,6 +6,7 @@ using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OuterWilds;
 using NewHorizons.Utility.OWML;
+using Newtonsoft.Json;
 using OWML.Common;
 using System.Collections.Generic;
 using System.Linq;
@@ -414,7 +415,13 @@ namespace NewHorizons.Builder.Props
             {
                 foreach (var signalConfig in connectedSignals)
                 {
-                    var signalGO = SignalBuilder.Make(go, sector, signalConfig, mod);
+                    // Have to ensure that this new signal doesn't use parent path, else it looks for a parent that only exists on the original body
+                    // Have to make a copy of it as well to avoid modifying the old body's info
+                    var signalConfigCopy = JsonConvert.DeserializeObject<SignalInfo>(JsonConvert.SerializeObject(signalConfig));
+                    signalConfigCopy.parentPath = null;
+                    signalConfigCopy.isRelativeToParent = false;
+
+                    var signalGO = SignalBuilder.Make(go, sector, signalConfigCopy, mod);
                     signalGO.GetComponent<AudioSignal>()._identificationDistance = 0;
                     signalGO.GetComponent<AudioSignal>()._sourceRadius = 1;
                     signalGO.transform.position = brambleNode.transform.position;
