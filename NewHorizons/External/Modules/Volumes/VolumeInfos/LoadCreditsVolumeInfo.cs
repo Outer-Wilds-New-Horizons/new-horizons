@@ -7,7 +7,7 @@ namespace NewHorizons.External.Modules.Volumes.VolumeInfos
     [JsonObject]
     public class LoadCreditsVolumeInfo : VolumeInfo
     {
-        [DefaultValue("fast")] public NHCreditsType creditsType = NHCreditsType.Fast;
+        [DefaultValue("none")] public NHCreditsType creditsType = NHCreditsType.None;
 
         /// <summary>
         /// Text displayed in orange on game over. For localization, put translations under UI.
@@ -15,8 +15,8 @@ namespace NewHorizons.External.Modules.Volumes.VolumeInfos
         public string gameOverText;
 
         /// <summary>
-        /// The type of death the player will have if they enter this volume.
+        /// The type of death the player will have if they enter this volume. Don't set to have the camera just fade out.
         /// </summary>
-        [DefaultValue("default")] public NHDeathType deathType = NHDeathType.Default;
+        [DefaultValue("default")] public NHDeathType? deathType = null;
     }
 }

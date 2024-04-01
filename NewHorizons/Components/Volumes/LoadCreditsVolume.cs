@@ -10,10 +10,10 @@ namespace NewHorizons.Components.Volumes
 {
     internal class LoadCreditsVolume : BaseVolume
     {
-        public NHCreditsType creditsType = NHCreditsType.Fast;
+        public NHCreditsType creditsType = NHCreditsType.None;
 
         public string gameOverText;
-        public DeathType deathType = DeathType.Default;
+        public DeathType? deathType = DeathType.Default;
 
         private GameOverController _gameOverController;
         private PlayerCameraEffectController _playerCameraEffectController;
@@ -43,14 +43,27 @@ namespace NewHorizons.Components.Volumes
             // The PlayerCameraEffectController is what actually kills us, so convince it we're already dead
             Locator.GetDeathManager()._isDead = true;
 
-            _playerCameraEffectController.OnPlayerDeath(deathType);
+            var fadeLength = 2f;
+
+            if (deathType is DeathType nonNullDeathType)
+            {
+                _playerCameraEffectController.OnPlayerDeath(nonNullDeathType);
+                fadeLength = _playerCameraEffectController._deathFadeLength;
+            }
+            else
+            {
+                FadeHandler.FadeOut(fadeLength);
+            }
             
-            yield return new WaitForSeconds(_playerCameraEffectController._deathFadeLength);
+            yield return new WaitForSeconds(fadeLength);
 
             if (!string.IsNullOrEmpty(gameOverText) && _gameOverController != null)
             {
                 _gameOverController._deathText.text = TranslationHandler.GetTranslation(gameOverText, TranslationHandler.TextType.UI);
                 _gameOverController.SetupGameOverScreen(5f);
+
+                // Make sure the fade handler is off now
+                FadeHandler.FadeIn(0f);
 
                 // We set this to true to stop it from loading the credits scene, so we can do it ourselves
                 _gameOverController._loading = true;
@@ -80,6 +93,9 @@ namespace NewHorizons.Components.Volumes
                 case NHCreditsType.Kazoo:
                     TimelineObliterationController.s_hasRealityEnded = true;
                     LoadManager.LoadScene(OWScene.Credits_Fast, LoadManager.FadeType.ToBlack);
+                    break;
+                default:
+                    GlobalMessenger.FireEvent("TriggerFlashback");
                     break;
             }
         }
