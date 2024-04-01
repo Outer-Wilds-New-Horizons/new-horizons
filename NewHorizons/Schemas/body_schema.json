@@ -5029,7 +5029,7 @@
           "description": "An optional rename of this object"
         },
         "creditsType": {
-          "default": "fast",
+          "default": "none",
           "$ref": "#/definitions/NHCreditsType"
         },
         "gameOverText": {
@@ -5037,9 +5037,16 @@
           "description": "Text displayed in orange on game over. For localization, put translations under UI."
         },
         "deathType": {
-          "description": "The type of death the player will have if they enter this volume.",
+          "description": "The type of death the player will have if they enter this volume. Don't set to have the camera just fade out.",
           "default": "default",
-          "$ref": "#/definitions/NHDeathType"
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/NHDeathType"
+            }
+          ]
         }
       }
     },
@@ -5049,12 +5056,14 @@
       "x-enumNames": [
         "Fast",
         "Final",
-        "Kazoo"
+        "Kazoo",
+        "None"
       ],
       "enum": [
         "fast",
         "final",
-        "kazoo"
+        "kazoo",
+        "none"
       ]
     },
     "CometTailModule": {
