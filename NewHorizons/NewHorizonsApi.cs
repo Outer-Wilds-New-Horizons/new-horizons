@@ -336,5 +336,7 @@ namespace NewHorizons
         public string GetTranslationForUI(string text) => TranslationHandler.GetTranslation(text, TranslationHandler.TextType.UI);
 
         public string GetTranslationForOtherText(string text) => TranslationHandler.GetTranslation(text, TranslationHandler.TextType.OTHER);
+
+        public void AddSubtitle(IModBehaviour mod, string filePath) => SubtitlesHandler.RegisterAdditionalSubtitle(mod, filePath);
     }
 }

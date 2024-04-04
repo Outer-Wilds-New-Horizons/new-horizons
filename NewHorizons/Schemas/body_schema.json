@@ -1342,7 +1342,7 @@
         },
         "keepLoaded": {
           "type": "boolean",
-          "description": "Should this detail stay loaded even if you're outside the sector (good for very large props)"
+          "description": "Should this detail stay loaded (visible and collideable) even if you're outside the sector (good for very large props)?\nAlso makes this detail visible on the map.\nMost logic/behavior scripts will still only work inside the sector, as most of those scripts break if a sector is not provided."
         },
         "hasPhysics": {
           "type": "boolean",
@@ -1402,13 +1402,19 @@
         },
         "itemType": {
           "type": "string",
-          "description": "The type of the item, which determines its orientation when held and what sockets it fits into. This can be a custom string, or a vanilla ItemType (Scroll, WarpCode, SharedStone, ConversationStone, Lantern, SlideReel, DreamLantern, or VisionTorch). Defaults to the item name."
+          "description": "The type of the item, which determines its orientation when held and what sockets it fits into. This can be a custom string, or a vanilla ItemType (Scroll, WarpCore, SharedStone, ConversationStone, Lantern, SlideReel, DreamLantern, or VisionTorch). Defaults to the item name."
         },
         "interactRange": {
           "type": "number",
           "description": "The furthest distance where the player can interact with this item. Defaults to two meters, same as most vanilla items. Set this to zero to disable all interaction by default.",
           "format": "float",
           "default": 2.0
+        },
+        "colliderRadius": {
+          "type": "number",
+          "description": "The radius that the added sphere collider will use for collision and hover detection.\nIf there's already a collider on the detail, you can make this 0.",
+          "format": "float",
+          "default": 0.5
         },
         "droppable": {
           "type": "boolean",

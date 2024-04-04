@@ -79,6 +79,12 @@ namespace NewHorizons.Builder.Props
             item.ClearPickupConditionOnDrop = info.clearPickupConditionOnDrop;
             item.PickupFact = info.pickupFact;
 
+            if (info.colliderRadius > 0f)
+            {
+                go.AddComponent<SphereCollider>().radius = info.colliderRadius;
+                go.GetAddComponent<OWCollider>();
+            }
+
             Delay.FireOnNextUpdate(() =>
             {
                 if (item != null && !string.IsNullOrEmpty(info.pathToInitialSocket))

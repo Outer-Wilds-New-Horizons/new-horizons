@@ -11,15 +11,11 @@ namespace NewHorizons.OtherMods.MenuFramework
 {
     public static class MenuHandler
     {
-        private static IMenuAPI _menuApi;
-
         private static List<(IModBehaviour mod, string message, bool repeat)> _registeredPopups = new();
         private static List<string> _failedFiles = new();
 
         public static void Init()
         {
-            _menuApi = Main.Instance.ModHelper.Interaction.TryGetModApi<IMenuAPI>("_nebula.MenuFramework");
-
             TextTranslation.Get().OnLanguageChanged += OnLanguageChanged;
         }
 
@@ -35,14 +31,14 @@ namespace NewHorizons.OtherMods.MenuFramework
                     Application.version);
 
                 NHLogger.LogError(warning);
-                _menuApi.RegisterStartupPopup(warning);
+                Main.Instance.ModHelper.MenuHelper.PopupMenuManager.RegisterStartupPopup(warning);
             }
 
             foreach(var (mod, message, repeat) in _registeredPopups)
             {
                 if (repeat || !NewHorizonsData.HasReadOneTimePopup(mod.ModHelper.Manifest.UniqueName))
                 {
-                    _menuApi.RegisterStartupPopup(TranslationHandler.GetTranslation(message, TranslationHandler.TextType.UI));
+                    Main.Instance.ModHelper.MenuHelper.PopupMenuManager.RegisterStartupPopup(TranslationHandler.GetTranslation(message, TranslationHandler.TextType.UI));
                     NewHorizonsData.ReadOneTimePopup(mod.ModHelper.Manifest.UniqueName);
                 }
             }
@@ -52,7 +48,7 @@ namespace NewHorizons.OtherMods.MenuFramework
                 var message = TranslationHandler.GetTranslation("JSON_FAILED_TO_LOAD", TranslationHandler.TextType.UI);
                 var mods = string.Join(",", _failedFiles.Take(10));
                 if (_failedFiles.Count > 10) mods += "...";
-                _menuApi.RegisterStartupPopup(string.Format(message, mods));
+                Main.Instance.ModHelper.MenuHelper.PopupMenuManager.RegisterStartupPopup(string.Format(message, mods));
             }
 
             _registeredPopups.Clear();

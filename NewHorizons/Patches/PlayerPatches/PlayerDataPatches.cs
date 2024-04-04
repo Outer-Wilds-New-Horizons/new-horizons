@@ -85,12 +85,8 @@ namespace NewHorizons.Patches.PlayerPatches
         [HarmonyPatch(nameof(PlayerData.KnowsMultipleFrequencies))]
         public static bool PlayerData_KnowsMultipleFrequencies(ref bool __result)
         {
-            if (NewHorizonsData.KnowsMultipleFrequencies())
-            {
-                __result = true;
-                return false;
-            }
-            return true;
+            __result = NewHorizonsData.KnowsMultipleFrequencies();
+            return false;
         }
 
         [HarmonyPrefix]
@@ -139,6 +135,13 @@ namespace NewHorizons.Patches.PlayerPatches
         public static void PlayerData_ResetGame()
         {
             NewHorizonsData.Reset();
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(nameof(PlayerData.SaveCurrentGame))]
+        public static void PlayerData_SaveCurrentGame()
+        {
+            NewHorizonsData.Save();
         }
     }
 }

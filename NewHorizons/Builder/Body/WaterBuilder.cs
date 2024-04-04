@@ -135,7 +135,8 @@ namespace NewHorizons.Builder.Body
             var fogGO = Object.Instantiate(_oceanFog, waterGO.transform);
             fogGO.name = "OceanFog";
             fogGO.transform.localPosition = Vector3.zero;
-            fogGO.transform.localScale = Vector3.one;
+            // In base game GD ocean fog is 550 while the water volume is 500
+            fogGO.transform.localScale = Vector3.one * 550f / 500f;
             fogGO.SetActive(true);
 
             if (module.tint != null)
