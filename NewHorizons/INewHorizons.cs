@@ -1,4 +1,3 @@
-using NewHorizons.Handlers;
 using OWML.Common;
 using System;
 using System.Collections.Generic;
