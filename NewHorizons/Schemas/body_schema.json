@@ -1429,6 +1429,22 @@
           "description": "The direction the item will be oriented when dropping it on the ground. Defaults to up (0, 1, 0).",
           "$ref": "#/definitions/MVector3"
         },
+        "holdOffset": {
+          "description": "A relative offset to apply to the item's position when holding it. The initial position varies for vanilla item types.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "holdRotation": {
+          "description": "A relative offset to apply to the item's rotation when holding it.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "socketOffset": {
+          "description": "A relative offset to apply to the item's position when placing it into a socket.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "socketRotation": {
+          "description": "A relative offset to apply to the item's rotation when placing it into a socket.",
+          "$ref": "#/definitions/MVector3"
+        },
         "pickupAudio": {
           "type": "string",
           "description": "The audio to play when this item is picked up. Only applies to custom/non-vanilla item types.\nCan be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
