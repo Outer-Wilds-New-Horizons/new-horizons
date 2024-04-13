@@ -2,9 +2,11 @@ using NewHorizons.External.Configs;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OWML;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using static TextTranslation;
 
 namespace NewHorizons.Handlers
 {
@@ -50,30 +52,46 @@ namespace NewHorizons.Handlers
             }
 
             // Get the translated text
-            if (dictionary.TryGetValue(language, out var table))
+            if (TryGetTranslatedText(dictionary, language, text, out var translatedText))
             {
-                if (table.TryGetValue(text, out var translatedText))
+                return translatedText;
+            }
+
+            if (warn)
+            {
+                NHLogger.LogVerbose($"Defaulting to english for {text}");
+            }
+
+            if (TryGetTranslatedText(dictionary, Language.ENGLISH, text, out translatedText))
+            {
+                return translatedText;
+            }
+
+            if (warn)
+            {
+                NHLogger.LogVerbose($"Defaulting to key for {text}");
+            }
+
+            return text;
+        }
+
+        private static bool TryGetTranslatedText(Dictionary<Language, Dictionary<string, string>> dict, Language language, string text, out string translatedText)
+        {
+            if (dict.TryGetValue(language, out var table))
+            {
+                if (table.TryGetValue(text, out translatedText))
                 {
-                    return translatedText;
+                    return true;
                 }
                 // Try without whitespace if its missing
                 else if (table.TryGetValue(text.TruncateWhitespaceAndToLower(), out translatedText))
                 {
-                    return translatedText;
+                    return true;
                 }
             }
 
-            if (warn) NHLogger.LogVerbose($"Defaulting to english for {text}");
-
-            // Try to default to English
-            if (dictionary.TryGetValue(TextTranslation.Language.ENGLISH, out var englishTable))
-                if (englishTable.TryGetValue(text, out var englishText))
-                    return englishText;
-
-            if (warn) NHLogger.LogVerbose($"Defaulting to key for {text}");
-
-            // Default to the key
-            return text;
+            translatedText = null;
+            return false;
         }
 
         public static void RegisterTranslation(TextTranslation.Language language, TranslationConfig config)

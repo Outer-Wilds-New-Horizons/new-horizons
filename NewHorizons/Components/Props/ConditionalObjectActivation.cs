@@ -19,6 +19,7 @@ namespace NewHorizons.Components.Props
         {
             var conditionalObjectActivationGO = new GameObject($"{go.name}_{condition}");
             var component = conditionalObjectActivationGO.AddComponent<ConditionalObjectActivation>();
+            component.transform.parent = go.transform.parent;
             component.GameObject = go;
             component.DialogueCondition = condition;
             component.CloseEyes = closeEyes;

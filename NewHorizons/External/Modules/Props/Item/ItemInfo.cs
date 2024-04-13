@@ -44,6 +44,22 @@ namespace NewHorizons.External.Modules.Props.Item
         /// </summary>
         public MVector3 dropNormal;
         /// <summary>
+        /// A relative offset to apply to the item's position when holding it. The initial position varies for vanilla item types.
+        /// </summary>
+        public MVector3 holdOffset;
+        /// <summary>
+        /// A relative offset to apply to the item's rotation when holding it.
+        /// </summary>
+        public MVector3 holdRotation;
+        /// <summary>
+        /// A relative offset to apply to the item's position when placing it into a socket.
+        /// </summary>
+        public MVector3 socketOffset;
+        /// <summary>
+        /// A relative offset to apply to the item's rotation when placing it into a socket.
+        /// </summary>
+        public MVector3 socketRotation;
+        /// <summary>
         /// The audio to play when this item is picked up. Only applies to custom/non-vanilla item types.
         /// Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list.
         /// </summary>

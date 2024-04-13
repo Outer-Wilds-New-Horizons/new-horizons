@@ -263,7 +263,6 @@ namespace NewHorizons
             // Call this from the menu since we hadn't hooked onto the event yet
             Delay.FireOnNextUpdate(() => OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single));
             Delay.FireOnNextUpdate(() => _firstLoad = false);
-            Instance.ModHelper.Menus.PauseMenu.OnInit += DebugReload.InitializePauseMenu;
 
             MenuHandler.Init();
             AchievementHandler.Init();
@@ -273,6 +272,13 @@ namespace NewHorizons
             OnChangeStarSystem.AddListener(RichPresenceHandler.OnChangeStarSystem);
 
             LoadAddonManifest("Assets/addon-manifest.json", this);
+        }
+
+        public override void SetupPauseMenu(IPauseMenuManager pauseMenu)
+        {
+            base.SetupPauseMenu(pauseMenu);
+            DebugReload.InitializePauseMenu(pauseMenu);
+            DebugMenu.InitializePauseMenu(pauseMenu);
         }
 
         public void OnDestroy()
@@ -512,8 +518,10 @@ namespace NewHorizons
 
                     // We are in a custom system on the first loop -> The time loop isn't active, that's not very good
                     // TimeLoop uses the launch codes condition to know if the loop is active or not
+                    // We also skip them to loop 2, else if they enter a credits volume in this loop they get reset
                     if (CurrentStarSystem != "SolarSystem" && PlayerData.LoadLoopCount() == 1)
                     {
+                        PlayerData.SaveLoopCount(2);
                         PlayerData.SetPersistentCondition("LAUNCH_CODES_GIVEN", true);
                     }
                 }
@@ -595,6 +603,7 @@ namespace NewHorizons
                 Locator.GetPlayerBody().gameObject.AddComponent<DebugRaycaster>();
                 Locator.GetPlayerBody().gameObject.AddComponent<DebugPropPlacer>();
                 Locator.GetPlayerBody().gameObject.AddComponent<DebugMenu>();
+                Locator.GetPlayerBody().gameObject.AddComponent<PlayerShipAtmosphereDetectorFix>();
 
                 PlayerSpawnHandler.OnSystemReady(shouldWarpInFromShip, shouldWarpInFromVessel);
 

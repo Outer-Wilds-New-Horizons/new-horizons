@@ -371,7 +371,7 @@ namespace NewHorizons.Handlers
             const float sphereOfInfluence = 2000f;
             
             var owRigidBody = RigidBodyBuilder.Make(go, sphereOfInfluence, body.Config);
-            var ao = AstroObjectBuilder.Make(go, null, body.Config, false);
+            var ao = AstroObjectBuilder.Make(go, null, body, false);
 
             var sector = SectorBuilder.Make(go, owRigidBody, sphereOfInfluence);
             ao._rootSector = sector;
@@ -447,7 +447,7 @@ namespace NewHorizons.Handlers
             var sphereOfInfluence = GetSphereOfInfluence(body);
             
             var owRigidBody = RigidBodyBuilder.Make(go, sphereOfInfluence, body.Config);
-            var ao = AstroObjectBuilder.Make(go, primaryBody, body.Config, false);
+            var ao = AstroObjectBuilder.Make(go, primaryBody, body, false);
 
             var sector = SectorBuilder.Make(go, owRigidBody, sphereOfInfluence * 2f);
             ao._rootSector = sector;
@@ -788,7 +788,7 @@ namespace NewHorizons.Handlers
                 }
 
                 // Just destroy the existing AO after copying everything over
-                var newAO = AstroObjectBuilder.Make(go, primary, body.Config, true);
+                var newAO = AstroObjectBuilder.Make(go, primary, body, true);
                 newAO._gravityVolume = ao._gravityVolume;
                 newAO._moon = ao._moon;
                 newAO._name = ao._name;
