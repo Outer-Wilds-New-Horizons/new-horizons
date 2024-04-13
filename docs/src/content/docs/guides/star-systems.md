@@ -23,10 +23,12 @@ A star system config file will look something like this:
             "y": [0, 5, 4],
             "z": [5, 4, 0, 3, 1]
         },
-        "vesselPosition": {
-            "x": 0,
-            "y": 0,
-            "z": 8000
+        "vesselSpawn": {
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 8000
+            }
         }
     }
 }
