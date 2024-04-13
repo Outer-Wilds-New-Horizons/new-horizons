@@ -14,6 +14,11 @@ namespace NewHorizons.Components.Orbital
         public bool invulnerableToSun;
         public bool isVanilla;
 
+        /// <summary>
+        /// The unique name of the mod that created this body or, if it is an existing body being edited, the last mod to edit it
+        /// </summary>
+        public string modUniqueName;
+
         public void SetOrbitalParametersFromConfig(OrbitModule orbit)
         {
             SetOrbitalParametersFromTrueAnomaly(orbit.eccentricity, orbit.semiMajorAxis, orbit.inclination, orbit.argumentOfPeriapsis, orbit.longitudeOfAscendingNode, orbit.trueAnomaly);
