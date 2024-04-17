@@ -19,6 +19,7 @@ namespace NewHorizons.Builder.Body
         public static Shader RingV2UnlitShader;
         public static Shader RingV2TransparentShader;
         public static Shader RingV2UnlitTransparentShader;
+        public static Texture2D NoiseTexture;
         private static readonly int OnePixelMode = Shader.PropertyToID("_1PixelMode");
         private static readonly int InnerRadius = Shader.PropertyToID("_InnerRadius");
         private static readonly int Noise = Shader.PropertyToID("_Noise");
@@ -73,11 +74,11 @@ namespace NewHorizons.Builder.Body
 
         public static GameObject MakeRingGraphics(GameObject rootObject, Sector sector, RingModule ring, IModBehaviour mod)
         {
-            var ringTexture = ImageUtilities.GetTexture(mod, ring.texture);
+            var albedoTexture = ImageUtilities.GetTexture(mod, ring.texture);
 
-            if (ringTexture == null)
+            if (albedoTexture == null)
             {
-                NHLogger.LogError($"Couldn't load Ring texture [{ring.texture}]");
+                NHLogger.LogError($"Couldn't load ring texture [{ring.texture}]");
                 return null;
             }
 
@@ -96,21 +97,42 @@ namespace NewHorizons.Builder.Body
             if (RingV2TransparentShader == null) RingV2TransparentShader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/RingV2Transparent.shader");
             if (RingV2UnlitShader == null) RingV2UnlitShader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/RingV2UnlitShader.shader");
             if (RingV2UnlitTransparentShader == null) RingV2UnlitTransparentShader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/RingV2UnlitTransparentShader.shader");
+            if (NoiseTexture == null) NoiseTexture = Main.NHAssetBundle.LoadAsset<Texture2D>("Assets/Resources/BlueNoise470.png");
 
-            var mat = new Material(ring.unlit ? RingV2TransparentShader : RingV2Shader);
-            if (ringTexture.width == 1)
+            var mat = new Material(ring.unlit ? RingV2UnlitShader : RingV2Shader);
+            if (ring.transparencyType == RingTransparencyType.Fade)
             {
-                mat = new Material(ring.unlit ? RingV2UnlitTransparentShader : RingV2UnlitShader);
-                mat.SetFloat(InnerRadius, 0);
+                mat = new Material(ring.unlit ? RingV2UnlitTransparentShader : RingV2TransparentShader);
             }
-            ringMR.receiveShadows = !ring.unlit;
+            
+            mat.SetFloat(OnePixelMode, albedoTexture.width == 1 ? 1 : 0);
+            mat.mainTexture = albedoTexture;
+            mat.SetFloat(InnerRadius, 0);
 
-            mat.mainTexture = ringTexture;
+            mat.SetFloat(Noise, ring.useNoise ?? ring.transparencyType == RingTransparencyType.AlphaClip ? 1 : 0);
+            mat.SetFloat(NoiseRotation, ring.noiseRotationSpeed != 0 ? 1 : 0);
+            mat.SetFloat(NoiseRotationSpeed, ring.noiseRotationSpeed * Mathf.Deg2Rad);
+            mat.SetTexture(NoiseMap, NoiseTexture);
+            var scale = ring.outerRadius / NoiseTexture.width / ring.noiseScale;
+            mat.SetTextureScale(NoiseMap, new Vector2(scale, scale));
+            
+            if (!ring.unlit)
+            {
+                var smoothnessMap = ImageUtilities.GetTexture(mod, ring.smoothnessMap);
+                var normalMap = ImageUtilities.GetTexture(mod, ring.normalMap);
+                var emissionMap = ImageUtilities.GetTexture(mod, ring.emissionMap);
+                if (smoothnessMap != null) mat.SetTexture(SmoothnessMap, smoothnessMap);
+                if (normalMap != null) mat.SetTexture(NormalMap, normalMap);
+                if (emissionMap != null) mat.SetTexture(EmissionMap, emissionMap);
+
+                mat.SetFloat(Translucency, ring.translucency);
+                mat.SetFloat(TranslucentGlow, ring.translucentGlow ? 1 : 0);
+            }
 
             // Black holes vanish behind rings
             // However if we lower this to where black holes don't vanish, water becomes invisible when seen through rings
             // Vanishing black holes is the lesser bug
-            mat.renderQueue = 3000;
+            if (ring.transparencyType == RingTransparencyType.Fade) mat.renderQueue = 3000;
             ringMR.material = mat;
 
             // Make mesh
