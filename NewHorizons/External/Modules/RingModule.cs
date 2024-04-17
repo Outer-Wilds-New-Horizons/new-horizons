@@ -35,7 +35,7 @@ namespace NewHorizons.External.Modules
         [Range(0, double.MaxValue)] public float outerRadius;
 
         /// <summary>
-        /// Allows the rings to rotate.
+        /// Rotation speed, in degrees per second.
         /// </summary>
         public float rotationSpeed;
 
