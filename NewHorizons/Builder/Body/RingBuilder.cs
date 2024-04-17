@@ -74,7 +74,7 @@ namespace NewHorizons.Builder.Body
 
         public static GameObject MakeRingGraphics(GameObject rootObject, Sector sector, RingModule ring, IModBehaviour mod)
         {
-            var albedoTexture = ImageUtilities.GetTexture(mod, ring.texture);
+            var albedoTexture = ImageUtilities.GetTexture(mod, ring.texture ?? "");
 
             if (albedoTexture == null)
             {
@@ -118,9 +118,9 @@ namespace NewHorizons.Builder.Body
             
             if (!ring.unlit)
             {
-                var smoothnessMap = ImageUtilities.GetTexture(mod, ring.smoothnessMap);
-                var normalMap = ImageUtilities.GetTexture(mod, ring.normalMap);
-                var emissionMap = ImageUtilities.GetTexture(mod, ring.emissionMap);
+                var smoothnessMap = ImageUtilities.GetTexture(mod, ring.smoothnessMap ?? "");
+                var normalMap = ImageUtilities.GetTexture(mod, ring.normalMap ?? "");
+                var emissionMap = ImageUtilities.GetTexture(mod, ring.emissionMap ?? "");
                 if (smoothnessMap != null) mat.SetTexture(SmoothnessMap, smoothnessMap);
                 if (normalMap != null) mat.SetTexture(NormalMap, normalMap);
                 if (emissionMap != null) mat.SetTexture(EmissionMap, emissionMap);

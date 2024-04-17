@@ -24,7 +24,7 @@ namespace NewHorizons.External.Modules
         /// Should the texture's transparency cause the ring to fade out, or be opaque above 0.5 and invisible below?
         /// Warning! Fade transparency does not support shadows!
         /// </summary>
-        [DefaultValue("alphaClip")] public RingTransparencyType transparencyType;
+        [DefaultValue("alphaClip")] public RingTransparencyType transparencyType = RingTransparencyType.AlphaClip;
 
         /// <summary>
         /// Fluid type for sounds/effects when colliding with this ring.
