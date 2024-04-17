@@ -15,11 +15,22 @@ namespace NewHorizons.Builder.Body
 {
     public static class RingBuilder
     {
-        public static Shader RingShader;
-        public static Shader RingShader1Pixel;
-        public static Shader UnlitRingShader;
-        public static Shader UnlitRingShader1Pixel;
+        public static Shader RingV2Shader;
+        public static Shader RingV2UnlitShader;
+        public static Shader RingV2TransparentShader;
+        public static Shader RingV2UnlitTransparentShader;
+        private static readonly int OnePixelMode = Shader.PropertyToID("_1PixelMode");
         private static readonly int InnerRadius = Shader.PropertyToID("_InnerRadius");
+        private static readonly int Noise = Shader.PropertyToID("_Noise");
+        private static readonly int NoiseRotation = Shader.PropertyToID("_NoiseRotation");
+        private static readonly int NoiseRotationSpeed = Shader.PropertyToID("_NoiseRotationSpeed");
+        private static readonly int NoiseMap = Shader.PropertyToID("_NoiseMap");
+        private static readonly int SmoothnessMap = Shader.PropertyToID("_SmoothnessMap");
+        private static readonly int NormalMap = Shader.PropertyToID("_NormalMap");
+        private static readonly int EmissionMap = Shader.PropertyToID("_EmissionMap");
+        private static readonly int Translucency = Shader.PropertyToID("_Translucency");
+        private static readonly int TranslucentGlow = Shader.PropertyToID("_TranslucentGlow");
+        private static readonly int TranslucentGlowExponent = Shader.PropertyToID("_TranslucentGlowExponent");
 
         public static GameObject Make(GameObject planetGO, Sector sector, RingModule ring, IModBehaviour mod)
         {
@@ -62,9 +73,6 @@ namespace NewHorizons.Builder.Body
 
         public static GameObject MakeRingGraphics(GameObject rootObject, Sector sector, RingModule ring, IModBehaviour mod)
         {
-            // Properly lit shader doesnt work yet
-            ring.unlit = true;
-
             var ringTexture = ImageUtilities.GetTexture(mod, ring.texture);
 
             if (ringTexture == null)
@@ -84,15 +92,15 @@ namespace NewHorizons.Builder.Body
             var ringMesh = ringMF.mesh;
             var ringMR = ringGO.AddComponent<MeshRenderer>();
 
-            if (RingShader == null) RingShader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/Ring.shader");
-            if (UnlitRingShader == null) UnlitRingShader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/UnlitTransparent.shader");
-            if (RingShader1Pixel == null) RingShader1Pixel = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/Ring1Pixel.shader");
-            if (UnlitRingShader1Pixel == null) UnlitRingShader1Pixel = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/UnlitRing1Pixel.shader");
+            if (RingV2Shader == null) RingV2Shader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/RingV2.shader");
+            if (RingV2TransparentShader == null) RingV2TransparentShader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/RingV2Transparent.shader");
+            if (RingV2UnlitShader == null) RingV2UnlitShader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/RingV2UnlitShader.shader");
+            if (RingV2UnlitTransparentShader == null) RingV2UnlitTransparentShader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/RingV2UnlitTransparentShader.shader");
 
-            var mat = new Material(ring.unlit ? UnlitRingShader : RingShader);
+            var mat = new Material(ring.unlit ? RingV2TransparentShader : RingV2Shader);
             if (ringTexture.width == 1)
             {
-                mat = new Material(ring.unlit ? UnlitRingShader1Pixel : RingShader1Pixel);
+                mat = new Material(ring.unlit ? RingV2UnlitTransparentShader : RingV2UnlitShader);
                 mat.SetFloat(InnerRadius, 0);
             }
             ringMR.receiveShadows = !ring.unlit;
