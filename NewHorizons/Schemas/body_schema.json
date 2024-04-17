@@ -3290,7 +3290,7 @@
         },
         "rotationSpeed": {
           "type": "number",
-          "description": "Allows the rings to rotate.",
+          "description": "Rotation speed, in degrees per second.",
           "format": "float"
         },
         "texture": {
