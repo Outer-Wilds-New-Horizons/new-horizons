@@ -104,6 +104,10 @@ namespace NewHorizons.Builder.Body
             {
                 mat = new Material(ring.unlit ? RingV2UnlitTransparentShader : RingV2TransparentShader);
             }
+            else
+            {
+                albedoTexture.anisoLevel = 0; // otherwise it dies from afar if it has a lot of transparency
+            }
             
             mat.SetFloat(OnePixelMode, albedoTexture.width == 1 ? 1 : 0);
             mat.mainTexture = albedoTexture;
