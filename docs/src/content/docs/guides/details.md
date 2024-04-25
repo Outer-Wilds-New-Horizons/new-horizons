@@ -88,7 +88,7 @@ To add a Mars rover to the red planet in [RSS](https://github.com/xen-42/outer-w
 ```json {5-6}
 {
     "Props": {
-        "Details": [
+        "details": [
             {
                 "assetBundle": "planets/assetbundle/rss",
                 "path": "Assets/RSS/Prefabs/Rover.prefab",
@@ -97,7 +97,7 @@ To add a Mars rover to the red planet in [RSS](https://github.com/xen-42/outer-w
                     "y": -10.83688,
                     "z": -36.02736
                 },
-                "alignToNormal": true
+                "alignRadial": true
             }
         ]
     }
@@ -109,7 +109,7 @@ To scatter 12 trees from the Dream World around Wetrock in [NH Examples](https:/
 ```json
 {
     "Props": {
-        "Scatter": [
+        "scatter": [
             {
                 "path": "DreamWorld_Body/Sector_DreamWorld/Sector_DreamZone_1/Props_DreamZone_1/OtherComponentsGroup/Trees_Z1/DreamHouseIsland/Tree_DW_M_Var",
                 "count": 12
@@ -124,7 +124,7 @@ You can swap these around too. The following would scatter 12 Mars rovers across
 ```json
 {
     "Props": {
-        "Details": [
+        "details": [
             {
                 "path": "DreamWorld_Body/Sector_DreamWorld/Sector_DreamZone_1/Props_DreamZone_1/OtherComponentsGroup/Trees_Z1/DreamHouseIsland/Tree_DW_M_Var",
                 "position": {
@@ -132,10 +132,10 @@ You can swap these around too. The following would scatter 12 Mars rovers across
                     "y": -10.83688,
                     "z": -36.02736
                 },
-                "alignToNormal": true
+                "alignRadial": true
             }
         ],
-        "Scatter": [
+        "scatter": [
             {
                 "assetBundle": "planets/assetbundle/rss",
                 "path": "Assets/RSS/Prefabs/Rover.prefab",
