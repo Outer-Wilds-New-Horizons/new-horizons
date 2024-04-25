@@ -476,7 +476,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
             }
 
             ArcCacheData[] cachedData = null;
-            if (nhBody.Cache?.ContainsKey(cacheKey) ?? false)
+            if (nhBody?.Cache?.ContainsKey(cacheKey) ?? false)
                 cachedData = nhBody.Cache.Get<ArcCacheData[]>(cacheKey);
 
             var arranger = nomaiWallText.gameObject.AddComponent<NomaiTextArcArranger>();
