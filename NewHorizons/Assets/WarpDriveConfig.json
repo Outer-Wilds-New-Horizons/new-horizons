@@ -1,17 +1,28 @@
 {
-	"name" : "Ship",
-	"$schema": "https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/master/NewHorizons/body_schema.json",
-	"Props" :
-	{
-		"dialogue": [
-			{
-				"position":{"x": -0.3071011, "y": 2.741472, "z": -4.005298},
-				"radius": 0,
-				"remoteTriggerRadius": 1,
-				"xmlFile":"Assets/WarpDriveDialogue.xml",
-				"remoteTriggerPosition": {"x": -0.05656214, "y": 0.5362684, "z": 0.5467669},
-				"blockAfterPersistentCondition" : "KnowsAboutWarpDrive"
-			}
-		]
-	}
+  "name": "Ship",
+  "$schema": "https://raw.githubusercontent.com/Outer-Wilds-New-Horizons/new-horizons/main/NewHorizons/Schemas/body_schema.json",
+  "Props": {
+    "dialogue": [
+      {
+        "position": {
+          "x": -0.3071011,
+          "y": 2.741472,
+          "z": -4.005298
+        },
+        "radius": 0,
+        "rename": "WarpDriveDialogue",
+        "xmlFile": "Assets/WarpDriveDialogue.xml",
+        "blockAfterPersistentCondition": "KnowsAboutWarpDrive",
+        "remoteTrigger": {
+          "radius": 1,
+          "position": {
+            "x": -0.05656214,
+            "y": 0.5362684,
+            "z": 0.5467669
+          },
+          "rename": "WarpDriveRemoteTrigger"
+        }
+      }
+    ]
+  }
 }

@@ -7,7 +7,7 @@
   "version": "1.19.9",
   "owmlVersion": "2.10.3",
   "dependencies": [ "JohnCorby.VanillaFix", "xen.CommonCameraUtility", "dgarro.CustomShipLogModes" ],
-  "conflicts": [ "Raicuparta.QuantumSpaceBuddies", "PacificEngine.OW_CommonResources" ],
+  "conflicts": [ "PacificEngine.OW_CommonResources" ],
   "pathsToPreserve": [ "planets", "systems", "translations" ],
   "donateLink": "https://www.patreon.com/ownh"
 }
