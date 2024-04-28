@@ -101,13 +101,17 @@ namespace NewHorizons.Utility
                 case TextTranslation.Language.TURKISH:
                     return "Turkish";
                 default:
-                    return language.ToString().Replace("_", " ").ToLowerInvariant().ToTitleCase();
+                    return language.ToString().Replace("_", " ").ToTitleCase();
             }
         }
 
         public static CultureInfo ToCultureInfo(this TextTranslation.Language language)
         {
-            return CultureInfo.GetCultures(CultureTypes.AllCultures).FirstOrDefault(culture => culture.DisplayName == language.ToLanguageName()) ?? CultureInfo.CurrentCulture;
+            return CultureInfo.GetCultures(CultureTypes.AllCultures).FirstOrDefault(culture =>
+            {
+                var name = language.ToLanguageName();
+                return culture.EnglishName == name || culture.NativeName.ToTitleCase() == name;
+            }) ?? CultureInfo.CurrentCulture;
         }
 
         public static string ToUpperFixed(this string str)
@@ -139,7 +143,7 @@ namespace NewHorizons.Utility
 
         public static string ToTitleCase(this string str)
         {
-            StringBuilder strBuilder = new StringBuilder(str);
+            StringBuilder strBuilder = new StringBuilder(str.ToLowerInvariant());
             strBuilder[0] = strBuilder[0].ToString().ToUpperInvariant().ToCharArray()[0];
             return strBuilder.ToString();
         }
