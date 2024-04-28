@@ -72,14 +72,14 @@ namespace NewHorizons.Utility
         public static string ToCamelCase(this string str)
         {
             StringBuilder strBuilder = new StringBuilder(str);
-            strBuilder[0] = strBuilder[0].ToString().ToLower().ToCharArray()[0];
+            strBuilder[0] = strBuilder[0].ToString().ToLowerInvariant().ToCharArray()[0];
             return strBuilder.ToString();
         }
 
         public static string ToTitleCase(this string str)
         {
             StringBuilder strBuilder = new StringBuilder(str);
-            strBuilder[0] = strBuilder[0].ToString().ToUpper().ToCharArray()[0];
+            strBuilder[0] = strBuilder[0].ToString().ToUpperInvariant().ToCharArray()[0];
             return strBuilder.ToString();
         }
 

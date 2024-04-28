@@ -51,7 +51,7 @@ namespace NewHorizons.Builder.StarSystem
         {
             if (!tex)
             {
-                NHLogger.LogError($"Failed to load texture for skybox {name.ToLower()} face");
+                NHLogger.LogError($"Failed to load texture for skybox {name.ToLowerInvariant()} face");
                 return null;
             }
 

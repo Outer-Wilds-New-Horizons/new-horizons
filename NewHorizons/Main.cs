@@ -787,7 +787,7 @@ namespace NewHorizons
             {
                 if (language is TextTranslation.Language.UNKNOWN or TextTranslation.Language.TOTAL) continue;
 
-                var relativeFile = Path.Combine("translations", language.ToString().ToLower() + ".json");
+                var relativeFile = Path.Combine("translations", language.ToString().ToLowerInvariant() + ".json");
 
                 if (File.Exists(Path.Combine(folder, relativeFile)))
                 {

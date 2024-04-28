@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using NewHorizons.Components.Orbital;
 using NewHorizons.Handlers;
@@ -33,7 +34,7 @@ namespace NewHorizons.Utility.OuterWilds
             }
 
             // Else check stock names
-            var stringID = name.ToUpper().Replace(" ", "_").Replace("'", "");
+            var stringID = name.ToUpperInvariant().Replace(" ", "_").Replace("'", "");
             if (stringID.Equals("ATTLEROCK")) stringID = "TIMBER_MOON";
             if (stringID.Equals("HOLLOWS_LANTERN")) stringID = "VOLCANIC_MOON";
             if (stringID.Equals("ASH_TWIN")) stringID = "TOWER_TWIN";
@@ -42,7 +43,7 @@ namespace NewHorizons.Utility.OuterWilds
             if (stringID.Equals("EYE") || stringID.Equals("EYEOFTHEUNIVERSE")) stringID = "EYE_OF_THE_UNIVERSE";
 
             string key;
-            if (stringID.ToUpper().Replace("_", "").Equals("MAPSATELLITE"))
+            if (stringID.ToUpperInvariant().Replace("_", "").Equals("MAPSATELLITE"))
             {
                 key = AstroObject.Name.MapSatellite.ToString();
             }
