@@ -282,7 +282,7 @@ namespace NewHorizons.Components.ShipLog
 
             var name = UniqueIDToName(shipLogEntryCard.name);
 
-            var warpNotificationDataText = TranslationHandler.GetTranslation("WARP_LOCKED", TranslationHandler.TextType.UI).Replace("{0}", name.ToUpperInvariant());
+            var warpNotificationDataText = TranslationHandler.GetTranslation("WARP_LOCKED", TranslationHandler.TextType.UI).Replace("{0}", name.ToUpper());
             _warpNotificationData = new NotificationData(warpNotificationDataText);
             NotificationManager.SharedInstance.PostNotification(_warpNotificationData, true);
 

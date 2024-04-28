@@ -15,7 +15,7 @@ namespace NewHorizons.Utility.DebugTools
 
         public static void InitializePauseMenu(IPauseMenuManager pauseMenu)
         {
-            _reloadButton = pauseMenu.MakeSimpleButton(TranslationHandler.GetTranslation("Reload Configs", TranslationHandler.TextType.UI).ToUpperInvariant(), 3, true);
+            _reloadButton = pauseMenu.MakeSimpleButton(TranslationHandler.GetTranslation("Reload Configs", TranslationHandler.TextType.UI).ToUpper(), 3, true);
             _reloadButton.OnSubmitAction += ReloadConfigs;
             UpdateReloadButton();
         }

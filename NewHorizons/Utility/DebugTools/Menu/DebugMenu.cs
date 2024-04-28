@@ -89,7 +89,7 @@ namespace NewHorizons.Utility.DebugTools.Menu
 
         public static void InitializePauseMenu(IPauseMenuManager pauseMenu)
         {
-            pauseMenuButton = pauseMenu.MakeSimpleButton(TranslationHandler.GetTranslation("Toggle Dev Tools Menu", TranslationHandler.TextType.UI).ToUpperInvariant(), 3, true);
+            pauseMenuButton = pauseMenu.MakeSimpleButton(TranslationHandler.GetTranslation("Toggle Dev Tools Menu", TranslationHandler.TextType.UI).ToUpper(), 3, true);
             _instance?.InitMenu();
         }
 

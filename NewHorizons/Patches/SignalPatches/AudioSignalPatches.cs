@@ -17,7 +17,7 @@ namespace NewHorizons.Patches.SignalPatches
             var customSignalName = SignalBuilder.GetCustomSignalName(name);
             if (!string.IsNullOrEmpty(customSignalName))
             {
-                __result = TranslationHandler.GetTranslation(customSignalName, TranslationHandler.TextType.UI, false).ToUpperInvariant();
+                __result = TranslationHandler.GetTranslation(customSignalName, TranslationHandler.TextType.UI, false).ToUpper();
                 return false;
             }
             return true;
@@ -68,7 +68,7 @@ namespace NewHorizons.Patches.SignalPatches
             var customName = SignalBuilder.GetCustomFrequencyName(frequency);
             if (!string.IsNullOrEmpty(customName))
             {
-                if (NewHorizonsData.KnowsFrequency(customName)) __result = TranslationHandler.GetTranslation(customName, TranslationHandler.TextType.UI, false).ToUpperInvariant();
+                if (NewHorizonsData.KnowsFrequency(customName)) __result = TranslationHandler.GetTranslation(customName, TranslationHandler.TextType.UI, false).ToUpper();
                 else __result = UITextLibrary.GetString(UITextType.SignalFreqUnidentified);
                 return false;
             }
