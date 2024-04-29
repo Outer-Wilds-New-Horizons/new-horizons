@@ -12,6 +12,7 @@ using System.IO;
 using System.Xml;
 using System.Xml.Linq;
 using UnityEngine;
+using UnityEngine.XR;
 
 namespace NewHorizons.Builder.Props
 {
@@ -121,6 +122,10 @@ namespace NewHorizons.Builder.Props
                 }
             }
 
+            // Character name is required for adding translations, something to do with how OW prefixes its dialogue
+            var characterName = existingDialogueTree.SelectSingleNode("NameField").InnerText;
+            AddTranslation(additionalDialogueDoc.GetChildNode("DialogueTree"), characterName);
+
             DoDialogueOptionsListReplacement(existingDialogueTree);
 
             var newTextAsset = new TextAsset(existingDialogueDoc.OuterXml)
@@ -130,13 +135,13 @@ namespace NewHorizons.Builder.Props
 
             existingDialogue.SetTextXml(newTextAsset);
 
-            // Chracter name is required for adding translations, something to do with how OW prefixes its dialogue
-            var characterName = existingDialogueTree.SelectSingleNode("NameField").InnerText;
-            AddTranslation(additionalDialogueDoc.GetChildNode("DialogueTree"), characterName);
-
             return existingDialogue;
         }
 
+        /// <summary>
+        /// Always call this after adding translations, else it won't update them properly
+        /// </summary>
+        /// <param name="dialogueTree"></param>
         private static void DoDialogueOptionsListReplacement(XmlNode dialogueTree)
         {
             var optionsListsByName = new Dictionary<string, XmlNode>();
@@ -155,7 +160,8 @@ namespace NewHorizons.Builder.Props
                 var replacement = optionsList.GetChildNode("ReuseDialogueOptionsListFrom");
                 if (replacement != null)
                 {
-                    if (optionsListsByName.TryGetValue(replacement.InnerText, out var replacementOptionsList))
+                    var replacementName = replacement.InnerText;
+                    if (optionsListsByName.TryGetValue(replacementName, out var replacementOptionsList))
                     {
                         if (replacementOptionsList.GetChildNode("ReuseDialogueOptionsListFrom") != null)
                         {
@@ -164,6 +170,17 @@ namespace NewHorizons.Builder.Props
                         var dialogueNode = optionsList.ParentNode;
                         dialogueNode.RemoveChild(optionsList);
                         dialogueNode.AppendChild(replacementOptionsList.Clone());
+
+                        // Have to manually fix the translations here
+                        var characterName = dialogueTree.SelectSingleNode("NameField").InnerText;
+
+                        var xmlText = replacementOptionsList.SelectNodes("DialogueOption/Text");
+                        foreach (object option in xmlText)
+                        {
+                            var optionData = (XmlNode)option;
+                            var text = optionData.InnerText.Trim();
+                            TranslationHandler.ReuseDialogueTranslation(text, new string[] { characterName, replacementName }, new string[] { characterName, name });
+                        }
                     }
                     else
                     {
@@ -231,8 +248,8 @@ namespace NewHorizons.Builder.Props
             var dialogueDoc = new XmlDocument();
             dialogueDoc.LoadXml(xml);
             var xmlNode = dialogueDoc.SelectSingleNode("DialogueTree");
-            DoDialogueOptionsListReplacement(xmlNode);
             AddTranslation(xmlNode);
+            DoDialogueOptionsListReplacement(xmlNode);
             xml = xmlNode.OuterXml;
 
             var text = new TextAsset(xml)
