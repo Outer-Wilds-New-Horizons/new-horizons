@@ -8,6 +8,7 @@ using OWML.Common;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
+using System.Xml.Linq;
 using UnityEngine;
 
 namespace NewHorizons.Builder.Props
@@ -118,6 +119,8 @@ namespace NewHorizons.Builder.Props
                 }
             }
 
+            DoDialogueOptionsListReplacement(existingDialogueTree);
+
             var newTextAsset = new TextAsset(existingDialogueDoc.OuterXml)
             {
                 name = existingDialogue._xmlCharacterDialogueAsset.name
@@ -130,6 +133,51 @@ namespace NewHorizons.Builder.Props
             AddTranslation(xml, characterName);
 
             return existingDialogue;
+        }
+
+        private static string DoDialogueOptionsListReplacement(string xmlString)
+        {
+            var dialogueDoc = new XmlDocument();
+            dialogueDoc.LoadXml(xmlString);
+            var xmlNode = dialogueDoc.SelectSingleNode("DialogueTree");
+            DoDialogueOptionsListReplacement(xmlNode);
+            return xmlNode.OuterXml;
+        }
+
+        private static void DoDialogueOptionsListReplacement(XmlNode dialogueTree)
+        {
+            var optionsListsByName = new Dictionary<string, XmlNode>();
+            var dialogueNodes = dialogueTree.GetChildNodes("DialogueNode");
+            foreach (XmlNode dialogueNode in dialogueNodes)
+            {
+                var optionsList = dialogueNode.GetChildNode("DialogueOptionsList");
+                if (optionsList != null)
+                {
+                    var name = dialogueNode.GetChildNode("Name").InnerText;
+                    optionsListsByName[name] = optionsList;
+                }
+            }
+            foreach (var (name, optionsList) in optionsListsByName)
+            {
+                var replacement = optionsList.GetChildNode("ReuseDialogueOptionsListFrom");
+                if (replacement != null)
+                {
+                    if (optionsListsByName.TryGetValue(replacement.InnerText, out var replacementOptionsList))
+                    {
+                        if (replacementOptionsList.GetChildNode("ReuseDialogueOptionsListFrom") != null)
+                        {
+                            NHLogger.LogError($"Can not target a node with ReuseDialogueOptionsListFrom that also reuses options when making dialogue. Node {name} cannot reuse the list from {replacement.InnerText}");
+                        }
+                        var dialogueNode = optionsList.ParentNode;
+                        dialogueNode.RemoveChild(optionsList);
+                        dialogueNode.AppendChild(replacementOptionsList.Clone());
+                    }
+                    else
+                    {
+                        NHLogger.LogError($"Could not reuse dialogue options list from node with Name {replacement.InnerText} to node with Name {name}");
+                    }
+                }
+            }
         }
 
         private static RemoteDialogueTrigger MakeRemoteDialogueTrigger(GameObject planetGO, Sector sector, DialogueInfo info, CharacterDialogueTree dialogue)
@@ -186,6 +234,8 @@ namespace NewHorizons.Builder.Props
             }
 
             var dialogueTree = conversationZone.AddComponent<NHCharacterDialogueTree>();
+
+            xml = DoDialogueOptionsListReplacement(xml);
 
             var text = new TextAsset(xml)
             {
