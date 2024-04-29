@@ -5,7 +5,9 @@ using NewHorizons.Utility;
 using NewHorizons.Utility.OuterWilds;
 using NewHorizons.Utility.OWML;
 using OWML.Common;
+using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.IO;
 using System.Xml;
 using System.Xml.Linq;
@@ -130,18 +132,9 @@ namespace NewHorizons.Builder.Props
 
             // Chracter name is required for adding translations, something to do with how OW prefixes its dialogue
             var characterName = existingDialogueTree.SelectSingleNode("NameField").InnerText;
-            AddTranslation(xml, characterName);
+            AddTranslation(additionalDialogueDoc.GetChildNode("DialogueTree"), characterName);
 
             return existingDialogue;
-        }
-
-        private static string DoDialogueOptionsListReplacement(string xmlString)
-        {
-            var dialogueDoc = new XmlDocument();
-            dialogueDoc.LoadXml(xmlString);
-            var xmlNode = dialogueDoc.SelectSingleNode("DialogueTree");
-            DoDialogueOptionsListReplacement(xmlNode);
-            return xmlNode.OuterXml;
         }
 
         private static void DoDialogueOptionsListReplacement(XmlNode dialogueTree)
@@ -235,7 +228,12 @@ namespace NewHorizons.Builder.Props
 
             var dialogueTree = conversationZone.AddComponent<NHCharacterDialogueTree>();
 
-            xml = DoDialogueOptionsListReplacement(xml);
+            var dialogueDoc = new XmlDocument();
+            dialogueDoc.LoadXml(xml);
+            var xmlNode = dialogueDoc.SelectSingleNode("DialogueTree");
+            DoDialogueOptionsListReplacement(xmlNode);
+            AddTranslation(xmlNode);
+            xml = xmlNode.OuterXml;
 
             var text = new TextAsset(xml)
             {
@@ -243,7 +241,6 @@ namespace NewHorizons.Builder.Props
                 name = dialogueName
             };
             dialogueTree.SetTextXml(text);
-            AddTranslation(xml);
 
             switch (info.flashlightToggle)
             {
@@ -428,11 +425,17 @@ namespace NewHorizons.Builder.Props
             }
         }
 
+        [Obsolete("Pass in the DialogueTree XmlNode instead, this is still here because Pikpik was using it in EOTP")]
         public static void AddTranslation(string xml, string characterName = null)
         {
             var xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(xml);
             var xmlNode = xmlDocument.SelectSingleNode("DialogueTree");
+            AddTranslation(xmlNode, characterName);
+        }
+
+        public static void AddTranslation(XmlNode xmlNode, string characterName = null) 
+        { 
             var xmlNodeList = xmlNode.SelectNodes("DialogueNode");
 
             // When adding dialogue to existing stuff, we have to pass in the character name
@@ -466,6 +469,21 @@ namespace NewHorizons.Builder.Props
                     TranslationHandler.AddDialogue(text, true, characterName, name);
                 }
             }
+        }
+
+        public static void HandleUnityCreatedDialogue(CharacterDialogueTree dialogue)
+        {
+            var text = dialogue._xmlCharacterDialogueAsset.text;
+            var dialogueDoc = new XmlDocument();
+            dialogueDoc.LoadXml(text);
+            var xmlNode = dialogueDoc.SelectSingleNode("DialogueTree");
+            AddTranslation(xmlNode, null);
+            DoDialogueOptionsListReplacement(xmlNode);
+            var newTextAsset = new TextAsset(dialogueDoc.OuterXml)
+            {
+                name = dialogue._xmlCharacterDialogueAsset.name
+            };
+            dialogue.SetTextXml(newTextAsset);
         }
     }
 }
