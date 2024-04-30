@@ -26,8 +26,9 @@ Check the ship's log for how to use your warp drive to travel between star syste
 
 ## Incompatible mods
 
--   Quantum Space Buddies.
--   OW Randomizer.
+New Horizons conflicts with the mod Common Resources. This mod is a requirement for other mods such as Cheats Mod (we recommend you use the [Cheat and Debug Menu](https://outerwildsmods.com/mods/cheatanddebugmenu/) mod instead) and OW Randomizer.
+
+Why do these two mods conflict? Common Resources is a mod which reimplements many of the game's features underneath the hood, for one reason or another. For instance, it completely overhauls how the orbits of planets work, as this is a requirement for it to support OW Randomizer. It does this even when you are only using Cheats Mod. In particular, having CR installed seems to, for whatever reason, break character dialogue introduced by New Horizons. As CR is no longer actively maintained, it is unlikely this issue will be resolved any time soon. 
 
 ## Supported Mods
 
