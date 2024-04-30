@@ -4,7 +4,7 @@
   "author": "xen, Bwc9876, JohnCorby, MegaPiggy, Clay, Trifid, and friends",
   "name": "New Horizons",
   "uniqueName": "xen.NewHorizons",
-  "version": "1.20.1",
+  "version": "1.20.2",
   "owmlVersion": "2.10.3",
   "dependencies": [ "JohnCorby.VanillaFix", "xen.CommonCameraUtility", "dgarro.CustomShipLogModes" ],
   "conflicts": [ "PacificEngine.OW_CommonResources" ],

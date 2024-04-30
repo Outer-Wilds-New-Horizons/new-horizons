@@ -130,8 +130,6 @@ namespace NewHorizons.Builder.Props
             var characterName = existingDialogueTree.SelectSingleNode("NameField").InnerText;
             AddTranslation(additionalDialogueDoc.GetChildNode("DialogueTree"), characterName);
 
-            DoDialogueOptionsListReplacement(existingDialogueTree);
-
             var newTextAsset = new TextAsset(existingDialogueDoc.OuterXml)
             {
                 name = existingDialogue._xmlCharacterDialogueAsset.name
@@ -139,7 +137,30 @@ namespace NewHorizons.Builder.Props
 
             existingDialogue.SetTextXml(newTextAsset);
 
+            FixDialogueNextFrame(existingDialogue);
+
             return existingDialogue;
+        }
+
+        private static void FixDialogueNextFrame(CharacterDialogueTree characterDialogueTree)
+        {
+            Delay.FireOnNextUpdate(() =>
+            {
+                var rawText = characterDialogueTree._xmlCharacterDialogueAsset.text;
+
+                var doc = new XmlDocument();
+                doc.LoadXml(rawText);
+                var dialogueTree = doc.DocumentElement.SelectSingleNode("//DialogueTree");
+
+                DoDialogueOptionsListReplacement(dialogueTree);
+
+                var newTextAsset = new TextAsset(doc.OuterXml)
+                {
+                    name = characterDialogueTree._xmlCharacterDialogueAsset.name
+                };
+
+                characterDialogueTree.SetTextXml(newTextAsset);
+            });
         }
 
         /// <summary>
@@ -253,7 +274,7 @@ namespace NewHorizons.Builder.Props
             dialogueDoc.LoadXml(xml);
             var xmlNode = dialogueDoc.SelectSingleNode("DialogueTree");
             AddTranslation(xmlNode);
-            DoDialogueOptionsListReplacement(xmlNode);
+
             xml = xmlNode.OuterXml;
 
             var text = new TextAsset(xml)
@@ -281,6 +302,8 @@ namespace NewHorizons.Builder.Props
             }
 
             conversationZone.SetActive(true);
+
+            FixDialogueNextFrame(dialogueTree);
 
             return dialogueTree;
         }
@@ -499,12 +522,13 @@ namespace NewHorizons.Builder.Props
             dialogueDoc.LoadXml(text);
             var xmlNode = dialogueDoc.SelectSingleNode("DialogueTree");
             AddTranslation(xmlNode, null);
-            DoDialogueOptionsListReplacement(xmlNode);
             var newTextAsset = new TextAsset(dialogueDoc.OuterXml)
             {
                 name = dialogue._xmlCharacterDialogueAsset.name
             };
             dialogue.SetTextXml(newTextAsset);
+
+            FixDialogueNextFrame(dialogue);
         }
     }
 }
