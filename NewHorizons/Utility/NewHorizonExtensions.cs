@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using OWML.Utils;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -69,6 +70,70 @@ namespace NewHorizons.Utility
             return 0;
         }
 
+        public static string ToLanguageName(this TextTranslation.Language language)
+        {
+            switch (language)
+            {
+                case TextTranslation.Language.UNKNOWN:
+                case TextTranslation.Language.TOTAL:
+                case TextTranslation.Language.ENGLISH:
+                    return "English";
+                case TextTranslation.Language.SPANISH_LA:
+                    return "Spanish";
+                case TextTranslation.Language.GERMAN:
+                    return "German";
+                case TextTranslation.Language.FRENCH:
+                    return "French";
+                case TextTranslation.Language.ITALIAN:
+                    return "Italian";
+                case TextTranslation.Language.POLISH:
+                    return "Polish";
+                case TextTranslation.Language.PORTUGUESE_BR:
+                    return "Portuguese (Brazil)";
+                case TextTranslation.Language.JAPANESE:
+                    return "Japanese";
+                case TextTranslation.Language.RUSSIAN:
+                    return "Russian";
+                case TextTranslation.Language.CHINESE_SIMPLE:
+                    return "Chinese (Simplified)";
+                case TextTranslation.Language.KOREAN:
+                    return "Korean";
+                case TextTranslation.Language.TURKISH:
+                    return "Turkish";
+                default:
+                    return language.ToString().Replace("_", " ").ToTitleCase();
+            }
+        }
+
+        public static CultureInfo ToCultureInfo(this TextTranslation.Language language)
+        {
+            return CultureInfo.GetCultures(CultureTypes.AllCultures).FirstOrDefault(culture =>
+            {
+                var name = language.ToLanguageName();
+                return culture.EnglishName == name || culture.NativeName.ToTitleCase() == name;
+            }) ?? CultureInfo.CurrentCulture;
+        }
+
+        public static string ToUpperFixed(this string str)
+        {
+            return str.ToUpper(TextTranslation.Get().m_language);
+        }
+
+        public static string ToLowerFixed(this string str)
+        {
+            return str.ToLower(TextTranslation.Get().m_language);
+        }
+
+        public static string ToUpper(this string str, TextTranslation.Language language)
+        {
+            return str.ToUpper(language.ToCultureInfo());
+        }
+
+        public static string ToLower(this string str, TextTranslation.Language language)
+        {
+            return str.ToLower(language.ToCultureInfo());
+        }
+
         public static string ToCamelCase(this string str)
         {
             StringBuilder strBuilder = new StringBuilder(str);
@@ -78,7 +143,7 @@ namespace NewHorizons.Utility
 
         public static string ToTitleCase(this string str)
         {
-            StringBuilder strBuilder = new StringBuilder(str);
+            StringBuilder strBuilder = new StringBuilder(str.ToLowerInvariant());
             strBuilder[0] = strBuilder[0].ToString().ToUpperInvariant().ToCharArray()[0];
             return strBuilder.ToString();
         }

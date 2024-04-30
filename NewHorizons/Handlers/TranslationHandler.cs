@@ -189,7 +189,7 @@ namespace NewHorizons.Handlers
         {
             var uiTable = TextTranslation.Get().m_table.theUITable;
 
-            var text = GetTranslation(rawText, TextType.UI).ToUpper();
+            var text = GetTranslation(rawText, TextType.UI).ToUpperFixed();
 
             var key = uiTable.Keys.Max() + 1;
             try
