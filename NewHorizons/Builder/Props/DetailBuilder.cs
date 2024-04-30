@@ -156,7 +156,7 @@ namespace NewHorizons.Builder.Props
                         // If they're adding dialogue we have to manually register the xml text
                         if (isFromAssetBundle && component is CharacterDialogueTree dialogue)
                         {
-                            DialogueBuilder.AddTranslation(dialogue._xmlCharacterDialogueAsset.text, null);
+                            DialogueBuilder.HandleUnityCreatedDialogue(dialogue);
                         }
 
                         FixComponent(component, go, detail.ignoreSun);

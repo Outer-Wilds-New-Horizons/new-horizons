@@ -14,7 +14,11 @@ internal class PlayerShipAtmosphereDetectorFix : MonoBehaviour
     public void Start()
     {
         _fluidDetector = Locator.GetPlayerCameraDetector().GetComponent<PlayerCameraFluidDetector>();
-        _shipAtmosphereVolume = Locator.GetShipBody().transform.Find("Volumes/ShipAtmosphereVolume").GetComponent<SimpleFluidVolume>();
+        _shipAtmosphereVolume = Locator.GetShipBody()?.transform?.Find("Volumes/ShipAtmosphereVolume")?.GetComponent<SimpleFluidVolume>();
+        if (_shipAtmosphereVolume == null)
+        {
+            Destroy(this);
+        }
     }
 
     public void Update()

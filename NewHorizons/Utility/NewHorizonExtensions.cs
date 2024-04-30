@@ -413,7 +413,7 @@ namespace NewHorizons.Utility
 
         public static XmlNode GetChildNode(this XmlNode parentNode, string tagName)
         {
-            return parentNode.ChildNodes.Cast<XmlNode>().First(node => node.LocalName == tagName);
+            return parentNode.ChildNodes.Cast<XmlNode>().FirstOrDefault(node => node.LocalName == tagName);
         }
 
         public static string TruncateWhitespaceAndToLower(this string text)
