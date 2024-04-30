@@ -106,7 +106,11 @@ namespace NewHorizons.Builder.Props
                     // We just have to merge the dialogue options
                     var dialogueOptions = newDialogueNode.GetChildNode("DialogueOptionsList").GetChildNodes("DialogueOption");
                     var existingDialogueOptionsList = existingNode.GetChildNode("DialogueOptionsList");
-                    var firstNode = existingDialogueOptionsList.ChildNodes[0];
+                    if (existingDialogueOptionsList == null)
+                    {
+                        existingDialogueOptionsList = existingDialogueDoc.CreateElement("DialogueOptionsList");
+                        existingNode.AppendChild(existingDialogueOptionsList);
+                    }
                     foreach (XmlNode node in dialogueOptions)
                     {
                         var importedNode = existingDialogueOptionsList.OwnerDocument.ImportNode(node, true);
