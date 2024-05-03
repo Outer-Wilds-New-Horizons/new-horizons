@@ -66,5 +66,10 @@ namespace NewHorizons.External.Modules.Props
         /// Should this detail stay loaded even if you're outside the sector (good for very large props)
         /// </summary>
         public bool keepLoaded;
+
+        /// <summary>
+        /// The relative path from the planet to the parent of this object. Optional (will default to the root sector).
+        /// </summary>
+        public string parentPath;
     }
 }
