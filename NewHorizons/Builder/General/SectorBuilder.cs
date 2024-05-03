@@ -11,8 +11,7 @@ namespace NewHorizons.Builder.General
         {
             var sectorGO = new GameObject("Sector");
             sectorGO.SetActive(false);
-            sectorGO.transform.parent = planetBody.transform;
-            sectorGO.transform.localPosition = Vector3.zero;
+            sectorGO.transform.SetParent(planetBody.transform, false);
 
             var SS = sectorGO.AddComponent<SphereShape>();
             SS.SetCollisionMode(Shape.CollisionMode.Volume);
