@@ -928,7 +928,7 @@ namespace NewHorizons.Handlers
             }
 
             // Uses the ratio of the interlopers furthest point to what the base game considers the edge of the solar system
-            var distanceToCenter = go.transform.position.magnitude * (24000 / 30000f);
+            var distanceToCenter = go.transform.position.magnitude / (24000 / 30000f);
             if (distanceToCenter > SolarSystemRadius)
             {
                 SolarSystemRadius = distanceToCenter;
