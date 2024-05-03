@@ -68,7 +68,7 @@ namespace NewHorizons.External.Modules.Props
         public bool keepLoaded;
 
         /// <summary>
-        /// The relative path from the planet to the parent of this object. Optional (will default to the root sector).
+        /// The relative path from the planet to the parent of this object. Optional (will default to the root sector). This parent should be at the position where you'd like to scatter (which would usually be zero).
         /// </summary>
         public string parentPath;
     }

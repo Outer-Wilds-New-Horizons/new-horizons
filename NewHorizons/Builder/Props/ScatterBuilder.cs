@@ -140,7 +140,7 @@ namespace NewHorizons.Builder.Props
 
                     var prop = scatterPrefab.InstantiateInactive();
                     prop.transform.SetParent(parent, false);
-                    prop.transform.position = go.transform.TransformPoint(point * height);
+                    prop.transform.localPosition = point * height;
                     var up = (prop.transform.position - go.transform.position).normalized;
                     prop.transform.rotation = Quaternion.FromToRotation(Vector3.up, up);
 
