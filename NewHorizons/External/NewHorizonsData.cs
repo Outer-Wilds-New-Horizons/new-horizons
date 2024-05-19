@@ -187,7 +187,11 @@ namespace NewHorizons.External
 
         public static void ReadOneTimePopup(string id)
         {
-            _activeProfile?.PopupsRead.Add(id);
+            // else it re-adds it each time
+            if (_activeProfile != null && !_activeProfile.PopupsRead.Contains(id))
+            {
+                _activeProfile.PopupsRead.Add(id);
+            }
         }
 
         public static bool HasReadOneTimePopup(string id)
