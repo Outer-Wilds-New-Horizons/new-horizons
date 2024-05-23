@@ -417,6 +417,11 @@ namespace NewHorizons.Builder.Props
             {
                 component.gameObject.AddComponent<AnglerAnimFixer>();
             }
+            // Add custom logic to NH-spawned rafts to handle fluid changes
+            else if (component is RaftController raft)
+            {
+                component.gameObject.AddComponent<NHRaftController>();
+            }
         }
 
         /// <summary>
