@@ -59,24 +59,10 @@
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="DialogueOptionsList" type="DialogueOptionsList" minOccurs="0" maxOccurs="1">
-                <xs:annotation>
-                    <xs:documentation>
-                        A list of options to show to the player once the character is done talking
-                    </xs:documentation>
-                </xs:annotation>
-            </xs:element>
             <xs:element name="RevealFacts" type="RevealFacts" minOccurs="0" maxOccurs="1">
                 <xs:annotation>
                     <xs:documentation>
                         Facts to reveal when the player goes through this dialogue node
-                    </xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element name="SetCondition" type="xs:string" minOccurs="0" maxOccurs="unbounded">
-                <xs:annotation>
-                    <xs:documentation>
-                        Set a new condition that will only last for the current loop
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
@@ -85,6 +71,13 @@
                     <xs:documentation>
                         Set a new persistent condition that will last indefinitely in the current save, unless cancelled
                         or deleted
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="SetCondition" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>
+                        Set a new condition that will only last for the current loop
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
@@ -107,6 +100,13 @@
                     <xs:documentation>
                         The name of the `DialogueNode` to go to after this node. Mutually exclusive with
                         `DialogueOptionsList` here
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="DialogueOptionsList" type="DialogueOptionsList" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>
+                        A list of options to show to the player once the character is done talking
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
@@ -162,6 +162,13 @@
     <!-- Dialogue Option Info -->
     <xs:complexType name="DialogueOption">
         <xs:sequence>
+            <xs:element name="RequiredLogCondition" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>
+                        Require a ship log fact to be known to show this option
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
             <xs:element name="RequiredPersistentCondition" type="xs:string" minOccurs="0" maxOccurs="unbounded">
                 <xs:annotation>
                     <xs:documentation>
@@ -190,17 +197,17 @@
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="RequiredLogCondition" type="xs:string" minOccurs="0" maxOccurs="unbounded">
-                <xs:annotation>
-                    <xs:documentation>
-                        Require a ship log fact to be known to show this option
-                    </xs:documentation>
-                </xs:annotation>
-            </xs:element>
             <xs:element name="Text" type="xs:string" minOccurs="1" maxOccurs="1">
                 <xs:annotation>
                     <xs:documentation>
                         The text to show for this option
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="DialogueTarget" type="xs:string" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>
+                        The name of the `DialogueNode` to go to when this option is selected
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
@@ -215,13 +222,6 @@
                 <xs:annotation>
                     <xs:documentation>
                         Cancel a condition when this option is chosen
-                    </xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element name="DialogueTarget" type="xs:string" minOccurs="0" maxOccurs="1">
-                <xs:annotation>
-                    <xs:documentation>
-                        The name of the `DialogueNode` to go to when this option is selected
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
