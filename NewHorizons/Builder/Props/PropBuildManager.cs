@@ -19,20 +19,6 @@ namespace NewHorizons.Builder.Props
             PlanetConfig config = nhBody.Config;
             IModBehaviour mod = nhBody.Mod;
 
-            if (config.Props.gravityCannons != null)
-            {
-                foreach (var gravityCannonInfo in config.Props.gravityCannons)
-                {
-                    try
-                    {
-                        GravityCannonBuilder.Make(go, sector, gravityCannonInfo, mod);
-                    }
-                    catch (Exception ex)
-                    {
-                        NHLogger.LogError($"Couldn't make gravity cannon [{gravityCannonInfo.shuttleID}] for [{go.name}]:\n{ex}");
-                    }
-                }
-            }
             if (config.Props.scatter != null)
             {
                 try
@@ -55,6 +41,20 @@ namespace NewHorizons.Builder.Props
                     catch (Exception ex)
                     {
                         NHLogger.LogError($"Couldn't make planet detail [{detail.path}] for [{go.name}]:\n{ex}");
+                    }
+                }
+            }
+            if (config.Props.gravityCannons != null)
+            {
+                foreach (var gravityCannonInfo in config.Props.gravityCannons)
+                {
+                    try
+                    {
+                        GravityCannonBuilder.Make(go, sector, gravityCannonInfo, mod);
+                    }
+                    catch (Exception ex)
+                    {
+                        NHLogger.LogError($"Couldn't make gravity cannon [{gravityCannonInfo.shuttleID}] for [{go.name}]:\n{ex}");
                     }
                 }
             }
