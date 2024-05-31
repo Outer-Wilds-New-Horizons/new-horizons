@@ -33,20 +33,6 @@ namespace NewHorizons.Builder.Props
                     }
                 }
             }
-            if (config.Props.shuttles != null)
-            {
-                foreach (var shuttleInfo in config.Props.shuttles)
-                {
-                    try
-                    {
-                        ShuttleBuilder.Make(go, sector, nhBody.Mod, shuttleInfo);
-                    }
-                    catch (Exception ex)
-                    {
-                        NHLogger.LogError($"Couldn't make shuttle [{shuttleInfo.id}] for [{go.name}]:\n{ex}");
-                    }
-                }
-            }
             if (config.Props.scatter != null)
             {
                 try
@@ -69,6 +55,20 @@ namespace NewHorizons.Builder.Props
                     catch (Exception ex)
                     {
                         NHLogger.LogError($"Couldn't make planet detail [{detail.path}] for [{go.name}]:\n{ex}");
+                    }
+                }
+            }
+            if (config.Props.shuttles != null)
+            {
+                foreach (var shuttleInfo in config.Props.shuttles)
+                {
+                    try
+                    {
+                        ShuttleBuilder.Make(go, sector, nhBody.Mod, shuttleInfo);
+                    }
+                    catch (Exception ex)
+                    {
+                        NHLogger.LogError($"Couldn't make shuttle [{shuttleInfo.id}] for [{go.name}]:\n{ex}");
                     }
                 }
             }
