@@ -27,27 +27,27 @@
     <!-- Text Block Info -->
     <xs:complexType name="TextBlock">
         <xs:sequence>
-            <xs:element name="ID" type="xs:positiveInteger">
+            <xs:element name="ID" type="xs:positiveInteger" minOccurs="1" maxOccurs="1">
                 <xs:annotation>
                     <xs:documentation> The id of this text block </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="ParentID" type="xs:positiveInteger" minOccurs="0">
+            <xs:element name="ParentID" type="xs:positiveInteger" minOccurs="0" maxOccurs="1">
                 <xs:annotation>
                     <xs:documentation> The id of the parent text block </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="LocationA" type="empty" minOccurs="0">
+            <xs:element name="LocationA" type="empty" minOccurs="0" maxOccurs="1">
                 <xs:annotation>
                     <xs:documentation> </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="LocationB" type="empty" minOccurs="0">
+            <xs:element name="LocationB" type="empty" minOccurs="0" maxOccurs="1">
                 <xs:annotation>
                     <xs:documentation> </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="Text" type="xs:string">
+            <xs:element name="Text" type="xs:string" minOccurs="1" maxOccurs="1">
                 <xs:annotation>
                     <xs:documentation> The text to show for this option </xs:documentation>
                 </xs:annotation>
@@ -58,17 +58,17 @@
     <!-- Ship Log Conditions Info -->
     <xs:complexType name="ShipLogConditions">
         <xs:sequence>
-            <xs:element name="LocationA" type="empty" minOccurs="0">
+            <xs:element name="LocationA" type="empty" minOccurs="0" maxOccurs="1">
                 <xs:annotation>
                     <xs:documentation> </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="LocationB" type="empty" minOccurs="0">
+            <xs:element name="LocationB" type="empty" minOccurs="0" maxOccurs="1">
                 <xs:annotation>
                     <xs:documentation> </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="RevealFact" type="RevealFact" minOccurs="0">
+            <xs:element name="RevealFact" type="RevealFact" minOccurs="0" maxOccurs="unbounded">
                 <xs:annotation>
                     <xs:documentation> Facts to reveal when the player goes through this dialogue
                         node </xs:documentation>
