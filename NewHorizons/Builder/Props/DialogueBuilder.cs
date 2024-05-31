@@ -35,7 +35,7 @@ namespace NewHorizons.Builder.Props
             }
             else
             {
-                return (AddToExistingDialogue(info, xml), null);
+                return (AddToExistingDialogue(go, info, xml), null);
             }
         }
 
@@ -70,9 +70,11 @@ namespace NewHorizons.Builder.Props
             return (dialogue, remoteTrigger);
         }
 
-        private static CharacterDialogueTree AddToExistingDialogue(DialogueInfo info, string xml)
+        private static CharacterDialogueTree AddToExistingDialogue(GameObject go, DialogueInfo info, string xml)
         {
-            var existingDialogue = SearchUtilities.Find(info.pathToExistingDialogue)?.GetComponent<CharacterDialogueTree>();
+            var dialogueObject = go.FindChild(info.pathToExistingDialogue);
+            if (dialogueObject == null) dialogueObject = SearchUtilities.Find(info.pathToExistingDialogue);
+            var existingDialogue = dialogueObject != null ? dialogueObject.GetComponent<CharacterDialogueTree>() : null;
 
             if (existingDialogue == null)
             {
