@@ -35,7 +35,7 @@ namespace NewHorizons.Builder.Props
             }
             else
             {
-                return (AddToExistingDialogue(go, info, xml), null);
+                return (AddToExistingDialogue(go, info, xml, dialogueName), null);
             }
         }
 
@@ -70,7 +70,7 @@ namespace NewHorizons.Builder.Props
             return (dialogue, remoteTrigger);
         }
 
-        private static CharacterDialogueTree AddToExistingDialogue(GameObject go, DialogueInfo info, string xml)
+        private static CharacterDialogueTree AddToExistingDialogue(GameObject go, DialogueInfo info, string xml, string dialogueName)
         {
             var dialogueObject = go.FindChild(info.pathToExistingDialogue);
             if (dialogueObject == null) dialogueObject = SearchUtilities.Find(info.pathToExistingDialogue);
@@ -82,7 +82,29 @@ namespace NewHorizons.Builder.Props
                 return null;
             }
 
-            var existingText = existingDialogue._xmlCharacterDialogueAsset.text;
+            var existingAsset = existingDialogue._xmlCharacterDialogueAsset;
+            if (existingAsset == null)
+            {
+                var dialogueDoc = new XmlDocument();
+                dialogueDoc.LoadXml(xml);
+                var xmlNode = dialogueDoc.SelectSingleNode("DialogueTree");
+                AddTranslation(xmlNode);
+
+                xml = xmlNode.OuterXml;
+
+                var text = new TextAsset(xml)
+                {
+                    // Text assets need a name to be used with VoiceMod
+                    name = dialogueName
+                };
+                existingDialogue.SetTextXml(text);
+
+                FixDialogueNextFrame(existingDialogue);
+
+                return existingDialogue;
+            }
+
+            var existingText = existingAsset.text;
 
             var existingDialogueDoc = new XmlDocument();
             existingDialogueDoc.LoadXml(existingText);
@@ -519,14 +541,16 @@ namespace NewHorizons.Builder.Props
 
         public static void HandleUnityCreatedDialogue(CharacterDialogueTree dialogue)
         {
-            var text = dialogue._xmlCharacterDialogueAsset.text;
+            var asset = dialogue._xmlCharacterDialogueAsset;
+            if (asset == null) return;
+            var text = asset.text;
             var dialogueDoc = new XmlDocument();
             dialogueDoc.LoadXml(text);
             var xmlNode = dialogueDoc.SelectSingleNode("DialogueTree");
             AddTranslation(xmlNode, null);
             var newTextAsset = new TextAsset(dialogueDoc.OuterXml)
             {
-                name = dialogue._xmlCharacterDialogueAsset.name
+                name = asset.name
             };
             dialogue.SetTextXml(newTextAsset);
 
