@@ -47,17 +47,6 @@ namespace NewHorizons.Builder.Props
                     }
                 }
             }
-            if (config.Props.scatter != null)
-            {
-                try
-                {
-                    ScatterBuilder.Make(go, sector, config, mod);
-                }
-                catch (Exception ex)
-                {
-                    NHLogger.LogError($"Couldn't make planet scatter for [{go.name}]:\n{ex}");
-                }
-            }
             if (config.Props.details != null)
             {
                 foreach (var detail in config.Props.details)
@@ -70,6 +59,17 @@ namespace NewHorizons.Builder.Props
                     {
                         NHLogger.LogError($"Couldn't make planet detail [{detail.path}] for [{go.name}]:\n{ex}");
                     }
+                }
+            }
+            if (config.Props.scatter != null)
+            {
+                try
+                {
+                    ScatterBuilder.Make(go, sector, config, mod);
+                }
+                catch (Exception ex)
+                {
+                    NHLogger.LogError($"Couldn't make planet scatter for [{go.name}]:\n{ex}");
                 }
             }
             if (config.Props.geysers != null)
