@@ -387,11 +387,10 @@ namespace NewHorizons
             else if (IsWarpingBackToEye)
             {
                 IsWarpingBackToEye = false;
-                OWTime.Pause(OWTime.PauseType.Loading);
-                // fire OnStartSceneLoad so qsb and other mods are happy
-                ((Delegate)AccessTools.Field(typeof(LoadManager), nameof(LoadManager.OnStartSceneLoad)).GetValue(null)).DynamicInvoke(LoadManager.s_currentScene, LoadManager.s_loadingScene);
+                // OWTime.Pause(OWTime.PauseType.Loading); // loading already pauses
+                ManualOnStartSceneLoad(OWScene.EyeOfTheUniverse);
                 LoadManager.LoadSceneImmediate(OWScene.EyeOfTheUniverse);       
-                OWTime.Unpause(OWTime.PauseType.Loading);
+                // OWTime.Unpause(OWTime.PauseType.Loading); // changing active scenes already unpauses
                 return;
             }
 
@@ -629,6 +628,39 @@ namespace NewHorizons
             HasWarpDrive = true;
         }
 
+        /// <summary>
+        /// sometimes we call LoadSceneImmediate, which doesnt do the required event firing for mods to be happy.
+        /// this method emulates that via copying parts of LoadManager.
+        /// </summary>
+        public static void ManualOnStartSceneLoad(OWScene scene)
+        {
+            LoadManager.s_loadSceneJob = new LoadManager.LoadSceneJob();
+            LoadManager.s_loadSceneJob.sceneToLoad = scene;
+            LoadManager.s_loadSceneJob.fadeType = LoadManager.FadeType.None;
+            LoadManager.s_loadSceneJob.fadeLength = 0;
+            LoadManager.s_loadSceneJob.pauseDuringFade = true;
+            LoadManager.s_loadSceneJob.asyncOperation = false;
+            LoadManager.s_loadSceneJob.skipPreLoadMemoryDump = false;
+            LoadManager.s_loadSceneJob.skipVsyncChange = false;
+
+            LoadManager.s_loadingScene = LoadManager.s_loadSceneJob.sceneToLoad;
+            LoadManager.s_fadeType = LoadManager.s_loadSceneJob.fadeType;
+            LoadManager.s_fadeStartTime = Time.unscaledTime;
+            LoadManager.s_fadeLength = LoadManager.s_loadSceneJob.fadeLength;
+            LoadManager.s_pauseDuringFade = LoadManager.s_loadSceneJob.pauseDuringFade;
+            LoadManager.s_skipVsyncChange = LoadManager.s_loadSceneJob.skipVsyncChange;
+
+            // cant fire events from outside of class without reflection
+            ((Delegate)AccessTools.Field(typeof(LoadManager), nameof(LoadManager.OnStartSceneLoad)).GetValue(null))
+                .DynamicInvoke(LoadManager.s_currentScene, LoadManager.s_loadingScene);
+
+            if (LoadManager.s_pauseDuringFade)
+            {
+                OWTime.Pause(OWTime.PauseType.Loading);
+            }
+            
+            LoadManager.s_loadSceneJob = null;
+        }
 
         #region Load
         public void LoadStarSystemConfig(string starSystemName, StarSystemConfig starSystemConfig, string relativePath, IModBehaviour mod)
@@ -938,8 +970,7 @@ namespace NewHorizons
                 OWInput.ChangeInputMode(InputMode.None);
 
                 // Hide unloading
-                // fire OnStartSceneLoad so qsb and other mods are happy
-                ((Delegate)AccessTools.Field(typeof(LoadManager), nameof(LoadManager.OnStartSceneLoad)).GetValue(null)).DynamicInvoke(LoadManager.s_currentScene, LoadManager.s_loadingScene);
+                ManualOnStartSceneLoad(sceneToLoad);
                 FadeHandler.FadeThen(1f, () =>
                 {
                     // Slide reel unloading is tied to being removed from the sector, so we do that here to prevent a softlock
