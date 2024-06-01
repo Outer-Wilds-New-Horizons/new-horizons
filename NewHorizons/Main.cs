@@ -389,7 +389,7 @@ namespace NewHorizons
                 IsWarpingBackToEye = false;
                 // OWTime.Pause(OWTime.PauseType.Loading); // loading already pauses
                 ManualOnStartSceneLoad(OWScene.EyeOfTheUniverse);
-                LoadManager.LoadSceneImmediate(OWScene.EyeOfTheUniverse);       
+                LoadManager.LoadSceneImmediate(OWScene.EyeOfTheUniverse);
                 // OWTime.Unpause(OWTime.PauseType.Loading); // changing active scenes already unpauses
                 return;
             }
