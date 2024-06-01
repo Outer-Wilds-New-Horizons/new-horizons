@@ -389,7 +389,7 @@ namespace NewHorizons
                 IsWarpingBackToEye = false;
                 OWTime.Pause(OWTime.PauseType.Loading);
                 // fire OnStartSceneLoad so qsb and other mods are happy
-                ((Delegate)AccessTools.Field(typeof(LoadManager), nameof(LoadManager.OnStartSceneLoad)).GetValue(null)).DynamicInvoke();
+                ((Delegate)AccessTools.Field(typeof(LoadManager), nameof(LoadManager.OnStartSceneLoad)).GetValue(null)).DynamicInvoke(LoadManager.s_currentScene, LoadManager.s_loadingScene);
                 LoadManager.LoadSceneImmediate(OWScene.EyeOfTheUniverse);       
                 OWTime.Unpause(OWTime.PauseType.Loading);
                 return;
@@ -939,7 +939,7 @@ namespace NewHorizons
 
                 // Hide unloading
                 // fire OnStartSceneLoad so qsb and other mods are happy
-                ((Delegate)AccessTools.Field(typeof(LoadManager), nameof(LoadManager.OnStartSceneLoad)).GetValue(null)).DynamicInvoke();
+                ((Delegate)AccessTools.Field(typeof(LoadManager), nameof(LoadManager.OnStartSceneLoad)).GetValue(null)).DynamicInvoke(LoadManager.s_currentScene, LoadManager.s_loadingScene);
                 FadeHandler.FadeThen(1f, () =>
                 {
                     // Slide reel unloading is tied to being removed from the sector, so we do that here to prevent a softlock
