@@ -85,6 +85,10 @@
       "description": "Add lava to this planet",
       "$ref": "#/definitions/LavaModule"
     },
+    "MapMarker": {
+      "description": "Map marker properties of this body",
+      "$ref": "#/definitions/MapMarkerModule"
+    },
     "Orbit": {
       "description": "Describes this Body's orbit (or lack there of)",
       "$ref": "#/definitions/OrbitModule"
@@ -542,10 +546,6 @@
           "type": "number",
           "description": "Radius of a simple sphere used as the ground for the planet. If you want to use more complex terrain, leave this as\n0.",
           "format": "float"
-        },
-        "hasMapMarker": {
-          "type": "boolean",
-          "description": "If the body should have a marker on the map screen."
         },
         "invulnerableToSun": {
           "type": "boolean",
@@ -1019,6 +1019,26 @@
         "tint": {
           "description": "Tint of the lava",
           "$ref": "#/definitions/MColor"
+        }
+      }
+    },
+    "MapMarkerModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "If the body should have a marker on the map screen."
+        },
+        "minDisplayDistanceOverride": {
+          "type": "number",
+          "description": "Lowest distance away from the body that the marker can be shown. This is automatically set to 0 for all bodies except focal points where it is 5,000.",
+          "format": "float"
+        },
+        "maxDisplayDistanceOverride": {
+          "type": "number",
+          "description": "Highest distance away from the body that the marker can be shown. For planets and focal points the automatic value is 50,000. Moons and planets in focal points are 5,000. Stars are 1E+10 (10,000,000,000).",
+          "format": "float"
         }
       }
     },
