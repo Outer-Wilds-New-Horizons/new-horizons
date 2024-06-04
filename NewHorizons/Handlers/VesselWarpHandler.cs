@@ -66,6 +66,11 @@ namespace NewHorizons.Handlers
             playerSpawner.DebugWarp(_vesselSpawnPoint);
             Builder.General.SpawnPointBuilder.SuitUp();
 
+            LoadDB();
+        }
+
+        public static void LoadDB()
+        {
             if (Instance.CurrentStarSystem == "SolarSystem")
             {
                 // Deactivate village music because for some reason it still plays.
