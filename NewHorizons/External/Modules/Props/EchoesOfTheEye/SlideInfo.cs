@@ -90,6 +90,6 @@ namespace NewHorizons.External.Modules.Props.EchoesOfTheEye
         /// <summary>
         /// Exclusive to slide reels. Whether this slide should rotate the reel item while inside a projector.
         /// </summary>
-        public bool rotate = true;
+        [DefaultValue(true)] public bool rotate = true;
     }
 }
