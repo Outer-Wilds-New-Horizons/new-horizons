@@ -136,16 +136,23 @@ namespace NewHorizons.Handlers
             vesselWarpController._targetWarpPlatform._whiteHole.OnCollapse += vesselWarpController._targetWarpPlatform.OnWhiteHoleCollapse;
 
             GameObject blackHole = SearchUtilities.Find("DB_VesselDimension_Body/Sector_VesselDimension/Sector_VesselBridge/Interactibles_VesselBridge/BlackHole");
-            GameObject newBlackHole = Object.Instantiate(blackHole, Vector3.zero, Quaternion.identity, singularityRoot.transform);
+            GameObject newBlackHole = Object.Instantiate(blackHole, singularityRoot.transform);
+            newBlackHole.transform.localPosition = Vector3.zero;
+            newBlackHole.transform.localRotation = Quaternion.identity;
+            newBlackHole.transform.localScale = Vector3.one;
             newBlackHole.name = "BlackHole";
             vesselWarpController._blackHole = newBlackHole.GetComponentInChildren<SingularityController>();
             vesselWarpController._blackHoleOneShot = vesselWarpController._blackHole.transform.parent.Find("BlackHoleAudio_OneShot").GetComponent<OWAudioSource>();
 
             GameObject whiteHole = SearchUtilities.Find("DB_VesselDimension_Body/Sector_VesselDimension/Sector_VesselBridge/Interactibles_VesselBridge/WhiteHole");
-            GameObject newWhiteHole = Object.Instantiate(whiteHole, Vector3.zero, Quaternion.identity, singularityRoot.transform);
+            GameObject newWhiteHole = Object.Instantiate(whiteHole, singularityRoot.transform);
+            newWhiteHole.transform.localPosition = Vector3.zero;
+            newWhiteHole.transform.localRotation = Quaternion.identity;
+            newWhiteHole.transform.localScale = Vector3.one;
             newWhiteHole.name = "WhiteHole";
             vesselWarpController._whiteHole = newWhiteHole.GetComponentInChildren<SingularityController>();
             vesselWarpController._whiteHoleOneShot = vesselWarpController._whiteHole.transform.parent.Find("WhiteHoleAudio_OneShot").GetComponent<OWAudioSource>();
+            vesselWarpController._whiteHole._startActive = true;
 
             vesselObject.GetComponent<MapMarker>()._labelID = (UITextType)TranslationHandler.AddUI("Vessel");
 
@@ -237,7 +244,8 @@ namespace NewHorizons.Handlers
                 vesselWarpController._whiteHoleOneShot = vesselWarpController._whiteHole.transform.parent.Find("WhiteHoleAudio_OneShot").GetComponent<OWAudioSource>();
             }
 
-            Delay.FireOnNextUpdate(() => SetupWarpController(vesselWarpController, true));
+            vesselWarpController._whiteHole._startActive = true;
+            vesselWarpController._whiteHole.Stabilize();
 
             var power = vesselWarpController.transform.Find("PowerSwitchInterface");
             var orb = power.GetComponentInChildren<NomaiInterfaceOrb>(true);
