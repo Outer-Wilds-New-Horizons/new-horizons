@@ -13,7 +13,7 @@ namespace NewHorizons.Builder.General
                 // We can't not build a reference frame volume, Cloak requires one to be there
                 module.maxTargetDistance = 0f;
                 module.targetWhenClose = true;
-                module.targetColliderRadius = 0f;
+                module.targetColliderRadius = 0.001f;
                 module.hideInMap = true;
                 owrb.SetIsTargetable(false);
             }
