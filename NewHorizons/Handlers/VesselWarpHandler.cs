@@ -281,7 +281,11 @@ namespace NewHorizons.Handlers
                                 if (light.GetLight()) light.GetLight().enabled = true;
                             }
                         }
-                        vesselWarpController._coreSocket.PlaceIntoSocket(newCore);
+                        vesselWarpController._coreSocket._socketedItem = newCore;
+                        newCore.SocketItem(vesselWarpController._coreSocket._socketTransform, vesselWarpController._coreSocket._sector);
+                        newCore.PlaySocketAnimation();
+                        vesselWarpController._coreSocket.enabled = true;
+                        vesselWarpController.SetPowered(true);
                         break;
                     }
                 }
