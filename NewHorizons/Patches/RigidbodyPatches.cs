@@ -1,5 +1,5 @@
 using HarmonyLib;
-using NewHorizons.Utility;
+using OWML.Utils;
 using System.Collections.Generic;
 using UnityEngine;
 
