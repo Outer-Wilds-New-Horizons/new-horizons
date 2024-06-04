@@ -11,6 +11,7 @@ namespace NewHorizons.Builder.General
         {
             var sectorGO = new GameObject("Sector");
             sectorGO.SetActive(false);
+            // Have to use set parent method without keeping world position to Fix sectors being rotated on tidally locked bodies #870 
             sectorGO.transform.SetParent(planetBody.transform, false);
 
             var SS = sectorGO.AddComponent<SphereShape>();
