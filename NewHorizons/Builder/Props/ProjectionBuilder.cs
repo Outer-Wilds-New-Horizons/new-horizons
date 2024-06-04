@@ -419,6 +419,7 @@ namespace NewHorizons.Builder.Props
             {
                 var slide = new Slide();
                 var slideInfo = slides[i];
+                slide._streamingImageID = i; // for SlideRotationModule
 
                 if (string.IsNullOrEmpty(slideInfo.imagePath))
                 {
@@ -492,6 +493,10 @@ namespace NewHorizons.Builder.Props
                     _entryKey = slideInfo.reveal
                 };
                 modules.Add(shipLogEntry);
+            }
+            if (slideInfo.rotate)
+            {
+                modules.Add(new SlideRotationModule());
             }
 
             Slide.WriteModules(modules, ref slide._modulesList, ref slide._modulesData, ref slide.lengths);

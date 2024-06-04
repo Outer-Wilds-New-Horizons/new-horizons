@@ -84,5 +84,12 @@ namespace NewHorizons.External.Modules.Props.EchoesOfTheEye
         /// Set this to include ship log entry module. Base game default is "".
         /// </summary>
         public string reveal;
+
+        // SlideRotationModule
+
+        /// <summary>
+        /// Exclusive to slide reels. Whether this slide should rotate the reel item while inside a projector.
+        /// </summary>
+        public bool rotate = true;
     }
 }
