@@ -165,6 +165,17 @@ namespace NewHorizons.Handlers
                     Object.Destroy(rfVolume.gameObject);
                 }
             }
+            
+            if (hasParentBody)
+            {
+                foreach (OWRigidbody dynamicProp in vesselObject.GetComponentsInChildren<OWRigidbody>(true))
+                {
+                    if (dynamicProp.GetComponent<NomaiInterfaceOrb>() == null)
+                    {
+                        dynamicProp.gameObject.AddComponent<FixPhysics>();
+                    }
+                }
+            }
 
             var attachWarpExitToVessel = system.Config.Vessel?.warpExit?.attachToVessel ?? false;
             var warpExitParent = vesselWarpController._targetWarpPlatform.transform.parent;
