@@ -2183,7 +2183,8 @@
         },
         "rotate": {
           "type": "boolean",
-          "description": "Exclusive to slide reels. Whether this slide should rotate the reel item while inside a projector."
+          "description": "Exclusive to slide reels. Whether this slide should rotate the reel item while inside a projector.",
+          "default": true
         }
       }
     },
