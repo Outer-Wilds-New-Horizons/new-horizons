@@ -251,7 +251,7 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        private static string GetSlideReelName(ProjectionInfo.SlideReelType model, ProjectionInfo.SlideReelCondition condition)
+        public static string GetSlideReelName(ProjectionInfo.SlideReelType model, ProjectionInfo.SlideReelCondition condition)
         {
             switch (model)
             {
@@ -264,6 +264,21 @@ namespace NewHorizons.Builder.Props
                 case ProjectionInfo.SlideReelType.Whole:
                 default:
                     return $"{model}_{condition}";
+            }
+        }
+
+        public static int GetSlideCount(ProjectionInfo.SlideReelType model)
+        {
+            switch (model)
+            {
+                case ProjectionInfo.SlideReelType.SixSlides:
+                    return 6;
+                case ProjectionInfo.SlideReelType.SevenSlides:
+                case ProjectionInfo.SlideReelType.Whole:
+                    return 7;
+                case ProjectionInfo.SlideReelType.EightSlides:
+                default:
+                    return 8;
             }
         }
 
