@@ -19,6 +19,7 @@ using UnityEngine;
 using NewHorizons.Streaming;
 using Newtonsoft.Json;
 using NewHorizons.External.Modules.VariableSize;
+using NewHorizons.Components;
 
 namespace NewHorizons.Handlers
 {
@@ -726,6 +727,8 @@ namespace NewHorizons.Handlers
             {
                 SupernovaEffectBuilder.Make(go, sector, body.Config, body.Mod, procGen, ambientLight, fog, atmosphere, null, fog?._fogImpostor);
             }
+
+            SplashColourizer.Make(go, body.Config, sphereOfInfluence);
 
             // We allow removing children afterwards so you can also take bits off of the modules you used
             if (body.Config.removeChildren != null) RemoveChildren(go, body);
