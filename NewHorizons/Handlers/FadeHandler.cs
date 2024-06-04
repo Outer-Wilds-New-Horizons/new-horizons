@@ -25,13 +25,11 @@ namespace NewHorizons.Handlers
             yield return new WaitForEndOfFrame();
         }
 
-        public static void FadeThen(float length, float totalTime, Action action) => Delay.StartCoroutine(FadeThenCoroutine(length, totalTime, action));
+        public static void FadeThen(float length, Action action) => Delay.StartCoroutine(FadeThenCoroutine(length, action));
 
-        private static IEnumerator FadeThenCoroutine(float length, float totalTime, Action action)
+        private static IEnumerator FadeThenCoroutine(float length, Action action)
         {
             yield return FadeOutCoroutine(length);
-
-            yield return new WaitForSeconds(totalTime - length);
 
             action?.Invoke();
         }

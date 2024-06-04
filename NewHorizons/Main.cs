@@ -970,13 +970,11 @@ namespace NewHorizons
                 OWInput.ChangeInputMode(InputMode.None);
 
                 // Hide unloading
-                // When warping with the ship or vessel there are graphical effects we want to see! Do not pause immediately or cut to black immediately
-                // Otherwise we fade to black much quicker. Still wait a bit for the sound effects to finish
-                FadeHandler.FadeThen(IsWarpingFromShip || IsWarpingFromVessel ? 1f : 0.2f, 1.2f, () =>
+                ManualOnStartSceneLoad(sceneToLoad);
+                FadeHandler.FadeThen(1f, () =>
                 {
                     // Slide reel unloading is tied to being removed from the sector, so we do that here to prevent a softlock
                     Locator.GetPlayerSectorDetector().RemoveFromAllSectors();
-                    ManualOnStartSceneLoad(sceneToLoad);
                     LoadManager.LoadSceneImmediate(sceneToLoad);
                 });
             }
