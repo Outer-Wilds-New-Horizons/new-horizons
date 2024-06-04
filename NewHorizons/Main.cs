@@ -998,9 +998,13 @@ namespace NewHorizons
             {
                 CurrentStarSystem = _defaultSystemOverride;
 
-                if (BodyDict.TryGetValue(_defaultSystemOverride, out var bodies) && bodies.Any(x => x.Config?.Spawn?.shipSpawn != null))
+                // #738 - Sometimes the override will not support spawning regularly, so always warp in if possible
+                if (SystemDict[_defaultSystemOverride].Config.Vessel?.spawnOnVessel == true)
                 {
-                    // #738 - Sometimes the override will not support spawning regularly, so always warp in if possible
+                    IsWarpingFromVessel = true;
+                }
+                else if (BodyDict.TryGetValue(_defaultSystemOverride, out var bodies) && bodies.Any(x => x.Config?.Spawn?.shipSpawn != null))
+                {
                     IsWarpingFromShip = true;
                 }
                 else
