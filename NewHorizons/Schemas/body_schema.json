@@ -2180,6 +2180,10 @@
         "reveal": {
           "type": "string",
           "description": "Ship log fact revealed when viewing this slide.\nSet this to include ship log entry module. Base game default is \"\"."
+        },
+        "rotate": {
+          "type": "boolean",
+          "description": "Exclusive to slide reels. Whether this slide should rotate the reel item while inside a projector."
         }
       }
     },
