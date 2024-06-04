@@ -210,7 +210,9 @@ namespace NewHorizons.Handlers
 
             vesselObject.SetActive(true);
 
-            Delay.FireOnNextUpdate(() => SetupWarpController(vesselWarpController));
+            var power = vesselWarpController.transform.Find("PowerSwitchInterface");
+            var orb = power.GetComponentInChildren<NomaiInterfaceOrb>(true);
+            Delay.FireOnNextUpdate(() => SetupWarpController(vesselWarpController, orb));
 
             return eyeSpawnPoint;
         }
@@ -223,7 +225,7 @@ namespace NewHorizons.Handlers
             var vectorSector = SearchUtilities.Find("DB_VesselDimension_Body/Sector_VesselDimension");
             VesselObject = vectorSector;
 
-            var spawnPoint = vectorSector.GetComponentInChildren<SpawnPoint>();
+            var spawnPoint = vectorSector.GetComponentInChildren<SpawnPoint>(true);
 
             VesselWarpController vesselWarpController = vectorSector.GetComponentInChildren<VesselWarpController>(true);
             WarpController = vesselWarpController;
@@ -237,10 +239,14 @@ namespace NewHorizons.Handlers
 
             Delay.FireOnNextUpdate(() => SetupWarpController(vesselWarpController, true));
 
+            var power = vesselWarpController.transform.Find("PowerSwitchInterface");
+            var orb = power.GetComponentInChildren<NomaiInterfaceOrb>(true);
+            Delay.FireOnNextUpdate(() => SetupWarpController(vesselWarpController, orb, true));
+
             return spawnPoint;
         }
 
-        public static void SetupWarpController(VesselWarpController vesselWarpController, bool db = false)
+        public static void SetupWarpController(VesselWarpController vesselWarpController, NomaiInterfaceOrb orb, bool db = false)
         {
             if (db)
             {
@@ -290,11 +296,14 @@ namespace NewHorizons.Handlers
             }
 
             vesselWarpController.OnSlotDeactivated(vesselWarpController._coordinatePowerSlot);
-            if (!db) vesselWarpController.OnSlotActivated(vesselWarpController._coordinatePowerSlot);
             vesselWarpController._gravityVolume.SetFieldMagnitude(vesselWarpController._origGravityMagnitude);
             vesselWarpController._coreCable.SetPowered(true);
-            vesselWarpController._coordinateCable.SetPowered(!db);
             vesselWarpController._warpPlatformCable.SetPowered(false);
+            orb.SetOrbPosition(vesselWarpController._coordinatePowerSlot.transform.position);
+            orb._occupiedSlot = vesselWarpController._coordinatePowerSlot;
+            orb._enterSlotTime = Time.time;
+            Delay.RunWhen(() => !vesselWarpController._coordinateInterface._pillarRaised, () => vesselWarpController.OnSlotActivated(vesselWarpController._coordinatePowerSlot));
+            vesselWarpController._coordinateCable.SetPowered(true);
             vesselWarpController._cageClosed = true;
             if (vesselWarpController._cageAnimator != null)
             {
