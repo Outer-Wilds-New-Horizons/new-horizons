@@ -108,7 +108,7 @@ namespace NewHorizons.Components.Props
 
         public void SetActive(bool active)
         {
-            if (CloseEyes && _playerDoneAwake)
+            if (CloseEyes && _playerDoneAwake && LateInitializerManager.isDoneInitializing)
             {
                 Delay.StartCoroutine(Coroutine(active));
             }
