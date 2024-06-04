@@ -275,6 +275,15 @@ namespace NewHorizons.Handlers
                     }
                 }
             }
+            else
+            {
+                foreach (NomaiLamp lamp in vesselWarpController.transform.root.GetComponentsInChildren<NomaiLamp>(true))
+                {
+                    lamp._startOn = true;
+                    lamp.Awake();
+                }
+            }
+
             vesselWarpController.OnSlotDeactivated(vesselWarpController._coordinatePowerSlot);
             if (!db) vesselWarpController.OnSlotActivated(vesselWarpController._coordinatePowerSlot);
             vesselWarpController._gravityVolume.SetFieldMagnitude(vesselWarpController._origGravityMagnitude);
