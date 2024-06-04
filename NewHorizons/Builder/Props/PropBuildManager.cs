@@ -4,10 +4,12 @@ using NewHorizons.Builder.Props.TranslatorText;
 using NewHorizons.Builder.ShipLog;
 using NewHorizons.External;
 using NewHorizons.External.Configs;
+using NewHorizons.External.Modules;
 using NewHorizons.Utility.OWML;
 using OWML.Common;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace NewHorizons.Builder.Props
@@ -19,48 +21,95 @@ namespace NewHorizons.Builder.Props
             PlanetConfig config = nhBody.Config;
             IModBehaviour mod = nhBody.Mod;
 
-            if (config.Props.gravityCannons != null)
+            // This next pass thing
+            var nextPass = new List<Action>();
+
+            void MakeGeneralProp<T>(GameObject go, T prop, Action<T> builder) where T : GeneralPointPropInfo
             {
-                foreach (var gravityCannonInfo in config.Props.gravityCannons)
+                try
                 {
-                    try
+                    if (DoesParentExist(go, prop))
                     {
-                        GravityCannonBuilder.Make(go, sector, gravityCannonInfo, mod);
+                        builder(prop);
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        NHLogger.LogError($"Couldn't make gravity cannon [{gravityCannonInfo.shuttleID}] for [{go.name}]:\n{ex}");
+                        nextPass.Add(() => MakeGeneralProp<T>(go, prop, builder));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    NHLogger.LogError($"Couldn't make {typeof(T).Name} [{prop.rename}] for [{go.name}]:\n{ex}");
+                }
+            }
+
+            void MakeGeneralProps<T>(GameObject go, IEnumerable<T> props, Action<T> builder) where T : GeneralPointPropInfo
+            {
+                if (props != null)
+                {
+                    foreach (var prop in props)
+                    {
+                        MakeGeneralProp(go, prop, builder);
                     }
                 }
             }
-            if (config.Props.shuttles != null)
+
+            MakeGeneralProps(go, config.Props.gravityCannons, (cannon) => GravityCannonBuilder.Make(go, sector, cannon, mod));
+            MakeGeneralProps(go, config.Props.shuttles, (shuttle) => ShuttleBuilder.Make(go, sector, nhBody.Mod, shuttle));
+            MakeGeneralProps(go, config.Props.details, (detail) => DetailBuilder.Make(go, sector, mod, detail));
+            MakeGeneralProps(go, config.Props.geysers, (geyser) => GeyserBuilder.Make(go, sector, geyser));
+            if (Main.HasDLC) MakeGeneralProps(go, config.Props.rafts, (raft) => RaftBuilder.Make(go, sector, raft, planetBody));
+            MakeGeneralProps(go, config.Props.tornados, (tornado) => TornadoBuilder.Make(go, sector, tornado, config.Atmosphere?.clouds != null));
+            MakeGeneralProps(go, config.Props.volcanoes, (volcano) => VolcanoBuilder.Make(go, sector, volcano));
+            MakeGeneralProps(go, config.Props.dialogue, (dialogueInfo) =>
             {
-                foreach (var shuttleInfo in config.Props.shuttles)
+                var (dialogue, trigger) = DialogueBuilder.Make(go, sector, dialogueInfo, mod);
+                if (dialogue == null)
                 {
-                    try
-                    {
-                        ShuttleBuilder.Make(go, sector, nhBody.Mod, shuttleInfo);
-                    }
-                    catch (Exception ex)
-                    {
-                        NHLogger.LogError($"Couldn't make shuttle [{shuttleInfo.id}] for [{go.name}]:\n{ex}");
-                    }
+                    NHLogger.LogVerbose($"[DIALOGUE] Failed to create dialogue [{dialogueInfo.xmlFile}]");
+                }
+            });
+            MakeGeneralProps(go, config.Props.entryLocation, (entryLocationInfo) => EntryLocationBuilder.Make(go, sector, entryLocationInfo, mod));
+            // Backwards compatibility 
+#pragma warning disable 612, 618
+            MakeGeneralProps(go, config.Props.nomaiText, (nomaiTextInfo) => NomaiTextBuilder.Make(go, sector, nomaiTextInfo, nhBody.Mod));
+#pragma warning restore 612, 618
+            MakeGeneralProps(go, config.Props.translatorText, (nomaiTextInfo) => TranslatorTextBuilder.Make(go, sector, nomaiTextInfo, nhBody));
+            if (Main.HasDLC) MakeGeneralProps(go, config.Props.slideShows, (slideReelInfo) => ProjectionBuilder.Make(go, sector, slideReelInfo, mod));
+            MakeGeneralProps(go, config.Props.singularities, (singularity) => SingularityBuilder.Make(go, sector, go.GetComponent<OWRigidbody>(), config, singularity));
+            MakeGeneralProps(go, config.Props.signals, (signal) => SignalBuilder.Make(go, sector, signal, mod));
+            MakeGeneralProps(go, config.Props.warpReceivers, (warpReceiver) => WarpPadBuilder.Make(go, sector, nhBody.Mod, warpReceiver));
+            MakeGeneralProps(go, config.Props.warpTransmitters, (warpTransmitter) => WarpPadBuilder.Make(go, sector, nhBody.Mod, warpTransmitter));
+            MakeGeneralProps(go, config.Props.audioSources, (audioSource) => AudioSourceBuilder.Make(go, sector, audioSource, mod));
+
+            // Try at least 10 times going through all builders to allow for parents to be built out of order
+            int i = 0;
+            while(nextPass.Any())
+            {
+                var count = nextPass.Count;
+                var passClone = nextPass.ToList();
+                nextPass.Clear();
+                passClone.ForEach((x) => x.Invoke());
+
+                if (nextPass.Count >= count)
+                {
+                    NHLogger.LogError("Couldn't find any parents");
+                    break;
+                }
+
+                if (i++ > 10)
+                {
+                    NHLogger.LogError("Went through more than 10 passes of trying to find parents, stopping");
+                    break;
                 }
             }
-            if (config.Props.details != null)
-            {
-                foreach (var detail in config.Props.details)
-                {
-                    try
-                    {
-                        var detailGO = DetailBuilder.Make(go, sector, mod, detail);
-                    }
-                    catch (Exception ex)
-                    {
-                        NHLogger.LogError($"Couldn't make planet detail [{detail.path}] for [{go.name}]:\n{ex}");
-                    }
-                }
-            }
+
+            /*
+             * 
+             * Builders below don't inherit the same base class so they won't be able to do this weirdly organized layering stuff
+             *
+             */
+
             if (config.Props.scatter != null)
             {
                 try
@@ -72,142 +121,7 @@ namespace NewHorizons.Builder.Props
                     NHLogger.LogError($"Couldn't make planet scatter for [{go.name}]:\n{ex}");
                 }
             }
-            if (config.Props.geysers != null)
-            {
-                foreach (var geyserInfo in config.Props.geysers)
-                {
-                    try
-                    {
-                        GeyserBuilder.Make(go, sector, geyserInfo);
-                    }
-                    catch (Exception ex)
-                    {
-                        NHLogger.LogError($"Couldn't make geyser for [{go.name}]:\n{ex}");
-                    }
-                }
-            }
-            if (Main.HasDLC && config.Props.rafts != null)
-            {
-                foreach (var raftInfo in config.Props.rafts)
-                {
-                    try
-                    {
-                        RaftBuilder.Make(go, sector, raftInfo, planetBody);
-                    }
-                    catch (Exception ex)
-                    {
-                        NHLogger.LogError($"Couldn't make raft for [{go.name}]:\n{ex}");
-                    }
-                }
-            }
-            if (config.Props.tornados != null)
-            {
-                foreach (var tornadoInfo in config.Props.tornados)
-                {
-                    try
-                    {
-                        TornadoBuilder.Make(go, sector, tornadoInfo, config.Atmosphere?.clouds != null);
-                    }
-                    catch (Exception ex)
-                    {
-                        NHLogger.LogError($"Couldn't make tornado for [{go.name}]:\n{ex}");
-                    }
-                }
-            }
-            if (config.Props.volcanoes != null)
-            {
-                foreach (var volcanoInfo in config.Props.volcanoes)
-                {
-                    try
-                    {
-                        VolcanoBuilder.Make(go, sector, volcanoInfo);
-                    }
-                    catch (Exception ex)
-                    {
-                        NHLogger.LogError($"Couldn't make volcano for [{go.name}]:\n{ex}");
-                    }
-                }
-            }
-            // Reminder that dialogue has to be built after props if they're going to be using CharacterAnimController stuff
-            if (config.Props.dialogue != null)
-            {
-                foreach (var dialogueInfo in config.Props.dialogue)
-                {
-                    try
-                    {
-                        var (dialogue, trigger) = DialogueBuilder.Make(go, sector, dialogueInfo, mod);
-                        if (dialogue == null)
-                        {
-                            NHLogger.LogVerbose($"[DIALOGUE] Failed to create dialogue [{dialogueInfo.xmlFile}]");
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        NHLogger.LogError($"[DIALOGUE] Couldn't make dialogue [{dialogueInfo.xmlFile}] for [{go.name}]:\n{ex}");
-                    }
-                }
-            }
-            if (config.Props.entryLocation != null)
-            {
-                foreach (var entryLocationInfo in config.Props.entryLocation)
-                {
-                    try
-                    {
-                        EntryLocationBuilder.Make(go, sector, entryLocationInfo, mod);
-                    }
-                    catch (Exception ex)
-                    {
-                        NHLogger.LogError($"Couldn't make entry location [{entryLocationInfo.id}] for [{go.name}]:\n{ex}");
-                    }
-                }
-            }
-            // Backwards compatibility 
-#pragma warning disable 612, 618
-            if (config.Props.nomaiText != null)
-            {
-                foreach (var nomaiTextInfo in config.Props.nomaiText)
-                {
-                    try
-                    {
-                        NomaiTextBuilder.Make(go, sector, nomaiTextInfo, nhBody.Mod);
-                    }
-                    catch (Exception ex)
-                    {
-                        NHLogger.LogError($"Couldn't make text [{nomaiTextInfo.xmlFile}] for [{go.name}]:\n{ex}");
-                    }
 
-                }
-            }
-#pragma warning restore 612, 618
-            if (config.Props.translatorText != null)
-            {
-                foreach (var nomaiTextInfo in config.Props.translatorText)
-                {
-                    try
-                    {
-                        TranslatorTextBuilder.Make(go, sector, nomaiTextInfo, nhBody);
-                    }
-                    catch (Exception ex)
-                    {
-                        NHLogger.LogError($"Couldn't make text [{nomaiTextInfo.xmlFile}] for [{go.name}]:\n{ex}");
-                    }
-
-                }
-            }
-            if (Main.HasDLC && config.Props.slideShows != null)
-            {
-                foreach (var slideReelInfo in config.Props.slideShows)
-                {
-                    try
-                    {
-                        ProjectionBuilder.Make(go, sector, slideReelInfo, mod);
-                    }
-                    catch (Exception ex)
-                    {
-                        NHLogger.LogError($"Couldn't make slide reel for [{go.name}]:\n{ex}");
-                    }
-                }
-            }
             if (config.Props.quantumGroups != null)
             {
                 Dictionary<string, List<GameObject>> propsByGroup = new Dictionary<string, List<GameObject>>();
@@ -235,34 +149,7 @@ namespace NewHorizons.Builder.Props
                     }
                 }
             }
-            if (config.Props.singularities != null)
-            {
-                foreach (var singularity in config.Props.singularities)
-                {
-                    try
-                    {
-                        SingularityBuilder.Make(go, sector, go.GetComponent<OWRigidbody>(), config, singularity);
-                    }
-                    catch (Exception ex)
-                    {
-                        NHLogger.LogError($"Couldn't make singularity \"{(string.IsNullOrEmpty(singularity.uniqueID) ? config.name : singularity.uniqueID)}\" for [{go.name}]::\n{ex}");
-                    }
-                }
-            }
-            if (config.Props.signals != null)
-            {
-                foreach (var signal in config.Props.signals)
-                {
-                    try
-                    {
-                        SignalBuilder.Make(go, sector, signal, mod);
-                    }
-                    catch (Exception ex)
-                    {
-                        NHLogger.LogError($"Couldn't make signal on planet [{config.name}] - {ex}");
-                    }
-                }
-            }
+
             if (config.Props.remotes != null)
             {
                 foreach (var remoteInfo in config.Props.remotes)
@@ -277,47 +164,17 @@ namespace NewHorizons.Builder.Props
                     }
                 }
             }
-            if (config.Props.warpReceivers != null)
+        }
+
+        private static bool DoesParentExist(GameObject go, GeneralPointPropInfo prop)
+        {
+            if (string.IsNullOrEmpty(prop.parentPath))
             {
-                foreach (var warpReceiver in config.Props.warpReceivers)
-                {
-                    try
-                    {
-                        WarpPadBuilder.Make(go, sector, nhBody.Mod, warpReceiver);
-                    }
-                    catch (Exception ex)
-                    {
-                        NHLogger.LogError($"Couldn't make warp receiver [{warpReceiver.frequency}] for [{go.name}]:\n{ex}");
-                    }
-                }
+                return true;
             }
-            if (config.Props.warpTransmitters != null)
+            else
             {
-                foreach (var warpTransmitter in config.Props.warpTransmitters)
-                {
-                    try
-                    {
-                        WarpPadBuilder.Make(go, sector, nhBody.Mod, warpTransmitter);
-                    }
-                    catch (Exception ex)
-                    {
-                        NHLogger.LogError($"Couldn't make warp transmitter [{warpTransmitter.frequency}] for [{go.name}]:\n{ex}");
-                    }
-                }
-            }
-            if (config.Props.audioSources != null)
-            {
-                foreach (var audioSource in config.Props.audioSources)
-                {
-                    try
-                    {
-                        AudioSourceBuilder.Make(go, sector, audioSource, mod);
-                    }
-                    catch (Exception ex)
-                    {
-                        NHLogger.LogError($"Couldn't make audio source [{audioSource.audio}] for [{go.name}]:\n{ex}");
-                    }
-                }
+                return go.transform.Find(prop.parentPath) != null;
             }
         }
     }
