@@ -57,12 +57,11 @@ namespace NewHorizons.Builder.Orbital
             config.Base.surfaceGravity = gravitationalMass * GravityVolume.GRAVITATIONAL_CONSTANT;
             config.Base.gravityFallOff = primary.Config.Base.gravityFallOff;
 
-            // Other stuff to make the barycenter not interact with anything in any way
-            config.Base.soiOverride = 0;
-
             var separation = primary.Config.Orbit.semiMajorAxis + secondary.Config.Orbit.semiMajorAxis;
-            config.ReferenceFrame.bracketRadius = separation;
-            config.ReferenceFrame.targetColliderRadius = separation;
+            var separationRadius = (separation / 2);
+            config.Base.soiOverride = separationRadius * 1.5f;
+            config.ReferenceFrame.bracketRadius = separationRadius;
+            config.ReferenceFrame.targetColliderRadius = separationRadius;
         }
 
         private static float GetGravitationalMass(PlanetConfig config)
