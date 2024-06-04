@@ -387,10 +387,11 @@ namespace NewHorizons
             else if (IsWarpingBackToEye)
             {
                 IsWarpingBackToEye = false;
-                // OWTime.Pause(OWTime.PauseType.Loading); // loading already pauses
                 ManualOnStartSceneLoad(OWScene.EyeOfTheUniverse);
-                LoadManager.LoadSceneImmediate(OWScene.EyeOfTheUniverse);
-                // OWTime.Unpause(OWTime.PauseType.Loading); // changing active scenes already unpauses
+                // LoadSceneImmediate doesn't cover the screen and you see the solar system for a frame without this
+                LoadManager.s_instance._fadeCanvas.enabled = true;
+                LoadManager.s_instance._fadeImage.color = Color.black;
+                LoadManager.LoadSceneImmediate(OWScene.EyeOfTheUniverse);                
                 return;
             }
 
