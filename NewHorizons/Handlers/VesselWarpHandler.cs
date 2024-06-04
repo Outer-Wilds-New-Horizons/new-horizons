@@ -56,14 +56,39 @@ namespace NewHorizons.Handlers
             if (IsVesselPresentAndActive())
                 _vesselSpawnPoint = Instance.CurrentStarSystem == "SolarSystem" ? UpdateVessel() : CreateVessel();
             else
-                _vesselSpawnPoint = SearchUtilities.Find("DB_VesselDimension_Body/Sector_VesselDimension").GetComponentInChildren<SpawnPoint>();
+            {
+                var vesselDimension = SearchUtilities.Find("DB_VesselDimension_Body/Sector_VesselDimension");
+                var vesselDimensionSpawn = vesselDimension.GetComponentInChildren<SpawnPoint>(true);
+                var vesselWarpController = vesselDimension.GetComponentInChildren<VesselWarpController>(true);
+
+                var defaultPlayerWarpPoint = new GameObject("DefaultPlayerWarpPos");
+                defaultPlayerWarpPoint.transform.SetParent(vesselWarpController.transform, false);
+                defaultPlayerWarpPoint.transform.localPosition = new Vector3(0, -5.82f, -6.56f);
+                vesselWarpController._defaultPlayerWarpPoint = defaultPlayerWarpPoint.transform;
+
+                var vesselSpawnObj = new GameObject("SPAWN_Vessel");
+                vesselSpawnObj.transform.SetParent(vesselWarpController.transform.parent.parent, false);
+                vesselSpawnObj.transform.localPosition = new Vector3(-0.3f, -5.18f, -6.35f);
+                var vesselSpawnPoint = vesselSpawnObj.AddComponent<VesselSpawnPoint>();
+                vesselSpawnPoint.WarpController = vesselWarpController;
+                vesselSpawnPoint._triggerVolumes = vesselDimensionSpawn._triggerVolumes;
+                _vesselSpawnPoint = vesselSpawnPoint;
+            }
         }
 
         public static void TeleportToVessel()
         {
             var playerSpawner = Object.FindObjectOfType<PlayerSpawner>();
-            NHLogger.LogVerbose("Debug warping into vessel");
-            playerSpawner.DebugWarp(_vesselSpawnPoint);
+            if (_vesselSpawnPoint is VesselSpawnPoint vesselSpawnPoint)
+            {
+                NHLogger.LogVerbose("Relative warping into vessel");
+                vesselSpawnPoint.WarpPlayer();//Delay.FireOnNextUpdate(vesselSpawnPoint.WarpPlayer);
+            }
+            else
+            {
+                NHLogger.LogVerbose("Debug warping into vessel");
+                playerSpawner.DebugWarp(_vesselSpawnPoint);
+            }
             Builder.General.SpawnPointBuilder.SuitUp();
 
             LoadDB();
@@ -86,7 +111,7 @@ namespace NewHorizons.Handlers
             }
         }
 
-        public static EyeSpawnPoint CreateVessel()
+        public static VesselSpawnPoint CreateVessel()
         {
             var system = SystemDict[Instance.CurrentStarSystem];
 
@@ -209,10 +234,10 @@ namespace NewHorizons.Handlers
                 }
             }
 
-            EyeSpawnPoint eyeSpawnPoint = vesselObject.GetComponentInChildren<EyeSpawnPoint>(true);
+            VesselSpawnPoint spawnPoint = vesselObject.GetComponentInChildren<VesselSpawnPoint>(true);
             if (ShouldSpawnAtVessel())
             {
-                system.SpawnPoint = eyeSpawnPoint;
+                system.SpawnPoint = spawnPoint;
             }
 
             vesselObject.SetActive(true);
@@ -221,10 +246,10 @@ namespace NewHorizons.Handlers
             var orb = power.GetComponentInChildren<NomaiInterfaceOrb>(true);
             Delay.FireOnNextUpdate(() => SetupWarpController(vesselWarpController, orb));
 
-            return eyeSpawnPoint;
+            return spawnPoint;
         }
 
-        public static SpawnPoint UpdateVessel()
+        public static VesselSpawnPoint UpdateVessel()
         {
             var system = SystemDict[Instance.CurrentStarSystem];
 
@@ -247,11 +272,23 @@ namespace NewHorizons.Handlers
             vesselWarpController._whiteHole._startActive = true;
             vesselWarpController._whiteHole.Stabilize();
 
+            var defaultPlayerWarpPoint = new GameObject("DefaultPlayerWarpPos");
+            defaultPlayerWarpPoint.transform.SetParent(vesselWarpController.transform, false);
+            defaultPlayerWarpPoint.transform.localPosition = new Vector3(0, -5.82f, -6.56f);
+            vesselWarpController._defaultPlayerWarpPoint = defaultPlayerWarpPoint.transform;
+
+            var vesselSpawnObj = new GameObject("SPAWN_Vessel");
+            vesselSpawnObj.transform.SetParent(vesselWarpController.transform.parent.parent, false);
+            vesselSpawnObj.transform.localPosition = new Vector3(-0.3f, -5.18f, -6.35f);
+            var vesselSpawnPoint = vesselSpawnObj.AddComponent<VesselSpawnPoint>();
+            vesselSpawnPoint.WarpController = vesselWarpController;
+            vesselSpawnPoint._triggerVolumes = spawnPoint._triggerVolumes;
+
             var power = vesselWarpController.transform.Find("PowerSwitchInterface");
             var orb = power.GetComponentInChildren<NomaiInterfaceOrb>(true);
             Delay.FireOnNextUpdate(() => SetupWarpController(vesselWarpController, orb, true));
 
-            return spawnPoint;
+            return vesselSpawnPoint;
         }
 
         public static void SetupWarpController(VesselWarpController vesselWarpController, NomaiInterfaceOrb orb, bool db = false)
