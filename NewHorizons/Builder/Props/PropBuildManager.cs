@@ -24,7 +24,7 @@ namespace NewHorizons.Builder.Props
             // If a prop has set its parentPath and the parent cannot be found, add it to the next pass and try again later
             var nextPass = new List<Action>();
 
-            void MakeGeneralProp<T>(GameObject go, T prop, Action<T> builder) where T : GeneralPointPropInfo
+            void MakeGeneralProp<T>(GameObject go, T prop, Action<T> builder) where T : BasePropInfo
             {
                 try
                 {
@@ -43,7 +43,7 @@ namespace NewHorizons.Builder.Props
                 }
             }
 
-            void MakeGeneralProps<T>(GameObject go, IEnumerable<T> props, Action<T> builder) where T : GeneralPointPropInfo
+            void MakeGeneralProps<T>(GameObject go, IEnumerable<T> props, Action<T> builder) where T : BasePropInfo
             {
                 if (props != null)
                 {
@@ -167,7 +167,7 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        private static bool DoesParentExist(GameObject go, GeneralPointPropInfo prop)
+        private static bool DoesParentExist(GameObject go, BasePropInfo prop)
         {
             if (string.IsNullOrEmpty(prop.parentPath))
             {
