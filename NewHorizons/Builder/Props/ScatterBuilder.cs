@@ -139,6 +139,7 @@ namespace NewHorizons.Builder.Props
                     }
 
                     var prop = scatterPrefab.InstantiateInactive();
+                    // Have to use SetParent method to work with tidally locked bodies #872
                     prop.transform.SetParent(parent, false);
                     prop.transform.localPosition = point * height;
                     var up = (prop.transform.position - go.transform.position).normalized;
