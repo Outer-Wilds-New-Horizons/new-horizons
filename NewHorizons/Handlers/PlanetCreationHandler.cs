@@ -366,7 +366,7 @@ namespace NewHorizons.Handlers
             go.SetActive(false);
 
             body.Config.Base.showMinimap = false;
-            body.Config.Base.hasMapMarker = false;
+            body.Config.MapMarker.enabled = false;
 
             const float sphereOfInfluence = 2000f;
             
@@ -459,7 +459,7 @@ namespace NewHorizons.Handlers
 
             RFVolumeBuilder.Make(go, owRigidBody, sphereOfInfluence, body.Config.ReferenceFrame);
 
-            if (body.Config.Base.hasMapMarker)
+            if (body.Config.MapMarker.enabled)
             {
                 MarkerBuilder.Make(go, body.Config.name, body.Config);
             }
