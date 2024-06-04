@@ -21,7 +21,7 @@ namespace NewHorizons.Builder.Props
             PlanetConfig config = nhBody.Config;
             IModBehaviour mod = nhBody.Mod;
 
-            // This next pass thing
+            // If a prop has set its parentPath and the parent cannot be found, add it to the next pass and try again later
             var nextPass = new List<Action>();
 
             void MakeGeneralProp<T>(GameObject go, T prop, Action<T> builder) where T : GeneralPointPropInfo
@@ -106,7 +106,8 @@ namespace NewHorizons.Builder.Props
 
             /*
              * 
-             * Builders below don't inherit the same base class so they won't be able to do this weirdly organized layering stuff
+             * Builders below don't inherit the same base class so if they have complicated parentPaths they might just break
+             * If a prop above sets one of these as its parent path it will break (but that was always the case)
              *
              */
 
