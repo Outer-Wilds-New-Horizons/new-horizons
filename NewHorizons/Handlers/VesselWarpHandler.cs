@@ -41,7 +41,7 @@ namespace NewHorizons.Handlers
         {
             var vesselConfig = SystemDict[Instance.CurrentStarSystem].Config?.Vessel;
             var shouldSpawnOnVessel = IsVesselPresent() && (vesselConfig?.spawnOnVessel ?? false);
-            return !Instance.IsWarpingFromShip && (Instance.IsWarpingFromVessel || shouldSpawnOnVessel);
+            return !Instance.IsWarpingFromShip && (Instance.IsWarpingFromVessel || Instance.DidWarpFromVessel || shouldSpawnOnVessel);
         }
 
         public static void LoadVessel()
