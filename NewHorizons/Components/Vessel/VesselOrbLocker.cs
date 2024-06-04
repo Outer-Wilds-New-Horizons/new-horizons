@@ -45,11 +45,55 @@ namespace NewHorizons.Components
             _powerOrb.AddLock();
         }
 
-        public void RemoveLocks()
+        public void RemoveLockFromCoordinateOrb()
+        {
+            _coordinateInterfaceOrb.RemoveLock();
+        }
+
+        public void RemoveLockFromWarpOrb()
+        {
+            _coordinateInterfaceUpperOrb.RemoveLock();
+        }
+
+        public void RemoveLockFromPowerOrb()
+        {
+            _powerOrb.RemoveLock();
+        }
+
+        public void RemoveAllLocksFromCoordinateOrb()
         {
             _coordinateInterfaceOrb.RemoveAllLocks();
+        }
+
+        public void RemoveAllLocksFromWarpOrb()
+        {
             _coordinateInterfaceUpperOrb.RemoveAllLocks();
+        }
+
+        public void RemoveAllLocksFromPowerOrb()
+        {
             _powerOrb.RemoveAllLocks();
+        }
+
+        public void AddLock()
+        {
+            AddLockToCoordinateOrb();
+            AddLockToWarpOrb();
+            AddLockToPowerOrb();
+        }
+
+        public void RemoveLock()
+        {
+            RemoveLockFromCoordinateOrb();
+            RemoveLockFromWarpOrb();
+            RemoveLockFromPowerOrb();
+        }
+
+        public void RemoveAllLocks()
+        {
+            RemoveAllLocksFromCoordinateOrb();
+            RemoveAllLocksFromWarpOrb();
+            RemoveAllLocksFromPowerOrb();
         }
     }
 }
