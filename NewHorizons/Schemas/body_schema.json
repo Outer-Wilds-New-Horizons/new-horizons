@@ -2046,6 +2046,10 @@
         "keepLoaded": {
           "type": "boolean",
           "description": "Should this detail stay loaded even if you're outside the sector (good for very large props)"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector). This parent should be at the position where you'd like to scatter (which would usually be zero)."
         }
       }
     },
