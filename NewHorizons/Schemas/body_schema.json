@@ -2109,6 +2109,16 @@
           "description": "The type of object this is.",
           "default": "slideReel",
           "$ref": "#/definitions/SlideShowType"
+        },
+        "reelModel": {
+          "description": "Exclusive to the slide reel type. Model/mesh of the reel. Each model has a different number of slides on it. Whole has 7 slides but a full ring like 8.",
+          "default": "sevenSlides",
+          "$ref": "#/definitions/SlideReelType"
+        },
+        "reelCondition": {
+          "description": "Exclusive to the slide reel type. Condition/material of the reel. Antique is the Stranger, Pristine is the Dreamworld, Rusted is a burned reel.",
+          "default": "antique",
+          "$ref": "#/definitions/SlideReelCondition"
         }
       }
     },
@@ -2174,6 +2184,11 @@
         "reveal": {
           "type": "string",
           "description": "Ship log fact revealed when viewing this slide.\nSet this to include ship log entry module. Base game default is \"\"."
+        },
+        "rotate": {
+          "type": "boolean",
+          "description": "Exclusive to slide reels. Whether this slide should rotate the reel item while inside a projector.",
+          "default": true
         }
       }
     },
@@ -2191,6 +2206,36 @@
         "autoProjector",
         "visionTorchTarget",
         "standingVisionTorch"
+      ]
+    },
+    "SlideReelType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "SixSlides",
+        "SevenSlides",
+        "EightSlides",
+        "Whole"
+      ],
+      "enum": [
+        "sixSlides",
+        "sevenSlides",
+        "eightSlides",
+        "whole"
+      ]
+    },
+    "SlideReelCondition": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Antique",
+        "Pristine",
+        "Rusted"
+      ],
+      "enum": [
+        "antique",
+        "pristine",
+        "rusted"
       ]
     },
     "QuantumGroupInfo": {
