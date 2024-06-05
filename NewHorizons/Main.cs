@@ -526,6 +526,8 @@ namespace NewHorizons
                         PlayerData.SaveLoopCount(2);
                         PlayerData.SetPersistentCondition("LAUNCH_CODES_GIVEN", true);
                     }
+
+                    if (shouldWarpInFromVessel) VesselWarpHandler.LoadDB();
                 }
                 else if (isEyeOfTheUniverse)
                 {
@@ -942,6 +944,7 @@ namespace NewHorizons
                 IsWarpingFromVessel = vessel;
                 DidWarpFromVessel = false;
                 OnChangeStarSystem?.Invoke(newStarSystem);
+                VesselWarpController.s_relativeLocationSaved = false;
 
                 NHLogger.Log($"Warping to {newStarSystem}");
                 if (warp && ShipWarpController) ShipWarpController.WarpOut();
@@ -981,8 +984,38 @@ namespace NewHorizons
             }
         }
 
+        /// <summary>
+        /// Exclusively for <see cref="Patches.WarpPatches.VesselWarpControllerPatches.VesselWarpController_OnSlotActivated(VesselWarpController, NomaiInterfaceSlot)"/>
+        /// </summary>
+        internal void ChangeCurrentStarSystemVesselAsync(string newStarSystem)
+        {
+            if (IsChangingStarSystem) return;
+
+            if (LoadManager.GetCurrentScene() == OWScene.SolarSystem || LoadManager.GetCurrentScene() == OWScene.EyeOfTheUniverse)
+            {
+                IsWarpingFromShip = false;
+                IsWarpingFromVessel = true;
+                DidWarpFromVessel = false;
+                OnChangeStarSystem?.Invoke(newStarSystem);
+
+                NHLogger.Log($"Vessel warping to {newStarSystem}");
+                IsChangingStarSystem = true;
+                WearingSuit = PlayerState.IsWearingSuit();
+
+                PlayerData.SaveEyeCompletion(); // So that the title screen doesn't keep warping you back to eye
+
+                if (SystemDict[CurrentStarSystem].Config.enableTimeLoop) SecondsElapsedInLoop = TimeLoop.GetSecondsElapsed();
+                else SecondsElapsedInLoop = -1;
+
+                CurrentStarSystem = newStarSystem;
+
+                LoadManager.LoadSceneAsync(OWScene.SolarSystem, false, LoadManager.FadeType.ToBlack);
+            }
+        }
+
         void OnDeath(DeathType _)
         {
+            VesselWarpController.s_relativeLocationSaved = false;
             // We reset the solar system on death
             if (!IsChangingStarSystem)
             {
@@ -998,9 +1031,13 @@ namespace NewHorizons
             {
                 CurrentStarSystem = _defaultSystemOverride;
 
-                if (BodyDict.TryGetValue(_defaultSystemOverride, out var bodies) && bodies.Any(x => x.Config?.Spawn?.shipSpawn != null))
+                // #738 - Sometimes the override will not support spawning regularly, so always warp in if possible
+                if (SystemDict[_defaultSystemOverride].Config.Vessel?.spawnOnVessel == true)
                 {
-                    // #738 - Sometimes the override will not support spawning regularly, so always warp in if possible
+                    IsWarpingFromVessel = true;
+                }
+                else if (BodyDict.TryGetValue(_defaultSystemOverride, out var bodies) && bodies.Any(x => x.Config?.Spawn?.shipSpawn != null))
+                {
                     IsWarpingFromShip = true;
                 }
                 else
