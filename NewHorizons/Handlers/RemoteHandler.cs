@@ -2,6 +2,7 @@ using NewHorizons.Utility.OWML;
 using OWML.Utils;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 
 namespace NewHorizons.Handlers
@@ -33,24 +34,34 @@ namespace NewHorizons.Handlers
             return id.ToString();
         }
 
-        public static NomaiRemoteCameraPlatform.ID GetPlatformID(string id)
+        public static bool TryGetPlatformID(string id, out NomaiRemoteCameraPlatform.ID platformID)
         {
             try
             {
-                NomaiRemoteCameraPlatform.ID platformID;
-                if (_customPlatformIDs.TryGetValue(id, out platformID) || EnumUtils.TryParse<NomaiRemoteCameraPlatform.ID>(id, out platformID))
+                if (!(_customPlatformIDs.TryGetValue(id, out platformID) || EnumUtils.TryParse<NomaiRemoteCameraPlatform.ID>(id, out platformID)))
                 {
-                    return platformID;
+                    platformID = AddCustomPlatformID(id);
                 }
-                else
-                {
-                    return AddCustomPlatformID(id);
-                }
+                return true;
             }
             catch (Exception e)
             {
                 NHLogger.LogError($"Couldn't load platform id [{id}]:\n{e}");
-                return NomaiRemoteCameraPlatform.ID.None;
+                platformID = NomaiRemoteCameraPlatform.ID.None;
+                return false;
+            }
+        }
+
+        public static NomaiRemoteCameraPlatform.ID GetPlatformID(string id)
+        {
+            NomaiRemoteCameraPlatform.ID platformID = NomaiRemoteCameraPlatform.ID.None;
+            if (_customPlatformIDs.TryGetValue(id, out platformID) || EnumUtils.TryParse<NomaiRemoteCameraPlatform.ID>(id, out platformID))
+            {
+                return platformID;
+            }
+            else
+            {
+                return AddCustomPlatformID(id);
             }
         }
 
