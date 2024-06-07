@@ -5,6 +5,7 @@ using NewHorizons.Builder.ShipLog;
 using NewHorizons.External;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
+using NewHorizons.Utility;
 using NewHorizons.Utility.OWML;
 using OWML.Common;
 using System;
@@ -16,15 +17,25 @@ namespace NewHorizons.Builder.Props
 {
     public static class PropBuildManager
     {
-        public static void Make(GameObject go, Sector sector, OWRigidbody planetBody, NewHorizonsBody nhBody)
+        public static string InfoToName<T>() where T : BasePropInfo
         {
-            PlanetConfig config = nhBody.Config;
-            IModBehaviour mod = nhBody.Mod;
+            var info = typeof(T).Name;
+            if (info.EndsWith("Info"))
+            {
+                return info.Substring(0, info.Length - 4).ToLowercaseNamingConvention();
+            }
+            else if (info.EndsWith("Module"))
+            {
+                return info.Substring(0, info.Length - 6).ToLowercaseNamingConvention();
+            }
+            return info.ToLowercaseNamingConvention();
+        }
 
-            // If a prop has set its parentPath and the parent cannot be found, add it to the next pass and try again later
-            var nextPass = new List<Action>();
+        public static List<Action> nextPass;
 
-            void MakeGeneralProp<T>(GameObject go, T prop, Action<T> builder) where T : BasePropInfo
+        public static void MakeGeneralProp<T>(GameObject go, T prop, Action<T> builder, Func<T, string> errorMessage = null) where T : BasePropInfo
+        {
+            if (prop != null)
             {
                 try
                 {
@@ -34,25 +45,61 @@ namespace NewHorizons.Builder.Props
                     }
                     else
                     {
-                        nextPass.Add(() => MakeGeneralProp<T>(go, prop, builder));
+                        nextPass.Add(() => MakeGeneralProp<T>(go, prop, builder, errorMessage));
                     }
                 }
                 catch (Exception ex)
                 {
-                    NHLogger.LogError($"Couldn't make {typeof(T).Name} [{prop.rename}] for [{go.name}]:\n{ex}");
+                    var rename = !string.IsNullOrEmpty(prop.rename) ? $" [{prop.rename}]" : string.Empty;
+                    var extra = errorMessage != null ? $" [{errorMessage(prop)}]" : string.Empty;
+                    NHLogger.LogError($"Couldn't make {InfoToName<T>()}{rename}{extra} for [{go.name}]:\n{ex}");
                 }
             }
+        }
 
-            void MakeGeneralProps<T>(GameObject go, IEnumerable<T> props, Action<T> builder) where T : BasePropInfo
+        public static void MakeGeneralProps<T>(GameObject go, IEnumerable<T> props, Action<T> builder, Func<T, string> errorMessage = null) where T : BasePropInfo
+        {
+            if (props != null)
             {
-                if (props != null)
+                foreach (var prop in props)
                 {
-                    foreach (var prop in props)
-                    {
-                        MakeGeneralProp(go, prop, builder);
-                    }
+                    MakeGeneralProp(go, prop, builder, errorMessage);
                 }
             }
+        }
+
+        public static void RunMultiPass()
+        {
+            // Try at least 10 times going through all builders to allow for parents to be built out of order
+            int i = 0;
+            while (nextPass.Any())
+            {
+                var count = nextPass.Count;
+                var passClone = nextPass.ToList();
+                nextPass.Clear();
+                passClone.ForEach((x) => x.Invoke());
+
+                if (nextPass.Count >= count)
+                {
+                    NHLogger.LogError("Couldn't find any parents");
+                    break;
+                }
+
+                if (i++ > 10)
+                {
+                    NHLogger.LogError("Went through more than 10 passes of trying to find parents, stopping");
+                    break;
+                }
+            }
+        }
+
+        public static void Make(GameObject go, Sector sector, OWRigidbody planetBody, NewHorizonsBody nhBody)
+        {
+            PlanetConfig config = nhBody.Config;
+            IModBehaviour mod = nhBody.Mod;
+
+            // If a prop has set its parentPath and the parent cannot be found, add it to the next pass and try again later
+            nextPass = new List<Action>();
 
             MakeGeneralProps(go, config.Props.gravityCannons, (cannon) => GravityCannonBuilder.Make(go, sector, cannon, mod));
             MakeGeneralProps(go, config.Props.shuttles, (shuttle) => ShuttleBuilder.Make(go, sector, nhBody.Mod, shuttle));
@@ -82,27 +129,7 @@ namespace NewHorizons.Builder.Props
             MakeGeneralProps(go, config.Props.warpTransmitters, (warpTransmitter) => WarpPadBuilder.Make(go, sector, nhBody.Mod, warpTransmitter));
             MakeGeneralProps(go, config.Props.audioSources, (audioSource) => AudioSourceBuilder.Make(go, sector, audioSource, mod));
 
-            // Try at least 10 times going through all builders to allow for parents to be built out of order
-            int i = 0;
-            while(nextPass.Any())
-            {
-                var count = nextPass.Count;
-                var passClone = nextPass.ToList();
-                nextPass.Clear();
-                passClone.ForEach((x) => x.Invoke());
-
-                if (nextPass.Count >= count)
-                {
-                    NHLogger.LogError("Couldn't find any parents");
-                    break;
-                }
-
-                if (i++ > 10)
-                {
-                    NHLogger.LogError("Went through more than 10 passes of trying to find parents, stopping");
-                    break;
-                }
-            }
+            RunMultiPass();
 
             /*
              * 
