@@ -101,9 +101,9 @@ namespace NewHorizons.Builder.Props
             // If a prop has set its parentPath and the parent cannot be found, add it to the next pass and try again later
             nextPass = new List<Action>();
 
-            MakeGeneralProps(go, config.Props.gravityCannons, (cannon) => GravityCannonBuilder.Make(go, sector, cannon, mod));
-            MakeGeneralProps(go, config.Props.shuttles, (shuttle) => ShuttleBuilder.Make(go, sector, nhBody.Mod, shuttle));
-            MakeGeneralProps(go, config.Props.details, (detail) => DetailBuilder.Make(go, sector, mod, detail));
+            MakeGeneralProps(go, config.Props.gravityCannons, (cannon) => GravityCannonBuilder.Make(go, sector, cannon, mod), (cannon) => cannon.shuttleID);
+            MakeGeneralProps(go, config.Props.shuttles, (shuttle) => ShuttleBuilder.Make(go, sector, mod, shuttle), (shuttle) => shuttle.id);
+            MakeGeneralProps(go, config.Props.details, (detail) => DetailBuilder.Make(go, sector, mod, detail), (detail) => detail.path);
             MakeGeneralProps(go, config.Props.geysers, (geyser) => GeyserBuilder.Make(go, sector, geyser));
             if (Main.HasDLC) MakeGeneralProps(go, config.Props.rafts, (raft) => RaftBuilder.Make(go, sector, raft, planetBody));
             MakeGeneralProps(go, config.Props.tornados, (tornado) => TornadoBuilder.Make(go, sector, tornado, config.Atmosphere?.clouds != null));
@@ -115,19 +115,19 @@ namespace NewHorizons.Builder.Props
                 {
                     NHLogger.LogVerbose($"[DIALOGUE] Failed to create dialogue [{dialogueInfo.xmlFile}]");
                 }
-            });
-            MakeGeneralProps(go, config.Props.entryLocation, (entryLocationInfo) => EntryLocationBuilder.Make(go, sector, entryLocationInfo, mod));
+            }, (dialogueInfo) => dialogueInfo.xmlFile);
+            MakeGeneralProps(go, config.Props.entryLocation, (entryLocationInfo) => EntryLocationBuilder.Make(go, sector, entryLocationInfo, mod), (entryLocationInfo) => entryLocationInfo.id);
             // Backwards compatibility 
 #pragma warning disable 612, 618
-            MakeGeneralProps(go, config.Props.nomaiText, (nomaiTextInfo) => NomaiTextBuilder.Make(go, sector, nomaiTextInfo, nhBody.Mod));
+            MakeGeneralProps(go, config.Props.nomaiText, (nomaiTextInfo) => NomaiTextBuilder.Make(go, sector, nomaiTextInfo, mod), (nomaiTextInfo) => nomaiTextInfo.xmlFile);
 #pragma warning restore 612, 618
-            MakeGeneralProps(go, config.Props.translatorText, (nomaiTextInfo) => TranslatorTextBuilder.Make(go, sector, nomaiTextInfo, nhBody));
-            if (Main.HasDLC) MakeGeneralProps(go, config.Props.slideShows, (slideReelInfo) => ProjectionBuilder.Make(go, sector, slideReelInfo, mod));
-            MakeGeneralProps(go, config.Props.singularities, (singularity) => SingularityBuilder.Make(go, sector, go.GetComponent<OWRigidbody>(), config, singularity));
-            MakeGeneralProps(go, config.Props.signals, (signal) => SignalBuilder.Make(go, sector, signal, mod));
-            MakeGeneralProps(go, config.Props.warpReceivers, (warpReceiver) => WarpPadBuilder.Make(go, sector, nhBody.Mod, warpReceiver));
-            MakeGeneralProps(go, config.Props.warpTransmitters, (warpTransmitter) => WarpPadBuilder.Make(go, sector, nhBody.Mod, warpTransmitter));
-            MakeGeneralProps(go, config.Props.audioSources, (audioSource) => AudioSourceBuilder.Make(go, sector, audioSource, mod));
+            MakeGeneralProps(go, config.Props.translatorText, (nomaiTextInfo) => TranslatorTextBuilder.Make(go, sector, nomaiTextInfo, nhBody), (nomaiTextInfo) => nomaiTextInfo.xmlFile);
+            if (Main.HasDLC) MakeGeneralProps(go, config.Props.slideShows, (slideReelInfo) => ProjectionBuilder.Make(go, sector, slideReelInfo, mod), (slideReelInfo) => slideReelInfo.type.ToString().ToCamelCase());
+            MakeGeneralProps(go, config.Props.singularities, (singularity) => SingularityBuilder.Make(go, sector, go.GetComponent<OWRigidbody>(), config, singularity), (singularity) => (string.IsNullOrEmpty(singularity.uniqueID) ? config.name : singularity.uniqueID));
+            MakeGeneralProps(go, config.Props.signals, (signal) => SignalBuilder.Make(go, sector, signal, mod), (signal) => signal.name);
+            MakeGeneralProps(go, config.Props.warpReceivers, (warpReceiver) => WarpPadBuilder.Make(go, sector, mod, warpReceiver), (warpReceiver) => warpReceiver.frequency);
+            MakeGeneralProps(go, config.Props.warpTransmitters, (warpTransmitter) => WarpPadBuilder.Make(go, sector, mod, warpTransmitter), (warpTransmitter) => warpTransmitter.frequency);
+            MakeGeneralProps(go, config.Props.audioSources, (audioSource) => AudioSourceBuilder.Make(go, sector, audioSource, mod), (audioSource) => audioSource.audio);
 
             RunMultiPass();
 
