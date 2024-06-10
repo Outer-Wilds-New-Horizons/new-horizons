@@ -981,11 +981,11 @@ namespace NewHorizons
                 OWInput.ChangeInputMode(InputMode.None);
 
                 // Hide unloading
-                ManualOnStartSceneLoad(sceneToLoad);
                 FadeHandler.FadeThen(1f, () =>
                 {
                     // Slide reel unloading is tied to being removed from the sector, so we do that here to prevent a softlock
                     Locator.GetPlayerSectorDetector().RemoveFromAllSectors();
+                    ManualOnStartSceneLoad(sceneToLoad); // putting it before fade breaks ship warp effect cuz pause
                     LoadManager.LoadSceneImmediate(sceneToLoad);
                 });
             }
