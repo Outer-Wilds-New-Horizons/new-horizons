@@ -3,22 +3,23 @@ using NewHorizons.Builder.Body;
 using NewHorizons.Builder.General;
 using NewHorizons.Builder.Orbital;
 using NewHorizons.Builder.Props;
+using NewHorizons.Builder.ShipLog;
 using NewHorizons.Builder.Volumes;
 using NewHorizons.Components.Orbital;
 using NewHorizons.Components.Quantum;
 using NewHorizons.Components.Stars;
 using NewHorizons.External;
 using NewHorizons.OtherMods.OWRichPresence;
+using NewHorizons.Streaming;
 using NewHorizons.Utility;
-using NewHorizons.Utility.OWML;
 using NewHorizons.Utility.OuterWilds;
+using NewHorizons.Utility.OWML;
+using Newtonsoft.Json;
+using OWML.ModHelper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using NewHorizons.Streaming;
-using Newtonsoft.Json;
-using NewHorizons.External.Modules.VariableSize;
 
 namespace NewHorizons.Handlers
 {
@@ -344,6 +345,13 @@ namespace NewHorizons.Handlers
             // Do stuff that's shared between generating new planets and updating old ones
             go = SharedGenerateBody(body, go, sector, rb);
 
+            if (body.Config.ShipLog?.mapMode != null)
+            {
+                MapModeBuilder.TryReplaceExistingMapModeIcon(body, body.Mod as ModBehaviour, body.Config.ShipLog.mapMode);
+            }
+
+            body.Object = go;
+
             return go;
         }
 
@@ -366,7 +374,7 @@ namespace NewHorizons.Handlers
             go.SetActive(false);
 
             body.Config.Base.showMinimap = false;
-            body.Config.Base.hasMapMarker = false;
+            body.Config.MapMarker.enabled = false;
 
             const float sphereOfInfluence = 2000f;
             
@@ -459,7 +467,7 @@ namespace NewHorizons.Handlers
 
             RFVolumeBuilder.Make(go, owRigidBody, sphereOfInfluence, body.Config.ReferenceFrame);
 
-            if (body.Config.Base.hasMapMarker)
+            if (body.Config.MapMarker.enabled)
             {
                 MarkerBuilder.Make(go, body.Config.name, body.Config);
             }

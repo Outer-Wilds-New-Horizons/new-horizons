@@ -114,6 +114,11 @@ namespace NewHorizons.External.Configs
         public LavaModule Lava;
 
         /// <summary>
+        /// Map marker properties of this body
+        /// </summary>
+        public MapMarkerModule MapMarker;
+
+        /// <summary>
         /// Describes this Body's orbit (or lack there of)
         /// </summary>
         public OrbitModule Orbit;
@@ -214,6 +219,7 @@ namespace NewHorizons.External.Configs
             if (Base == null) Base = new BaseModule();
             if (Orbit == null) Orbit = new OrbitModule();
             if (ReferenceFrame == null) ReferenceFrame = new ReferenceFrameModule();
+            if (MapMarker == null) MapMarker = new MapMarkerModule();
         }
 
         public void Validate()
@@ -306,6 +312,8 @@ namespace NewHorizons.External.Configs
             if (Base.isSatellite) Base.showMinimap = false;
 
             if (!Base.hasReferenceFrame) ReferenceFrame.enabled = false;
+
+            if (Base.hasMapMarker) MapMarker.enabled = true;
 
             if (childrenToDestroy != null) removeChildren = childrenToDestroy;
 

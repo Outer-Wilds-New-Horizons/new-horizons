@@ -46,7 +46,7 @@ namespace NewHorizons.Utility.DebugTools
             SearchUtilities.Find("/PauseMenu/PauseMenuManagers").GetComponent<PauseMenuManager>().OnSkipToNextTimeLoop();
 
             Main.Instance.ForceClearCaches = true;
-            Main.Instance.ChangeCurrentStarSystem(Main.Instance.CurrentStarSystem);
+            Main.Instance.ChangeCurrentStarSystem(Main.Instance.CurrentStarSystem, Main.Instance.DidWarpFromShip, Main.Instance.DidWarpFromVessel);
 
             Main.SecondsElapsedInLoop = -1f;
         }
