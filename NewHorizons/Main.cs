@@ -227,6 +227,13 @@ namespace NewHorizons
             // the campfire on the title screen calls this from RegisterShape before it gets patched, so we have to call it again. lol 
             ShapeManager.Initialize();
 
+            // Fix a thing (thanks jeff mobius) 1.1.15 updated the game over fonts to only include the characters they needed
+            for (int i = 0; i < TextTranslation.s_theTable.m_gameOverFonts.Length; i++)
+            {
+                var existingFont = TextTranslation.s_theTable.m_dynamicFonts[i];
+                TextTranslation.s_theTable.m_gameOverFonts[i] = existingFont;
+            }
+
             SceneManager.sceneLoaded += OnSceneLoaded;
             SceneManager.sceneUnloaded += OnSceneUnloaded;
 
