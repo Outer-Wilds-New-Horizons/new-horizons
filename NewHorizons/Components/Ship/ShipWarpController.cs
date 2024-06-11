@@ -199,7 +199,6 @@ namespace NewHorizons.Components.Ship
 
             PlayerSpawnHandler.SpawnShip();
             OWInput.ChangeInputMode(InputMode.ShipCockpit);
-            Delay.FireInNUpdates(() => OWInput.ChangeInputMode(InputMode.ShipCockpit), 10);
         }
     }
 }
