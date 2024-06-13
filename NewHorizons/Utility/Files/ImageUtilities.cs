@@ -502,6 +502,8 @@ namespace NewHorizons.Utility.Files
                     var handler = (DownloadHandlerTexture)uwr.downloadHandler;
 
                     var texture = DownloadHandlerTexture.GetContent(uwr);
+                    texture.name = key;
+                    texture.wrapMode = TextureWrapMode.Clamp;
 
                     if (_textureCache.TryGetValue(key, out existingTexture))
                     {
