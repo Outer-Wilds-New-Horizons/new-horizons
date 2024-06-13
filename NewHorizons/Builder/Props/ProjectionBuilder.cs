@@ -11,11 +11,18 @@ using System.IO;
 using System.Threading;
 using UnityEngine;
 using static NewHorizons.Main;
+using System.Linq;
+using HarmonyLib;
+using UnityEngine.InputSystem;
+using Epic.OnlineServices.Presence;
 
 namespace NewHorizons.Builder.Props
 {
     public static class ProjectionBuilder
     {
+        public const string INVERTED_SLIDE_CACHE_FOLDER = "SlideReelCache/Inverted";
+        public const string ATLAS_SLIDE_CACHE_FOLDER = "SlideReelCache/Atlas";
+
         public static GameObject SlideReelWholePrefab { get; private set; }
         public static GameObject SlideReelWholePristinePrefab { get; private set; }
         public static GameObject SlideReelWholeRustedPrefab { get; private set; }
@@ -113,6 +120,8 @@ namespace NewHorizons.Builder.Props
             }
         }
 
+        public static string GetUniqueSlideReelID(IModBehaviour mod, SlideInfo[] slides) => $"{mod.ModHelper.Manifest.UniqueName}{slides.Join(x => x.imagePath)}".GetHashCode().ToString();
+
         private static GameObject MakeSlideReel(GameObject planetGO, Sector sector, ProjectionInfo info, IModBehaviour mod)
         {
             InitPrefabs();
@@ -144,6 +153,8 @@ namespace NewHorizons.Builder.Props
 
             var imageLoader = AddAsyncLoader(slideReelObj, mod, info.slides, ref slideCollection);
 
+            var key = GetUniqueSlideReelID(mod, info.slides);
+
             // this variable just lets us track how many of the first 15 slides have been loaded.
             // this way as soon as the last one is loaded (due to async loading, this may be
             // slide 7, or slide 3, or whatever), we can build the slide reel texture. This allows us
@@ -154,7 +165,7 @@ namespace NewHorizons.Builder.Props
                 {
                     var time = DateTime.Now;
 
-                    slideCollection.slides[index]._image = ImageUtilities.Invert(mod, tex, originalPath);
+                    slideCollection.slides[index]._image = ImageUtilities.InvertSlideReel(mod, tex, originalPath);
                     NHLogger.LogVerbose($"Slide reel make reel invert texture {(DateTime.Now - time).TotalMilliseconds}ms");
                     // Track the first 15 to put on the slide reel object
                     if (index < textures.Length) 
@@ -167,7 +178,7 @@ namespace NewHorizons.Builder.Props
                             var slidesFront = slideReelObj.GetComponentInChildren<TransformAnimator>().transform.Find("Slides_Front").GetComponent<MeshRenderer>();
 
                             // Now put together the textures into a 4x4 thing for the materials
-                            var reelTexture = ImageUtilities.MakeReelTexture(textures);
+                            var reelTexture = ImageUtilities.MakeReelTexture(mod, textures, key);
                             slidesBack.material.mainTexture = reelTexture;
                             slidesBack.material.SetTexture(EmissionMap, reelTexture);
                             slidesBack.material.name = reelTexture.name;
@@ -308,7 +319,7 @@ namespace NewHorizons.Builder.Props
             imageLoader.imageLoadedEvent.AddListener((Texture2D tex, int index, string originalPath) => 
             {
                 var time = DateTime.Now;
-                slideCollection.slides[index]._image = ImageUtilities.Invert(mod, tex, originalPath);
+                slideCollection.slides[index]._image = ImageUtilities.InvertSlideReel(mod, tex, originalPath);
                 NHLogger.LogVerbose($"Slide reel invert time {(DateTime.Now - time).TotalMilliseconds}ms");
             });
 
@@ -443,10 +454,21 @@ namespace NewHorizons.Builder.Props
             return standingTorch;
         }
 
-        private static ImageUtilities.AsyncImageLoader AddAsyncLoader(GameObject gameObject, IModBehaviour mod, SlideInfo[] slides, ref SlideCollection slideCollection)
+        private static SlideReelAsyncImageLoader AddAsyncLoader(GameObject gameObject, IModBehaviour mod, SlideInfo[] slides, ref SlideCollection slideCollection)
         {
-            var invertedImageLoader = gameObject.AddComponent<ImageUtilities.AsyncImageLoader>();
-            var imageLoader = gameObject.AddComponent<ImageUtilities.AsyncImageLoader>();
+            var invertedImageLoader = new SlideReelAsyncImageLoader();
+            var atlasImageLoader = new SlideReelAsyncImageLoader();
+            var imageLoader = new SlideReelAsyncImageLoader();
+
+            var textureNames = slides.Select(x => Path.GetFileNameWithoutExtension(x.imagePath)).ToArray();
+            var atlasKey = GetUniqueSlideReelID(mod, slides);
+
+            atlasImageLoader.PathsToLoad.Add((0, Path.Combine(mod.ModHelper.Manifest.ModFolderPath, ATLAS_SLIDE_CACHE_FOLDER, $"{atlasKey}.png")));
+            atlasImageLoader.imageLoadedEvent.AddListener((Texture2D t, int i, string s) =>
+            {
+                NHLogger.Log($"SLIDE REEL ATLAS from {slides.First().imagePath}: {s}");
+                ImageUtilities.TrackCachedTexture(atlasKey, t);
+            });
             for (int i = 0; i < slides.Length; i++)
             {
                 var slide = new Slide();
@@ -459,7 +481,7 @@ namespace NewHorizons.Builder.Props
                 }
                 else
                 {
-                    invertedImageLoader.PathsToLoad.Add((i, Path.Combine(mod.ModHelper.Manifest.ModFolderPath, "invertedSlideReelCache", slideInfo.imagePath)));
+                    invertedImageLoader.PathsToLoad.Add((i, Path.Combine(mod.ModHelper.Manifest.ModFolderPath, INVERTED_SLIDE_CACHE_FOLDER, slideInfo.imagePath)));
                     invertedImageLoader.imageLoadedEvent.AddListener((Texture2D t, int i, string s) => 
                     {
                         var path = "\\" + Path.Combine(Path.GetFileName(Path.GetDirectoryName(mod.ModHelper.Manifest.ModFolderPath)), slides[i].imagePath) + " > invert";
@@ -472,8 +494,11 @@ namespace NewHorizons.Builder.Props
 
                 slideCollection.slides[i] = slide;
             }
-            invertedImageLoader.Start();
-            imageLoader.Start();
+            // Loaders go sequentually - Load the inverted textures to the cache so that ImageUtilities will reuse them later
+            invertedImageLoader.Start(true);
+            // Atlas texture next so that the normal iamgeLoader knows not to regenerate them unless they were missing
+            atlasImageLoader.Start(false);
+            imageLoader.Start(true);
 
             return imageLoader;
         }
