@@ -690,7 +690,7 @@ namespace NewHorizons
 
             if (SystemDict.ContainsKey(starSystemName))
             {
-                if (string.IsNullOrEmpty(SystemDict[starSystemName].Config.travelAudio) && SystemDict[starSystemName].Config.Skybox == null)
+                if (SystemDict[starSystemName].Config.GlobalMusic == null && SystemDict[starSystemName].Config.Skybox == null)
                     SystemDict[starSystemName].Mod = mod;
                 SystemDict[starSystemName].Config.Merge(starSystemConfig);
             }

@@ -8,6 +8,7 @@ using NewHorizons.Utility.OuterWilds;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using NewHorizons.OtherMods;
+using NewHorizons.Components.EOTE;
 
 namespace NewHorizons.Handlers
 {
@@ -46,9 +47,42 @@ namespace NewHorizons.Handlers
                 TimeLoopUtilities.SetLoopDuration(system.Config.loopDuration);
             }
 
-            if (!string.IsNullOrEmpty(system.Config.travelAudio))
+            if (!string.IsNullOrEmpty(system.Config.GlobalMusic.travelAudio))
             {
-                Delay.FireOnNextUpdate(() => AudioUtilities.SetAudioClip(Locator.GetGlobalMusicController()._travelSource, system.Config.travelAudio, system.Mod));
+                Delay.FireOnNextUpdate(() => AudioUtilities.SetAudioClip(Locator.GetGlobalMusicController()._travelSource, system.Config.GlobalMusic.travelAudio, system.Mod));
+            }
+
+            if (!string.IsNullOrEmpty(system.Config.GlobalMusic.endTimesAudio))
+            {
+                Delay.FireOnNextUpdate(() => {
+                    Locator.GetGlobalMusicController().gameObject.GetAddComponent<DreamWorldEndTimes>().SetEndTimesAudio(system.Config.GlobalMusic.endTimesAudio, system.Mod);
+                    AudioUtilities.SetAudioClip(Locator.GetGlobalMusicController()._endTimesSource, system.Config.GlobalMusic.endTimesAudio, system.Mod);
+                });
+            }
+
+            if (!string.IsNullOrEmpty(system.Config.GlobalMusic.endTimesDreamAudio))
+            {
+                Delay.FireOnNextUpdate(() => Locator.GetGlobalMusicController().gameObject.GetAddComponent<DreamWorldEndTimes>().SetEndTimesDreamAudio(system.Config.GlobalMusic.endTimesDreamAudio, system.Mod));
+            }
+
+            if (!string.IsNullOrEmpty(system.Config.GlobalMusic.brambleDimensionAudio))
+            {
+                Delay.FireOnNextUpdate(() => AudioUtilities.SetAudioClip(Locator.GetGlobalMusicController()._darkBrambleSource, system.Config.GlobalMusic.brambleDimensionAudio, system.Mod));
+            }
+
+            if (!string.IsNullOrEmpty(system.Config.GlobalMusic.finalEndTimesIntroAudio))
+            {
+                Delay.FireOnNextUpdate(() => AudioUtilities.SetAudioClip(Locator.GetGlobalMusicController()._finalEndTimesIntroSource, system.Config.GlobalMusic.finalEndTimesIntroAudio, system.Mod));
+            }
+
+            if (!string.IsNullOrEmpty(system.Config.GlobalMusic.finalEndTimesLoopAudio))
+            {
+                Delay.FireOnNextUpdate(() => AudioUtilities.SetAudioClip(Locator.GetGlobalMusicController()._finalEndTimesLoopSource, system.Config.GlobalMusic.finalEndTimesLoopAudio, system.Mod));
+            }
+
+            if (!string.IsNullOrEmpty(system.Config.GlobalMusic.finalEndTimesBrambleDimensionAudio))
+            {
+                Delay.FireOnNextUpdate(() => AudioUtilities.SetAudioClip(Locator.GetGlobalMusicController()._finalEndTimesDarkBrambleSource, system.Config.GlobalMusic.finalEndTimesBrambleDimensionAudio, system.Mod));
             }
         }
     }
