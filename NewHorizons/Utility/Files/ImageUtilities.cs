@@ -6,8 +6,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.InputSystem;
 using UnityEngine.Networking;
 
 namespace NewHorizons.Utility.Files
@@ -472,21 +474,17 @@ namespace NewHorizons.Utility.Files
                 foreach (var (index, path) in PathsToLoad)
                 {
                     yield return StartCoroutine(DownloadTexture(path, index));
-                    yield return new WaitForSeconds(0.5f);
                 }
             }
 
             IEnumerator DownloadTexture(string url, int index)
             {
                 var key = GetKey(url);
-                lock (_textureCache)
+                if (_textureCache.TryGetValue(key, out var existingTexture))
                 {
-                    if (_textureCache.TryGetValue(key, out var existingTexture))
-                    {
-                        NHLogger.LogVerbose($"Already loaded image {index}:{url}");
-                        imageLoadedEvent?.Invoke((Texture2D)existingTexture, index);
-                        yield break;
-                    }
+                    NHLogger.LogVerbose($"Already loaded image {index}:{url}");
+                    imageLoadedEvent?.Invoke((Texture2D)existingTexture, index);
+                    yield break;
                 }
 
                 using UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(url);
@@ -501,28 +499,23 @@ namespace NewHorizons.Utility.Files
                 }
                 else
                 {
-                    var texture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
-                    texture.name = key;
-                    texture.wrapMode = TextureWrapMode.Clamp;
-
                     var handler = (DownloadHandlerTexture)uwr.downloadHandler;
-                    texture.LoadImage(handler.data);
 
-                    lock (_textureCache)
+                    var texture = DownloadHandlerTexture.GetContent(uwr);
+
+                    if (_textureCache.TryGetValue(key, out existingTexture))
                     {
-                        if (_textureCache.TryGetValue(key, out var existingTexture))
-                        {
-                            NHLogger.LogVerbose($"Already loaded image {index}:{url}");
-                            Destroy(texture);
-                            texture = (Texture2D)existingTexture;
-                        }
-                        else
-                        {
-                            _textureCache.Add(key, texture);
-                        }
-
-                        imageLoadedEvent?.Invoke(texture, index);
+                        NHLogger.LogVerbose($"Already loaded image {index}:{url}");
+                        Destroy(texture);
+                        texture = (Texture2D)existingTexture;
                     }
+                    else
+                    {
+                        _textureCache.Add(key, texture);
+                    }
+
+                    yield return null;
+                    imageLoadedEvent?.Invoke(texture, index);
                 }
             }
         }
