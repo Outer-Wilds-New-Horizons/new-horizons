@@ -1,6 +1,7 @@
 using HarmonyLib;
 using NewHorizons.Utility.OWML;
 using OWML.Common;
+using OWML.ModHelper;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -19,14 +20,14 @@ namespace NewHorizons.Utility.Files
         // key is path + applied effects
         private static readonly Dictionary<string, Texture> _textureCache = new();
         public static bool CheckCachedTexture(string key, out Texture existingTexture) => _textureCache.TryGetValue(key, out existingTexture);
-        public static void TrackCachedTexture(string key, Texture texture) => _textureCache.Add(key, texture);
+        public static void TrackCachedTexture(string key, Texture texture) => _textureCache[key] = texture;
 
-        private static string GetKey(string path) => path.Substring(Main.Instance.ModHelper.OwmlConfig.ModsPath.Length);
+        public static string GetKey(string path) => path.Substring(Main.Instance.ModHelper.OwmlConfig.ModsPath.Length);
 
         public static bool IsTextureLoaded(IModBehaviour mod, string filename)
         {
             var path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, filename);
-            var key = GetKey(path);
+            var key = GetKey(path).Replace('\\', '/');
             return _textureCache.ContainsKey(key);
         }
 
@@ -101,7 +102,7 @@ namespace NewHorizons.Utility.Files
         /// used specifically for projected slides.
         /// also adds a border (to prevent weird visual bug) and makes the texture linear (otherwise the projected image is too bright).
         /// </summary>
-        public static Texture2D Invert(Texture2D texture)
+        public static Texture2D Invert(IModBehaviour mod, Texture2D texture, string originalPath)
         {
             var key = $"{texture.name} > invert";
             if (_textureCache.TryGetValue(key, out var existingTexture)) return (Texture2D)existingTexture;
@@ -136,6 +137,14 @@ namespace NewHorizons.Utility.Files
             newTexture.wrapMode = texture.wrapMode;
 
             _textureCache.Add(key, newTexture);
+
+            if (!string.IsNullOrEmpty(originalPath))
+            {
+                var path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, "invertedSlideReelCache", originalPath.Replace(mod.ModHelper.Manifest.ModFolderPath, ""));
+                NHLogger.LogVerbose($"Caching inverted image to {path}");
+                Directory.CreateDirectory(Path.GetDirectoryName(path));
+                File.WriteAllBytes(path, newTexture.EncodeToPNG());
+            }
 
             return newTexture;
         }
@@ -432,12 +441,49 @@ namespace NewHorizons.Utility.Files
             return sprite;
         }
 
+        public class SingletonAsyncImageLoader : MonoBehaviour
+        {
+            public static SingletonAsyncImageLoader Instance { get; private set; }
+
+            private Queue<AsyncImageLoader> loaders = new();
+
+            private bool _isLoading;
+
+            public void Awake()
+            {
+                Instance = this;
+            }
+
+            public void Load(AsyncImageLoader loader)
+            {
+                loaders.Enqueue(loader);
+                if (!_isLoading)
+                {
+                    StartCoroutine(Run());
+                }
+            }
+
+            private IEnumerator Run()
+            {
+                NHLogger.Log("Loading slide reels");
+                _isLoading = true;
+                while (loaders.Count > 0)
+                {
+                    var loader = loaders.Dequeue();
+                    yield return loader.DownloadTextures();
+                    NHLogger.Log($"Finished a slide reel, {loaders.Count} left");
+                }
+                _isLoading = false;
+                NHLogger.Log("Done loading slide reels");
+            }
+        }
+
         // Modified from https://stackoverflow.com/a/69141085/9643841
         public class AsyncImageLoader : MonoBehaviour
         {
             public List<(int index, string path)> PathsToLoad { get; private set; } = new();
 
-            public class ImageLoadedEvent : UnityEvent<Texture2D, int> { }
+            public class ImageLoadedEvent : UnityEvent<Texture2D, int, string> { }
             public ImageLoadedEvent imageLoadedEvent = new();
 
             private readonly object _lockObj = new();
@@ -449,13 +495,25 @@ namespace NewHorizons.Utility.Files
             // and make use of that for at least for projector stuff (require player to be in the same sector as the slides
             // for them to start loading, and unload when the player leaves)
 
-            void Start()
+            private bool _started;
+
+            public void Start()
             {
+                if (_started) return;
+
+                _started = true;
+
+                if (SingletonAsyncImageLoader.Instance == null)
+                {
+                    Main.Instance.gameObject.AddComponent<SingletonAsyncImageLoader>();
+                }
+
+                NHLogger.LogVerbose("Loading new slide reel");
                 imageLoadedEvent.AddListener(OnImageLoaded);
-                StartCoroutine(DownloadTextures());
+                SingletonAsyncImageLoader.Instance.Load(this);
             }
 
-            private void OnImageLoaded(Texture texture, int index)
+            private void OnImageLoaded(Texture texture, int index, string originalPath)
             {
                 lock (_lockObj)
                 {
@@ -469,11 +527,13 @@ namespace NewHorizons.Utility.Files
                 }
             }
 
-            IEnumerator DownloadTextures()
+            internal IEnumerator DownloadTextures()
             {
                 foreach (var (index, path) in PathsToLoad)
                 {
-                    yield return StartCoroutine(DownloadTexture(path, index));
+                    NHLogger.Log($"Loaded slide reel {index} of {PathsToLoad.Count}");
+
+                    yield return DownloadTexture(path, index);
                 }
             }
 
@@ -483,7 +543,7 @@ namespace NewHorizons.Utility.Files
                 if (_textureCache.TryGetValue(key, out var existingTexture))
                 {
                     NHLogger.LogVerbose($"Already loaded image {index}:{url}");
-                    imageLoadedEvent?.Invoke((Texture2D)existingTexture, index);
+                    imageLoadedEvent?.Invoke((Texture2D)existingTexture, index, url);
                     yield break;
                 }
 
@@ -517,7 +577,9 @@ namespace NewHorizons.Utility.Files
                     }
 
                     yield return null;
-                    imageLoadedEvent?.Invoke(texture, index);
+                    var time = DateTime.Now;
+                    imageLoadedEvent?.Invoke(texture, index, url);
+                    NHLogger.LogVerbose($"Slide reel event? {(DateTime.Now - time).TotalMilliseconds}ms");
                 }
             }
         }
