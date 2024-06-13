@@ -450,10 +450,7 @@ namespace NewHorizons.Utility.Files
             void Start()
             {
                 imageLoadedEvent.AddListener(OnImageLoaded);
-                foreach (var (index, path) in PathsToLoad)
-                {
-                    StartCoroutine(DownloadTexture(path, index));
-                }
+                StartCoroutine(DownloadTextures());
             }
 
             private void OnImageLoaded(Texture texture, int index)
@@ -467,6 +464,15 @@ namespace NewHorizons.Utility.Files
                         NHLogger.LogVerbose($"Finished loading all textures for {gameObject.name} (one was {PathsToLoad.FirstOrDefault()}");
                         FinishedLoading = true;
                     }
+                }
+            }
+
+            IEnumerator DownloadTextures()
+            {
+                foreach (var (index, path) in PathsToLoad)
+                {
+                    yield return StartCoroutine(DownloadTexture(path, index));
+                    yield return new WaitForSeconds(0.5f);
                 }
             }
 
