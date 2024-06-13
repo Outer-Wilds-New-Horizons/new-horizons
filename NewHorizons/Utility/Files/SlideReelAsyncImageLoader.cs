@@ -6,6 +6,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Networking;
+using UnityEngine.SceneManagement;
 
 namespace NewHorizons.Utility.Files;
 
@@ -134,6 +135,14 @@ public class SlideReelAsyncImageLoader
         public void Awake()
         {
             Instance = this;
+            SceneManager.sceneUnloaded += OnSceneUnloaded;
+        }
+
+        private void OnSceneUnloaded(Scene _)
+        {
+            StopAllCoroutines();
+            _loaders.Clear();
+            _isLoading = false;
         }
 
         public void Load(SlideReelAsyncImageLoader loader)
