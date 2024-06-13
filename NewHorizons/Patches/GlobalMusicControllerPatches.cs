@@ -21,7 +21,7 @@ public class GlobalMusicControllerPatches
 			PlayerState.AtFlightConsole() &&
 			!PlayerState.IsHullBreached() &&
 			!__instance._playingFinalEndTimes &&
-			_audioDetector._activeVolumes.Count == 0; // change - don't play if in another audio volume
+			_audioDetector._activeVolumes.Count <= 1; // change - don't play if in another audio volume other than ambient
 		var playing = __instance._darkBrambleSource.isPlaying &&
 			!__instance._darkBrambleSource.IsFadingOut();
 		if (shouldBePlaying && !playing)
