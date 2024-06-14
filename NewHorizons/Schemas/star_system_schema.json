@@ -153,11 +153,11 @@
         },
         "endTimesAudio": {
           "type": "string",
-          "description": "The audio that will play for 85 seconds before the loop ends. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+          "description": "The audio that will play right before the loop ends. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
         },
         "endTimesDreamAudio": {
           "type": "string",
-          "description": "The audio that will play for 85 seconds before the loop ends while inside the dreamworld. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+          "description": "The audio that will play right before the loop ends while inside the dreamworld. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
         },
         "brambleDimensionAudio": {
           "type": "string",
