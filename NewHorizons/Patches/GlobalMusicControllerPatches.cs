@@ -79,7 +79,7 @@ public class GlobalMusicControllerPatches
 		{
 			if (__instance.TryGetComponent(out DreamWorldEndTimes dreamWorldEndTimes))
 			{
-				dreamWorldEndTimes.AssignEndTimesDream(__instance._endTimesSource);
+				dreamWorldEndTimes.AssignEndTimes(__instance._endTimesSource);
 			}
 			else
 			{
