@@ -31,6 +31,19 @@ namespace NewHorizons.Builder.ShipLog
             foreach (var shipLogAstroObject in currentNav.SelectMany(x => x))
             {
                 var astroObject = Locator.GetAstroObject(AstroObject.StringIDToAstroObjectName(shipLogAstroObject._id));
+                if (astroObject == null)
+                {
+                    // Outsider compat
+                    if (shipLogAstroObject._id == "POWER_STATION")
+                    {
+                        astroObject = GameObject.FindObjectsOfType<AstroObject>().FirstOrDefault(x => x._customName == "Power Station");
+                    }
+                    else
+                    {
+                        NHLogger.LogError($"Couldn't find stock (?) astro object [{shipLogAstroObject?._id}]");
+                        continue;
+                    }
+                }
                 _astroObjectToShipLog[astroObject.gameObject] = shipLogAstroObject;
             }
 

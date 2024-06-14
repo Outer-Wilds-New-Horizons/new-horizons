@@ -188,7 +188,11 @@ namespace NewHorizons.Components.Props
                     {
                         for (int i = 0; i < _ambientLight.Length; i++)
                         {
-                            _ambientLight[i].intensity = _ambientLightOrigIntensity[i] * (1f - collapseProgress);
+                            var ambientLight = _ambientLight[i];
+                            if (ambientLight != null)
+                            {
+                                ambientLight.intensity = _ambientLightOrigIntensity[i] * (1f - collapseProgress);
+                            }
                         }
                     }
 
