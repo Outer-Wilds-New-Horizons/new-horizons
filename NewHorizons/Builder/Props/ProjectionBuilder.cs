@@ -488,7 +488,7 @@ namespace NewHorizons.Builder.Props
                     invertedImageLoader.PathsToLoad.Add((i, Path.Combine(mod.ModHelper.Manifest.ModFolderPath, INVERTED_SLIDE_CACHE_FOLDER, slideInfo.imagePath)));
                     invertedImageLoader.imageLoadedEvent.AddListener((Texture2D t, int i, string s) => 
                     {
-                        var path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, slideInfo.imagePath);
+                        var path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, slides[i].imagePath);
                         var key = $"{ImageUtilities.GetKey(path)} > invert";
                         ImageUtilities.TrackCachedTexture(key, t);
                     });
