@@ -204,12 +204,12 @@ namespace NewHorizons.External.Configs
             public string travelAudio;
 
             /// <summary>
-            /// The audio that will play for 85 seconds before the loop ends. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list.
+            /// The audio that will play right before the loop ends. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list.
             /// </summary>
             public string endTimesAudio;
 
             /// <summary>
-            /// The audio that will play for 85 seconds before the loop ends while inside the dreamworld. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list.
+            /// The audio that will play right before the loop ends while inside the dreamworld. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list.
             /// </summary>
             public string endTimesDreamAudio;
 

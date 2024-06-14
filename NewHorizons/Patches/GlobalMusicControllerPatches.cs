@@ -1,11 +1,14 @@
 using HarmonyLib;
 using NewHorizons.Components.EOTE;
+using NewHorizons.Utility;
+using System.Collections.Generic;
+using System.Reflection.Emit;
 using UnityEngine;
 
 namespace NewHorizons.Patches;
 
 [HarmonyPatch(typeof(GlobalMusicController))]
-public class GlobalMusicControllerPatches
+public static class GlobalMusicControllerPatches
 {
 	private static AudioDetector _audioDetector;
 
@@ -35,10 +38,42 @@ public class GlobalMusicControllerPatches
 		}
 
 		return false;
-	}
+    }
 
+    /// <summary>
+    /// Replaces any <c>85f</c> with <see cref="NewHorizonsExtensions.GetSecondsBeforeSupernovaPlayTime(GlobalMusicController)"/>
+    /// </summary>
+    [HarmonyTranspiler]
+    [HarmonyPatch(nameof(GlobalMusicController.UpdateEndTimesMusic))]
+    public static IEnumerable<CodeInstruction> GlobalMusicController_UpdateEndTimesMusic(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+    {
+        return new CodeMatcher(instructions, generator).MatchForward(true,
+                new CodeMatch(OpCodes.Call),
+                new CodeMatch(OpCodes.Ldc_R4, 85f),
+                new CodeMatch(OpCodes.Ble_Un)
+            ).Advance(-1).RemoveInstruction().Insert(
+                new CodeInstruction(OpCodes.Ldarg_0),
+                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(NewHorizonsExtensions), nameof(NewHorizonsExtensions.GetSecondsBeforeSupernovaPlayTime)))
+            ).MatchForward(true,
+                new CodeMatch(OpCodes.Call),
+                new CodeMatch(OpCodes.Ldc_R4, 85f),
+                new CodeMatch(OpCodes.Bge_Un)
+            ).Advance(-1).RemoveInstruction().Insert(
+                new CodeInstruction(OpCodes.Ldarg_0),
+                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(NewHorizonsExtensions), nameof(NewHorizonsExtensions.GetSecondsBeforeSupernovaPlayTime)))
+            ).MatchForward(false,
+                new CodeMatch(OpCodes.Ldc_R4, 85f),
+                new CodeMatch(OpCodes.Call),
+                new CodeMatch(OpCodes.Sub)
+            ).RemoveInstruction().Insert(
+                new CodeInstruction(OpCodes.Ldarg_0),
+                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(NewHorizonsExtensions), nameof(NewHorizonsExtensions.GetSecondsBeforeSupernovaPlayTime)))
+            ).InstructionEnumeration();
+    }
 
-	[HarmonyPrefix]
+    // Custom end times for dreamworld
+
+    [HarmonyPrefix]
 	[HarmonyPatch(nameof(GlobalMusicController.OnEnterDreamWorld))]
 	public static bool GlobalMusicController_OnEnterDreamWorld(GlobalMusicController __instance)
 	{

@@ -1,3 +1,4 @@
+using HarmonyLib;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules.VariableSize;
 using NewHorizons.External.SerializableData;
@@ -424,6 +425,29 @@ namespace NewHorizons.Utility
             playerCameraEffectController._owCamera.postProcessingSettings.eyeMask.openness = 0f;
             playerCameraEffectController._owCamera.postProcessingSettings.bloom.threshold = 0f;
             playerCameraEffectController._owCamera.postProcessingSettings.eyeMaskEnabled = true;
+        }
+
+        public static float GetSecondsBeforeSupernovaPlayTime(this GlobalMusicController globalMusicController)
+        {
+            var clip = globalMusicController._endTimesSource.audioLibraryClip;
+            if (clip == AudioType.EndOfTime || clip == AudioType.EndOfTime_Dream)
+                return GlobalMusicController.secondsBeforeSupernovaPlayTime;
+            return globalMusicController._endTimesSource.clip.length;
+        }
+
+        public static CodeMatcher LogInstructions(this CodeMatcher matcher, string prefix)
+        {
+            matcher.InstructionEnumeration().LogInstructions(prefix);
+            return matcher;
+        }
+
+        public static IEnumerable<CodeInstruction> LogInstructions(this IEnumerable<CodeInstruction> instructions, string prefix)
+        {
+            var message = prefix;
+            foreach (var instruction in instructions)
+                message += $"\n{instruction}";
+            Debug.LogError(message);
+            return instructions;
         }
     }
 }
