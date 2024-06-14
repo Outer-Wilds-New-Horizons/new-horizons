@@ -1,3 +1,4 @@
+using HarmonyLib;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.Props.EchoesOfTheEye;
 using NewHorizons.Handlers;
@@ -8,13 +9,10 @@ using OWML.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
-using UnityEngine;
-using static NewHorizons.Main;
 using System.Linq;
-using HarmonyLib;
+using UnityEngine;
 using UnityEngine.InputSystem;
-using Epic.OnlineServices.Presence;
+using static NewHorizons.Main;
 
 namespace NewHorizons.Builder.Props
 {
@@ -471,7 +469,13 @@ namespace NewHorizons.Builder.Props
                 NHLogger.Log($"SLIDE REEL ATLAS from {slides.First().imagePath}: {s}");
                 ImageUtilities.TrackCachedTexture(atlasKey, t);
             });
-            
+            invertedImageLoader.imageLoadedEvent.AddListener((Texture2D t, int i, string s) =>
+            {
+                var path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, slides[i].imagePath);
+                var key = $"{ImageUtilities.GetKey(path)} > invert";
+                ImageUtilities.TrackCachedTexture(key, t);
+            });
+
             for (int i = 0; i < slides.Length; i++)
             {
                 var slide = new Slide();
@@ -485,14 +489,7 @@ namespace NewHorizons.Builder.Props
                 else
                 {
                     // attempt to load inverted guy from disk and precache so theres a cache hit when using ImageUtilities
-                    invertedImageLoader.PathsToLoad.Add((i, Path.Combine(mod.ModHelper.Manifest.ModFolderPath, INVERTED_SLIDE_CACHE_FOLDER, slideInfo.imagePath)));
-                    invertedImageLoader.imageLoadedEvent.AddListener((Texture2D t, int i, string s) => 
-                    {
-                        var path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, slides[i].imagePath);
-                        var key = $"{ImageUtilities.GetKey(path)} > invert";
-                        ImageUtilities.TrackCachedTexture(key, t);
-                    });
-                    
+                    invertedImageLoader.PathsToLoad.Add((i, Path.Combine(mod.ModHelper.Manifest.ModFolderPath, INVERTED_SLIDE_CACHE_FOLDER, slideInfo.imagePath)));                    
                     imageLoader.PathsToLoad.Add((i, Path.Combine(mod.ModHelper.Manifest.ModFolderPath, slideInfo.imagePath)));
                 }
 
