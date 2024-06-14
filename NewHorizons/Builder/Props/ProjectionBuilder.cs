@@ -1,3 +1,4 @@
+using HarmonyLib;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.Props.EchoesOfTheEye;
 using NewHorizons.Handlers;
@@ -8,14 +9,18 @@ using OWML.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using static NewHorizons.Main;
 
 namespace NewHorizons.Builder.Props
 {
     public static class ProjectionBuilder
     {
+        public const string INVERTED_SLIDE_CACHE_FOLDER = "SlideReelCache/Inverted";
+        public const string ATLAS_SLIDE_CACHE_FOLDER = "SlideReelCache/Atlas";
+
         public static GameObject SlideReelWholePrefab { get; private set; }
         public static GameObject SlideReelWholePristinePrefab { get; private set; }
         public static GameObject SlideReelWholeRustedPrefab { get; private set; }
@@ -113,6 +118,8 @@ namespace NewHorizons.Builder.Props
             }
         }
 
+        public static string GetUniqueSlideReelID(IModBehaviour mod, SlideInfo[] slides) => $"{mod.ModHelper.Manifest.UniqueName}{slides.Join(x => x.imagePath)}".GetHashCode().ToString();
+
         private static GameObject MakeSlideReel(GameObject planetGO, Sector sector, ProjectionInfo info, IModBehaviour mod)
         {
             InitPrefabs();
@@ -139,10 +146,12 @@ namespace NewHorizons.Builder.Props
             var slideCollection = new SlideCollection(slidesCount);
             slideCollection.streamingAssetIdentifier = string.Empty; // NREs if null
 
-            // The base game ones only have 15 slides max
-            var textures = new Texture2D[slidesCount >= 15 ? 15 : slidesCount];
+            // We can fit 16 slides max into an atlas
+            var textures = new Texture2D[slidesCount > 16 ? 16 : slidesCount];
 
-            var imageLoader = AddAsyncLoader(slideReelObj, mod, info.slides, ref slideCollection);
+            var imageLoader = StartAsyncLoader(mod, info.slides, ref slideCollection);
+
+            var key = GetUniqueSlideReelID(mod, info.slides);
 
             // this variable just lets us track how many of the first 15 slides have been loaded.
             // this way as soon as the last one is loaded (due to async loading, this may be
@@ -150,22 +159,25 @@ namespace NewHorizons.Builder.Props
             // to avoid doing a "is every element in the array `textures` not null" check every time a texture finishes loading
             int displaySlidesLoaded = 0;
             imageLoader.imageLoadedEvent.AddListener(
-                (Texture2D tex, int index) => 
+                (Texture2D tex, int index, string originalPath) => 
                 {
-                    slideCollection.slides[index]._image = ImageUtilities.Invert(tex); 
+                    var time = DateTime.Now;
 
-                    // Track the first 15 to put on the slide reel object
+                    slideCollection.slides[index]._image = ImageUtilities.InvertSlideReel(mod, tex, originalPath);
+                    NHLogger.LogVerbose($"Slide reel make reel invert texture {(DateTime.Now - time).TotalMilliseconds}ms");
+                    // Track the first 16 to put on the slide reel object
                     if (index < textures.Length) 
                     {
                         textures[index] = tex;
-                        if (Interlocked.Increment(ref displaySlidesLoaded) >= textures.Length)
+                        displaySlidesLoaded++;
+                        if (displaySlidesLoaded == textures.Length)
                         {
                             // all textures required to build the reel's textures have been loaded
                             var slidesBack = slideReelObj.GetComponentInChildren<TransformAnimator>().transform.Find("Slides_Back").GetComponent<MeshRenderer>();
                             var slidesFront = slideReelObj.GetComponentInChildren<TransformAnimator>().transform.Find("Slides_Front").GetComponent<MeshRenderer>();
 
                             // Now put together the textures into a 4x4 thing for the materials
-                            var reelTexture = ImageUtilities.MakeReelTexture(textures);
+                            var reelTexture = ImageUtilities.MakeReelTexture(mod, textures, key);
                             slidesBack.material.mainTexture = reelTexture;
                             slidesBack.material.SetTexture(EmissionMap, reelTexture);
                             slidesBack.material.name = reelTexture.name;
@@ -174,6 +186,8 @@ namespace NewHorizons.Builder.Props
                             slidesFront.material.name = reelTexture.name;
                         }
                     }
+
+                    NHLogger.LogVerbose($"Slide reel make reel texture {(DateTime.Now - time).TotalMilliseconds}ms");
                 }
             );
 
@@ -300,8 +314,13 @@ namespace NewHorizons.Builder.Props
             var slideCollection = new SlideCollection(slidesCount);
             slideCollection.streamingAssetIdentifier = string.Empty; // NREs if null
 
-            var imageLoader = AddAsyncLoader(projectorObj, mod, info.slides, ref slideCollection);
-            imageLoader.imageLoadedEvent.AddListener((Texture2D tex, int index) => { slideCollection.slides[index]._image = ImageUtilities.Invert(tex); });
+            var imageLoader = StartAsyncLoader(mod, info.slides, ref slideCollection);
+            imageLoader.imageLoadedEvent.AddListener((Texture2D tex, int index, string originalPath) => 
+            {
+                var time = DateTime.Now;
+                slideCollection.slides[index]._image = ImageUtilities.InvertSlideReel(mod, tex, originalPath);
+                NHLogger.LogVerbose($"Slide reel invert time {(DateTime.Now - time).TotalMilliseconds}ms");
+            });
 
             slideCollectionContainer.slideCollection = slideCollection;
 
@@ -339,8 +358,13 @@ namespace NewHorizons.Builder.Props
             var slideCollection = new SlideCollection(slidesCount); // TODO: uh I think that info.slides[i].playTimeDuration is not being read here... note to self for when I implement support for that: 0.7 is what to default to if playTimeDuration turns out to be 0
             slideCollection.streamingAssetIdentifier = string.Empty; // NREs if null
 
-            var imageLoader = AddAsyncLoader(g, mod, info.slides, ref slideCollection);
-            imageLoader.imageLoadedEvent.AddListener((Texture2D tex, int index) => { slideCollection.slides[index]._image = tex; });
+            var imageLoader = StartAsyncLoader(mod, info.slides, ref slideCollection);
+            imageLoader.imageLoadedEvent.AddListener((Texture2D tex, int index, string originalPath) => 
+            { 
+                var time = DateTime.Now;
+                slideCollection.slides[index]._image = tex;
+                NHLogger.LogVerbose($"Slide reel set time {(DateTime.Now - time).TotalMilliseconds}ms");
+            });
 
             // attach a component to store all the data for the slides that play when a vision torch scans this target
             var target = g.AddComponent<VisionTorchTarget>();
@@ -381,13 +405,13 @@ namespace NewHorizons.Builder.Props
             visionBeamEffect.SetActive(false);
 
             // Set up slides
-            // The number of slides is unlimited, 15 is only for texturing the actual slide reel item. This is not a slide reel item
+            // The number of slides is unlimited, 16 is only for texturing the actual slide reel item. This is not a slide reel item
             var slides = info.slides;
             var slidesCount = slides.Length;
             var slideCollection = new SlideCollection(slidesCount);
             slideCollection.streamingAssetIdentifier = string.Empty; // NREs if null
 
-            var imageLoader = AddAsyncLoader(standingTorch, mod, slides, ref slideCollection);
+            var imageLoader = StartAsyncLoader(mod, slides, ref slideCollection);
 
             // This variable just lets us track how many of the slides have been loaded.
             // This way as soon as the last one is loaded (due to async loading, this may be
@@ -395,15 +419,18 @@ namespace NewHorizons.Builder.Props
             // to avoid doing a "is every element in the array `slideCollection.slides` not null" check every time a texture finishes loading
             int displaySlidesLoaded = 0;
             imageLoader.imageLoadedEvent.AddListener(
-                (Texture2D tex, int index) => 
-                { 
+                (Texture2D tex, int index, string originalPath) => 
+                {
+                    var time = DateTime.Now;
                     slideCollection.slides[index]._image = tex;
 
-                    if (Interlocked.Increment(ref displaySlidesLoaded) == slides.Length)
+                    displaySlidesLoaded++;
+                    if (displaySlidesLoaded == slides.Length)
                     {
                         mindSlideProjector.enabled = true;
                         visionBeamEffect.SetActive(true);
                     }
+                    NHLogger.LogVerbose($"Slide reel another set time {(DateTime.Now - time).TotalMilliseconds}ms");
                 }
             );
 
@@ -427,9 +454,28 @@ namespace NewHorizons.Builder.Props
             return standingTorch;
         }
 
-        private static ImageUtilities.AsyncImageLoader AddAsyncLoader(GameObject gameObject, IModBehaviour mod, SlideInfo[] slides, ref SlideCollection slideCollection)
+        private static SlideReelAsyncImageLoader StartAsyncLoader(IModBehaviour mod, SlideInfo[] slides, ref SlideCollection slideCollection)
         {
-            var imageLoader = gameObject.AddComponent<ImageUtilities.AsyncImageLoader>();
+            var invertedImageLoader = new SlideReelAsyncImageLoader();
+            var atlasImageLoader = new SlideReelAsyncImageLoader();
+            var imageLoader = new SlideReelAsyncImageLoader();
+
+            var atlasKey = GetUniqueSlideReelID(mod, slides);
+
+            // attempt to load atlas guy from disk and precache so theres a cache hit when using ImageUtilities
+            atlasImageLoader.PathsToLoad.Add((0, Path.Combine(mod.ModHelper.Manifest.ModFolderPath, ATLAS_SLIDE_CACHE_FOLDER, $"{atlasKey}.png")));
+            atlasImageLoader.imageLoadedEvent.AddListener((Texture2D t, int i, string s) =>
+            {
+                NHLogger.Log($"SLIDE REEL ATLAS from {slides.First().imagePath}: {s}");
+                ImageUtilities.TrackCachedTexture(atlasKey, t);
+            });
+            invertedImageLoader.imageLoadedEvent.AddListener((Texture2D t, int i, string s) =>
+            {
+                var path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, slides[i].imagePath);
+                var key = $"{ImageUtilities.GetKey(path)} > invert";
+                ImageUtilities.TrackCachedTexture(key, t);
+            });
+
             for (int i = 0; i < slides.Length; i++)
             {
                 var slide = new Slide();
@@ -438,10 +484,12 @@ namespace NewHorizons.Builder.Props
 
                 if (string.IsNullOrEmpty(slideInfo.imagePath))
                 {
-                    imageLoader.imageLoadedEvent?.Invoke(Texture2D.blackTexture, i);
+                    imageLoader.imageLoadedEvent?.Invoke(Texture2D.blackTexture, i, null);
                 }
                 else
                 {
+                    // attempt to load inverted guy from disk and precache so theres a cache hit when using ImageUtilities
+                    invertedImageLoader.PathsToLoad.Add((i, Path.Combine(mod.ModHelper.Manifest.ModFolderPath, INVERTED_SLIDE_CACHE_FOLDER, slideInfo.imagePath)));                    
                     imageLoader.PathsToLoad.Add((i, Path.Combine(mod.ModHelper.Manifest.ModFolderPath, slideInfo.imagePath)));
                 }
 
@@ -449,6 +497,11 @@ namespace NewHorizons.Builder.Props
 
                 slideCollection.slides[i] = slide;
             }
+            // Loaders go sequentually - Load the inverted textures to the cache so that ImageUtilities will reuse them later
+            invertedImageLoader.Start(true);
+            // Atlas texture next so that the normal iamgeLoader knows not to regenerate them unless they were missing
+            atlasImageLoader.Start(false);
+            imageLoader.Start(true);
 
             return imageLoader;
         }
