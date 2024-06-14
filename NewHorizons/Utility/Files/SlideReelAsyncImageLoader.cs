@@ -10,10 +10,12 @@ using UnityEngine.SceneManagement;
 
 namespace NewHorizons.Utility.Files;
 
-// Modified from https://stackoverflow.com/a/69141085/9643841
-// Having more than one SlideReelAsyncImageLoader running at the same time is LAGGY. While loading the image data from the disk is async, nothing else is!
-// It will load the images async and then do tens to hundreds of callbacks to imageLoadedEvent all running at around the same time and lagging out the game
-// This is why we do it sequentially using SingletonAsyncImageLoader
+/// <summary>
+/// Modified from https://stackoverflow.com/a/69141085/9643841
+/// Having more than one SlideReelAsyncImageLoader running at the same time is LAGGY. While loading the image data from the disk is async, nothing else is!
+/// It will load the images async and then do tens to hundreds of callbacks to imageLoadedEvent all running at around the same time and lagging out the game
+/// This is why we do it sequentially using SingletonAsyncImageLoader
+/// </summary>
 public class SlideReelAsyncImageLoader
 {
     public List<(int index, string path)> PathsToLoad { get; private set; } = new();
@@ -21,14 +23,13 @@ public class SlideReelAsyncImageLoader
     public class ImageLoadedEvent : UnityEvent<Texture2D, int, string> { }
     public ImageLoadedEvent imageLoadedEvent = new();
 
-    private readonly object _lockObj = new();
-
     public bool FinishedLoading { get; private set; }
     private int _loadedCount = 0;
 
     // TODO: set up an optional “StartLoading” and “StartUnloading” condition on AsyncTextureLoader,
     // and make use of that for at least for projector stuff (require player to be in the same sector as the slides
     // for them to start loading, and unload when the player leaves)
+    //   also remember this for ship logs!!! lol
 
     private bool _started;
     private bool _clamp;
@@ -53,19 +54,16 @@ public class SlideReelAsyncImageLoader
 
     private void OnImageLoaded(Texture texture, int index, string originalPath)
     {
-        lock (_lockObj)
-        {
-            _loadedCount++;
+        _loadedCount++;
 
-            if (_loadedCount >= PathsToLoad.Count)
-            {
-                NHLogger.LogVerbose($"Finished loading all textures for a slide reel (one was {PathsToLoad.FirstOrDefault()}");
-                FinishedLoading = true;
-            }
+        if (_loadedCount >= PathsToLoad.Count)
+        {
+            NHLogger.LogVerbose($"Finished loading all textures for a slide reel (one was {PathsToLoad.FirstOrDefault()}");
+            FinishedLoading = true;
         }
     }
 
-    internal IEnumerator DownloadTextures()
+    private IEnumerator DownloadTextures()
     {
         foreach (var (index, path) in PathsToLoad)
         {
@@ -75,7 +73,7 @@ public class SlideReelAsyncImageLoader
         }
     }
 
-    IEnumerator DownloadTexture(string url, int index)
+    private IEnumerator DownloadTexture(string url, int index)
     {
         var key = ImageUtilities.GetKey(url);
         if (ImageUtilities.CheckCachedTexture(key, out var existingTexture))
@@ -97,8 +95,6 @@ public class SlideReelAsyncImageLoader
         }
         else
         {
-            var handler = (DownloadHandlerTexture)uwr.downloadHandler;
-
             var texture = DownloadHandlerTexture.GetContent(uwr);
             texture.name = key;
             if (_clamp)
@@ -108,6 +104,7 @@ public class SlideReelAsyncImageLoader
 
             if (ImageUtilities.CheckCachedTexture(key, out existingTexture))
             {
+                // the image could be loaded by something else by the time we're done doing async stuff
                 NHLogger.LogVerbose($"Already loaded image {index}:{url}");
                 GameObject.Destroy(texture);
                 texture = (Texture2D)existingTexture;
@@ -117,7 +114,6 @@ public class SlideReelAsyncImageLoader
                 ImageUtilities.TrackCachedTexture(key, texture);
             }
 
-            yield return null;
             var time = DateTime.Now;
             imageLoadedEvent?.Invoke(texture, index, url);
             NHLogger.LogVerbose($"Slide reel event took: {(DateTime.Now - time).TotalMilliseconds}ms");

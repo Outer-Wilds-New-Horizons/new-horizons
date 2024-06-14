@@ -17,12 +17,13 @@ namespace NewHorizons.Utility.Files
         public static bool CheckCachedTexture(string key, out Texture existingTexture) => _textureCache.TryGetValue(key, out existingTexture);
         public static void TrackCachedTexture(string key, Texture texture) => _textureCache[key] = texture;
 
-        public static string GetKey(string path) => path.Substring(Main.Instance.ModHelper.OwmlConfig.ModsPath.Length);
+        public static string GetKey(string path) =>
+            path.Substring(Main.Instance.ModHelper.OwmlConfig.ModsPath.Length + 1).Replace('\\', '/');
 
         public static bool IsTextureLoaded(IModBehaviour mod, string filename)
         {
             var path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, filename);
-            var key = GetKey(path).Replace('\\', '/');
+            var key = GetKey(path);
             return _textureCache.ContainsKey(key);
         }
 
