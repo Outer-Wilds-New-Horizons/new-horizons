@@ -83,7 +83,7 @@ public class SlideReelAsyncImageLoader
             yield break;
         }
 
-        using UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(url);
+        using UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(url.PathToUrl());
 
         yield return uwr.SendWebRequest();
 
