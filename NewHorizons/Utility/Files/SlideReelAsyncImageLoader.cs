@@ -124,10 +124,6 @@ public class SlideReelAsyncImageLoader
     {
         public static SingletonSlideReelAsyncImageLoader Instance { get; private set; }
 
-        private Queue<SlideReelAsyncImageLoader> _loaders = new();
-
-        private bool _isLoading;
-
         public void Awake()
         {
             Instance = this;
@@ -137,36 +133,11 @@ public class SlideReelAsyncImageLoader
         private void OnSceneUnloaded(Scene _)
         {
             StopAllCoroutines();
-            _loaders.Clear();
-            _isLoading = false;
         }
 
         public void Load(SlideReelAsyncImageLoader loader)
         {
             StartCoroutine(loader.DownloadTextures());
-
-            return;
-
-            // Sequential
-            _loaders.Enqueue(loader);
-            if (!_isLoading)
-            {
-                StartCoroutine(Run());
-            }
-        }
-
-        private IEnumerator Run()
-        {
-            NHLogger.Log("Loading slide reels");
-            _isLoading = true;
-            while (_loaders.Count > 0)
-            {
-                var loader = _loaders.Dequeue();
-                yield return loader.DownloadTextures();
-                NHLogger.Log($"Finished a slide reel, {_loaders.Count} left");
-            }
-            _isLoading = false;
-            NHLogger.Log("Done loading slide reels");
         }
     }
 }
