@@ -143,6 +143,11 @@ public class SlideReelAsyncImageLoader
 
         public void Load(SlideReelAsyncImageLoader loader)
         {
+            StartCoroutine(loader.DownloadTextures());
+
+            return;
+
+            // Sequential
             _loaders.Enqueue(loader);
             if (!_isLoading)
             {
