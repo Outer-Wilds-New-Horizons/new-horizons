@@ -149,7 +149,7 @@ namespace NewHorizons.Builder.Props
             // We can fit 16 slides max into an atlas
             var textures = new Texture2D[slidesCount > 16 ? 16 : slidesCount];
 
-            var (invImageLoader, atlasImageLoader, imageLoader) = StartAsyncLoader(mod, info.slides, ref slideCollection, true);
+            var (invImageLoader, atlasImageLoader, imageLoader) = StartAsyncLoader(mod, info.slides, ref slideCollection, true, true);
 
             var key = GetUniqueSlideReelID(mod, info.slides);
 
@@ -344,7 +344,7 @@ namespace NewHorizons.Builder.Props
             var slideCollection = new SlideCollection(slidesCount);
             slideCollection.streamingAssetIdentifier = string.Empty; // NREs if null
 
-            var (invImageLoader, _, imageLoader) = StartAsyncLoader(mod, info.slides, ref slideCollection, true);
+            var (invImageLoader, _, imageLoader) = StartAsyncLoader(mod, info.slides, ref slideCollection, true, false);
             if (invImageLoader != null)
             {
                 // Loaded directly from cache
@@ -400,7 +400,7 @@ namespace NewHorizons.Builder.Props
             var slideCollection = new SlideCollection(slidesCount); // TODO: uh I think that info.slides[i].playTimeDuration is not being read here... note to self for when I implement support for that: 0.7 is what to default to if playTimeDuration turns out to be 0
             slideCollection.streamingAssetIdentifier = string.Empty; // NREs if null
 
-            var (_, _, imageLoader) = StartAsyncLoader(mod, info.slides, ref slideCollection, false);
+            var (_, _, imageLoader) = StartAsyncLoader(mod, info.slides, ref slideCollection, false, false);
             imageLoader.imageLoadedEvent.AddListener((Texture2D tex, int index, string originalPath) =>
             {
                 var time = DateTime.Now;
@@ -453,7 +453,7 @@ namespace NewHorizons.Builder.Props
             var slideCollection = new SlideCollection(slidesCount);
             slideCollection.streamingAssetIdentifier = string.Empty; // NREs if null
 
-            var (_, _, imageLoader) = StartAsyncLoader(mod, slides, ref slideCollection, false);
+            var (_, _, imageLoader) = StartAsyncLoader(mod, slides, ref slideCollection, false, false);
 
             // This variable just lets us track how many of the slides have been loaded.
             // This way as soon as the last one is loaded (due to async loading, this may be
@@ -497,7 +497,7 @@ namespace NewHorizons.Builder.Props
         }
 
         private static (SlideReelAsyncImageLoader inverted, SlideReelAsyncImageLoader atlas, SlideReelAsyncImageLoader slides)
-            StartAsyncLoader(IModBehaviour mod, SlideInfo[] slides, ref SlideCollection slideCollection, bool useCache)
+            StartAsyncLoader(IModBehaviour mod, SlideInfo[] slides, ref SlideCollection slideCollection, bool useInvertedCache, bool useAtlasCache)
         {
             var invertedImageLoader = new SlideReelAsyncImageLoader();
             var atlasImageLoader = new SlideReelAsyncImageLoader();
@@ -509,7 +509,7 @@ namespace NewHorizons.Builder.Props
 
             NHLogger.Log($"Does cache exist for slide reels? {cacheExists}");
 
-            if (useCache && cacheExists)
+            if (useAtlasCache && cacheExists)
             {
                 // Load the atlas texture used to draw onto the physical slide reel object
                 atlasImageLoader.PathsToLoad.Add((0, Path.Combine(mod.ModHelper.Manifest.ModFolderPath, ATLAS_SLIDE_CACHE_FOLDER, $"{atlasKey}.png")));
@@ -527,7 +527,7 @@ namespace NewHorizons.Builder.Props
                 }
                 else
                 {
-                    if (useCache && cacheExists)
+                    if (useInvertedCache && cacheExists)
                     {
                         // Load the inverted images used when displaying slide reels to a screen
                         invertedImageLoader.PathsToLoad.Add((i, Path.Combine(mod.ModHelper.Manifest.ModFolderPath, INVERTED_SLIDE_CACHE_FOLDER, slideInfo.imagePath)));
@@ -540,13 +540,19 @@ namespace NewHorizons.Builder.Props
                 slideCollection.slides[i] = slide;
             }
 
-            if (useCache && cacheExists)
+            if (cacheExists)
             {
                 // This code will execute in order to create the cache
                 // Loaders go sequentually - Load the inverted textures to the cache so that ImageUtilities will reuse them later
-                invertedImageLoader.Start(true);
+                if (useInvertedCache)
+                {
+                    invertedImageLoader.Start(true);
+                }
                 // Atlas texture next so that the normal iamgeLoader knows not to regenerate them unless they were missing
-                atlasImageLoader.Start(false);
+                if (useAtlasCache)
+                {
+                    atlasImageLoader.Start(false);
+                }
                 imageLoader.Start(true);
 
                 return (invertedImageLoader, atlasImageLoader, imageLoader);
