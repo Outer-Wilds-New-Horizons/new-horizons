@@ -149,24 +149,53 @@ namespace NewHorizons.Builder.Props
             // We can fit 16 slides max into an atlas
             var textures = new Texture2D[slidesCount > 16 ? 16 : slidesCount];
 
-            var imageLoader = StartAsyncLoader(mod, info.slides, ref slideCollection);
+            var (invImageLoader, atlasImageLoader, imageLoader) = StartAsyncLoader(mod, info.slides, ref slideCollection, true);
 
             var key = GetUniqueSlideReelID(mod, info.slides);
 
-            // this variable just lets us track how many of the first 15 slides have been loaded.
-            // this way as soon as the last one is loaded (due to async loading, this may be
-            // slide 7, or slide 3, or whatever), we can build the slide reel texture. This allows us
-            // to avoid doing a "is every element in the array `textures` not null" check every time a texture finishes loading
-            int displaySlidesLoaded = 0;
-            imageLoader.imageLoadedEvent.AddListener(
-                (Texture2D tex, int index, string originalPath) => 
+            if (invImageLoader != null && atlasImageLoader != null)
+            {
+                // Loading directly from cache
+                invImageLoader.imageLoadedEvent.AddListener(
+                    (Texture2D tex, int index, string originalPath) =>
+                    {
+                        slideCollection.slides[index]._image = tex;
+                    }
+                );
+                atlasImageLoader.imageLoadedEvent.AddListener(
+                    (Texture2D tex, int _, string originalPath) =>
+                    {
+                        // all textures required to build the reel's textures have been loaded
+                        var slidesBack = slideReelObj.GetComponentInChildren<TransformAnimator>().transform.Find("Slides_Back").GetComponent<MeshRenderer>();
+                        var slidesFront = slideReelObj.GetComponentInChildren<TransformAnimator>().transform.Find("Slides_Front").GetComponent<MeshRenderer>();
+
+                        // Now put together the textures into a 4x4 thing for the materials
+                        var reelTexture = tex;
+                        slidesBack.material.mainTexture = reelTexture;
+                        slidesBack.material.SetTexture(EmissionMap, reelTexture);
+                        slidesBack.material.name = reelTexture.name;
+                        slidesFront.material.mainTexture = reelTexture;
+                        slidesFront.material.SetTexture(EmissionMap, reelTexture);
+                        slidesFront.material.name = reelTexture.name;
+                    }
+                );
+            }
+            else
+            {
+                // this variable just lets us track how many of the first 15 slides have been loaded.
+                // this way as soon as the last one is loaded (due to async loading, this may be
+                // slide 7, or slide 3, or whatever), we can build the slide reel texture. This allows us
+                // to avoid doing a "is every element in the array `textures` not null" check every time a texture finishes loading
+                int displaySlidesLoaded = 0;
+                imageLoader.imageLoadedEvent.AddListener(
+                (Texture2D tex, int index, string originalPath) =>
                 {
                     var time = DateTime.Now;
 
                     slideCollection.slides[index]._image = ImageUtilities.InvertSlideReel(mod, tex, originalPath);
                     NHLogger.LogVerbose($"Slide reel make reel invert texture {(DateTime.Now - time).TotalMilliseconds}ms");
                     // Track the first 16 to put on the slide reel object
-                    if (index < textures.Length) 
+                    if (index < textures.Length)
                     {
                         textures[index] = tex;
                         displaySlidesLoaded++;
@@ -188,8 +217,9 @@ namespace NewHorizons.Builder.Props
                     }
 
                     NHLogger.LogVerbose($"Slide reel make reel texture {(DateTime.Now - time).TotalMilliseconds}ms");
-                }
-            );
+                });
+            }
+
 
             // Else when you put them down you can't pick them back up
             slideReelObj.GetComponent<OWCollider>()._physicsRemoved = false;
@@ -210,58 +240,58 @@ namespace NewHorizons.Builder.Props
             switch (model)
             {
                 case ProjectionInfo.SlideReelType.SixSlides:
-                {
-                    switch (condition)
                     {
-                        case ProjectionInfo.SlideReelCondition.Antique:
-                        default:
-                            return SlideReel6Prefab;
-                        case ProjectionInfo.SlideReelCondition.Pristine:
-                            return SlideReel6PristinePrefab;
-                        case ProjectionInfo.SlideReelCondition.Rusted:
-                            return SlideReel6RustedPrefab;
+                        switch (condition)
+                        {
+                            case ProjectionInfo.SlideReelCondition.Antique:
+                            default:
+                                return SlideReel6Prefab;
+                            case ProjectionInfo.SlideReelCondition.Pristine:
+                                return SlideReel6PristinePrefab;
+                            case ProjectionInfo.SlideReelCondition.Rusted:
+                                return SlideReel6RustedPrefab;
+                        }
                     }
-                }
                 case ProjectionInfo.SlideReelType.SevenSlides:
                 default:
-                {
-                    switch (condition)
                     {
-                        case ProjectionInfo.SlideReelCondition.Antique:
-                        default:
-                            return SlideReel7Prefab;
-                        case ProjectionInfo.SlideReelCondition.Pristine:
-                            return SlideReel7PristinePrefab;
-                        case ProjectionInfo.SlideReelCondition.Rusted:
-                            return SlideReel7RustedPrefab;
+                        switch (condition)
+                        {
+                            case ProjectionInfo.SlideReelCondition.Antique:
+                            default:
+                                return SlideReel7Prefab;
+                            case ProjectionInfo.SlideReelCondition.Pristine:
+                                return SlideReel7PristinePrefab;
+                            case ProjectionInfo.SlideReelCondition.Rusted:
+                                return SlideReel7RustedPrefab;
+                        }
                     }
-                }
                 case ProjectionInfo.SlideReelType.EightSlides:
-                {
-                    switch (condition)
                     {
-                        case ProjectionInfo.SlideReelCondition.Antique:
-                        default:
-                            return SlideReel8Prefab;
-                        case ProjectionInfo.SlideReelCondition.Pristine:
-                            return SlideReel8PristinePrefab;
-                        case ProjectionInfo.SlideReelCondition.Rusted:
-                            return SlideReel8RustedPrefab;
+                        switch (condition)
+                        {
+                            case ProjectionInfo.SlideReelCondition.Antique:
+                            default:
+                                return SlideReel8Prefab;
+                            case ProjectionInfo.SlideReelCondition.Pristine:
+                                return SlideReel8PristinePrefab;
+                            case ProjectionInfo.SlideReelCondition.Rusted:
+                                return SlideReel8RustedPrefab;
+                        }
                     }
-                }
                 case ProjectionInfo.SlideReelType.Whole:
-                {
-                    switch (condition)
                     {
-                        case ProjectionInfo.SlideReelCondition.Antique:
-                        default:
-                            return SlideReelWholePrefab;
-                        case ProjectionInfo.SlideReelCondition.Pristine:
-                            return SlideReelWholePristinePrefab;
-                        case ProjectionInfo.SlideReelCondition.Rusted:
-                            return SlideReelWholeRustedPrefab;
+                        switch (condition)
+                        {
+                            case ProjectionInfo.SlideReelCondition.Antique:
+                            default:
+                                return SlideReelWholePrefab;
+                            case ProjectionInfo.SlideReelCondition.Pristine:
+                                return SlideReelWholePristinePrefab;
+                            case ProjectionInfo.SlideReelCondition.Rusted:
+                                return SlideReelWholeRustedPrefab;
+                        }
                     }
-                }
             }
         }
 
@@ -314,13 +344,25 @@ namespace NewHorizons.Builder.Props
             var slideCollection = new SlideCollection(slidesCount);
             slideCollection.streamingAssetIdentifier = string.Empty; // NREs if null
 
-            var imageLoader = StartAsyncLoader(mod, info.slides, ref slideCollection);
-            imageLoader.imageLoadedEvent.AddListener((Texture2D tex, int index, string originalPath) => 
+            var (invImageLoader, _, imageLoader) = StartAsyncLoader(mod, info.slides, ref slideCollection, true);
+            if (invImageLoader != null)
             {
-                var time = DateTime.Now;
-                slideCollection.slides[index]._image = ImageUtilities.InvertSlideReel(mod, tex, originalPath);
-                NHLogger.LogVerbose($"Slide reel invert time {(DateTime.Now - time).TotalMilliseconds}ms");
-            });
+                // Loaded directly from cache
+                invImageLoader.imageLoadedEvent.AddListener((Texture2D tex, int index, string originalPath) =>
+                {
+                    slideCollection.slides[index]._image = tex;
+                });
+            }
+            else
+            {
+                // Create the inverted cache from existing images
+                imageLoader.imageLoadedEvent.AddListener((Texture2D tex, int index, string originalPath) =>
+                {
+                    var time = DateTime.Now;
+                    slideCollection.slides[index]._image = ImageUtilities.InvertSlideReel(mod, tex, originalPath);
+                    NHLogger.LogVerbose($"Slide reel invert time {(DateTime.Now - time).TotalMilliseconds}ms");
+                });
+            }
 
             slideCollectionContainer.slideCollection = slideCollection;
 
@@ -358,9 +400,9 @@ namespace NewHorizons.Builder.Props
             var slideCollection = new SlideCollection(slidesCount); // TODO: uh I think that info.slides[i].playTimeDuration is not being read here... note to self for when I implement support for that: 0.7 is what to default to if playTimeDuration turns out to be 0
             slideCollection.streamingAssetIdentifier = string.Empty; // NREs if null
 
-            var imageLoader = StartAsyncLoader(mod, info.slides, ref slideCollection);
-            imageLoader.imageLoadedEvent.AddListener((Texture2D tex, int index, string originalPath) => 
-            { 
+            var (_, _, imageLoader) = StartAsyncLoader(mod, info.slides, ref slideCollection, false);
+            imageLoader.imageLoadedEvent.AddListener((Texture2D tex, int index, string originalPath) =>
+            {
                 var time = DateTime.Now;
                 slideCollection.slides[index]._image = tex;
                 NHLogger.LogVerbose($"Slide reel set time {(DateTime.Now - time).TotalMilliseconds}ms");
@@ -398,9 +440,9 @@ namespace NewHorizons.Builder.Props
             // Set some required properties on the torch
             var mindSlideProjector = standingTorch.GetComponent<MindSlideProjector>();
             mindSlideProjector._mindProjectorImageEffect = SearchUtilities.Find("Player_Body/PlayerCamera").GetComponent<MindProjectorImageEffect>();
-            
+
             // Setup for visually supporting async texture loading
-            mindSlideProjector.enabled = false;	
+            mindSlideProjector.enabled = false;
             var visionBeamEffect = standingTorch.FindChild("VisionBeam");
             visionBeamEffect.SetActive(false);
 
@@ -411,7 +453,7 @@ namespace NewHorizons.Builder.Props
             var slideCollection = new SlideCollection(slidesCount);
             slideCollection.streamingAssetIdentifier = string.Empty; // NREs if null
 
-            var imageLoader = StartAsyncLoader(mod, slides, ref slideCollection);
+            var (_, _, imageLoader) = StartAsyncLoader(mod, slides, ref slideCollection, false);
 
             // This variable just lets us track how many of the slides have been loaded.
             // This way as soon as the last one is loaded (due to async loading, this may be
@@ -419,7 +461,7 @@ namespace NewHorizons.Builder.Props
             // to avoid doing a "is every element in the array `slideCollection.slides` not null" check every time a texture finishes loading
             int displaySlidesLoaded = 0;
             imageLoader.imageLoadedEvent.AddListener(
-                (Texture2D tex, int index, string originalPath) => 
+                (Texture2D tex, int index, string originalPath) =>
                 {
                     var time = DateTime.Now;
                     slideCollection.slides[index]._image = tex;
@@ -454,7 +496,8 @@ namespace NewHorizons.Builder.Props
             return standingTorch;
         }
 
-        private static SlideReelAsyncImageLoader StartAsyncLoader(IModBehaviour mod, SlideInfo[] slides, ref SlideCollection slideCollection)
+        private static (SlideReelAsyncImageLoader inverted, SlideReelAsyncImageLoader atlas, SlideReelAsyncImageLoader slides)
+            StartAsyncLoader(IModBehaviour mod, SlideInfo[] slides, ref SlideCollection slideCollection, bool useCache)
         {
             var invertedImageLoader = new SlideReelAsyncImageLoader();
             var atlasImageLoader = new SlideReelAsyncImageLoader();
@@ -462,19 +505,15 @@ namespace NewHorizons.Builder.Props
 
             var atlasKey = GetUniqueSlideReelID(mod, slides);
 
-            // attempt to load atlas guy from disk and precache so theres a cache hit when using ImageUtilities
-            atlasImageLoader.PathsToLoad.Add((0, Path.Combine(mod.ModHelper.Manifest.ModFolderPath, ATLAS_SLIDE_CACHE_FOLDER, $"{atlasKey}.png")));
-            atlasImageLoader.imageLoadedEvent.AddListener((Texture2D t, int i, string s) =>
+            var cacheExists = Directory.Exists(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, ATLAS_SLIDE_CACHE_FOLDER));
+
+            NHLogger.Log($"Does cache exist for slide reels? {cacheExists}");
+
+            if (useCache && cacheExists)
             {
-                NHLogger.Log($"SLIDE REEL ATLAS from {slides.First().imagePath}: {s}");
-                ImageUtilities.TrackCachedTexture(atlasKey, t);
-            });
-            invertedImageLoader.imageLoadedEvent.AddListener((Texture2D t, int i, string s) =>
-            {
-                var path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, slides[i].imagePath);
-                var key = $"{ImageUtilities.GetKey(path)} > invert";
-                ImageUtilities.TrackCachedTexture(key, t);
-            });
+                // Load the atlas texture used to draw onto the physical slide reel object
+                atlasImageLoader.PathsToLoad.Add((0, Path.Combine(mod.ModHelper.Manifest.ModFolderPath, ATLAS_SLIDE_CACHE_FOLDER, $"{atlasKey}.png")));
+            }
 
             for (int i = 0; i < slides.Length; i++)
             {
@@ -488,8 +527,11 @@ namespace NewHorizons.Builder.Props
                 }
                 else
                 {
-                    // attempt to load inverted guy from disk and precache so theres a cache hit when using ImageUtilities
-                    invertedImageLoader.PathsToLoad.Add((i, Path.Combine(mod.ModHelper.Manifest.ModFolderPath, INVERTED_SLIDE_CACHE_FOLDER, slideInfo.imagePath)));                    
+                    if (useCache && cacheExists)
+                    {
+                        // Load the inverted images used when displaying slide reels to a screen
+                        invertedImageLoader.PathsToLoad.Add((i, Path.Combine(mod.ModHelper.Manifest.ModFolderPath, INVERTED_SLIDE_CACHE_FOLDER, slideInfo.imagePath)));
+                    }
                     imageLoader.PathsToLoad.Add((i, Path.Combine(mod.ModHelper.Manifest.ModFolderPath, slideInfo.imagePath)));
                 }
 
@@ -497,13 +539,25 @@ namespace NewHorizons.Builder.Props
 
                 slideCollection.slides[i] = slide;
             }
-            // Loaders go sequentually - Load the inverted textures to the cache so that ImageUtilities will reuse them later
-            invertedImageLoader.Start(true);
-            // Atlas texture next so that the normal iamgeLoader knows not to regenerate them unless they were missing
-            atlasImageLoader.Start(false);
-            imageLoader.Start(true);
 
-            return imageLoader;
+            if (useCache && cacheExists)
+            {
+                // This code will execute in order to create the cache
+                // Loaders go sequentually - Load the inverted textures to the cache so that ImageUtilities will reuse them later
+                invertedImageLoader.Start(true);
+                // Atlas texture next so that the normal iamgeLoader knows not to regenerate them unless they were missing
+                atlasImageLoader.Start(false);
+                imageLoader.Start(true);
+
+                return (invertedImageLoader, atlasImageLoader, imageLoader);
+            }
+            else
+            {
+                // Will be slow and create the cache if needed
+                imageLoader.Start(true);
+
+                return (null, null, imageLoader);
+            }
         }
 
         private static void AddModules(SlideInfo slideInfo, ref Slide slide, IModBehaviour mod)
@@ -569,7 +623,7 @@ namespace NewHorizons.Builder.Props
 
             Slide.WriteModules(modules, ref slide._modulesList, ref slide._modulesData, ref slide.lengths);
         }
-        
+
         private static void LinkShipLogFacts(ProjectionInfo info, SlideCollectionContainer slideCollectionContainer)
         {
             // Idk why but it wants reveals to be comma delimited not a list

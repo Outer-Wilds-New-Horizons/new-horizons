@@ -63,22 +63,12 @@ public class SlideReelAsyncImageLoader
         }
     }
 
-    private IEnumerator DownloadTextures()
-    {
-        foreach (var (index, path) in PathsToLoad)
-        {
-            NHLogger.LogVerbose($"Loaded slide reel {index} of {PathsToLoad.Count}");
-
-            yield return DownloadTexture(path, index);
-        }
-    }
-
     private IEnumerator DownloadTexture(string url, int index)
     {
         var key = ImageUtilities.GetKey(url);
         if (ImageUtilities.CheckCachedTexture(key, out var existingTexture))
         {
-            NHLogger.LogVerbose($"Already loaded image {index}:{url}");
+            NHLogger.LogVerbose($"Already loaded image {index}:{url} with key {key}");
             imageLoadedEvent?.Invoke((Texture2D)existingTexture, index, url);
             yield break;
         }
@@ -124,10 +114,6 @@ public class SlideReelAsyncImageLoader
     {
         public static SingletonSlideReelAsyncImageLoader Instance { get; private set; }
 
-        private Queue<SlideReelAsyncImageLoader> _loaders = new();
-
-        private bool _isLoading;
-
         public void Awake()
         {
             Instance = this;
@@ -137,31 +123,20 @@ public class SlideReelAsyncImageLoader
         private void OnSceneUnloaded(Scene _)
         {
             StopAllCoroutines();
-            _loaders.Clear();
-            _isLoading = false;
         }
 
         public void Load(SlideReelAsyncImageLoader loader)
         {
-            _loaders.Enqueue(loader);
-            if (!_isLoading)
+            // Delay at least one frame to let things subscribe to the event before it fires
+            Delay.FireOnNextUpdate(() =>
             {
-                StartCoroutine(Run());
-            }
-        }
+                foreach (var (index, path) in loader.PathsToLoad)
+                {
+                    NHLogger.LogVerbose($"Loaded slide reel {index} of {loader.PathsToLoad.Count}");
 
-        private IEnumerator Run()
-        {
-            NHLogger.Log("Loading slide reels");
-            _isLoading = true;
-            while (_loaders.Count > 0)
-            {
-                var loader = _loaders.Dequeue();
-                yield return loader.DownloadTextures();
-                NHLogger.Log($"Finished a slide reel, {_loaders.Count} left");
-            }
-            _isLoading = false;
-            NHLogger.Log("Done loading slide reels");
+                    StartCoroutine(loader.DownloadTexture(path, index));
+                }
+            });
         }
     }
 }
