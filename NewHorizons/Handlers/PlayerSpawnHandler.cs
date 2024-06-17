@@ -137,18 +137,18 @@ namespace NewHorizons.Handlers
 
         private static IEnumerator SpawnCoroutine(int length)
         {
-            FixPlayerVelocity(true);
+            FixPlayerVelocity();
             for(int i = 0; i < length; i++) 
             {
                 FixPlayerVelocity(false);
                 yield return new WaitForEndOfFrame();
             }
-            FixPlayerVelocity(true);
+            FixPlayerVelocity();
 
             InvulnerabilityHandler.MakeInvulnerable(false);
         }
 
-        private static void FixPlayerVelocity(bool recenter)
+        private static void FixPlayerVelocity(bool recenter = true)
         {
             var playerBody = SearchUtilities.Find("Player_Body").GetAttachedOWRigidbody();
             var resources = playerBody.GetComponent<PlayerResources>();
@@ -158,7 +158,7 @@ namespace NewHorizons.Handlers
             resources._currentHealth = 100f;
         }
 
-        public static void SpawnBody(OWRigidbody body, SpawnPoint spawn, Vector3? positionOverride = null, bool recenter = false)
+        public static void SpawnBody(OWRigidbody body, SpawnPoint spawn, Vector3? positionOverride = null, bool recenter = true)
         {
             var pos = positionOverride ?? spawn.transform.position;
 
