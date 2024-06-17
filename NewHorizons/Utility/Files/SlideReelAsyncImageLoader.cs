@@ -137,6 +137,7 @@ public class SlideReelAsyncImageLoader
 
         public void Load(SlideReelAsyncImageLoader loader)
         {
+            // Delay at least one frame to let things subscribe to the event before it fires
             Delay.FireOnNextUpdate(() =>
             {
                 StartCoroutine(loader.DownloadTextures());
