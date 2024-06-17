@@ -108,7 +108,7 @@ namespace NewHorizons.Utility.Files
             {
                 DownloadHandlerAudioClip dh = new DownloadHandlerAudioClip(path, UnityEngine.AudioType.MPEG);
                 dh.compressed = true;
-                using (UnityWebRequest www = new UnityWebRequest(path.PathToUrl(), "GET", dh, null))
+                using (UnityWebRequest www = new UnityWebRequest(path, "GET", dh, null))
                 {
                     var result = www.SendWebRequest();
 
@@ -127,7 +127,7 @@ namespace NewHorizons.Utility.Files
             }
             else
             {
-                using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(path.PathToUrl(), audioType))
+                using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(path, audioType))
                 {
                     var result = www.SendWebRequest();
 

@@ -1,4 +1,3 @@
-using HarmonyLib;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules.VariableSize;
 using NewHorizons.External.SerializableData;
@@ -16,7 +15,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using UnityEngine;
-using UnityEngine.Networking;
 using static NewHorizons.External.Modules.ParticleFieldModule;
 using NomaiCoordinates = NewHorizons.External.Configs.StarSystemConfig.NomaiCoordinates;
 
@@ -427,17 +425,5 @@ namespace NewHorizons.Utility
             playerCameraEffectController._owCamera.postProcessingSettings.bloom.threshold = 0f;
             playerCameraEffectController._owCamera.postProcessingSettings.eyeMaskEnabled = true;
         }
-
-        /// <summary>
-        /// unity is STUPID and makes us use UnityWebRequest stuff.
-        /// so we have to do this to let it work with special characters.
-        /// </summary>
-        public static string PathToUrl(this string url) =>
-            $"file:///{url
-                .Replace('\\', '/')
-                .Split('/')
-                .Select(UnityWebRequest.EscapeURL)
-                .Join(delimiter: "/")
-            }";
     }
 }
