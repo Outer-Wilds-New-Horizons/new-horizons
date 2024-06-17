@@ -78,7 +78,7 @@ public class SlideReelAsyncImageLoader
         var key = ImageUtilities.GetKey(url);
         if (ImageUtilities.CheckCachedTexture(key, out var existingTexture))
         {
-            NHLogger.LogVerbose($"Already loaded image {index}:{url}");
+            NHLogger.LogVerbose($"Already loaded image {index}:{url} with key {key}");
             imageLoadedEvent?.Invoke((Texture2D)existingTexture, index, url);
             yield break;
         }
@@ -137,7 +137,10 @@ public class SlideReelAsyncImageLoader
 
         public void Load(SlideReelAsyncImageLoader loader)
         {
-            StartCoroutine(loader.DownloadTextures());
+            Delay.FireOnNextUpdate(() =>
+            {
+                StartCoroutine(loader.DownloadTextures());
+            });
         }
     }
 }
