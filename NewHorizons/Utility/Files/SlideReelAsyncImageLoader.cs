@@ -63,16 +63,6 @@ public class SlideReelAsyncImageLoader
         }
     }
 
-    private IEnumerator DownloadTextures()
-    {
-        foreach (var (index, path) in PathsToLoad)
-        {
-            NHLogger.LogVerbose($"Loaded slide reel {index} of {PathsToLoad.Count}");
-
-            yield return DownloadTexture(path, index);
-        }
-    }
-
     private IEnumerator DownloadTexture(string url, int index)
     {
         var key = ImageUtilities.GetKey(url);
@@ -140,7 +130,12 @@ public class SlideReelAsyncImageLoader
             // Delay at least one frame to let things subscribe to the event before it fires
             Delay.FireOnNextUpdate(() =>
             {
-                StartCoroutine(loader.DownloadTextures());
+                foreach (var (index, path) in loader.PathsToLoad)
+                {
+                    NHLogger.LogVerbose($"Loaded slide reel {index} of {loader.PathsToLoad.Count}");
+
+                    StartCoroutine(loader.DownloadTexture(path, index));
+                }
             });
         }
     }
