@@ -123,7 +123,7 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        internal static void InternalMake(GameObject go, Sector sector, RemoteInfo[] remotes, NewHorizonsBody nhBody)
+        public static void MakeGeneralProps(GameObject go, Sector sector, RemoteInfo[] remotes, NewHorizonsBody nhBody)
         {
             if (remotes != null)
             {
@@ -150,6 +150,7 @@ namespace NewHorizons.Builder.Props
             }
         }
 
+        [Obsolete("Use MakeGeneralProps instead")]
         public static void Make(GameObject go, Sector sector, RemoteInfo info, NewHorizonsBody nhBody)
         {
             var mod = nhBody.Mod;

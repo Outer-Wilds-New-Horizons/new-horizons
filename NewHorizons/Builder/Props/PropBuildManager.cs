@@ -128,7 +128,7 @@ namespace NewHorizons.Builder.Props
             MakeGeneralProps(go, config.Props.warpReceivers, (warpReceiver) => WarpPadBuilder.Make(go, sector, mod, warpReceiver), (warpReceiver) => warpReceiver.frequency);
             MakeGeneralProps(go, config.Props.warpTransmitters, (warpTransmitter) => WarpPadBuilder.Make(go, sector, mod, warpTransmitter), (warpTransmitter) => warpTransmitter.frequency);
             MakeGeneralProps(go, config.Props.audioSources, (audioSource) => AudioSourceBuilder.Make(go, sector, audioSource, mod), (audioSource) => audioSource.audio);
-            RemoteBuilder.InternalMake(go, sector, config.Props.remotes, nhBody);
+            RemoteBuilder.MakeGeneralProps(go, sector, config.Props.remotes, nhBody);
 
             RunMultiPass();
 
