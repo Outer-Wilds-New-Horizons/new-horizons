@@ -82,10 +82,13 @@ namespace NewHorizons.External.Configs
         [Obsolete("travelAudioFilePath is deprecated, please use travelAudio instead")]
         public string travelAudioFilePath;
 
-        /// <summary>
-        /// The audio that will play when travelling in space. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list.
-        /// </summary>
+        [Obsolete("travelAudio is deprecated, please use travelAudio instead")]
         public string travelAudio;
+
+        /// <summary>
+        /// Replace music that plays globally
+        /// </summary>
+        public GlobalMusicModule GlobalMusic;
 
         /// <summary>
         /// Configure warping to this system with the vessel
@@ -193,6 +196,45 @@ namespace NewHorizons.External.Configs
         }
 
         [JsonObject]
+        public class GlobalMusicModule
+        {
+            /// <summary>
+            /// The audio that will play when travelling in space. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list.
+            /// </summary>
+            public string travelAudio;
+
+            /// <summary>
+            /// The audio that will play right before the loop ends. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list.
+            /// </summary>
+            public string endTimesAudio;
+
+            /// <summary>
+            /// The audio that will play right before the loop ends while inside the dreamworld. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list.
+            /// </summary>
+            public string endTimesDreamAudio;
+
+            /// <summary>
+            /// The audio that will play when travelling through a bramble dimension. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list.
+            /// </summary>
+            public string brambleDimensionAudio;
+
+            /// <summary>
+            /// The audio that will play when you leave the ash twin project after taking out the advanced warp core. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list.
+            /// </summary>
+            public string finalEndTimesIntroAudio;
+
+            /// <summary>
+            /// The audio that will loop after the final end times intro. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list.
+            /// </summary>
+            public string finalEndTimesLoopAudio;
+
+            /// <summary>
+            /// The audio that will loop after the final end times intro while inside a bramble dimension. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list.
+            /// </summary>
+            public string finalEndTimesBrambleDimensionAudio;
+        }
+
+        [JsonObject]
         public class VesselModule
         {
             /// <summary>
@@ -283,7 +325,6 @@ namespace NewHorizons.External.Configs
             // If current one is null take the other
             factRequiredForWarp = string.IsNullOrEmpty(factRequiredForWarp) ? otherConfig.factRequiredForWarp : factRequiredForWarp;
             Skybox = Skybox == null ? otherConfig.Skybox : Skybox;
-            travelAudio = string.IsNullOrEmpty(travelAudio) ? otherConfig.travelAudio : travelAudio;
 
             // False by default so if one is true go true
             mapRestricted = mapRestricted || otherConfig.mapRestricted;
@@ -300,6 +341,21 @@ namespace NewHorizons.External.Configs
             else
             {
                 Vessel ??= otherConfig.Vessel;
+            }
+
+            if (GlobalMusic != null && otherConfig.GlobalMusic != null)
+            {
+                GlobalMusic.travelAudio = string.IsNullOrEmpty(GlobalMusic.travelAudio) ? otherConfig.GlobalMusic.travelAudio : GlobalMusic.travelAudio;
+                GlobalMusic.endTimesAudio = string.IsNullOrEmpty(GlobalMusic.endTimesAudio) ? otherConfig.GlobalMusic.endTimesAudio : GlobalMusic.endTimesAudio;
+                GlobalMusic.endTimesDreamAudio = string.IsNullOrEmpty(GlobalMusic.endTimesDreamAudio) ? otherConfig.GlobalMusic.endTimesDreamAudio : GlobalMusic.endTimesDreamAudio;
+                GlobalMusic.brambleDimensionAudio = string.IsNullOrEmpty(GlobalMusic.brambleDimensionAudio) ? otherConfig.GlobalMusic.brambleDimensionAudio : GlobalMusic.brambleDimensionAudio;
+                GlobalMusic.finalEndTimesIntroAudio = string.IsNullOrEmpty(GlobalMusic.finalEndTimesIntroAudio) ? otherConfig.GlobalMusic.finalEndTimesIntroAudio : GlobalMusic.finalEndTimesIntroAudio;
+                GlobalMusic.finalEndTimesLoopAudio = string.IsNullOrEmpty(GlobalMusic.finalEndTimesLoopAudio) ? otherConfig.GlobalMusic.finalEndTimesLoopAudio : GlobalMusic.finalEndTimesLoopAudio;
+                GlobalMusic.finalEndTimesBrambleDimensionAudio = string.IsNullOrEmpty(GlobalMusic.finalEndTimesBrambleDimensionAudio) ? otherConfig.GlobalMusic.finalEndTimesBrambleDimensionAudio : GlobalMusic.finalEndTimesBrambleDimensionAudio;
+            }
+            else
+            {
+                GlobalMusic ??= otherConfig.GlobalMusic;
             }
 
             entryPositions = Concatenate(entryPositions, otherConfig.entryPositions);
@@ -319,6 +375,11 @@ namespace NewHorizons.External.Configs
 #pragma warning disable 612, 618
             if (!string.IsNullOrEmpty(travelAudioClip)) travelAudio = travelAudioClip;
             if (!string.IsNullOrEmpty(travelAudioFilePath)) travelAudio = travelAudioFilePath;
+            if (!string.IsNullOrEmpty(travelAudio))
+            {
+                if (GlobalMusic == null) GlobalMusic = new GlobalMusicModule();
+                if (string.IsNullOrEmpty(GlobalMusic.travelAudio)) GlobalMusic.travelAudio = travelAudio;
+            }
             if (coords != null || vesselPosition != null || vesselRotation != null || warpExitPosition != null || warpExitRotation != null)
             {
                 if (Vessel == null)
