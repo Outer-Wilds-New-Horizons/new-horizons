@@ -121,7 +121,7 @@ namespace NewHorizons.Handlers
 
         public static void OnRevealFact(string factID)
         {
-            if (_factIDToStarSystem.TryGetValue(factID, out var systemUnlocked))
+            if (_factIDToStarSystem != null && _factIDToStarSystem.TryGetValue(factID, out var systemUnlocked))
             {
                 NHLogger.Log($"Just learned [{factID}] and unlocked [{systemUnlocked}]");
                 if (!Main.HasWarpDrive)
