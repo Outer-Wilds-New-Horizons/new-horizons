@@ -13,7 +13,7 @@ namespace NewHorizons.Utility.Files
         // key is path + applied effects
         private static readonly Dictionary<string, Texture> _textureCache = new();
         public static bool CheckCachedTexture(string key, out Texture existingTexture) => _textureCache.TryGetValue(key, out existingTexture);
-        public static void TrackCachedTexture(string key, Texture texture) => _textureCache[key] = texture;
+        public static void TrackCachedTexture(string key, Texture texture) => _textureCache.Add(key, texture); // dont reinsert cuz that causes memory leak!
 
         public static string GetKey(string path) =>
             path.Substring(Main.Instance.ModHelper.OwmlConfig.ModsPath.Length + 1).Replace('\\', '/');

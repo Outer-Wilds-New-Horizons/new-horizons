@@ -542,13 +542,10 @@ namespace NewHorizons.Builder.Props
 
             if (cacheExists)
             {
-                // This code will execute in order to create the cache
-                // Loaders go sequentually - Load the inverted textures to the cache so that ImageUtilities will reuse them later
                 if (useInvertedCache)
                 {
                     invertedImageLoader.Start(true);
                 }
-                // Atlas texture next so that the normal iamgeLoader knows not to regenerate them unless they were missing
                 if (useAtlasCache)
                 {
                     atlasImageLoader.Start(false);
