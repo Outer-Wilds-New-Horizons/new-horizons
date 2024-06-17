@@ -121,6 +121,7 @@ namespace NewHorizons.Builder.Props.Audio
 
         public static string GetCustomFrequencyName(SignalFrequency frequencyName)
         {
+            if (_customFrequencyNames == null) return string.Empty;
             _customFrequencyNames.TryGetValue(frequencyName, out string name);
             return name;
         }
@@ -140,6 +141,7 @@ namespace NewHorizons.Builder.Props.Audio
 
         public static string GetCustomSignalName(SignalName signalName)
         {
+            if (_customSignalNames == null) return string.Empty;
             _customSignalNames.TryGetValue(signalName, out string name);
             return name;
         }
