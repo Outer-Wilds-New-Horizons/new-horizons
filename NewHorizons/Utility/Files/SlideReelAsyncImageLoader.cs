@@ -12,9 +12,6 @@ namespace NewHorizons.Utility.Files;
 
 /// <summary>
 /// Modified from https://stackoverflow.com/a/69141085/9643841
-/// Having more than one SlideReelAsyncImageLoader running at the same time is LAGGY. While loading the image data from the disk is async, nothing else is!
-/// It will load the images async and then do tens to hundreds of callbacks to imageLoadedEvent all running at around the same time and lagging out the game
-/// This is why we do it sequentially using SingletonAsyncImageLoader
 /// </summary>
 public class SlideReelAsyncImageLoader
 {
