@@ -156,7 +156,7 @@ namespace NewHorizons.Builder.Props
                         // If they're adding dialogue we have to manually register the xml text
                         if (isFromAssetBundle && component is CharacterDialogueTree dialogue)
                         {
-                            DialogueBuilder.AddTranslation(dialogue._xmlCharacterDialogueAsset.text, null);
+                            DialogueBuilder.HandleUnityCreatedDialogue(dialogue);
                         }
 
                         FixComponent(component, go, detail.ignoreSun);
@@ -416,6 +416,11 @@ namespace NewHorizons.Builder.Props
             else if(component is AnglerfishAnimController && component.transform.parent.GetComponent<AnglerfishController>() == null)
             {
                 component.gameObject.AddComponent<AnglerAnimFixer>();
+            }
+            // Add custom logic to NH-spawned rafts to handle fluid changes
+            else if (component is RaftController raft)
+            {
+                component.gameObject.AddComponent<NHRaftController>();
             }
         }
 

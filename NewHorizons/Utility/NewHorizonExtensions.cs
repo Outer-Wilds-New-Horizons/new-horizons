@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using OWML.Utils;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -69,17 +70,81 @@ namespace NewHorizons.Utility
             return 0;
         }
 
+        public static string ToLanguageName(this TextTranslation.Language language)
+        {
+            switch (language)
+            {
+                case TextTranslation.Language.UNKNOWN:
+                case TextTranslation.Language.TOTAL:
+                case TextTranslation.Language.ENGLISH:
+                    return "English";
+                case TextTranslation.Language.SPANISH_LA:
+                    return "Spanish";
+                case TextTranslation.Language.GERMAN:
+                    return "German";
+                case TextTranslation.Language.FRENCH:
+                    return "French";
+                case TextTranslation.Language.ITALIAN:
+                    return "Italian";
+                case TextTranslation.Language.POLISH:
+                    return "Polish";
+                case TextTranslation.Language.PORTUGUESE_BR:
+                    return "Portuguese (Brazil)";
+                case TextTranslation.Language.JAPANESE:
+                    return "Japanese";
+                case TextTranslation.Language.RUSSIAN:
+                    return "Russian";
+                case TextTranslation.Language.CHINESE_SIMPLE:
+                    return "Chinese (Simplified)";
+                case TextTranslation.Language.KOREAN:
+                    return "Korean";
+                case TextTranslation.Language.TURKISH:
+                    return "Turkish";
+                default:
+                    return language.ToString().Replace("_", " ").ToTitleCase();
+            }
+        }
+
+        public static CultureInfo ToCultureInfo(this TextTranslation.Language language)
+        {
+            return CultureInfo.GetCultures(CultureTypes.AllCultures).FirstOrDefault(culture =>
+            {
+                var name = language.ToLanguageName();
+                return culture.EnglishName == name || culture.NativeName.ToTitleCase() == name;
+            }) ?? CultureInfo.CurrentCulture;
+        }
+
+        public static string ToUpperFixed(this string str)
+        {
+            return str.ToUpper(TextTranslation.Get().m_language);
+        }
+
+        public static string ToLowerFixed(this string str)
+        {
+            return str.ToLower(TextTranslation.Get().m_language);
+        }
+
+        public static string ToUpper(this string str, TextTranslation.Language language)
+        {
+            return str.ToUpper(language.ToCultureInfo());
+        }
+
+        public static string ToLower(this string str, TextTranslation.Language language)
+        {
+            return str.ToLower(language.ToCultureInfo());
+        }
+
         public static string ToCamelCase(this string str)
         {
             StringBuilder strBuilder = new StringBuilder(str);
-            strBuilder[0] = strBuilder[0].ToString().ToLower().ToCharArray()[0];
+            strBuilder[0] = strBuilder[0].ToString().ToLowerInvariant().ToCharArray()[0];
             return strBuilder.ToString();
         }
 
         public static string ToTitleCase(this string str)
         {
-            StringBuilder strBuilder = new StringBuilder(str);
-            strBuilder[0] = strBuilder[0].ToString().ToUpper().ToCharArray()[0];
+            StringBuilder strBuilder = new StringBuilder(str.ToLowerInvariant());
+            strBuilder[0] = strBuilder[0].ToString().ToUpperInvariant().ToCharArray()[0];
             return strBuilder.ToString();
         }
 
@@ -307,40 +372,6 @@ namespace NewHorizons.Utility
             return curve;
         }
 
-        // From QSB
-        public static void RaiseEvent<T>(this T instance, string eventName, params object[] args)
-        {
-            const BindingFlags flags = BindingFlags.Instance
-                | BindingFlags.Static
-                | BindingFlags.Public
-                | BindingFlags.NonPublic
-                | BindingFlags.DeclaredOnly;
-            if (typeof(T)
-                    .GetField(eventName, flags)?
-                    .GetValue(instance) is not MulticastDelegate multiDelegate)
-            {
-                return;
-            }
-
-            multiDelegate.SafeInvoke(args);
-        }
-
-        // From QSB
-        public static void SafeInvoke(this MulticastDelegate multicast, params object[] args)
-        {
-            foreach (var del in multicast.GetInvocationList())
-            {
-                try
-                {
-                    del.DynamicInvoke(args);
-                }
-                catch (TargetInvocationException ex)
-                {
-                    NHLogger.LogError($"Error invoking delegate! {ex.InnerException}");
-                }
-            }
-        }
-
         public static List<XmlNode> GetChildNodes(this XmlNode parentNode, string tagName)
         {
             return parentNode.ChildNodes.Cast<XmlNode>().Where(node => node.LocalName == tagName).ToList();
@@ -348,13 +379,51 @@ namespace NewHorizons.Utility
 
         public static XmlNode GetChildNode(this XmlNode parentNode, string tagName)
         {
-            return parentNode.ChildNodes.Cast<XmlNode>().First(node => node.LocalName == tagName);
+            return parentNode.ChildNodes.Cast<XmlNode>().FirstOrDefault(node => node.LocalName == tagName);
         }
 
         public static string TruncateWhitespaceAndToLower(this string text)
         {
             // return Regex.Replace(text.Trim(), @"[^\S\r\n]+", "GUH");
             return Regex.Replace(text.Trim(), @"\s+", " ").ToLowerInvariant();
+        }
+
+        public static void Stabilize(this SingularityController singularity)
+        {
+            singularity._state = SingularityController.State.Stable;
+            singularity._timer = 0f;
+            singularity._baseRadius = singularity._targetRadius;
+            singularity._currentRadius = singularity._targetRadius;
+            singularity._renderer.SetActivation(active: true);
+            singularity._renderer.SetMaterialProperty(singularity._propID_Radius, singularity._targetRadius);
+            if (singularity._owAmbientSource != null) singularity._owAmbientSource.FadeIn(0.5f);
+            singularity.enabled = true;
+        }
+
+        public static void OpenEyesImmediate(this PlayerCameraEffectController playerCameraEffectController)
+        {
+            playerCameraEffectController._lastOpenness = 1;
+            playerCameraEffectController._wakeCurve = playerCameraEffectController._fastWakeCurve;
+            playerCameraEffectController._isOpeningEyes = false;
+            playerCameraEffectController._isClosingEyes = false;
+            playerCameraEffectController._eyeAnimDuration = 0;
+            playerCameraEffectController._eyeAnimStartTime = Time.time;
+            playerCameraEffectController._owCamera.postProcessingSettings.eyeMask.openness = 1;
+            playerCameraEffectController._owCamera.postProcessingSettings.bloom.threshold = playerCameraEffectController._owCamera.postProcessingSettings.bloomDefault.threshold;
+            playerCameraEffectController._owCamera.postProcessingSettings.eyeMaskEnabled = false;
+        }
+
+        public static void CloseEyesImmediate(this PlayerCameraEffectController playerCameraEffectController)
+        {
+            playerCameraEffectController._lastOpenness = 0f;
+            playerCameraEffectController._wakeCurve = playerCameraEffectController._fastWakeCurve;
+            playerCameraEffectController._isOpeningEyes = false;
+            playerCameraEffectController._isClosingEyes = false;
+            playerCameraEffectController._eyeAnimDuration = 0;
+            playerCameraEffectController._eyeAnimStartTime = Time.time;
+            playerCameraEffectController._owCamera.postProcessingSettings.eyeMask.openness = 0f;
+            playerCameraEffectController._owCamera.postProcessingSettings.bloom.threshold = 0f;
+            playerCameraEffectController._owCamera.postProcessingSettings.eyeMaskEnabled = true;
         }
     }
 }

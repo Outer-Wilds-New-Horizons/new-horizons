@@ -36,7 +36,6 @@ namespace NewHorizons.Builder.Body
 
                 config.Base = new BaseModule()
                 {
-                    hasMapMarker = false,
                     surfaceGravity = 1,
                     surfaceSize = size,
                     gravityFallOff = GravityFallOff.InverseSquared
@@ -54,6 +53,11 @@ namespace NewHorizons.Builder.Body
                 };
 
                 config.ReferenceFrame = new ReferenceFrameModule()
+                {
+                    enabled = false
+                };
+
+                config.MapMarker = new MapMarkerModule()
                 {
                     enabled = false
                 };

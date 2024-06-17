@@ -22,6 +22,16 @@ namespace NewHorizons.Components.Quantum
         private OWRigidbody _rb;
         private OrbitLine _orbitLine;
 
+        public NHAstroObject astroObject
+        {
+            get
+            {
+                if (_astroObject == null)
+                    _astroObject = GetComponent<NHAstroObject>();
+                return _astroObject;
+            }
+        }
+
         public int CurrentIndex { get; private set; }
 
         public override void Awake()
@@ -97,7 +107,7 @@ namespace NewHorizons.Components.Quantum
 
                 primaryBody = AstroObjectLocator.GetAstroObject(newOrbit.primaryBody);
                 var primaryGravity = new Gravity(primaryBody.GetGravityVolume());
-                var secondaryGravity = new Gravity(_astroObject.GetGravityVolume());
+                var secondaryGravity = new Gravity(astroObject.GetGravityVolume());
                 orbitalParams = newOrbit.GetOrbitalParameters(primaryGravity, secondaryGravity);
 
                 var pos = primaryBody.transform.position + orbitalParams.InitialPosition;
@@ -139,15 +149,16 @@ namespace NewHorizons.Components.Quantum
 
         private void SetNewOrbit(AstroObject primaryBody, OrbitalParameters orbitalParameters)
         {
-            _astroObject._primaryBody = primaryBody;
-            DetectorBuilder.SetDetector(primaryBody, _astroObject, _detector);
+            astroObject._primaryBody = primaryBody;
+            DetectorBuilder.SetDetector(primaryBody, astroObject, _detector);
             _detector._activeInheritedDetector = primaryBody.GetComponentInChildren<ForceDetector>();
             _detector._activeVolumes = new List<EffectVolume>() { primaryBody.GetGravityVolume() };
             if (_alignment != null) _alignment.SetTargetBody(primaryBody.GetComponent<OWRigidbody>());
 
-            _astroObject.SetOrbitalParametersFromTrueAnomaly(orbitalParameters.eccentricity, orbitalParameters.semiMajorAxis, orbitalParameters.inclination, orbitalParameters.argumentOfPeriapsis, orbitalParameters.longitudeOfAscendingNode, orbitalParameters.trueAnomaly);
+            astroObject.SetOrbitalParametersFromTrueAnomaly(orbitalParameters.eccentricity, orbitalParameters.semiMajorAxis, orbitalParameters.inclination, orbitalParameters.argumentOfPeriapsis, orbitalParameters.longitudeOfAscendingNode, orbitalParameters.trueAnomaly);
 
-            PlanetCreationHandler.UpdatePosition(gameObject, orbitalParameters, primaryBody, _astroObject);
+            PlanetCreationHandler.UpdatePosition(gameObject, orbitalParameters, primaryBody, astroObject);
+            gameObject.transform.parent = null;
 
             if (!Physics.autoSyncTransforms)
             {

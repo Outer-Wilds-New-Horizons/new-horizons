@@ -173,6 +173,26 @@ namespace NewHorizons.Handlers
             TextTranslation.Get().m_table.theTable[key] = value;
         }
 
+        /// <summary>
+        /// Two dialogue nodes might share indentical text but they will have different prefixes. Still, we want to reuse that old text.
+        /// </summary>
+        /// <param name="rawText"></param>
+        /// <param name="oldPrefixes"></param>
+        /// <param name="newPrefixes"></param>
+        public static void ReuseDialogueTranslation(string rawText, string[] oldPrefixes, string[] newPrefixes)
+        {
+            var key = string.Join(string.Empty, newPrefixes) + rawText;
+            var existingKey = string.Join(string.Empty, oldPrefixes) + rawText;
+            if (TextTranslation.Get().m_table.theTable.TryGetValue(existingKey, out var existingTranslation))
+            {
+                TextTranslation.Get().m_table.theTable[key] = existingTranslation;
+            }
+            else
+            {
+                NHLogger.LogWarning($"Couldn't find translation key {existingKey}");
+            }
+        }
+
         public static void AddShipLog(string rawText, params string[] rawPreText)
         {
             var key = string.Join(string.Empty, rawPreText) + rawText;
@@ -189,7 +209,7 @@ namespace NewHorizons.Handlers
         {
             var uiTable = TextTranslation.Get().m_table.theUITable;
 
-            var text = GetTranslation(rawText, TextType.UI).ToUpper();
+            var text = GetTranslation(rawText, TextType.UI).ToUpperFixed();
 
             var key = uiTable.Keys.Max() + 1;
             try
