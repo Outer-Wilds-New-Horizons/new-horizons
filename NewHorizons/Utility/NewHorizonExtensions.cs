@@ -148,6 +148,16 @@ namespace NewHorizons.Utility
             return strBuilder.ToString();
         }
 
+        public static string ToLowercaseNamingConvention(this string str, string separation = " ")
+        {
+            var r = new Regex(@"
+                (?<=[A-Z])(?=[A-Z][a-z]) |
+                 (?<=[^A-Z])(?=[A-Z]) |
+                 (?<=[A-Za-z])(?=[^A-Za-z])", RegexOptions.IgnorePatternWhitespace);
+
+            return r.Replace(str, separation).ToLower();
+        }
+
         public static void CopyPropertiesFrom(this object destination, object source)
         {
             // If any this null throw an exception

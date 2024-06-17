@@ -12,6 +12,7 @@ using NewHorizons.Utility.OWML;
 using OWML.Common;
 using System;
 using UnityEngine;
+using NewHorizons.External.Modules;
 
 namespace NewHorizons.Builder.Props
 {
@@ -122,10 +123,36 @@ namespace NewHorizons.Builder.Props
             }
         }
 
+        public static void MakeGeneralProps(GameObject go, Sector sector, RemoteInfo[] remotes, NewHorizonsBody nhBody)
+        {
+            if (remotes != null)
+            {
+                foreach (var remoteInfo in remotes)
+                {
+                    try
+                    {
+                        var mod = nhBody.Mod;
+                        var id = RemoteHandler.GetPlatformID(remoteInfo.id);
+
+                        Texture2D decal = Texture2D.whiteTexture;
+                        if (!string.IsNullOrWhiteSpace(remoteInfo.decalPath)) decal = ImageUtilities.GetTexture(mod, remoteInfo.decalPath, false, false);
+                        else NHLogger.LogError($"Missing decal path on [{remoteInfo.id}] for [{go.name}]");
+
+                        PropBuildManager.MakeGeneralProp(go, remoteInfo.platform, (platform) => MakePlatform(go, sector, id, decal, platform, mod), (platform) => remoteInfo.id);
+                        PropBuildManager.MakeGeneralProp(go, remoteInfo.whiteboard, (whiteboard) => MakeWhiteboard(go, sector, id, decal, whiteboard, nhBody), (whiteboard) => remoteInfo.id);
+                        PropBuildManager.MakeGeneralProps(go, remoteInfo.stones, (stone) => MakeStone(go, sector, id, decal, stone, mod), (stone) => remoteInfo.id);
+                    }
+                    catch (Exception ex)
+                    {
+                        NHLogger.LogError($"Couldn't make remote [{remoteInfo.id}] for [{go.name}]:\n{ex}");
+                    }
+                }
+            }
+        }
+
+        [Obsolete("Use MakeGeneralProps instead")]
         public static void Make(GameObject go, Sector sector, RemoteInfo info, NewHorizonsBody nhBody)
         {
-            InitPrefabs();
-
             var mod = nhBody.Mod;
             var id = RemoteHandler.GetPlatformID(info.id);
 
@@ -149,7 +176,7 @@ namespace NewHorizons.Builder.Props
             {
                 try
                 {
-                    MakeWhiteboard(go, sector, nhBody.Mod, id, decal, info.whiteboard, nhBody);
+                    MakeWhiteboard(go, sector, id, decal, info.whiteboard, nhBody);
                 }
                 catch (Exception ex)
                 {
@@ -173,8 +200,10 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        public static void MakeWhiteboard(GameObject go, Sector sector, IModBehaviour mod, NomaiRemoteCameraPlatform.ID id, Texture2D decal, RemoteWhiteboardInfo info, NewHorizonsBody nhBody)
+        public static void MakeWhiteboard(GameObject go, Sector sector, NomaiRemoteCameraPlatform.ID id, Texture2D decal, RemoteWhiteboardInfo info, NewHorizonsBody nhBody)
         {
+            InitPrefabs();
+            var mod = nhBody.Mod;
             var whiteboard = DetailBuilder.Make(go, sector, mod, _whiteboardPrefab, new DetailInfo(info));
             whiteboard.SetActive(false);
 
@@ -213,8 +242,9 @@ namespace NewHorizons.Builder.Props
             whiteboard.SetActive(true);
         }
 
-        public static void MakePlatform(GameObject go, Sector sector, NomaiRemoteCameraPlatform.ID id, Texture2D decal, PlatformInfo info, IModBehaviour mod)
+        public static void MakePlatform(GameObject go, Sector sector, NomaiRemoteCameraPlatform.ID id, Texture2D decal, RemotePlatformInfo info, IModBehaviour mod)
         {
+            InitPrefabs();
             var platform = DetailBuilder.Make(go, sector, mod, _remoteCameraPlatformPrefab, new DetailInfo(info));
             platform.SetActive(false);
 
@@ -239,8 +269,9 @@ namespace NewHorizons.Builder.Props
             platform.SetActive(true);
         }
 
-        public static void MakeStone(GameObject go, Sector sector, NomaiRemoteCameraPlatform.ID id, Texture2D decal, StoneInfo info, IModBehaviour mod)
+        public static void MakeStone(GameObject go, Sector sector, NomaiRemoteCameraPlatform.ID id, Texture2D decal, ProjectionStoneInfo info, IModBehaviour mod)
         {
+            InitPrefabs();
             var shareStone = GeneralPropBuilder.MakeFromPrefab(_shareStonePrefab, "ShareStone_" + id.ToString(), go, sector, info);
 
             shareStone.GetComponent<SharedStone>()._connectedPlatform = id;

@@ -692,13 +692,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -1315,13 +1315,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -1519,13 +1519,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -1585,13 +1585,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -1648,13 +1648,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -1693,13 +1693,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -1734,13 +1734,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -1813,13 +1813,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -1982,13 +1982,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -2092,13 +2092,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -2323,13 +2323,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -2362,13 +2362,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -2530,13 +2530,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -2600,13 +2600,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -2701,13 +2701,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -2774,13 +2774,13 @@
         },
         "platform": {
           "description": "Camera platform that the stones can project to and from",
-          "$ref": "#/definitions/PlatformInfo"
+          "$ref": "#/definitions/RemotePlatformInfo"
         },
         "stones": {
           "type": "array",
           "description": "Projection stones",
           "items": {
-            "$ref": "#/definitions/StoneInfo"
+            "$ref": "#/definitions/ProjectionStoneInfo"
           }
         }
       }
@@ -2804,13 +2804,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -2864,7 +2864,7 @@
         }
       }
     },
-    "PlatformInfo": {
+    "RemotePlatformInfo": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -2883,13 +2883,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -2910,7 +2910,7 @@
         }
       }
     },
-    "StoneInfo": {
+    "ProjectionStoneInfo": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -2929,13 +2929,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -2966,13 +2966,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -3011,13 +3011,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -3048,13 +3048,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -3101,13 +3101,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -3179,13 +3179,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -3226,13 +3226,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -3270,13 +3270,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -3573,13 +3573,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -3618,13 +3618,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -4098,13 +4098,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -4196,13 +4196,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -4266,13 +4266,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -4349,13 +4349,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -4400,13 +4400,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -4443,13 +4443,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -4477,13 +4477,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -4548,13 +4548,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -4605,13 +4605,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -4728,13 +4728,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -4768,13 +4768,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -4818,13 +4818,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -4862,13 +4862,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -4934,13 +4934,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -4988,13 +4988,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -5028,13 +5028,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -5068,13 +5068,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -5101,13 +5101,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
