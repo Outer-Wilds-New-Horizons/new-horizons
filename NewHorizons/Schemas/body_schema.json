@@ -85,6 +85,10 @@
       "description": "Add lava to this planet",
       "$ref": "#/definitions/LavaModule"
     },
+    "MapMarker": {
+      "description": "Map marker properties of this body",
+      "$ref": "#/definitions/MapMarkerModule"
+    },
     "Orbit": {
       "description": "Describes this Body's orbit (or lack there of)",
       "$ref": "#/definitions/OrbitModule"
@@ -542,10 +546,6 @@
           "type": "number",
           "description": "Radius of a simple sphere used as the ground for the planet. If you want to use more complex terrain, leave this as\n0.",
           "format": "float"
-        },
-        "hasMapMarker": {
-          "type": "boolean",
-          "description": "If the body should have a marker on the map screen."
         },
         "invulnerableToSun": {
           "type": "boolean",
@@ -1019,6 +1019,26 @@
         "tint": {
           "description": "Tint of the lava",
           "$ref": "#/definitions/MColor"
+        }
+      }
+    },
+    "MapMarkerModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "If the body should have a marker on the map screen."
+        },
+        "minDisplayDistanceOverride": {
+          "type": "number",
+          "description": "Lowest distance away from the body that the marker can be shown. This is automatically set to 0 for all bodies except focal points where it is 5,000.",
+          "format": "float"
+        },
+        "maxDisplayDistanceOverride": {
+          "type": "number",
+          "description": "Highest distance away from the body that the marker can be shown. For planets and focal points the automatic value is 50,000. Moons and planets in focal points are 5,000. Stars are 1E+10 (10,000,000,000).",
+          "format": "float"
         }
       }
     },
@@ -2046,6 +2066,10 @@
         "keepLoaded": {
           "type": "boolean",
           "description": "Should this detail stay loaded even if you're outside the sector (good for very large props)"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector). This parent should be at the position where you'd like to scatter (which would usually be zero)."
         }
       }
     },
@@ -2105,6 +2129,16 @@
           "description": "The type of object this is.",
           "default": "slideReel",
           "$ref": "#/definitions/SlideShowType"
+        },
+        "reelModel": {
+          "description": "Exclusive to the slide reel type. Model/mesh of the reel. Each model has a different number of slides on it. Whole has 7 slides but a full ring like 8.",
+          "default": "sevenSlides",
+          "$ref": "#/definitions/SlideReelType"
+        },
+        "reelCondition": {
+          "description": "Exclusive to the slide reel type. Condition/material of the reel. Antique is the Stranger, Pristine is the Dreamworld, Rusted is a burned reel.",
+          "default": "antique",
+          "$ref": "#/definitions/SlideReelCondition"
         }
       }
     },
@@ -2170,6 +2204,11 @@
         "reveal": {
           "type": "string",
           "description": "Ship log fact revealed when viewing this slide.\nSet this to include ship log entry module. Base game default is \"\"."
+        },
+        "rotate": {
+          "type": "boolean",
+          "description": "Exclusive to slide reels. Whether this slide should rotate the reel item while inside a projector.",
+          "default": true
         }
       }
     },
@@ -2187,6 +2226,36 @@
         "autoProjector",
         "visionTorchTarget",
         "standingVisionTorch"
+      ]
+    },
+    "SlideReelType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "SixSlides",
+        "SevenSlides",
+        "EightSlides",
+        "Whole"
+      ],
+      "enum": [
+        "sixSlides",
+        "sevenSlides",
+        "eightSlides",
+        "whole"
+      ]
+    },
+    "SlideReelCondition": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Antique",
+        "Pristine",
+        "Rusted"
+      ],
+      "enum": [
+        "antique",
+        "pristine",
+        "rusted"
       ]
     },
     "QuantumGroupInfo": {

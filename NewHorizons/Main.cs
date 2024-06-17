@@ -227,6 +227,13 @@ namespace NewHorizons
             // the campfire on the title screen calls this from RegisterShape before it gets patched, so we have to call it again. lol 
             ShapeManager.Initialize();
 
+            // Fix a thing (thanks jeff mobius) 1.1.15 updated the game over fonts to only include the characters they needed
+            for (int i = 0; i < TextTranslation.s_theTable.m_gameOverFonts.Length; i++)
+            {
+                var existingFont = TextTranslation.s_theTable.m_dynamicFonts[i];
+                TextTranslation.s_theTable.m_gameOverFonts[i] = existingFont;
+            }
+
             SceneManager.sceneLoaded += OnSceneLoaded;
             SceneManager.sceneUnloaded += OnSceneUnloaded;
 
@@ -387,9 +394,11 @@ namespace NewHorizons
             else if (IsWarpingBackToEye)
             {
                 IsWarpingBackToEye = false;
-                OWTime.Pause(OWTime.PauseType.Loading);
-                LoadManager.LoadScene(OWScene.EyeOfTheUniverse); // LoadScene loads one frame later in Update. will this break since we unpause before that in the next line? 
-                OWTime.Unpause(OWTime.PauseType.Loading);
+                ManualOnStartSceneLoad(OWScene.EyeOfTheUniverse);
+                // LoadSceneImmediate doesn't cover the screen and you see the solar system for a frame without this
+                LoadManager.s_instance._fadeCanvas.enabled = true;
+                LoadManager.s_instance._fadeImage.color = Color.black;
+                LoadManager.LoadSceneImmediate(OWScene.EyeOfTheUniverse);                
                 return;
             }
 
@@ -524,6 +533,8 @@ namespace NewHorizons
                         PlayerData.SaveLoopCount(2);
                         PlayerData.SetPersistentCondition("LAUNCH_CODES_GIVEN", true);
                     }
+
+                    if (shouldWarpInFromVessel) VesselWarpHandler.LoadDB();
                 }
                 else if (isEyeOfTheUniverse)
                 {
@@ -627,6 +638,39 @@ namespace NewHorizons
             HasWarpDrive = true;
         }
 
+        /// <summary>
+        /// sometimes we call LoadSceneImmediate, which doesnt do the required event firing for mods to be happy.
+        /// this method emulates that via copying parts of LoadManager.
+        /// </summary>
+        public static void ManualOnStartSceneLoad(OWScene scene)
+        {
+            LoadManager.s_loadSceneJob = new LoadManager.LoadSceneJob();
+            LoadManager.s_loadSceneJob.sceneToLoad = scene;
+            LoadManager.s_loadSceneJob.fadeType = LoadManager.FadeType.None;
+            LoadManager.s_loadSceneJob.fadeLength = 0;
+            LoadManager.s_loadSceneJob.pauseDuringFade = true;
+            LoadManager.s_loadSceneJob.asyncOperation = false;
+            LoadManager.s_loadSceneJob.skipPreLoadMemoryDump = false;
+            LoadManager.s_loadSceneJob.skipVsyncChange = false;
+
+            LoadManager.s_loadingScene = LoadManager.s_loadSceneJob.sceneToLoad;
+            LoadManager.s_fadeType = LoadManager.s_loadSceneJob.fadeType;
+            LoadManager.s_fadeStartTime = Time.unscaledTime;
+            LoadManager.s_fadeLength = LoadManager.s_loadSceneJob.fadeLength;
+            LoadManager.s_pauseDuringFade = LoadManager.s_loadSceneJob.pauseDuringFade;
+            LoadManager.s_skipVsyncChange = LoadManager.s_loadSceneJob.skipVsyncChange;
+
+            // cant fire events from outside of class without reflection
+            ((Delegate)AccessTools.Field(typeof(LoadManager), nameof(LoadManager.OnStartSceneLoad)).GetValue(null))
+                .DynamicInvoke(LoadManager.s_currentScene, LoadManager.s_loadingScene);
+
+            if (LoadManager.s_pauseDuringFade)
+            {
+                OWTime.Pause(OWTime.PauseType.Loading);
+            }
+            
+            LoadManager.s_loadSceneJob = null;
+        }
 
         #region Load
         public void LoadStarSystemConfig(string starSystemName, StarSystemConfig starSystemConfig, string relativePath, IModBehaviour mod)
@@ -787,7 +831,7 @@ namespace NewHorizons
             {
                 if (language is TextTranslation.Language.UNKNOWN or TextTranslation.Language.TOTAL) continue;
 
-                var relativeFile = Path.Combine("translations", language.ToString().ToLower() + ".json");
+                var relativeFile = Path.Combine("translations", language.ToString().ToLowerInvariant() + ".json");
 
                 if (File.Exists(Path.Combine(folder, relativeFile)))
                 {
@@ -907,6 +951,7 @@ namespace NewHorizons
                 IsWarpingFromVessel = vessel;
                 DidWarpFromVessel = false;
                 OnChangeStarSystem?.Invoke(newStarSystem);
+                VesselWarpController.s_relativeLocationSaved = false;
 
                 NHLogger.Log($"Warping to {newStarSystem}");
                 if (warp && ShipWarpController) ShipWarpController.WarpOut();
@@ -940,13 +985,44 @@ namespace NewHorizons
                 {
                     // Slide reel unloading is tied to being removed from the sector, so we do that here to prevent a softlock
                     Locator.GetPlayerSectorDetector().RemoveFromAllSectors();
-                    LoadManager.LoadScene(sceneToLoad); // this used to be LoadSceneImmediate, but that breaks with qsb. hopefully it doesnt break nh
+                    ManualOnStartSceneLoad(sceneToLoad); // putting it before fade breaks ship warp effect cuz pause
+                    LoadManager.LoadSceneImmediate(sceneToLoad);
                 });
+            }
+        }
+
+        /// <summary>
+        /// Exclusively for <see cref="Patches.WarpPatches.VesselWarpControllerPatches.VesselWarpController_OnSlotActivated(VesselWarpController, NomaiInterfaceSlot)"/>
+        /// </summary>
+        internal void ChangeCurrentStarSystemVesselAsync(string newStarSystem)
+        {
+            if (IsChangingStarSystem) return;
+
+            if (LoadManager.GetCurrentScene() == OWScene.SolarSystem || LoadManager.GetCurrentScene() == OWScene.EyeOfTheUniverse)
+            {
+                IsWarpingFromShip = false;
+                IsWarpingFromVessel = true;
+                DidWarpFromVessel = false;
+                OnChangeStarSystem?.Invoke(newStarSystem);
+
+                NHLogger.Log($"Vessel warping to {newStarSystem}");
+                IsChangingStarSystem = true;
+                WearingSuit = PlayerState.IsWearingSuit();
+
+                PlayerData.SaveEyeCompletion(); // So that the title screen doesn't keep warping you back to eye
+
+                if (SystemDict[CurrentStarSystem].Config.enableTimeLoop) SecondsElapsedInLoop = TimeLoop.GetSecondsElapsed();
+                else SecondsElapsedInLoop = -1;
+
+                CurrentStarSystem = newStarSystem;
+
+                LoadManager.LoadSceneAsync(OWScene.SolarSystem, false, LoadManager.FadeType.ToBlack);
             }
         }
 
         void OnDeath(DeathType _)
         {
+            VesselWarpController.s_relativeLocationSaved = false;
             // We reset the solar system on death
             if (!IsChangingStarSystem)
             {
@@ -962,9 +1038,13 @@ namespace NewHorizons
             {
                 CurrentStarSystem = _defaultSystemOverride;
 
-                if (BodyDict.TryGetValue(_defaultSystemOverride, out var bodies) && bodies.Any(x => x.Config?.Spawn?.shipSpawn != null))
+                // #738 - Sometimes the override will not support spawning regularly, so always warp in if possible
+                if (SystemDict[_defaultSystemOverride].Config.Vessel?.spawnOnVessel == true)
                 {
-                    // #738 - Sometimes the override will not support spawning regularly, so always warp in if possible
+                    IsWarpingFromVessel = true;
+                }
+                else if (BodyDict.TryGetValue(_defaultSystemOverride, out var bodies) && bodies.Any(x => x.Config?.Spawn?.shipSpawn != null))
+                {
                     IsWarpingFromShip = true;
                 }
                 else

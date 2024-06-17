@@ -5,10 +5,14 @@ using NewHorizons.Utility;
 using NewHorizons.Utility.OuterWilds;
 using NewHorizons.Utility.OWML;
 using OWML.Common;
+using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.IO;
 using System.Xml;
+using System.Xml.Linq;
 using UnityEngine;
+using UnityEngine.XR;
 
 namespace NewHorizons.Builder.Props
 {
@@ -31,7 +35,7 @@ namespace NewHorizons.Builder.Props
             }
             else
             {
-                return (AddToExistingDialogue(info, xml), null);
+                return (AddToExistingDialogue(go, info, xml, dialogueName), null);
             }
         }
 
@@ -66,9 +70,11 @@ namespace NewHorizons.Builder.Props
             return (dialogue, remoteTrigger);
         }
 
-        private static CharacterDialogueTree AddToExistingDialogue(DialogueInfo info, string xml)
+        private static CharacterDialogueTree AddToExistingDialogue(GameObject go, DialogueInfo info, string xml, string dialogueName)
         {
-            var existingDialogue = SearchUtilities.Find(info.pathToExistingDialogue)?.GetComponent<CharacterDialogueTree>();
+            var dialogueObject = go.FindChild(info.pathToExistingDialogue);
+            if (dialogueObject == null) dialogueObject = SearchUtilities.Find(info.pathToExistingDialogue);
+            var existingDialogue = dialogueObject != null ? dialogueObject.GetComponent<CharacterDialogueTree>() : null;
 
             if (existingDialogue == null)
             {
@@ -76,7 +82,29 @@ namespace NewHorizons.Builder.Props
                 return null;
             }
 
-            var existingText = existingDialogue._xmlCharacterDialogueAsset.text;
+            var existingAsset = existingDialogue._xmlCharacterDialogueAsset;
+            if (existingAsset == null)
+            {
+                var dialogueDoc = new XmlDocument();
+                dialogueDoc.LoadXml(xml);
+                var xmlNode = dialogueDoc.SelectSingleNode("DialogueTree");
+                AddTranslation(xmlNode);
+
+                xml = xmlNode.OuterXml;
+
+                var text = new TextAsset(xml)
+                {
+                    // Text assets need a name to be used with VoiceMod
+                    name = dialogueName
+                };
+                existingDialogue.SetTextXml(text);
+
+                FixDialogueNextFrame(existingDialogue);
+
+                return existingDialogue;
+            }
+
+            var existingText = existingAsset.text;
 
             var existingDialogueDoc = new XmlDocument();
             existingDialogueDoc.LoadXml(existingText);
@@ -102,7 +130,11 @@ namespace NewHorizons.Builder.Props
                     // We just have to merge the dialogue options
                     var dialogueOptions = newDialogueNode.GetChildNode("DialogueOptionsList").GetChildNodes("DialogueOption");
                     var existingDialogueOptionsList = existingNode.GetChildNode("DialogueOptionsList");
-                    var firstNode = existingDialogueOptionsList.ChildNodes[0];
+                    if (existingDialogueOptionsList == null)
+                    {
+                        existingDialogueOptionsList = existingDialogueDoc.CreateElement("DialogueOptionsList");
+                        existingNode.AppendChild(existingDialogueOptionsList);
+                    }
                     foreach (XmlNode node in dialogueOptions)
                     {
                         var importedNode = existingDialogueOptionsList.OwnerDocument.ImportNode(node, true);
@@ -118,6 +150,10 @@ namespace NewHorizons.Builder.Props
                 }
             }
 
+            // Character name is required for adding translations, something to do with how OW prefixes its dialogue
+            var characterName = existingDialogueTree.SelectSingleNode("NameField").InnerText;
+            AddTranslation(additionalDialogueDoc.GetChildNode("DialogueTree"), characterName);
+
             var newTextAsset = new TextAsset(existingDialogueDoc.OuterXml)
             {
                 name = existingDialogue._xmlCharacterDialogueAsset.name
@@ -125,11 +161,82 @@ namespace NewHorizons.Builder.Props
 
             existingDialogue.SetTextXml(newTextAsset);
 
-            // Chracter name is required for adding translations, something to do with how OW prefixes its dialogue
-            var characterName = existingDialogueTree.SelectSingleNode("NameField").InnerText;
-            AddTranslation(xml, characterName);
+            FixDialogueNextFrame(existingDialogue);
 
             return existingDialogue;
+        }
+
+        private static void FixDialogueNextFrame(CharacterDialogueTree characterDialogueTree)
+        {
+            Delay.FireOnNextUpdate(() =>
+            {
+                var rawText = characterDialogueTree._xmlCharacterDialogueAsset.text;
+
+                var doc = new XmlDocument();
+                doc.LoadXml(rawText);
+                var dialogueTree = doc.DocumentElement.SelectSingleNode("//DialogueTree");
+
+                DoDialogueOptionsListReplacement(dialogueTree);
+
+                var newTextAsset = new TextAsset(doc.OuterXml)
+                {
+                    name = characterDialogueTree._xmlCharacterDialogueAsset.name
+                };
+
+                characterDialogueTree.SetTextXml(newTextAsset);
+            });
+        }
+
+        /// <summary>
+        /// Always call this after adding translations, else it won't update them properly
+        /// </summary>
+        /// <param name="dialogueTree"></param>
+        private static void DoDialogueOptionsListReplacement(XmlNode dialogueTree)
+        {
+            var optionsListsByName = new Dictionary<string, XmlNode>();
+            var dialogueNodes = dialogueTree.GetChildNodes("DialogueNode");
+            foreach (XmlNode dialogueNode in dialogueNodes)
+            {
+                var optionsList = dialogueNode.GetChildNode("DialogueOptionsList");
+                if (optionsList != null)
+                {
+                    var name = dialogueNode.GetChildNode("Name").InnerText;
+                    optionsListsByName[name] = optionsList;
+                }
+            }
+            foreach (var (name, optionsList) in optionsListsByName)
+            {
+                var replacement = optionsList.GetChildNode("ReuseDialogueOptionsListFrom");
+                if (replacement != null)
+                {
+                    var replacementName = replacement.InnerText;
+                    if (optionsListsByName.TryGetValue(replacementName, out var replacementOptionsList))
+                    {
+                        if (replacementOptionsList.GetChildNode("ReuseDialogueOptionsListFrom") != null)
+                        {
+                            NHLogger.LogError($"Can not target a node with ReuseDialogueOptionsListFrom that also reuses options when making dialogue. Node {name} cannot reuse the list from {replacement.InnerText}");
+                        }
+                        var dialogueNode = optionsList.ParentNode;
+                        dialogueNode.RemoveChild(optionsList);
+                        dialogueNode.AppendChild(replacementOptionsList.Clone());
+
+                        // Have to manually fix the translations here
+                        var characterName = dialogueTree.SelectSingleNode("NameField").InnerText;
+
+                        var xmlText = replacementOptionsList.SelectNodes("DialogueOption/Text");
+                        foreach (object option in xmlText)
+                        {
+                            var optionData = (XmlNode)option;
+                            var text = optionData.InnerText.Trim();
+                            TranslationHandler.ReuseDialogueTranslation(text, new string[] { characterName, replacementName }, new string[] { characterName, name });
+                        }
+                    }
+                    else
+                    {
+                        NHLogger.LogError($"Could not reuse dialogue options list from node with Name {replacement.InnerText} to node with Name {name}");
+                    }
+                }
+            }
         }
 
         private static RemoteDialogueTrigger MakeRemoteDialogueTrigger(GameObject planetGO, Sector sector, DialogueInfo info, CharacterDialogueTree dialogue)
@@ -187,13 +294,19 @@ namespace NewHorizons.Builder.Props
 
             var dialogueTree = conversationZone.AddComponent<NHCharacterDialogueTree>();
 
+            var dialogueDoc = new XmlDocument();
+            dialogueDoc.LoadXml(xml);
+            var xmlNode = dialogueDoc.SelectSingleNode("DialogueTree");
+            AddTranslation(xmlNode);
+
+            xml = xmlNode.OuterXml;
+
             var text = new TextAsset(xml)
             {
                 // Text assets need a name to be used with VoiceMod
                 name = dialogueName
             };
             dialogueTree.SetTextXml(text);
-            AddTranslation(xml);
 
             switch (info.flashlightToggle)
             {
@@ -213,6 +326,8 @@ namespace NewHorizons.Builder.Props
             }
 
             conversationZone.SetActive(true);
+
+            FixDialogueNextFrame(dialogueTree);
 
             return dialogueTree;
         }
@@ -378,11 +493,17 @@ namespace NewHorizons.Builder.Props
             }
         }
 
+        [Obsolete("Pass in the DialogueTree XmlNode instead, this is still here because Pikpik was using it in EOTP")]
         public static void AddTranslation(string xml, string characterName = null)
         {
             var xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(xml);
             var xmlNode = xmlDocument.SelectSingleNode("DialogueTree");
+            AddTranslation(xmlNode, characterName);
+        }
+
+        public static void AddTranslation(XmlNode xmlNode, string characterName = null) 
+        { 
             var xmlNodeList = xmlNode.SelectNodes("DialogueNode");
 
             // When adding dialogue to existing stuff, we have to pass in the character name
@@ -416,6 +537,24 @@ namespace NewHorizons.Builder.Props
                     TranslationHandler.AddDialogue(text, true, characterName, name);
                 }
             }
+        }
+
+        public static void HandleUnityCreatedDialogue(CharacterDialogueTree dialogue)
+        {
+            var asset = dialogue._xmlCharacterDialogueAsset;
+            if (asset == null) return;
+            var text = asset.text;
+            var dialogueDoc = new XmlDocument();
+            dialogueDoc.LoadXml(text);
+            var xmlNode = dialogueDoc.SelectSingleNode("DialogueTree");
+            AddTranslation(xmlNode, null);
+            var newTextAsset = new TextAsset(dialogueDoc.OuterXml)
+            {
+                name = asset.name
+            };
+            dialogue.SetTextXml(newTextAsset);
+
+            FixDialogueNextFrame(dialogue);
         }
     }
 }

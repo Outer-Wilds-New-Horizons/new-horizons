@@ -15,7 +15,7 @@ namespace NewHorizons.Utility.DebugTools
 
         public static void InitializePauseMenu(IPauseMenuManager pauseMenu)
         {
-            _reloadButton = pauseMenu.MakeSimpleButton(TranslationHandler.GetTranslation("Reload Configs", TranslationHandler.TextType.UI).ToUpper(), 3, true);
+            _reloadButton = pauseMenu.MakeSimpleButton(TranslationHandler.GetTranslation("Reload Configs", TranslationHandler.TextType.UI).ToUpperFixed(), 3, true);
             _reloadButton.OnSubmitAction += ReloadConfigs;
             UpdateReloadButton();
         }
@@ -46,7 +46,7 @@ namespace NewHorizons.Utility.DebugTools
             SearchUtilities.Find("/PauseMenu/PauseMenuManagers").GetComponent<PauseMenuManager>().OnSkipToNextTimeLoop();
 
             Main.Instance.ForceClearCaches = true;
-            Main.Instance.ChangeCurrentStarSystem(Main.Instance.CurrentStarSystem);
+            Main.Instance.ChangeCurrentStarSystem(Main.Instance.CurrentStarSystem, Main.Instance.DidWarpFromShip, Main.Instance.DidWarpFromVessel);
 
             Main.SecondsElapsedInLoop = -1f;
         }

@@ -471,7 +471,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
 
             if (info.arcInfo != null && info.arcInfo.Count() != dict.Values.Count())
             {
-                NHLogger.LogError($"Can't make NomaiWallText, arcInfo length [{info.arcInfo.Count()}] doesn't equal text entries [{dict.Values.Count()}]");
+                NHLogger.LogError($"Can't make NomaiWallText, arcInfo length [{info.arcInfo.Count()}] doesn't equal number of TextBlocks [{dict.Values.Count()}] in the xml");
                 return;
             }
 

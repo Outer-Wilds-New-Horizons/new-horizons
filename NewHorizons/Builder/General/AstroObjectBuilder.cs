@@ -16,7 +16,7 @@ namespace NewHorizons.Builder.General
             var config = nhBody.Config;
 
             astroObject.isVanilla = isVanilla;
-            astroObject.HideDisplayName = !config.Base.hasMapMarker;
+            astroObject.HideDisplayName = !config.MapMarker.enabled;
             astroObject.invulnerableToSun = config.Base.invulnerableToSun;
 
             if (config.Orbit != null) astroObject.SetOrbitalParametersFromConfig(config.Orbit);

@@ -5,6 +5,10 @@ using UnityEngine;
 
 namespace NewHorizons.Handlers
 {
+    /// <summary>
+    /// copied from LoadManager.
+    /// exists so we can do things after the fade without patching. 
+    /// </summary>
     public static class FadeHandler
     {
         public static void FadeOut(float length) => Delay.StartCoroutine(FadeOutCoroutine(length));
@@ -17,11 +21,14 @@ namespace NewHorizons.Handlers
 
             while (Time.unscaledTime < endTime)
             {
-                LoadManager.s_instance._fadeImage.color = Color.Lerp(Color.clear, Color.black, (Time.unscaledTime - startTime) / length);
+                var t = Mathf.Clamp01((Time.unscaledTime - startTime) / length);
+                LoadManager.s_instance._fadeImage.color = Color.Lerp(Color.clear, Color.black, t);
+                AudioListener.volume = 1f - t;
                 yield return new WaitForEndOfFrame();
             }
 
             LoadManager.s_instance._fadeImage.color = Color.black;
+            AudioListener.volume = 0;
             yield return new WaitForEndOfFrame();
         }
 

@@ -29,10 +29,10 @@ jobs:
       schemas_changed: ${{ steps.changed_files.outputs.files_changed }}
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
 
       # Disable Strong Name Verification to let us pull a switch-a-roo
       - name: Disable strong name validation
@@ -51,19 +51,19 @@ jobs:
         run: rm .\NewHorizons\bin\${{ inputs.build_type }}\NewHorizons.xml
 
       - name: Upload Mod Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: xen.NewHorizons.${{ inputs.build_type }}
           path: .\NewHorizons\bin\${{ inputs.build_type }}
 
       - name: Upload Schemas Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: NewHorizons-Schemas-${{ inputs.build_type }}
           path: .\NewHorizons\Schemas
 
       - name: Verify Changed Schemas
-        uses: tj-actions/verify-changed-files@v17
+        uses: tj-actions/verify-changed-files@v20
         id: changed_files
         with:
           files: NewHorizons/Schemas/**
