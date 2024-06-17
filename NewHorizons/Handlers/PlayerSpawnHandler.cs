@@ -140,7 +140,7 @@ namespace NewHorizons.Handlers
             FixPlayerVelocity();
             for(int i = 0; i < length; i++) 
             {
-                FixPlayerVelocity(false);
+                FixPlayerVelocity(false); // dont recenter universe here or else it spams and lags game
                 yield return new WaitForEndOfFrame();
             }
             FixPlayerVelocity();
