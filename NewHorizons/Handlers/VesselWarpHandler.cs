@@ -98,6 +98,9 @@ namespace NewHorizons.Handlers
         {
             if (Instance.CurrentStarSystem == "SolarSystem")
             {
+                //Deactivate lock since we aren't in timber anymore
+                GameObject.Destroy(SearchUtilities.Find("TimberHearth_Body/StreamingGroup_TH").GetComponent<StreamingLock>());
+
                 // Deactivate village music because for some reason it still plays.
                 SearchUtilities.Find("TimberHearth_Body/Sector_TH/Sector_Village/Volumes_Village/MusicVolume_Village").GetComponent<VillageMusicVolume>().Deactivate();
 
