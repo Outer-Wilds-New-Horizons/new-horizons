@@ -643,11 +643,6 @@ namespace NewHorizons.Builder.Props
                 modules.Add(new SlideRotationModule());
             }
 
-            if (loaders.Count == 0)
-            {
-                Slide.WriteModules(modules, ref slide._modulesList, ref slide._modulesData, ref slide.lengths);
-            }
-
             var count = loaders.Count;
             foreach (var loader in loaders)
             {

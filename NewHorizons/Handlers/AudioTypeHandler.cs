@@ -19,6 +19,8 @@ namespace NewHorizons.Handlers
         private static AudioLibrary.AudioEntry[] _defaultLibraryEntries;
         private static AudioLibrary _library;
 
+        private static bool _isSetUp;
+
         public static void Init()
         {
             _customAudioTypes = new Dictionary<string, AudioType>();
@@ -28,7 +30,11 @@ namespace NewHorizons.Handlers
                 PostInit
             );
 
-            SceneManager.sceneUnloaded += SceneManager_sceneUnloaded;
+            if (!_isSetUp)
+            {
+                _isSetUp = true;
+                SceneManager.sceneUnloaded += SceneManager_sceneUnloaded;
+            }
         }
 
         private static void SceneManager_sceneUnloaded(Scene arg0)
@@ -115,8 +121,9 @@ namespace NewHorizons.Handlers
 
             _customAudioTypes.Add(id, audioType);
 
-            _library.audioEntries = _library.audioEntries.Append(new AudioLibrary.AudioEntry(audioType, audioClips)).ToArray(); // concat custom entries
-            Locator.GetAudioManager()._audioLibraryDict = _library.BuildAudioEntryDictionary();
+            var entry = new AudioLibrary.AudioEntry(audioType, audioClips);
+            _library.audioEntries = _library.audioEntries.Append(entry).ToArray();
+            Locator.GetAudioManager()._audioLibraryDict.Add((int)audioType, entry);
 
             return audioType;
         }

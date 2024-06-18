@@ -73,6 +73,8 @@ public static class AudioUtilities
         _loadedAudioClips.Clear();
     }
 
+    public static Action allLoadersComplete;
+
     public class AsyncAudioLoader
     {
         public class AudioLoadedEvent : UnityEvent<AudioClip> { }
@@ -101,6 +103,8 @@ public static class AudioUtilities
     {
         public static SingletonAudioLoader Instance { get; private set; }
 
+        public int loadingCount = 0;
+
         public void Awake()
         {
             Instance = this;
@@ -110,10 +114,12 @@ public static class AudioUtilities
         private void OnSceneUnloaded(Scene _)
         {
             StopAllCoroutines();
+            loadingCount = 0;
         }
 
         public void Load(AsyncAudioLoader loader)
         {
+            loadingCount++;
             StartCoroutine(GetAudioClip(loader)); 
         }
 
@@ -128,85 +134,93 @@ public static class AudioUtilities
             {
                 NHLogger.LogVerbose($"Already loaded audio at path: {path}");
                 loader.audioLoadedEvent?.Invoke(_loadedAudioClips[path]);
-                yield break;
-            }
-
-            var extension = Path.GetExtension(path);
-
-            UnityEngine.AudioType audioType;
-
-            switch (extension)
-            {
-                case ".wav":
-                    audioType = UnityEngine.AudioType.WAV;
-                    break;
-                case ".ogg":
-                    audioType = UnityEngine.AudioType.OGGVORBIS;
-                    break;
-                case ".mp3":
-                    audioType = UnityEngine.AudioType.MPEG;
-                    break;
-                default:
-                    throw new Exception($"Couldn't load Audio at {path} : Invalid audio file extension ({extension}) must be .wav or .ogg or .mp3");
-            }
-
-            path = $"file:///{path.Replace("+", "%2B")}";
-
-            if (audioType == UnityEngine.AudioType.MPEG)
-            {
-                DownloadHandlerAudioClip dh = new DownloadHandlerAudioClip(path, UnityEngine.AudioType.MPEG);
-                dh.compressed = true;
-                using UnityWebRequest www = new UnityWebRequest(path, "GET", dh, null);
-                yield return www.SendWebRequest();
-
-                // Could have loaded in the meantime
-                if (_loadedAudioClips.ContainsKey(path))
-                {
-                    NHLogger.LogVerbose($"Already loaded audio at {path}");
-                    loader.audioLoadedEvent?.Invoke(_loadedAudioClips[path]);
-                }
-                else
-                {
-                    if (www.isNetworkError || www.isHttpError)
-                    {
-                        NHLogger.LogError($"Couldn't load Audio at {path} : {www.error}");
-                        loader.audioLoadedEvent?.Invoke(null);
-                    }
-                    else
-                    {
-                        var audioClip = dh.audioClip;
-                        audioClip.name = Path.GetFileNameWithoutExtension(path);
-                        _loadedAudioClips.Add(path, audioClip);
-                        loader.audioLoadedEvent?.Invoke(audioClip);
-                    }
-                }
             }
             else
             {
-                using UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(path, audioType);
-                yield return www.SendWebRequest();
+                var extension = Path.GetExtension(path);
 
-                // Could have loaded in the meantime
-                if (_loadedAudioClips.ContainsKey(path))
+                UnityEngine.AudioType audioType;
+
+                switch (extension)
                 {
-                    NHLogger.LogVerbose($"Already loaded audio at {path}");
-                    loader.audioLoadedEvent?.Invoke(_loadedAudioClips[path]);
+                    case ".wav":
+                        audioType = UnityEngine.AudioType.WAV;
+                        break;
+                    case ".ogg":
+                        audioType = UnityEngine.AudioType.OGGVORBIS;
+                        break;
+                    case ".mp3":
+                        audioType = UnityEngine.AudioType.MPEG;
+                        break;
+                    default:
+                        throw new Exception($"Couldn't load Audio at {path} : Invalid audio file extension ({extension}) must be .wav or .ogg or .mp3");
                 }
-                else
+
+                path = $"file:///{path.Replace("+", "%2B")}";
+
+                if (audioType == UnityEngine.AudioType.MPEG)
                 {
-                    if (www.isNetworkError || www.isHttpError)
+                    DownloadHandlerAudioClip dh = new DownloadHandlerAudioClip(path, UnityEngine.AudioType.MPEG);
+                    dh.compressed = true;
+                    using UnityWebRequest www = new UnityWebRequest(path, "GET", dh, null);
+                    yield return www.SendWebRequest();
+
+                    // Could have loaded in the meantime
+                    if (_loadedAudioClips.ContainsKey(path))
                     {
-                        NHLogger.LogError($"Couldn't load Audio at {path} : {www.error}");
-                        loader.audioLoadedEvent?.Invoke(null);
+                        NHLogger.LogVerbose($"Already loaded audio at {path}");
+                        loader.audioLoadedEvent?.Invoke(_loadedAudioClips[path]);
                     }
                     else
                     {
-                        var audioClip = DownloadHandlerAudioClip.GetContent(www);
-                        audioClip.name = Path.GetFileNameWithoutExtension(path);
-                        _loadedAudioClips.Add(path, audioClip);
-                        loader.audioLoadedEvent?.Invoke(audioClip);
+                        if (www.isNetworkError || www.isHttpError)
+                        {
+                            NHLogger.LogError($"Couldn't load Audio at {path} : {www.error}");
+                            loader.audioLoadedEvent?.Invoke(null);
+                        }
+                        else
+                        {
+                            var audioClip = dh.audioClip;
+                            audioClip.name = Path.GetFileNameWithoutExtension(path);
+                            _loadedAudioClips.Add(path, audioClip);
+                            loader.audioLoadedEvent?.Invoke(audioClip);
+                        }
                     }
                 }
+                else
+                {
+                    using UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(path, audioType);
+                    yield return www.SendWebRequest();
+
+                    // Could have loaded in the meantime
+                    if (_loadedAudioClips.ContainsKey(path))
+                    {
+                        NHLogger.LogVerbose($"Already loaded audio at {path}");
+                        loader.audioLoadedEvent?.Invoke(_loadedAudioClips[path]);
+                    }
+                    else
+                    {
+                        if (www.isNetworkError || www.isHttpError)
+                        {
+                            NHLogger.LogError($"Couldn't load Audio at {path} : {www.error}");
+                            loader.audioLoadedEvent?.Invoke(null);
+                        }
+                        else
+                        {
+                            var audioClip = DownloadHandlerAudioClip.GetContent(www);
+                            audioClip.name = Path.GetFileNameWithoutExtension(path);
+                            _loadedAudioClips.Add(path, audioClip);
+                            loader.audioLoadedEvent?.Invoke(audioClip);
+                        }
+                    }
+                }
+            }
+
+            loadingCount--;
+
+            if (loadingCount == 0)
+            {
+                allLoadersComplete?.Invoke();
             }
         }
     }
