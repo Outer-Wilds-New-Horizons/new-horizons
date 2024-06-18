@@ -425,6 +425,9 @@ namespace NewHorizons.Utility.Files
         }
         public static Texture2D MakeSolidColorTexture(int width, int height, Color color)
         {
+            var key = $"{color} {width} {height}";
+            if (_textureCache.TryGetValue(key, out var existingTexture)) return (Texture2D)existingTexture;
+
             var pixels = new Color[width * height];
 
             for (int i = 0; i < pixels.Length; i++)
@@ -435,6 +438,9 @@ namespace NewHorizons.Utility.Files
             var newTexture = new Texture2D(width, height);
             newTexture.SetPixels(pixels);
             newTexture.Apply();
+
+            _textureCache.Add(key, newTexture);
+
             return newTexture;
         }
 

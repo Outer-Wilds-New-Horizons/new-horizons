@@ -511,6 +511,7 @@ namespace NewHorizons.Builder.Props
 
             if (useAtlasCache && cacheExists)
             {
+                NHLogger.LogVerbose($"The atlas cache for slide reel containing [{slides.FirstOrDefault(x => !string.IsNullOrEmpty(x.imagePath))?.imagePath}] is {atlasKey}");
                 // Load the atlas texture used to draw onto the physical slide reel object
                 atlasImageLoader.PathsToLoad.Add((0, Path.Combine(mod.ModHelper.Manifest.ModFolderPath, ATLAS_SLIDE_CACHE_FOLDER, $"{atlasKey}.png")));
             }
@@ -523,7 +524,12 @@ namespace NewHorizons.Builder.Props
 
                 if (string.IsNullOrEmpty(slideInfo.imagePath))
                 {
-                    imageLoader.imageLoadedEvent?.Invoke(Texture2D.blackTexture, i, null);
+                    // Delay at least one frame to let things subscribe to the event before it fires
+                    int index = i;
+                    Delay.FireOnNextUpdate(() =>
+                    {
+                        imageLoader.imageLoadedEvent?.Invoke(ImageUtilities.MakeSolidColorTexture(256, 256, Color.black), index, null);
+                    });
                 }
                 else
                 {
