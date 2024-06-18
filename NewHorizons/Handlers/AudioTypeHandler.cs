@@ -1,3 +1,4 @@
+using NAudio.Mixer;
 using NewHorizons.Utility.Files;
 using NewHorizons.Utility.OWML;
 using OWML.Common;
@@ -7,86 +8,115 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 
 namespace NewHorizons.Handlers
 {
     public static class AudioTypeHandler
     {
         private static Dictionary<string, AudioType> _customAudioTypes;
-        private static List<AudioLibrary.AudioEntry> _audioEntries;
+
+        private static AudioLibrary.AudioEntry[] _defaultLibraryEntries;
+        private static AudioLibrary _library;
 
         public static void Init()
         {
             _customAudioTypes = new Dictionary<string, AudioType>();
-            _audioEntries = new List<AudioLibrary.AudioEntry>();
 
             Delay.RunWhen(
                 () => Locator.GetAudioManager()?._libraryAsset != null,
                 PostInit
             );
+
+            SceneManager.sceneUnloaded += SceneManager_sceneUnloaded;
+        }
+
+        private static void SceneManager_sceneUnloaded(Scene arg0)
+        {
+            if (_library != null)
+            {
+                _library.audioEntries = _defaultLibraryEntries; // reset it back for next time we build
+                _library = null;
+            }
         }
 
         private static void PostInit()
         {
             NHLogger.LogVerbose($"Adding all custom AudioTypes to the library");
 
-            var library = Locator.GetAudioManager()._libraryAsset;
-            var audioEntries = library.audioEntries; // store previous array
-            library.audioEntries = library.audioEntries.Concat(_audioEntries).ToArray(); // concat custom entries
-            Locator.GetAudioManager()._audioLibraryDict = library.BuildAudioEntryDictionary();
-            library.audioEntries = audioEntries; // reset it back for next time we build
+            _library = Locator.GetAudioManager()._libraryAsset;
+            _defaultLibraryEntries = _library.audioEntries; // store previous array
         }
 
         // Will return an existing audio type or create a new one for the given audio string
-        public static AudioType GetAudioType(string audio, IModBehaviour mod)
+        public static AudioUtilities.AsyncAudioLoader AsyncSetAudioType(string audio, IModBehaviour mod, Action<AudioType> action)
         {
             try
             {
                 if (audio.Contains(".wav") || audio.Contains(".mp3") || audio.Contains(".ogg"))
                 {
-                    return AddCustomAudioType(audio, mod);
+                    return AsyncAddCustomAudioType(audio, mod, action);
                 }
                 else
                 {
-                    return EnumUtils.Parse<AudioType>(audio);
+                    action?.Invoke(EnumUtils.Parse<AudioType>(audio));
                 }
             }
             catch (Exception e)
             {
                 NHLogger.LogError($"Couldn't load AudioType:\n{e}");
-                return AudioType.None;
+                action?.Invoke(AudioType.None);
             }
+
+            return null;
         }
 
         // Create a custom audio type from relative file path and the mod
-        public static AudioType AddCustomAudioType(string audioPath, IModBehaviour mod)
+        private static AudioUtilities.AsyncAudioLoader AsyncAddCustomAudioType(string audioPath, IModBehaviour mod, Action<AudioType> action)
         {
-            AudioType audioType;
-
             var id = mod.ModHelper.Manifest.UniqueName + "_" + audioPath;
-            if (_customAudioTypes.TryGetValue(id, out audioType)) return audioType;
-
-            var audioClip = AudioUtilities.LoadAudio(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, audioPath));
-
-            if (audioClip == null)
+            if (_customAudioTypes.TryGetValue(id, out var audioType))
             {
-                NHLogger.LogError($"Couldn't create audioType for {audioPath}");
-                return AudioType.None;
+                action?.Invoke(audioType);
             }
 
-            return AddCustomAudioType(id, new AudioClip[] { audioClip });
+            var audioClipLoader = AudioUtilities.LoadAudio(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, audioPath));
+
+            audioClipLoader.audioLoadedEvent.AddListener((audioClip) =>
+            {
+                if (audioClip == null)
+                {
+                    action?.Invoke(AudioType.None);
+                }
+                else
+                {
+                    // Could have loaded in the meantime
+                    if (_customAudioTypes.TryGetValue(id, out var audioType))
+                    {
+                        action?.Invoke(audioType);
+                    }
+                    else
+                    {
+                        var customAudioType = AddCustomAudioType(id, new AudioClip[] { audioClip });
+                        action?.Invoke(customAudioType);
+                    }
+                }
+            });
+
+            return audioClipLoader;
         }
 
         // Create a custom audio type from a set of audio clips. Needs a unique ID
-        public static AudioType AddCustomAudioType(string id, AudioClip[] audioClips)
+        private static AudioType AddCustomAudioType(string id, AudioClip[] audioClips)
         {
             NHLogger.LogVerbose($"Registering new audio type [{id}]");
 
             var audioType = EnumUtilities.Create<AudioType>(id);
 
-            _audioEntries.Add(new AudioLibrary.AudioEntry(audioType, audioClips));
             _customAudioTypes.Add(id, audioType);
+
+            _library.audioEntries = _library.audioEntries.Append(new AudioLibrary.AudioEntry(audioType, audioClips)).ToArray(); // concat custom entries
+            Locator.GetAudioManager()._audioLibraryDict = _library.BuildAudioEntryDictionary();
 
             return audioType;
         }

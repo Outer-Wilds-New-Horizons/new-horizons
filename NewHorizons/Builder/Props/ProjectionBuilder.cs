@@ -7,6 +7,7 @@ using NewHorizons.Utility.Files;
 using NewHorizons.Utility.OWML;
 using OWML.Common;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -547,7 +548,7 @@ namespace NewHorizons.Builder.Props
                     }
                 }
 
-                AddModules(slideInfo, ref slide, mod);
+                Main.Instance.StartCoroutine(AddModules(slideInfo, slide, mod));
 
                 slideCollection.slides[i] = slide;
             }
@@ -579,25 +580,27 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        private static void AddModules(SlideInfo slideInfo, ref Slide slide, IModBehaviour mod)
+        private static IEnumerator AddModules(SlideInfo slideInfo, Slide slide, IModBehaviour mod)
         {
+            List<AudioUtilities.AsyncAudioLoader> loaders = new();
+
             var modules = new List<SlideFunctionModule>();
             if (!string.IsNullOrEmpty(slideInfo.beatAudio))
             {
                 var audioBeat = new SlideBeatAudioModule
                 {
-                    _audioType = AudioTypeHandler.GetAudioType(slideInfo.beatAudio, mod),
                     _delay = slideInfo.beatDelay
                 };
+                loaders.Add(AudioTypeHandler.AsyncSetAudioType(slideInfo.beatAudio, mod, (audioType) => audioBeat._audioType = audioType));
                 modules.Add(audioBeat);
             }
             if (!string.IsNullOrEmpty(slideInfo.backdropAudio))
             {
                 var audioBackdrop = new SlideBackdropAudioModule
                 {
-                    _audioType = AudioTypeHandler.GetAudioType(slideInfo.backdropAudio, mod),
                     _fadeTime = slideInfo.backdropFadeTime
                 };
+                loaders.Add(AudioTypeHandler.AsyncSetAudioType(slideInfo.backdropAudio, mod, (audioType) => audioBackdrop._audioType = audioType));
                 modules.Add(audioBackdrop);
             }
             if (slideInfo.ambientLightIntensity != 0)
@@ -638,6 +641,25 @@ namespace NewHorizons.Builder.Props
             if (slideInfo.rotate)
             {
                 modules.Add(new SlideRotationModule());
+            }
+
+            if (loaders.Count == 0)
+            {
+                Slide.WriteModules(modules, ref slide._modulesList, ref slide._modulesData, ref slide.lengths);
+            }
+
+            var count = loaders.Count;
+            foreach (var loader in loaders)
+            {
+                loader.audioLoadedEvent.AddListener((_) =>
+                {
+                    count--;
+                });
+            }
+
+            while (count > 0)
+            {
+                yield return null;
             }
 
             Slide.WriteModules(modules, ref slide._modulesList, ref slide._modulesData, ref slide.lengths);

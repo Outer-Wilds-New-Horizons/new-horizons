@@ -57,15 +57,15 @@ namespace NewHorizons.Builder.Props
             item.SocketRotation = info.socketRotation ?? Vector3.zero;
             if (!string.IsNullOrEmpty(info.pickupAudio))
             {
-                item.PickupAudio = AudioTypeHandler.GetAudioType(info.pickupAudio, mod);
+                AudioTypeHandler.AsyncSetAudioType(info.pickupAudio, mod, (audioType) => item.PickupAudio = audioType);
             }
             if (!string.IsNullOrEmpty(info.dropAudio))
             {
-                item.DropAudio = AudioTypeHandler.GetAudioType(info.dropAudio, mod);
+                AudioTypeHandler.AsyncSetAudioType(info.dropAudio, mod, (audioType) => item.DropAudio = audioType);
             }
             if (!string.IsNullOrEmpty(info.socketAudio))
             {
-                item.SocketAudio = AudioTypeHandler.GetAudioType(info.socketAudio, mod);
+                AudioTypeHandler.AsyncSetAudioType(info.socketAudio, mod, (audioType) => item.SocketAudio = audioType);
             }
             else
             {
@@ -73,7 +73,7 @@ namespace NewHorizons.Builder.Props
             }
             if (!string.IsNullOrEmpty(info.unsocketAudio))
             {
-                item.UnsocketAudio = AudioTypeHandler.GetAudioType(info.unsocketAudio, mod);
+                AudioTypeHandler.AsyncSetAudioType(info.unsocketAudio, mod, (audioType) => item.UnsocketAudio = audioType);
             }
             else
             {

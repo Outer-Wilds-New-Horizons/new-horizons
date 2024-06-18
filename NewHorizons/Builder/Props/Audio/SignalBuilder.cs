@@ -7,7 +7,6 @@ using OWML.Common;
 using OWML.Utils;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
