@@ -5,7 +5,6 @@ using NewHorizons.Builder.ShipLog;
 using NewHorizons.External;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
-using NewHorizons.External.Modules.Props.Dialogue;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OWML;
 using OWML.Common;
