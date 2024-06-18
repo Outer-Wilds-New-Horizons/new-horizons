@@ -135,7 +135,7 @@ namespace NewHorizons.Builder.Props
                         var id = RemoteHandler.GetPlatformID(remoteInfo.id);
 
                         Texture2D decal = Texture2D.whiteTexture;
-                        if (!string.IsNullOrWhiteSpace(remoteInfo.decalPath)) decal = ImageUtilities.GetTexture(mod, remoteInfo.decalPath, false, false);
+                        if (!string.IsNullOrWhiteSpace(remoteInfo.decalPath)) decal = ImageUtilities.GetTexture(mod, remoteInfo.decalPath, false, false, false);
                         else NHLogger.LogError($"Missing decal path on [{remoteInfo.id}] for [{go.name}]");
 
                         PropBuildManager.MakeGeneralProp(go, remoteInfo.platform, (platform) => MakePlatform(go, sector, id, decal, platform, mod), (platform) => remoteInfo.id);
