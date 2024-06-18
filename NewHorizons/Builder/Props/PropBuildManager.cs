@@ -5,6 +5,7 @@ using NewHorizons.Builder.ShipLog;
 using NewHorizons.External;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
+using NewHorizons.External.Modules.Props.Dialogue;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OWML;
 using OWML.Common;
@@ -79,15 +80,15 @@ namespace NewHorizons.Builder.Props
                 nextPass.Clear();
                 passClone.ForEach((x) => x.Invoke());
 
-                if (nextPass.Count >= count)
+                if (nextPass.Count >= count || i++ > 10)
                 {
-                    NHLogger.LogError("Couldn't find any parents");
-                    break;
-                }
+                    NHLogger.LogError("Couldn't find any parents. Did you write an invalid parent path?");
 
-                if (i++ > 10)
-                {
-                    NHLogger.LogError("Went through more than 10 passes of trying to find parents, stopping");
+                    // Ignore the parent this time so that other error handling stuff can deal with these invalid paths like it used to (backwards compat)
+                    _ignoreParent = true;
+                    nextPass.ForEach((x) => x.Invoke());
+                    _ignoreParent = false;
+
                     break;
                 }
             }
@@ -180,9 +181,15 @@ namespace NewHorizons.Builder.Props
             }
         }
 
+        private static bool _ignoreParent;
+
         private static bool DoesParentExist(GameObject go, BasePropInfo prop)
         {
-            if (string.IsNullOrEmpty(prop.parentPath))
+            if (_ignoreParent)
+            {
+                return true;
+            }
+            else if (string.IsNullOrEmpty(prop.parentPath))
             {
                 return true;
             }
