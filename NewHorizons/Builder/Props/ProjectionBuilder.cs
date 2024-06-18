@@ -524,12 +524,12 @@ namespace NewHorizons.Builder.Props
 
                 if (string.IsNullOrEmpty(slideInfo.imagePath))
                 {
-                    // Delay at least one frame to let things subscribe to the event before it fires
-                    int index = i;
-                    Delay.FireOnNextUpdate(() =>
+                    if (useInvertedCache && cacheExists)
                     {
-                        imageLoader.imageLoadedEvent?.Invoke(ImageUtilities.MakeSolidColorTexture(256, 256, Color.black), index, null);
-                    });
+                        // Load the inverted images used when displaying slide reels to a screen
+                        invertedImageLoader.PathsToLoad.Add((i, Path.Combine(Instance.ModHelper.Manifest.ModFolderPath, "Assets/textures/inverted_blank_slide_reel.png")));
+                    }
+                    imageLoader.PathsToLoad.Add((i, Path.Combine(Instance.ModHelper.Manifest.ModFolderPath, "Assets/textures/blank_slide_reel.png")));
                 }
                 else
                 {
