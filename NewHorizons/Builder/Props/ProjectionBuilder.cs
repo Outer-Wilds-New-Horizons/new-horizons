@@ -166,8 +166,8 @@ namespace NewHorizons.Builder.Props
                     (Texture2D tex, int _, string originalPath) =>
                     {
                         // all textures required to build the reel's textures have been loaded
-                        var slidesBack = slideReelObj.GetComponentInChildren<TransformAnimator>().transform.Find("Slides_Back").GetComponent<MeshRenderer>();
-                        var slidesFront = slideReelObj.GetComponentInChildren<TransformAnimator>().transform.Find("Slides_Front").GetComponent<MeshRenderer>();
+                        var slidesBack = slideReelObj.GetComponentInChildren<TransformAnimator>(true).transform.Find("Slides_Back").GetComponent<MeshRenderer>();
+                        var slidesFront = slideReelObj.GetComponentInChildren<TransformAnimator>(true).transform.Find("Slides_Front").GetComponent<MeshRenderer>();
 
                         // Now put together the textures into a 4x4 thing for the materials
                         var reelTexture = tex;
@@ -202,8 +202,8 @@ namespace NewHorizons.Builder.Props
                         if (displaySlidesLoaded == textures.Length)
                         {
                             // all textures required to build the reel's textures have been loaded
-                            var slidesBack = slideReelObj.GetComponentInChildren<TransformAnimator>().transform.Find("Slides_Back").GetComponent<MeshRenderer>();
-                            var slidesFront = slideReelObj.GetComponentInChildren<TransformAnimator>().transform.Find("Slides_Front").GetComponent<MeshRenderer>();
+                            var slidesBack = slideReelObj.GetComponentInChildren<TransformAnimator>(true).transform.Find("Slides_Back").GetComponent<MeshRenderer>();
+                            var slidesFront = slideReelObj.GetComponentInChildren<TransformAnimator>(true).transform.Find("Slides_Front").GetComponent<MeshRenderer>();
 
                             // Now put together the textures into a 4x4 thing for the materials
                             var reelTexture = ImageUtilities.MakeReelTexture(mod, textures, key);
