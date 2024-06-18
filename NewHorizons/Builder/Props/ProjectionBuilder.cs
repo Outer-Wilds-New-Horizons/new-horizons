@@ -529,7 +529,10 @@ namespace NewHorizons.Builder.Props
                         // Load the inverted images used when displaying slide reels to a screen
                         invertedImageLoader.PathsToLoad.Add((i, Path.Combine(Instance.ModHelper.Manifest.ModFolderPath, "Assets/textures/inverted_blank_slide_reel.png")));
                     }
-                    imageLoader.PathsToLoad.Add((i, Path.Combine(Instance.ModHelper.Manifest.ModFolderPath, "Assets/textures/blank_slide_reel.png")));
+                    else
+                    {
+                        imageLoader.PathsToLoad.Add((i, Path.Combine(Instance.ModHelper.Manifest.ModFolderPath, "Assets/textures/blank_slide_reel.png")));
+                    }
                 }
                 else
                 {
@@ -538,7 +541,10 @@ namespace NewHorizons.Builder.Props
                         // Load the inverted images used when displaying slide reels to a screen
                         invertedImageLoader.PathsToLoad.Add((i, Path.Combine(mod.ModHelper.Manifest.ModFolderPath, INVERTED_SLIDE_CACHE_FOLDER, slideInfo.imagePath)));
                     }
-                    imageLoader.PathsToLoad.Add((i, Path.Combine(mod.ModHelper.Manifest.ModFolderPath, slideInfo.imagePath)));
+                    else
+                    {
+                        imageLoader.PathsToLoad.Add((i, Path.Combine(mod.ModHelper.Manifest.ModFolderPath, slideInfo.imagePath)));
+                    }
                 }
 
                 AddModules(slideInfo, ref slide, mod);
@@ -548,15 +554,19 @@ namespace NewHorizons.Builder.Props
 
             if (cacheExists)
             {
-                if (useInvertedCache)
-                {
-                    invertedImageLoader.Start(true);
-                }
                 if (useAtlasCache)
                 {
                     atlasImageLoader.Start(false);
                 }
-                imageLoader.Start(true);
+                // When using the inverted cache we never need the regular images
+                if (useInvertedCache)
+                {
+                    invertedImageLoader.Start(true);
+                }
+                else
+                {
+                    imageLoader.Start(true);
+                }
 
                 return (invertedImageLoader, atlasImageLoader, imageLoader);
             }
