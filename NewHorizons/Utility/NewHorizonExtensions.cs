@@ -1,3 +1,4 @@
+using HarmonyLib;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules.VariableSize;
 using NewHorizons.External.SerializableData;
@@ -146,6 +147,16 @@ namespace NewHorizons.Utility
             StringBuilder strBuilder = new StringBuilder(str.ToLowerInvariant());
             strBuilder[0] = strBuilder[0].ToString().ToUpperInvariant().ToCharArray()[0];
             return strBuilder.ToString();
+        }
+
+        public static string ToLowercaseNamingConvention(this string str, string separation = " ")
+        {
+            var r = new Regex(@"
+                (?<=[A-Z])(?=[A-Z][a-z]) |
+                 (?<=[^A-Z])(?=[A-Z]) |
+                 (?<=[A-Za-z])(?=[^A-Za-z])", RegexOptions.IgnorePatternWhitespace);
+
+            return r.Replace(str, separation).ToLower();
         }
 
         public static void CopyPropertiesFrom(this object destination, object source)
@@ -424,6 +435,29 @@ namespace NewHorizons.Utility
             playerCameraEffectController._owCamera.postProcessingSettings.eyeMask.openness = 0f;
             playerCameraEffectController._owCamera.postProcessingSettings.bloom.threshold = 0f;
             playerCameraEffectController._owCamera.postProcessingSettings.eyeMaskEnabled = true;
+        }
+
+        public static float GetSecondsBeforeSupernovaPlayTime(this GlobalMusicController globalMusicController)
+        {
+            var clip = globalMusicController._endTimesSource.audioLibraryClip;
+            if (clip == AudioType.EndOfTime || clip == AudioType.EndOfTime_Dream)
+                return GlobalMusicController.secondsBeforeSupernovaPlayTime;
+            return globalMusicController._endTimesSource.clip.length;
+        }
+
+        public static CodeMatcher LogInstructions(this CodeMatcher matcher, string prefix)
+        {
+            matcher.InstructionEnumeration().LogInstructions(prefix);
+            return matcher;
+        }
+
+        public static IEnumerable<CodeInstruction> LogInstructions(this IEnumerable<CodeInstruction> instructions, string prefix)
+        {
+            var message = prefix;
+            foreach (var instruction in instructions)
+                message += $"\n{instruction}";
+            Debug.LogError(message);
+            return instructions;
         }
     }
 }

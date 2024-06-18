@@ -4,7 +4,7 @@ using System.ComponentModel;
 namespace NewHorizons.External.Modules.Props.Remote
 {
     [JsonObject]
-    public class PlatformInfo : GeneralPropInfo
+    public class RemotePlatformInfo : GeneralPropInfo
     {
         /// <summary>
         /// A ship log fact to reveal when the platform is connected to.

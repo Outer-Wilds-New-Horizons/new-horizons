@@ -1,14 +1,10 @@
-using HarmonyLib;
+using NewHorizons.Builder.Props;
 using NewHorizons.Utility.OWML;
 using OWML.Common;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.Networking;
 
 namespace NewHorizons.Utility.Files
 {
@@ -17,9 +13,10 @@ namespace NewHorizons.Utility.Files
         // key is path + applied effects
         private static readonly Dictionary<string, Texture> _textureCache = new();
         public static bool CheckCachedTexture(string key, out Texture existingTexture) => _textureCache.TryGetValue(key, out existingTexture);
-        public static void TrackCachedTexture(string key, Texture texture) => _textureCache.Add(key, texture);
+        public static void TrackCachedTexture(string key, Texture texture) => _textureCache.Add(key, texture); // dont reinsert cuz that causes memory leak!
 
-        private static string GetKey(string path) => path.Substring(Main.Instance.ModHelper.OwmlConfig.ModsPath.Length);
+        public static string GetKey(string path) =>
+            path.Substring(Main.Instance.ModHelper.OwmlConfig.ModsPath.Length + 1).Replace('\\', '/');
 
         public static bool IsTextureLoaded(IModBehaviour mod, string filename)
         {
@@ -28,8 +25,12 @@ namespace NewHorizons.Utility.Files
             return _textureCache.ContainsKey(key);
         }
 
+        #region obsolete
         // needed for backwards compat :P
+        // idk what mod used it
+        [Obsolete]
         public static Texture2D GetTexture(IModBehaviour mod, string filename, bool useMipmaps, bool wrap) => GetTexture(mod, filename, useMipmaps, wrap, false);
+        #endregion
         // bug: cache only considers file path, not wrap/mips/linear. oh well
         public static Texture2D GetTexture(IModBehaviour mod, string filename, bool useMipmaps = true, bool wrap = false, bool linear = false)
         {
@@ -99,7 +100,7 @@ namespace NewHorizons.Utility.Files
         /// used specifically for projected slides.
         /// also adds a border (to prevent weird visual bug) and makes the texture linear (otherwise the projected image is too bright).
         /// </summary>
-        public static Texture2D Invert(Texture2D texture)
+        public static Texture2D InvertSlideReel(IModBehaviour mod, Texture2D texture, string originalPath)
         {
             var key = $"{texture.name} > invert";
             if (_textureCache.TryGetValue(key, out var existingTexture)) return (Texture2D)existingTexture;
@@ -135,18 +136,27 @@ namespace NewHorizons.Utility.Files
 
             _textureCache.Add(key, newTexture);
 
+            // Since doing this is expensive we cache the results to the disk
+            // Preloading cached values is done in ProjectionBuilder
+            if (!string.IsNullOrEmpty(originalPath))
+            {
+                var path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, ProjectionBuilder.INVERTED_SLIDE_CACHE_FOLDER, originalPath.Replace(mod.ModHelper.Manifest.ModFolderPath, ""));
+                NHLogger.LogVerbose($"Caching inverted image to {path}");
+                Directory.CreateDirectory(Path.GetDirectoryName(path));
+                File.WriteAllBytes(path, newTexture.EncodeToPNG());
+            }
+
             return newTexture;
         }
 
-        public static Texture2D MakeReelTexture(Texture2D[] textures)
+        public static Texture2D MakeReelTexture(IModBehaviour mod, Texture2D[] textures, string uniqueSlideReelID)
         {
-            var key = $"SlideReelAtlas of {textures.Join(x => x.name)}";
-            if (_textureCache.TryGetValue(key, out var existingTexture)) return (Texture2D)existingTexture;
+            if (_textureCache.TryGetValue(uniqueSlideReelID, out var existingTexture)) return (Texture2D)existingTexture;
 
             var size = 256;
 
             var texture = new Texture2D(size * 4, size * 4, TextureFormat.ARGB32, false);
-            texture.name = key;
+            texture.name = uniqueSlideReelID;
 
             var fillPixels = new Color[size * size * 4 * 4];
             for (int xIndex = 0; xIndex < 4; xIndex++)
@@ -188,7 +198,14 @@ namespace NewHorizons.Utility.Files
             texture.SetPixels(fillPixels);
             texture.Apply();
 
-            _textureCache.Add(key, texture);
+            _textureCache.Add(uniqueSlideReelID, texture);
+
+            // Since doing this is expensive we cache the results to the disk
+            // Preloading cached values is done in ProjectionBuilder
+            var path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, ProjectionBuilder.ATLAS_SLIDE_CACHE_FOLDER, $"{uniqueSlideReelID}.png");
+            NHLogger.LogVerbose($"Caching atlas image to {path}");
+            Directory.CreateDirectory(Path.GetDirectoryName(path));
+            File.WriteAllBytes(path, texture.EncodeToPNG());
 
             return texture;
         }
@@ -408,6 +425,9 @@ namespace NewHorizons.Utility.Files
         }
         public static Texture2D MakeSolidColorTexture(int width, int height, Color color)
         {
+            var key = $"{color} {width} {height}";
+            if (_textureCache.TryGetValue(key, out var existingTexture)) return (Texture2D)existingTexture;
+
             var pixels = new Color[width * height];
 
             for (int i = 0; i < pixels.Length; i++)
@@ -418,6 +438,9 @@ namespace NewHorizons.Utility.Files
             var newTexture = new Texture2D(width, height);
             newTexture.SetPixels(pixels);
             newTexture.Apply();
+
+            _textureCache.Add(key, newTexture);
+
             return newTexture;
         }
 
@@ -428,97 +451,6 @@ namespace NewHorizons.Utility.Files
             var sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100, 0, SpriteMeshType.FullRect, Vector4.zero, false);
             sprite.name = texture.name;
             return sprite;
-        }
-
-        // Modified from https://stackoverflow.com/a/69141085/9643841
-        public class AsyncImageLoader : MonoBehaviour
-        {
-            public List<(int index, string path)> PathsToLoad { get; private set; } = new();
-
-            public class ImageLoadedEvent : UnityEvent<Texture2D, int> { }
-            public ImageLoadedEvent imageLoadedEvent = new();
-
-            private readonly object _lockObj = new();
-
-            public bool FinishedLoading { get; private set; }
-            private int _loadedCount = 0;
-
-            // TODO: set up an optional “StartLoading” and “StartUnloading” condition on AsyncTextureLoader,
-            // and make use of that for at least for projector stuff (require player to be in the same sector as the slides
-            // for them to start loading, and unload when the player leaves)
-
-            void Start()
-            {
-                imageLoadedEvent.AddListener(OnImageLoaded);
-                foreach (var (index, path) in PathsToLoad)
-                {
-                    StartCoroutine(DownloadTexture(path, index));
-                }
-            }
-
-            private void OnImageLoaded(Texture texture, int index)
-            {
-                lock (_lockObj)
-                {
-                    _loadedCount++;
-
-                    if (_loadedCount >= PathsToLoad.Count)
-                    {
-                        NHLogger.LogVerbose($"Finished loading all textures for {gameObject.name} (one was {PathsToLoad.FirstOrDefault()}");
-                        FinishedLoading = true;
-                    }
-                }
-            }
-
-            IEnumerator DownloadTexture(string url, int index)
-            {
-                var key = GetKey(url);
-                lock (_textureCache)
-                {
-                    if (_textureCache.TryGetValue(key, out var existingTexture))
-                    {
-                        NHLogger.LogVerbose($"Already loaded image {index}:{url}");
-                        imageLoadedEvent?.Invoke((Texture2D)existingTexture, index);
-                        yield break;
-                    }
-                }
-
-                using UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(url);
-
-                yield return uwr.SendWebRequest();
-
-                var hasError = uwr.error != null && uwr.error != "";
-
-                if (hasError)
-                {
-                    NHLogger.LogError($"Failed to load {index}:{url} - {uwr.error}");
-                }
-                else
-                {
-                    var texture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
-                    texture.name = key;
-                    texture.wrapMode = TextureWrapMode.Clamp;
-
-                    var handler = (DownloadHandlerTexture)uwr.downloadHandler;
-                    texture.LoadImage(handler.data);
-
-                    lock (_textureCache)
-                    {
-                        if (_textureCache.TryGetValue(key, out var existingTexture))
-                        {
-                            NHLogger.LogVerbose($"Already loaded image {index}:{url}");
-                            Destroy(texture);
-                            texture = (Texture2D)existingTexture;
-                        }
-                        else
-                        {
-                            _textureCache.Add(key, texture);
-                        }
-
-                        imageLoadedEvent?.Invoke(texture, index);
-                    }
-                }
-            }
         }
     }
 }

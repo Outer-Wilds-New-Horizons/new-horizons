@@ -121,7 +121,9 @@ namespace NewHorizons.Utility.Files
                     }
                     else
                     {
-                        return dh.audioClip;
+                        var audioClip = dh.audioClip;
+                        audioClip.name = Path.GetFileNameWithoutExtension(path);
+                        return audioClip;
                     }
                 }
             }
@@ -140,7 +142,9 @@ namespace NewHorizons.Utility.Files
                     }
                     else
                     {
-                        return DownloadHandlerAudioClip.GetContent(www);
+                        var audioClip = DownloadHandlerAudioClip.GetContent(www);
+                        audioClip.name = Path.GetFileNameWithoutExtension(path);
+                        return audioClip;
                     }
                 }
             }

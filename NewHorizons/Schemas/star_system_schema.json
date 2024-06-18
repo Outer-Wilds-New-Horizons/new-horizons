@@ -59,9 +59,9 @@
       "type": "boolean",
       "description": "Set to `true` if you want the player to stay in this star system if they die in it."
     },
-    "travelAudio": {
-      "type": "string",
-      "description": "The audio that will play when travelling in space. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+    "GlobalMusic": {
+      "description": "Replace music that plays globally",
+      "$ref": "#/definitions/GlobalMusicModule"
     },
     "Vessel": {
       "description": "Configure warping to this system with the vessel",
@@ -140,6 +140,40 @@
         "backPath": {
           "type": "string",
           "description": "Relative filepath to the texture to use for the skybox's negative Z direction"
+        }
+      }
+    },
+    "GlobalMusicModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "travelAudio": {
+          "type": "string",
+          "description": "The audio that will play when travelling in space. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+        },
+        "endTimesAudio": {
+          "type": "string",
+          "description": "The audio that will play right before the loop ends. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+        },
+        "endTimesDreamAudio": {
+          "type": "string",
+          "description": "The audio that will play right before the loop ends while inside the dreamworld. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+        },
+        "brambleDimensionAudio": {
+          "type": "string",
+          "description": "The audio that will play when travelling through a bramble dimension. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+        },
+        "finalEndTimesIntroAudio": {
+          "type": "string",
+          "description": "The audio that will play when you leave the ash twin project after taking out the advanced warp core. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+        },
+        "finalEndTimesLoopAudio": {
+          "type": "string",
+          "description": "The audio that will loop after the final end times intro. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+        },
+        "finalEndTimesBrambleDimensionAudio": {
+          "type": "string",
+          "description": "The audio that will loop after the final end times intro while inside a bramble dimension. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
         }
       }
     },
@@ -246,13 +280,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -301,13 +335,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
