@@ -528,8 +528,11 @@ namespace NewHorizons.Builder.Props
                 // this is set in Awake, we wanna override it
                 lantern._origLensFlareBrightness = sourceLantern._lensFlare.brightness;
                 lantern._focuserPetalsBaseEulerAngles = sourceLantern._focuserPetalsBaseEulerAngles;
+                lantern._dirtyFlag_focus = true;
                 lantern._concealerRootsBaseScale = sourceLantern._concealerRootsBaseScale;
                 lantern._concealerCoversStartPos = sourceLantern._concealerCoversStartPos;
+                lantern._dirtyFlag_concealment = true;
+                lantern.UpdateVisuals();
                 
                 Destroy(this);
             }
