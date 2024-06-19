@@ -159,6 +159,12 @@ namespace NewHorizons.Builder.Props
                             DialogueBuilder.HandleUnityCreatedDialogue(dialogue);
                         }
 
+                        // copied details need their lanterns fixed
+                        if (!isFromAssetBundle && component is DreamLanternController lantern)
+                        {
+                            lantern.gameObject.AddComponent<DreamLanternControllerFixer>();
+                        }
+
                         FixComponent(component, go, detail.ignoreSun);
                     }
                     catch(Exception e)
@@ -498,6 +504,33 @@ namespace NewHorizons.Builder.Props
                 var torchItem = GetComponent<VisionTorchItem>();
                 torchItem.mindSlideProjector._mindProjectorImageEffect = Locator.GetPlayerCamera().GetComponent<MindProjectorImageEffect>();
 
+                Destroy(this);
+            }
+        }
+
+        /// <summary>
+        /// need component here to run after DreamLanternController.Awake
+        /// </summary>
+        [RequireComponent(typeof(DreamLanternController))]
+        private class DreamLanternControllerFixer : MonoBehaviour
+        {
+            private void Start()
+            {
+                // based on https://github.com/Bwc9876/OW-Amogus/blob/master/Amogus/LanternCreator.cs
+                // needed to fix petals looking backwards, among other things
+
+                var lantern = GetComponent<DreamLanternController>();
+                // SearchUtilities caches so its fine
+                var sourceLantern = SearchUtilities
+                    .Find("RingWorld_Body/Sector_RingInterior/Sector_Zone1/Sector_ArtifactHouse_Zone1/Interactibles_ArtifactHouse_Zone1/Prefab_IP_DreamLanternItem_2 (1)")
+                    .GetComponent<DreamLanternController>();
+
+                // this is set in Awake, we wanna override it
+                lantern._origLensFlareBrightness = sourceLantern._lensFlare.brightness;
+                lantern._focuserPetalsBaseEulerAngles = sourceLantern._focuserPetalsBaseEulerAngles;
+                lantern._concealerRootsBaseScale = sourceLantern._concealerRootsBaseScale;
+                lantern._concealerCoversStartPos = sourceLantern._concealerCoversStartPos;
+                
                 Destroy(this);
             }
         }
