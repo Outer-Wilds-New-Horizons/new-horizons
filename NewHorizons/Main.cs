@@ -969,7 +969,8 @@ namespace NewHorizons
                 }
                 else
                 {
-                    PlayerData.SaveEyeCompletion(); // So that the title screen doesn't keep warping you back to eye
+                    if (!IsWarpingBackToEye)
+                        PlayerData.SaveEyeCompletion(); // So that the title screen doesn't keep warping you back to eye
 
                     if (SystemDict[CurrentStarSystem].Config.enableTimeLoop) SecondsElapsedInLoop = TimeLoop.GetSecondsElapsed();
                     else SecondsElapsedInLoop = -1;

@@ -6,8 +6,16 @@ namespace NewHorizons.Handlers;
 
 public static class EyeDetailCacher
 {
+    public static bool IsInitialized;
+
     public static void Init()
     {
+        if (IsInitialized) return;
+
+        SearchUtilities.ClearDontDestroyOnLoadCache();
+
+        IsInitialized = true;
+
         foreach (var body in Main.BodyDict["EyeOfTheUniverse"])
         {
             NHLogger.LogVerbose($"{nameof(EyeDetailCacher)}: {body.Config.name}");
@@ -16,7 +24,6 @@ public static class EyeDetailCacher
             foreach (var detail in body.Config.Props.details)
             {
                 NHLogger.LogVerbose($"{nameof(EyeDetailCacher)}: {detail.path}");
-
 
                 if (string.IsNullOrEmpty(detail.path)) continue;
 

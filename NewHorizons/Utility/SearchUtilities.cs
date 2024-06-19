@@ -18,6 +18,15 @@ namespace NewHorizons.Utility
             DontDestroyOnLoadCachedGameObjects[path] = go.InstantiateInactive().DontDestroyOnLoad();
         }
 
+        public static void ClearDontDestroyOnLoadCache()
+        {
+            foreach (var go in DontDestroyOnLoadCachedGameObjects.Values)
+            {
+                GameObject.Destroy(go);
+            }
+            DontDestroyOnLoadCachedGameObjects.Clear();
+        }
+
         public static void ClearCache()
         {
             NHLogger.LogVerbose("Clearing search cache");
