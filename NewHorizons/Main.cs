@@ -341,6 +341,8 @@ namespace NewHorizons
             {
                 try
                 {
+                    EyeDetailCacher.Init();
+
                     AtmosphereBuilder.InitPrefabs();
                     BrambleDimensionBuilder.InitPrefabs();
                     BrambleNodeBuilder.InitPrefabs();
