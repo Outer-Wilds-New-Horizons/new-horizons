@@ -438,7 +438,7 @@ namespace NewHorizons.Builder.Props
 
                 NHLogger.LogVerbose("Fixing anglerfish animation");
 
-                // Remove any event reference to its angler
+                // Remove any event reference to its angler so that they dont change its state
                 if (angler._anglerfishController)
                 {
                     angler._anglerfishController.OnChangeAnglerState -= angler.OnChangeAnglerState;
@@ -446,6 +446,7 @@ namespace NewHorizons.Builder.Props
                     angler._anglerfishController.OnAnglerSuspended -= angler.OnAnglerSuspended;
                     angler._anglerfishController.OnAnglerUnsuspended -= angler.OnAnglerUnsuspended;
                 }
+                // Disable the angler anim controller because we don't want Update or LateUpdate to run, just need it to set the initial Animator state
                 angler.enabled = false;
                 angler.OnChangeAnglerState(AnglerfishController.AnglerState.Lurking);
                 

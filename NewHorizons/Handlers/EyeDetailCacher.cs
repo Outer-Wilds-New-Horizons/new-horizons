@@ -25,11 +25,11 @@ public static class EyeDetailCacher
             {
                 NHLogger.LogVerbose($"{nameof(EyeDetailCacher)}: {detail.path}");
 
+                if (!string.IsNullOrEmpty(detail.assetBundle)) continue;
                 if (string.IsNullOrEmpty(detail.path)) continue;
 
                 var planet = detail.path.Contains('/') ? detail.path.Split('/').First() : string.Empty;
 
-                // TODO: what other root paths can we ignore
                 if (planet != "EyeOfTheUniverse_Body" && planet != "Vessel_Body")
                 {
                     NHLogger.LogVerbose($"{nameof(EyeDetailCacher)}: Looking for {detail.path}");
