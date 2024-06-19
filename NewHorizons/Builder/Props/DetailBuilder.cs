@@ -446,7 +446,7 @@ namespace NewHorizons.Builder.Props
                     angler._anglerfishController.OnAnglerSuspended -= angler.OnAnglerSuspended;
                     angler._anglerfishController.OnAnglerUnsuspended -= angler.OnAnglerUnsuspended;
                 }
-                angler.enabled = true;
+                angler.enabled = false;
                 angler.OnChangeAnglerState(AnglerfishController.AnglerState.Lurking);
                 
                 Destroy(this);
