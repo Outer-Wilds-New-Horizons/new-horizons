@@ -19,27 +19,44 @@ public static class EyeDetailCacher
         foreach (var body in Main.BodyDict["EyeOfTheUniverse"])
         {
             NHLogger.LogVerbose($"{nameof(EyeDetailCacher)}: {body.Config.name}");
-            if (body.Config?.Props?.details == null) continue;
-
-            foreach (var detail in body.Config.Props.details)
+            if (body.Config?.Props?.details != null)
             {
-                NHLogger.LogVerbose($"{nameof(EyeDetailCacher)}: {detail.path}");
-
-                if (!string.IsNullOrEmpty(detail.assetBundle)) continue;
-                if (string.IsNullOrEmpty(detail.path)) continue;
-
-                var planet = detail.path.Contains('/') ? detail.path.Split('/').First() : string.Empty;
-
-                if (planet != "EyeOfTheUniverse_Body" && planet != "Vessel_Body")
+                foreach (var detail in body.Config.Props.details)
                 {
-                    NHLogger.LogVerbose($"{nameof(EyeDetailCacher)}: Looking for {detail.path}");
-                    var obj = SearchUtilities.Find(detail.path);
-                    if (obj != null)
-                    {
-                        NHLogger.LogVerbose($"{nameof(EyeDetailCacher)}: Added solar system asset to dont destroy on load cache for eye: {detail.path}");
-                        SearchUtilities.AddToDontDestroyOnLoadCache(detail.path, obj);
-                    }
+                    if (!string.IsNullOrEmpty(detail.assetBundle)) continue;
+
+                    AddPathToCache(detail.path);
                 }
+            }
+
+            if (body.Config?.Props?.scatter != null)
+            {
+                foreach (var scatter in body.Config.Props.scatter)
+                {
+                    if (!string.IsNullOrEmpty(scatter.assetBundle)) continue;
+
+                    AddPathToCache(scatter.path);
+                }
+            }
+        }
+    }
+
+    private static void AddPathToCache(string path)
+    {
+        NHLogger.LogVerbose($"{nameof(EyeDetailCacher)}: {path}");
+
+        if (string.IsNullOrEmpty(path)) return;
+
+        var planet = path.Contains('/') ? path.Split('/').First() : string.Empty;
+
+        if (planet != "EyeOfTheUniverse_Body" && planet != "Vessel_Body")
+        {
+            NHLogger.LogVerbose($"{nameof(EyeDetailCacher)}: Looking for {path}");
+            var obj = SearchUtilities.Find(path);
+            if (obj != null)
+            {
+                NHLogger.LogVerbose($"{nameof(EyeDetailCacher)}: Added solar system asset to dont destroy on load cache for eye: {path}");
+                SearchUtilities.AddToDontDestroyOnLoadCache(path, obj);
             }
         }
     }

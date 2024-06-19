@@ -50,7 +50,6 @@ namespace NewHorizons.Utility.DebugTools
 
             if (Main.Instance.CurrentStarSystem == "EyeOfTheUniverse")
             {
-                PlayerData._currentGameSave.warpedToTheEye = true;
                 Main.Instance.IsWarpingBackToEye = true;
                 EyeDetailCacher.IsInitialized = false;
                 Main.Instance.ChangeCurrentStarSystem("SolarSystem");
