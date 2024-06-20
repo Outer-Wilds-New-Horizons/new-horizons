@@ -117,9 +117,11 @@ namespace NewHorizons.Builder.Body
             mat.SetFloat(NoiseRotation, ring.noiseRotationSpeed != 0 ? 1 : 0);
             mat.SetFloat(NoiseRotationSpeed, ring.noiseRotationSpeed * Mathf.Deg2Rad);
             mat.SetTexture(NoiseMap, NoiseTexture);
-            var scale = ring.outerRadius / NoiseTexture.width / ring.noiseScale;
-            mat.SetTextureScale(NoiseMap, new Vector2(scale, scale));
-            
+            var middleCircumference = 2f * Mathf.PI * Mathf.Lerp(ring.innerRadius, ring.outerRadius, 0.5f);
+            var radiusFix = 1f - (ring.innerRadius / ring.outerRadius);
+            var scale = new Vector2(middleCircumference / NoiseTexture.width / ring.noiseScale, radiusFix * ring.outerRadius / NoiseTexture.width / ring.noiseScale);
+            mat.SetTextureScale(NoiseMap, scale);
+
             if (!ring.unlit)
             {
                 var smoothnessMap = ImageUtilities.GetTexture(mod, ring.smoothnessMap ?? "");
