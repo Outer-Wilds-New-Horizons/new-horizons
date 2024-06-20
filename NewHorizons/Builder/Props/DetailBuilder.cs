@@ -520,17 +520,35 @@ namespace NewHorizons.Builder.Props
                 // needed to fix petals looking backwards, among other things
 
                 var lantern = GetComponent<DreamLanternController>();
-                // SearchUtilities caches so its fine
-                var sourceLantern = SearchUtilities
-                    .Find("RingWorld_Body/Sector_RingInterior/Sector_Zone1/Sector_ArtifactHouse_Zone1/Interactibles_ArtifactHouse_Zone1/Prefab_IP_DreamLanternItem_2 (1)")
-                    .GetComponent<DreamLanternController>();
 
                 // this is set in Awake, we wanna override it
-                lantern._origLensFlareBrightness = sourceLantern._lensFlare.brightness;
-                lantern._focuserPetalsBaseEulerAngles = sourceLantern._focuserPetalsBaseEulerAngles;
+
+                // Manually copied these values from a artifact lantern so that we don't have to find it (works in Eye)
+                lantern._origLensFlareBrightness = 0f;
+                lantern._focuserPetalsBaseEulerAngles = new Vector3[] 
+                { 
+                    new Vector3(0.7f, 270.0f, 357.5f), 
+                    new Vector3(288.7f, 270.1f, 357.4f), 
+                    new Vector3(323.3f, 90.0f, 177.5f),
+                    new Vector3(35.3f, 90.0f, 177.5f), 
+                    new Vector3(72.7f, 270.1f, 357.5f) 
+                };
                 lantern._dirtyFlag_focus = true;
-                lantern._concealerRootsBaseScale = sourceLantern._concealerRootsBaseScale;
-                lantern._concealerCoversStartPos = sourceLantern._concealerCoversStartPos;
+                lantern._concealerRootsBaseScale = new Vector3[] 
+                {
+                    Vector3.one,
+                    Vector3.one,
+                    Vector3.one
+                };
+                lantern._concealerCoversStartPos = new Vector3[] 
+                {
+                    new Vector3(0.0f, 0.0f, 0.0f),
+                    new Vector3(0.0f, -0.1f, 0.0f),
+                    new Vector3(0.0f, -0.2f, 0.0f),
+                    new Vector3(0.0f, 0.2f, 0.0f),
+                    new Vector3(0.0f, 0.1f, 0.0f),
+                    new Vector3(0.0f, 0.0f, 0.0f)
+                };
                 lantern._dirtyFlag_concealment = true;
                 lantern.UpdateVisuals();
                 
