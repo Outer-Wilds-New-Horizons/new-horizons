@@ -164,6 +164,9 @@ namespace NewHorizons.Utility.OuterWilds
                         .Select(x => x.gameObject)
                         .Where(x => x.name == "SS_Debris_Body"));
                     break;
+                case AstroObject.Name.Eye:
+                    otherChildren.Add(SearchUtilities.Find("Vessel_Body"));
+                    break;
                 // Just in case GetChildren runs before sun station's name is changed
                 case AstroObject.Name.CustomString:
                     if (primary._customName.Equals("Sun Station"))
