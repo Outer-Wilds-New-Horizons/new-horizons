@@ -1,29 +1,22 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <OutputType>Exe</OutputType>
         <TargetFramework>net48</TargetFramework>
         <LangVersion>default</LangVersion>
+        <Copyright>Copyright © 2021-2023 New Horizons Team</Copyright>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+        <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
+        <NoWarn>1701;1702;1591</NoWarn>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
         <DebugType>none</DebugType>
     </PropertyGroup>
     <ItemGroup>
-        <None Include="System*.dll">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Include="UnityEngine.CoreModule.dll">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-        <PackageReference Include="NJsonSchema" Version="10.9.0" />
-        <PackageReference Include="OuterWildsGameLibs" Version="1.1.15.1018" />
+        <PackageReference Include="NJsonSchema.Annotations" Version="11.0.1" />
         <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
-    </ItemGroup>
-    <ItemGroup>
-        <ProjectReference Include="..\NewHorizons\NewHorizons.csproj" />
     </ItemGroup>
 </Project>
