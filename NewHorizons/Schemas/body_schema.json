@@ -484,10 +484,10 @@
         "Transparent"
       ],
       "enum": [
-        "GiantsDeep",
-        "QuantumMoon",
-        "Basic",
-        "Transparent"
+        "giantsDeep",
+        "quantumMoon",
+        "basic",
+        "transparent"
       ]
     },
     "NHFluidType": {
@@ -505,15 +505,15 @@
         "GEYSER"
       ],
       "enum": [
-        "NONE",
-        "AIR",
-        "WATER",
-        "TRACTOR_BEAM",
-        "CLOUD",
-        "SAND",
-        "PLASMA",
-        "FOG",
-        "GEYSER"
+        "none",
+        "air",
+        "water",
+        "tractorBeam",
+        "cloud",
+        "sand",
+        "plasma",
+        "fog",
+        "geyser"
       ]
     },
     "MGradient": {
@@ -595,8 +595,8 @@
         "InverseSquared"
       ],
       "enum": [
-        "Linear",
-        "InverseSquared"
+        "linear",
+        "inverseSquared"
       ]
     },
     "BrambleModule": {
@@ -666,11 +666,11 @@
         "ExitOnly"
       ],
       "enum": [
-        "None",
-        "Hub",
-        "Cluster",
-        "SmallNest",
-        "ExitOnly"
+        "none",
+        "hub",
+        "cluster",
+        "smallNest",
+        "exitOnly"
       ]
     },
     "BrambleNodeInfo": {
@@ -863,10 +863,10 @@
         "Star"
       ],
       "enum": [
-        "Sand",
-        "Water",
-        "Lava",
-        "Star"
+        "sand",
+        "water",
+        "lava",
+        "star"
       ]
     },
     "HeightMapModule": {
@@ -1680,9 +1680,9 @@
         "None"
       ],
       "enum": [
-        "TurnOff",
-        "TurnOffThenOn",
-        "None"
+        "turnOff",
+        "turnOffThenOn",
+        "none"
       ]
     },
     "EntryLocationInfo": {
@@ -1899,10 +1899,10 @@
         "Teenager"
       ],
       "enum": [
-        "Adult",
-        "Child",
-        "Stranger",
-        "Teenager"
+        "adult",
+        "child",
+        "stranger",
+        "teenager"
       ]
     },
     "MVector2": {
@@ -1936,19 +1936,17 @@
         "Trailmarker"
       ],
       "enum": [
-        "Wall",
-        "Scroll",
-        "Whiteboard",
-        "Computer",
-        "PreCrashComputer",
-        "Recorder",
-        "PreCrashRecorder",
-        "CairnBrittleHollow",
-        "CairnTimberHearth",
-        "CairnEmberTwin",
-        "Trailmarker",
-        "Cairn",
-        "CairnVariant"
+        "wall",
+        "scroll",
+        "whiteboard",
+        "computer",
+        "preCrashComputer",
+        "recorder",
+        "preCrashRecorder",
+        "cairnBH",
+        "cairnTH",
+        "cairnCT",
+        "trailmarker"
       ]
     },
     "NomaiTextLocation": {
@@ -1960,9 +1958,9 @@
         "B"
       ],
       "enum": [
-        "UNSPECIFIED",
-        "A",
-        "B"
+        "unspecified",
+        "a",
+        "b"
       ]
     },
     "RaftInfo": {
@@ -2224,10 +2222,10 @@
         "StandingVisionTorch"
       ],
       "enum": [
-        "SlideReel",
-        "AutoProjector",
-        "VisionTorchTarget",
-        "StandingVisionTorch"
+        "slideReel",
+        "autoProjector",
+        "visionTorchTarget",
+        "standingVisionTorch"
       ]
     },
     "SlideReelType": {
@@ -2240,10 +2238,10 @@
         "Whole"
       ],
       "enum": [
-        "SixSlides",
-        "SevenSlides",
-        "EightSlides",
-        "Whole"
+        "sixSlides",
+        "sevenSlides",
+        "eightSlides",
+        "whole"
       ]
     },
     "SlideReelCondition": {
@@ -2255,9 +2253,9 @@
         "Rusted"
       ],
       "enum": [
-        "Antique",
-        "Pristine",
-        "Rusted"
+        "antique",
+        "pristine",
+        "rusted"
       ]
     },
     "QuantumGroupInfo": {
@@ -2302,8 +2300,8 @@
         "States"
       ],
       "enum": [
-        "Sockets",
-        "States"
+        "sockets",
+        "states"
       ]
     },
     "QuantumSocketInfo": {
@@ -2468,9 +2466,9 @@
         "Hurricane"
       ],
       "enum": [
-        "Upwards",
-        "Downwards",
-        "Hurricane"
+        "upwards",
+        "downwards",
+        "hurricane"
       ]
     },
     "HazardType": {
@@ -2488,15 +2486,15 @@
         "RIVERHEAT"
       ],
       "enum": [
-        "NONE",
-        "GENERAL",
-        "DARKMATTER",
-        "HEAT",
-        "FIRE",
-        "SANDFALL",
-        "ELECTRICITY",
-        "RAPIDS",
-        "RIVERHEAT"
+        "none",
+        "general",
+        "ghostMatter",
+        "heat",
+        "fire",
+        "sandfall",
+        "electricity",
+        "rapids",
+        "riverHeat"
       ]
     },
     "InstantDamageType": {
@@ -2508,9 +2506,9 @@
         "Electrical"
       ],
       "enum": [
-        "Impact",
-        "Puncture",
-        "Electrical"
+        "impact",
+        "puncture",
+        "electrical"
       ]
     },
     "VolcanoInfo": {
@@ -2670,8 +2668,8 @@
         "WhiteHole"
       ],
       "enum": [
-        "BlackHole",
-        "WhiteHole"
+        "blackHole",
+        "whiteHole"
       ]
     },
     "SignalInfo": {
@@ -3144,22 +3142,22 @@
         "SlideReelMusic"
       ],
       "enum": [
-        "Undefined",
-        "Menu",
-        "Music",
-        "Environment",
-        "Environment_Unfiltered",
-        "EndTimes_SFX",
-        "Signal",
-        "Death",
-        "Player",
-        "Player_External",
-        "Ship",
-        "Map",
-        "EndTimes_Music",
-        "MuffleWhileRafting",
-        "MuffleIndoors",
-        "SlideReelMusic"
+        "undefined",
+        "menu",
+        "music",
+        "environment",
+        "environmentUnfiltered",
+        "endTimesSfx",
+        "signal",
+        "death",
+        "player",
+        "playerExternal",
+        "ship",
+        "map",
+        "endTimesMusic",
+        "muffleWhileRafting",
+        "muffleIndoors",
+        "slideReelMusic"
       ]
     },
     "GravityCannonInfo": {
@@ -3746,10 +3744,10 @@
         "Supernova"
       ],
       "enum": [
-        "Default",
-        "None",
-        "PlanetaryNebula",
-        "Supernova"
+        "default",
+        "none",
+        "planetaryNebula",
+        "supernova"
       ]
     },
     "StellarRemnantType": {
@@ -3763,11 +3761,11 @@
         "Custom"
       ],
       "enum": [
-        "Default",
-        "WhiteDwarf",
-        "NeutronStar",
-        "BlackHole",
-        "Custom"
+        "default",
+        "whiteDwarf",
+        "neutronStar",
+        "blackHole",
+        "custom"
       ]
     },
     "SolarFlareModule": {
@@ -3883,23 +3881,23 @@
         "Current"
       ],
       "enum": [
-        "Rain",
-        "SnowflakesHeavy",
-        "SnowflakesLight",
-        "Embers",
-        "Clouds",
-        "Leaves",
-        "Bubbles",
-        "Fog",
-        "CrystalMotes",
-        "RockMotes",
-        "IceMotes",
-        "SandMotes",
-        "Crawlies",
-        "Fireflies",
-        "Plankton",
-        "Pollen",
-        "Current"
+        "rain",
+        "snowflakesHeavy",
+        "snowflakesLight",
+        "embers",
+        "clouds",
+        "leaves",
+        "bubbles",
+        "fog",
+        "crystalMotes",
+        "rockMotes",
+        "iceMotes",
+        "sandMotes",
+        "crawlies",
+        "fireflies",
+        "plankton",
+        "pollen",
+        "current"
       ]
     },
     "FollowTarget": {
@@ -3910,8 +3908,8 @@
         "Probe"
       ],
       "enum": [
-        "Player",
-        "Probe"
+        "player",
+        "probe"
       ]
     },
     "HeightDensityPair": {
@@ -4167,9 +4165,9 @@
         "MANUAL"
       ],
       "enum": [
-        "RANDOM",
-        "SEQUENTIAL",
-        "MANUAL"
+        "random",
+        "sequential",
+        "manual"
       ]
     },
     "DayNightAudioVolumeInfo": {
@@ -4308,21 +4306,21 @@
         "CrushedByElevator"
       ],
       "enum": [
-        "Default",
-        "Impact",
-        "Asphyxiation",
-        "Energy",
-        "Supernova",
-        "Digestion",
-        "BigBang",
-        "Crushed",
-        "Meditation",
-        "TimeLoop",
-        "Lava",
-        "BlackHole",
-        "Dream",
-        "DreamExplosion",
-        "CrushedByElevator"
+        "default",
+        "impact",
+        "asphyxiation",
+        "energy",
+        "supernova",
+        "digestion",
+        "bigBang",
+        "crushed",
+        "meditation",
+        "timeLoop",
+        "lava",
+        "blackHole",
+        "dream",
+        "dreamExplosion",
+        "crushedByElevator"
       ]
     },
     "FluidVolumeInfo": {
@@ -4515,9 +4513,9 @@
         "Player"
       ],
       "enum": [
-        "All",
-        "Ship",
-        "Player"
+        "all",
+        "ship",
+        "player"
       ]
     },
     "NotificationInfo": {
@@ -4663,9 +4661,9 @@
         "Snapshot"
       ],
       "enum": [
-        "Enter",
-        "Observe",
-        "Snapshot"
+        "enter",
+        "observe",
+        "snapshot"
       ]
     },
     "EnterType": {
@@ -4677,9 +4675,9 @@
         "Probe"
       ],
       "enum": [
-        "Both",
-        "Player",
-        "Probe"
+        "both",
+        "player",
+        "probe"
       ]
     },
     "RulesetModule": {
@@ -5139,9 +5137,9 @@
         "Kazoo"
       ],
       "enum": [
-        "Fast",
-        "Final",
-        "Kazoo"
+        "fast",
+        "final",
+        "kazoo"
       ]
     },
     "CometTailModule": {
