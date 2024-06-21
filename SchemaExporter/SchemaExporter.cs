@@ -4,6 +4,7 @@ using System.IO;
 using NewHorizons.External.Configs;
 using NJsonSchema;
 using NJsonSchema.Generation;
+using NJsonSchema.NewtonsoftJson.Generation;
 
 namespace SchemaExporter;
 
@@ -15,7 +16,7 @@ public static class SchemaExporter
 
         Directory.CreateDirectory(folderName);
         Console.WriteLine("Schema Generator: We're winning!");
-        var settings = new JsonSchemaGeneratorSettings
+        var settings = new NewtonsoftJsonSchemaGeneratorSettings
         {
             IgnoreObsoleteProperties = true,
             DefaultReferenceTypeNullHandling = ReferenceTypeNullHandling.NotNull,
