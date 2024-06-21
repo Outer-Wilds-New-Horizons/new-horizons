@@ -115,7 +115,7 @@ namespace NewHorizons.Builder.Body
 
             mat.SetFloat(Noise, ring.useNoise ?? ring.transparencyType == RingTransparencyType.AlphaClip ? 1 : 0);
             mat.SetFloat(NoiseRotation, ring.noiseRotationSpeed != 0 ? 1 : 0);
-            mat.SetFloat(NoiseRotationSpeed, ring.noiseRotationSpeed * Mathf.Deg2Rad);
+            mat.SetFloat(NoiseRotationSpeed, ring.noiseRotationSpeed / 360f);
             mat.SetTexture(NoiseMap, NoiseTexture);
             var middleCircumference = 2f * Mathf.PI * Mathf.Lerp(ring.innerRadius, ring.outerRadius, 0.5f);
             var radiusFix = 1f - (ring.innerRadius / ring.outerRadius);
@@ -215,6 +215,7 @@ namespace NewHorizons.Builder.Body
             Vector3[] vertices = new Vector3[(segments + 1) * 2 * 2];
             int[] triangles = new int[segments * 6 * 2];
             Vector2[] uv = new Vector2[(segments + 1) * 2 * 2];
+            Vector2[] uv2 = new Vector2[(segments + 1) * 2 * 2];
             int halfway = (segments + 1) * 2;
 
             for (int i = 0; i < segments + 1; i++)
@@ -228,8 +229,14 @@ namespace NewHorizons.Builder.Body
                 vertices[i * 2 + 1] = vertices[i * 2 + 1 + halfway] = new Vector3(x, 0f, z) * innerRadius;
                 //uv[i * 2] = uv[i * 2 + halfway] = new Vector2(progress, 0f);
                 //uv[i * 2 + 1] = uv[i * 2 + 1 + halfway] = new Vector2(progress, 1f);	  				
-                uv[i * 2] = uv[i * 2 + halfway] = (new Vector2(x, z) / 2f) + Vector2.one * 0.5f;
+                uv[i * 2] = uv[i * 2 + halfway] = (new Vector2(x, z) * 0.5f) + new Vector2(0.5f, 0.5f);
                 uv[i * 2 + 1] = uv[i * 2 + 1 + halfway] = new Vector2(0.5f, 0.5f);
+
+                float halfwayProgress = progress + 0.5f / segments;
+                uv2[i * 2] = new Vector2(progress, 1f);
+                uv2[i * 2 + halfway] = new Vector2(halfwayProgress, 1f);
+                uv2[i * 2 + 1] = new Vector2(progress, 0f);
+                uv2[i * 2 + 1 + halfway] = new Vector2(halfwayProgress, 0f);
 
                 if (i != segments)
                 {
@@ -249,6 +256,7 @@ namespace NewHorizons.Builder.Body
             ringMesh.vertices = vertices;
             ringMesh.triangles = triangles;
             ringMesh.uv = uv;
+            ringMesh.uv2 = uv2;
             ringMesh.RecalculateNormals();
         }
 
