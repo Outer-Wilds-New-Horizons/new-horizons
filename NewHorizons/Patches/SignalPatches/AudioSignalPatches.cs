@@ -11,6 +11,13 @@ namespace NewHorizons.Patches.SignalPatches
     [HarmonyPatch(typeof(AudioSignal))]
     public static class AudioSignalPatches
     {
+        [HarmonyPostfix]
+        [HarmonyPatch(nameof(AudioSignal.IsActive))]
+        public static void AudioSignal_IsActive(AudioSignal __instance, ref bool __result)
+        {
+            __result = __result && __instance.gameObject.activeInHierarchy;
+        }
+
         [HarmonyPrefix]
         [HarmonyPatch(nameof(AudioSignal.SignalNameToString))]
         public static bool AudioSignal_SignalNameToString(SignalName name, ref string __result)
