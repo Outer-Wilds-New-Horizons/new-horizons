@@ -28,7 +28,7 @@ namespace NewHorizons.Builder.Props
                 // Trifid is a Nomai ruins genius
                 _platformContainerPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_SouthHemisphere/Sector_SouthPole/Sector_Observatory/Interactables_Observatory/Prefab_NOM_RemoteViewer/Structure_NOM_RemoteViewer")
                     .InstantiateInactive()
-                    .Rename("Structure_NOM_PlatformContainer")
+                    .Rename("Prefab_NOM_PlatformContainer")
                     .DontDestroyOnLoad();
                 _platformContainerPrefab.transform.localScale = new Vector3(0.85f, 3f, 0.85f);
             }
@@ -67,7 +67,7 @@ namespace NewHorizons.Builder.Props
                     .DontDestroyOnLoad();
                 Object.Destroy(_receiverPrefab.GetComponentInChildren<NomaiWarpStreaming>().gameObject);
 
-                var structure = _platformContainerPrefab.Instantiate();
+                var structure = _platformContainerPrefab.Instantiate().Rename("Structure_NOM_PlatformContainer");
                 structure.transform.parent = _receiverPrefab.transform;
                 structure.transform.localPosition = new Vector3(0, 0.8945f, 0);
                 structure.transform.localRotation = Quaternion.identity;
@@ -82,7 +82,7 @@ namespace NewHorizons.Builder.Props
                     .DontDestroyOnLoad();
                 Object.Destroy(_transmitterPrefab.GetComponentInChildren<NomaiWarpStreaming>().gameObject);
 
-                var structure = _platformContainerPrefab.Instantiate();
+                var structure = _platformContainerPrefab.Instantiate().Rename("Structure_NOM_PlatformContainer");
                 structure.transform.parent = _transmitterPrefab.transform;
                 structure.transform.localPosition = new Vector3(0, 0.8945f, 0);
                 structure.transform.localRotation = Quaternion.identity;
