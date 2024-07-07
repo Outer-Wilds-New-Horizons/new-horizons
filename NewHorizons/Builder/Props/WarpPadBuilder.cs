@@ -28,6 +28,7 @@ namespace NewHorizons.Builder.Props
                 // Trifid is a Nomai ruins genius
                 _platformContainerPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_SouthHemisphere/Sector_SouthPole/Sector_Observatory/Interactables_Observatory/Prefab_NOM_RemoteViewer/Structure_NOM_RemoteViewer")
                     .InstantiateInactive()
+                    .Rename("Structure_NOM_PlatformContainer")
                     .DontDestroyOnLoad();
                 _platformContainerPrefab.transform.localScale = new Vector3(0.85f, 3f, 0.85f);
             }
@@ -39,12 +40,12 @@ namespace NewHorizons.Builder.Props
 
                 _detailedReceiverPrefab = new GameObject("NomaiWarpReceiver");
 
-                var detailedReceiver = thReceiver.InstantiateInactive();
+                var detailedReceiver = thReceiver.InstantiateInactive().Rename("Prefab_NOM_WarpReceiver");
                 detailedReceiver.transform.parent = _detailedReceiverPrefab.transform;
                 detailedReceiver.transform.localPosition = Vector3.zero;
                 detailedReceiver.transform.localRotation = Quaternion.identity;
 
-                var lamp = thReceiverLamp.InstantiateInactive();
+                var lamp = thReceiverLamp.InstantiateInactive().Rename("Structure_NOM_WarpReceiver_Lamp");
                 lamp.transform.parent = _detailedReceiverPrefab.transform;
                 lamp.transform.localPosition = thReceiver.transform.InverseTransformPoint(thReceiverLamp.transform.position);
                 lamp.transform.localRotation = thReceiver.transform.InverseTransformRotation(thReceiverLamp.transform.rotation);
@@ -62,6 +63,7 @@ namespace NewHorizons.Builder.Props
             {
                 _receiverPrefab = SearchUtilities.Find("SunStation_Body/Sector_SunStation/Sector_WarpModule/Interactables_WarpModule/Prefab_NOM_WarpReceiver")
                     .InstantiateInactive()
+                    .Rename("Prefab_NOM_WarpReceiver")
                     .DontDestroyOnLoad();
                 Object.Destroy(_receiverPrefab.GetComponentInChildren<NomaiWarpStreaming>().gameObject);
 
@@ -76,6 +78,7 @@ namespace NewHorizons.Builder.Props
             {
                 _transmitterPrefab = SearchUtilities.Find("TowerTwin_Body/Sector_TowerTwin/Sector_Tower_SS/Interactables_Tower_SS/Tower_SS_VisibleFrom_TowerTwin/Prefab_NOM_WarpTransmitter")
                     .InstantiateInactive()
+                    .Rename("Prefab_NOM_WarpTransmitter")
                     .DontDestroyOnLoad();
                 Object.Destroy(_transmitterPrefab.GetComponentInChildren<NomaiWarpStreaming>().gameObject);
 
