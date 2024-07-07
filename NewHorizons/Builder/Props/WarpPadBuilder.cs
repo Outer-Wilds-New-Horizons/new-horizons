@@ -157,6 +157,7 @@ namespace NewHorizons.Builder.Props
 
             var computerLogger = computerObject.AddComponent<NomaiWarpComputerLogger>();
             computerLogger._warpReceiver = receiver;
+            computerLogger.Awake();
 
             computerObject.SetActive(true);
         }
