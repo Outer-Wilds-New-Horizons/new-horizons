@@ -160,7 +160,7 @@ namespace NewHorizons.Builder.Props
 
             var computerLogger = computerObject.AddComponent<NomaiWarpComputerLogger>();
             computerLogger._warpReceiver = receiver;
-            computerLogger.Awake();
+            computerLogger.Awake(); // Redo awake because OnReceiveWarpedBody doesn't get added to otherwise
 
             computerObject.SetActive(true);
         }
