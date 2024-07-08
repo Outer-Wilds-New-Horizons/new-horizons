@@ -41,7 +41,7 @@ jobs:
           cp docs/package.json .
           cp docs/pnpm-lock.yaml .
       - name: Build Site
-        uses: withastro/action@v1
+        uses: withastro/action@v2
         with:
           path: ./docs
           package-manager: pnpm@latest
