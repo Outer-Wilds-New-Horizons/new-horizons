@@ -81,7 +81,7 @@ public class SlideReelAsyncImageLoader
             NHLogger.LogError($"Failed to load {index}:{url} - {uwr.error}");
             if (url.Contains("SlideReelCache"))
             {
-                NHLogger.LogError("Missing image in SlideReelCache: Try deleting the folder so that New Horizons can regenerate the cache.");
+                NHLogger.LogError("Missing image in SlideReelCache: If you are a dev, try deleting the folder so that New Horizons can regenerate the cache. If you are a player: do that and then complain to the mod dev.");
             }
         }
         else
