@@ -15,7 +15,7 @@ namespace NewHorizons.Utility.Files;
 /// </summary>
 public class SlideReelAsyncImageLoader
 {
-    public List<(int index, string path)> PathsToLoad { get; private set; } = new();
+    public List<(int index, string path, bool deleteImmediately)> PathsToLoad { get; private set; } = new();
 
     public class ImageLoadedEvent : UnityEvent<Texture2D, int, string> { }
     public ImageLoadedEvent imageLoadedEvent = new();
@@ -31,7 +31,7 @@ public class SlideReelAsyncImageLoader
     private bool _started;
     private bool _clamp;
 
-    public void Start(bool clamp)
+    public void Start(bool clamp, bool sequential)
     {
         if (_started) return;
 
@@ -46,7 +46,7 @@ public class SlideReelAsyncImageLoader
 
         NHLogger.LogVerbose("Loading new slide reel");
         imageLoadedEvent.AddListener(OnImageLoaded);
-        SingletonSlideReelAsyncImageLoader.Instance.Load(this);
+        SingletonSlideReelAsyncImageLoader.Instance.Load(this, sequential);
     }
 
     private void OnImageLoaded(Texture texture, int index, string originalPath)
@@ -60,7 +60,17 @@ public class SlideReelAsyncImageLoader
         }
     }
 
-    private IEnumerator DownloadTexture(string url, int index)
+    private IEnumerator DownloadTextures()
+    {
+        foreach (var (index, path, deleteImmediately) in PathsToLoad)
+        {
+            NHLogger.LogVerbose($"Loaded slide reel {index} of {PathsToLoad.Count}");
+
+            yield return DownloadTexture(path, index, deleteImmediately);
+        }
+    }
+
+    private IEnumerator DownloadTexture(string url, int index, bool deleteImmediately)
     {
         var key = ImageUtilities.GetKey(url);
         if (ImageUtilities.CheckCachedTexture(key, out var existingTexture))
@@ -107,6 +117,12 @@ public class SlideReelAsyncImageLoader
 
             var time = DateTime.Now;
             imageLoadedEvent?.Invoke(texture, index, url);
+
+            // For when its an image loaded only to create a new cacheable image
+            if (deleteImmediately)
+            {
+                ImageUtilities.DeleteTexture(key, texture);
+            }
             NHLogger.LogVerbose($"Slide reel event took: {(DateTime.Now - time).TotalMilliseconds}ms");
         }
     }
@@ -114,6 +130,10 @@ public class SlideReelAsyncImageLoader
     private class SingletonSlideReelAsyncImageLoader : MonoBehaviour
     {
         public static SingletonSlideReelAsyncImageLoader Instance { get; private set; }
+
+        private Queue<SlideReelAsyncImageLoader> _loaders = new();
+
+        private bool _isLoading;
 
         public void Awake()
         {
@@ -124,20 +144,48 @@ public class SlideReelAsyncImageLoader
         private void OnSceneUnloaded(Scene _)
         {
             StopAllCoroutines();
+            _loaders.Clear();
+            _isLoading = false;
         }
 
-        public void Load(SlideReelAsyncImageLoader loader)
+        public void Load(SlideReelAsyncImageLoader loader, bool sequential)
         {
             // Delay at least one frame to let things subscribe to the event before it fires
             Delay.FireOnNextUpdate(() =>
             {
-                foreach (var (index, path) in loader.PathsToLoad)
+                if (sequential)
                 {
-                    NHLogger.LogVerbose($"Loaded slide reel {index} of {loader.PathsToLoad.Count}");
+                    // Sequential
+                    _loaders.Enqueue(loader);
+                    if (!_isLoading)
+                    {
+                        StartCoroutine(LoadAllSequential());
+                    }
+                }
+                else
+                {
+                    foreach (var (index, path, deleteImmediately) in loader.PathsToLoad)
+                    {
+                        NHLogger.LogVerbose($"Loaded slide reel {index} of {loader.PathsToLoad.Count}");
 
-                    StartCoroutine(loader.DownloadTexture(path, index));
+                        StartCoroutine(loader.DownloadTexture(path, index, deleteImmediately));
+                    }
                 }
             });
+        }
+
+        private IEnumerator LoadAllSequential()
+        {
+            NHLogger.Log("Loading slide reels");
+            _isLoading = true;
+            while (_loaders.Count > 0)
+            {
+                var loader = _loaders.Dequeue();
+                yield return loader.DownloadTextures();
+                NHLogger.Log($"Finished a slide reel, {_loaders.Count} left");
+            }
+            _isLoading = false;
+            NHLogger.Log("Done loading slide reels");
         }
     }
 }

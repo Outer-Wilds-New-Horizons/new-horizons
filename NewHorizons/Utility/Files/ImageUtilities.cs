@@ -72,6 +72,11 @@ namespace NewHorizons.Utility.Files
         {
             var path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, filename);
             var key = GetKey(path);
+            DeleteTexture(key, texture);
+        }
+
+        public static void DeleteTexture(string key, Texture2D texture) 
+        { 
             if (_textureCache.ContainsKey(key))
             {
                 if (_textureCache[key] == texture)
