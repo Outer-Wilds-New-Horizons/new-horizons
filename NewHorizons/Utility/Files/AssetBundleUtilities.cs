@@ -155,6 +155,42 @@ namespace NewHorizons.Utility.Files
                     }
                 }
             }
+
+            // for dream world underwater fog
+            foreach (var ruleset in prefab.GetComponentsInChildren<EffectRuleset>(true))
+            {
+                var material = ruleset._material;
+                if (material == null) continue;
+
+                var replacementShader = Shader.Find(material.shader.name);
+                if (replacementShader == null) continue;
+
+                // preserve override tag and render queue (for Standard shader)
+                // keywords and properties are already preserved
+                if (material.renderQueue != material.shader.renderQueue)
+                {
+                    var renderType = material.GetTag("RenderType", false);
+                    var renderQueue = material.renderQueue;
+                    material.shader = replacementShader;
+                    material.SetOverrideTag("RenderType", renderType);
+                    material.renderQueue = renderQueue;
+                }
+                else
+                {
+                    material.shader = replacementShader;
+                }
+            }
+            // for raft splash
+            foreach (var fluidDetector in prefab.GetComponentsInChildren<FluidDetector>(true))
+            {
+                if (fluidDetector._splashEffects == null) continue;
+                foreach (var splashEffect in fluidDetector._splashEffects)
+                {
+                    if (splashEffect == null) continue;
+                    if (splashEffect.splashPrefab == null) continue;
+                    AssetBundleUtilities.ReplaceShaders(splashEffect.splashPrefab);
+                }
+            }
         }
     }
 }

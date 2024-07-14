@@ -1,6 +1,20 @@
 {
   "$schema": "https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/main/NewHorizons/Schemas/translation_schema.json",
+ "DialogueDictionary": {
+    "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_1": "Twój statek jest teraz wyposażony z napędem warp!",
+    "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_2": "Możesz użyć nowy \"Tryb międzygwiezdny\" w Dzienniku Pokładowym żeby zablokować twój autopilot na inny Układ Gwiazdy.",
+    "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_3": "A potem zapnij pasy i zaangażój wypaczanie!"
+  },
   "UIDictionary": {
+    "INTERSTELLAR_MODE": "Tryb międzygwiezdny",
+    "FREQ_STATUE": "Statua Nomai",
+    "FREQ_WARP_CORE": "Strumień Anty-Grawitonowy",
+    "FREQ_UNKNOWN": "???",
+    "ENGAGE_WARP_PROMPT": "Zaangażować Wypaczanie do {0}",
+    "WARP_LOCKED": "AUTOPILOT ZABLOKOWANY NA:\n{0}",
+    "LOCK_AUTOPILOT_WARP": "Zablokuj Autopilot na Układ Gwiazdy",
+    "RICH_PRESENCE_EXPLORING": "Eksploruje {0}.",
+    "RICH_PRESENCE_WARPING": "Wypaczanie do {0}.",
     "Vessel": "Statku"
   }
 }
