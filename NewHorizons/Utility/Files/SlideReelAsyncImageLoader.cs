@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Policy;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Networking;
@@ -15,13 +16,17 @@ namespace NewHorizons.Utility.Files;
 /// </summary>
 public class SlideReelAsyncImageLoader
 {
-    public List<(int index, string path, bool deleteImmediately)> PathsToLoad { get; private set; } = new();
+    public List<(int index, string path)> PathsToLoad { get; private set; } = new();
+
+    private Dictionary<string, Texture2D> _loadedTextures = new();
 
     public class ImageLoadedEvent : UnityEvent<Texture2D, int, string> { }
     public ImageLoadedEvent imageLoadedEvent = new();
 
     public bool FinishedLoading { get; private set; }
     private int _loadedCount = 0;
+
+    public bool deleteTexturesWhenDone;
 
     // TODO: set up an optional “StartLoading” and “StartUnloading” condition on AsyncTextureLoader,
     // and make use of that for at least for projector stuff (require player to be in the same sector as the slides
@@ -53,24 +58,40 @@ public class SlideReelAsyncImageLoader
     {
         _loadedCount++;
 
+        var key = ImageUtilities.GetKey(originalPath);
+        _loadedTextures[key] = texture as Texture2D;
+
         if (_loadedCount >= PathsToLoad.Count)
         {
             NHLogger.LogVerbose($"Finished loading all textures for a slide reel (one was {PathsToLoad.FirstOrDefault()}");
             FinishedLoading = true;
+
+            if (deleteTexturesWhenDone)
+            {
+                DeleteLoadedImages();
+            }
+        }
+    }
+
+    private void DeleteLoadedImages()
+    {
+        foreach (var (key, texture) in _loadedTextures)
+        {
+            ImageUtilities.DeleteTexture(key, texture);
         }
     }
 
     private IEnumerator DownloadTextures()
     {
-        foreach (var (index, path, deleteImmediately) in PathsToLoad)
+        foreach (var (index, path) in PathsToLoad)
         {
             NHLogger.LogVerbose($"Loaded slide reel {index} of {PathsToLoad.Count}");
 
-            yield return DownloadTexture(path, index, deleteImmediately);
+            yield return DownloadTexture(path, index);
         }
     }
 
-    private IEnumerator DownloadTexture(string url, int index, bool deleteImmediately)
+    private IEnumerator DownloadTexture(string url, int index)
     {
         var key = ImageUtilities.GetKey(url);
         if (ImageUtilities.CheckCachedTexture(key, out var existingTexture))
@@ -118,11 +139,6 @@ public class SlideReelAsyncImageLoader
             var time = DateTime.Now;
             imageLoadedEvent?.Invoke(texture, index, url);
 
-            // For when its an image loaded only to create a new cacheable image
-            if (deleteImmediately)
-            {
-                ImageUtilities.DeleteTexture(key, texture);
-            }
             NHLogger.LogVerbose($"Slide reel event took: {(DateTime.Now - time).TotalMilliseconds}ms");
         }
     }
@@ -153,7 +169,7 @@ public class SlideReelAsyncImageLoader
             // Delay at least one frame to let things subscribe to the event before it fires
             Delay.FireOnNextUpdate(() =>
             {
-                if (sequential)
+                if (sequential && Main.SequentialPreCaching)
                 {
                     // Sequential
                     _loaders.Enqueue(loader);
@@ -164,11 +180,11 @@ public class SlideReelAsyncImageLoader
                 }
                 else
                 {
-                    foreach (var (index, path, deleteImmediately) in loader.PathsToLoad)
+                    foreach (var (index, path) in loader.PathsToLoad)
                     {
                         NHLogger.LogVerbose($"Loaded slide reel {index} of {loader.PathsToLoad.Count}");
 
-                        StartCoroutine(loader.DownloadTexture(path, index, deleteImmediately));
+                        StartCoroutine(loader.DownloadTexture(path, index));
                     }
                 }
             });
