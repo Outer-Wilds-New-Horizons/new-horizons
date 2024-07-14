@@ -15,11 +15,23 @@ namespace NewHorizons.Builder.Body
 {
     public static class RingBuilder
     {
-        public static Shader RingShader;
-        public static Shader RingShader1Pixel;
-        public static Shader UnlitRingShader;
-        public static Shader UnlitRingShader1Pixel;
+        public static Shader RingV2Shader;
+        public static Shader RingV2UnlitShader;
+        public static Shader RingV2TransparentShader;
+        public static Shader RingV2UnlitTransparentShader;
+        public static Texture2D NoiseTexture;
+        private static readonly int OnePixelMode = Shader.PropertyToID("_1PixelMode");
         private static readonly int InnerRadius = Shader.PropertyToID("_InnerRadius");
+        private static readonly int Noise = Shader.PropertyToID("_Noise");
+        private static readonly int NoiseRotation = Shader.PropertyToID("_NoiseRotation");
+        private static readonly int NoiseRotationSpeed = Shader.PropertyToID("_NoiseRotationSpeed");
+        private static readonly int NoiseMap = Shader.PropertyToID("_NoiseMap");
+        private static readonly int SmoothnessMap = Shader.PropertyToID("_SmoothnessMap");
+        private static readonly int NormalMap = Shader.PropertyToID("_NormalMap");
+        private static readonly int EmissionMap = Shader.PropertyToID("_EmissionMap");
+        private static readonly int Translucency = Shader.PropertyToID("_Translucency");
+        private static readonly int TranslucentGlow = Shader.PropertyToID("_TranslucentGlow");
+        private static readonly int TranslucentGlowExponent = Shader.PropertyToID("_TranslucentGlowExponent");
 
         public static GameObject Make(GameObject planetGO, Sector sector, RingModule ring, IModBehaviour mod)
         {
@@ -62,14 +74,11 @@ namespace NewHorizons.Builder.Body
 
         public static GameObject MakeRingGraphics(GameObject rootObject, Sector sector, RingModule ring, IModBehaviour mod)
         {
-            // Properly lit shader doesnt work yet
-            ring.unlit = true;
+            var albedoTexture = ImageUtilities.GetTexture(mod, ring.texture ?? "");
 
-            var ringTexture = ImageUtilities.GetTexture(mod, ring.texture);
-
-            if (ringTexture == null)
+            if (albedoTexture == null)
             {
-                NHLogger.LogError($"Couldn't load Ring texture [{ring.texture}]");
+                NHLogger.LogError($"Couldn't load ring texture [{ring.texture}]");
                 return null;
             }
 
@@ -84,25 +93,52 @@ namespace NewHorizons.Builder.Body
             var ringMesh = ringMF.mesh;
             var ringMR = ringGO.AddComponent<MeshRenderer>();
 
-            if (RingShader == null) RingShader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/Ring.shader");
-            if (UnlitRingShader == null) UnlitRingShader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/UnlitTransparent.shader");
-            if (RingShader1Pixel == null) RingShader1Pixel = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/Ring1Pixel.shader");
-            if (UnlitRingShader1Pixel == null) UnlitRingShader1Pixel = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/UnlitRing1Pixel.shader");
+            if (RingV2Shader == null) RingV2Shader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/RingV2.shader");
+            if (RingV2TransparentShader == null) RingV2TransparentShader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/RingV2Transparent.shader");
+            if (RingV2UnlitShader == null) RingV2UnlitShader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/RingV2UnlitShader.shader");
+            if (RingV2UnlitTransparentShader == null) RingV2UnlitTransparentShader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/RingV2UnlitTransparentShader.shader");
+            if (NoiseTexture == null) NoiseTexture = Main.NHAssetBundle.LoadAsset<Texture2D>("Assets/Resources/BlueNoise470.png");
 
-            var mat = new Material(ring.unlit ? UnlitRingShader : RingShader);
-            if (ringTexture.width == 1)
+            var mat = new Material(ring.unlit ? RingV2UnlitShader : RingV2Shader);
+            if (ring.transparencyType == RingTransparencyType.Fade)
             {
-                mat = new Material(ring.unlit ? UnlitRingShader1Pixel : RingShader1Pixel);
-                mat.SetFloat(InnerRadius, 0);
+                mat = new Material(ring.unlit ? RingV2UnlitTransparentShader : RingV2TransparentShader);
             }
-            ringMR.receiveShadows = !ring.unlit;
+            else
+            {
+                albedoTexture.anisoLevel = 0; // otherwise it dies from afar if it has a lot of transparency
+            }
+            
+            mat.SetFloat(OnePixelMode, albedoTexture.width == 1 ? 1 : 0);
+            mat.mainTexture = albedoTexture;
+            mat.SetFloat(InnerRadius, 0);
 
-            mat.mainTexture = ringTexture;
+            mat.SetFloat(Noise, ring.useNoise ?? ring.transparencyType == RingTransparencyType.AlphaClip ? 1 : 0);
+            mat.SetFloat(NoiseRotation, ring.noiseRotationSpeed != 0 ? 1 : 0);
+            mat.SetFloat(NoiseRotationSpeed, ring.noiseRotationSpeed / 360f);
+            mat.SetTexture(NoiseMap, NoiseTexture);
+            var middleCircumference = 2f * Mathf.PI * Mathf.Lerp(ring.innerRadius, ring.outerRadius, 0.5f);
+            var radiusFix = 1f - (ring.innerRadius / ring.outerRadius);
+            var scale = new Vector2(middleCircumference / NoiseTexture.width / ring.noiseScale, radiusFix * ring.outerRadius / NoiseTexture.width / ring.noiseScale);
+            mat.SetTextureScale(NoiseMap, scale);
+
+            if (!ring.unlit)
+            {
+                var smoothnessMap = ImageUtilities.GetTexture(mod, ring.smoothnessMap ?? "");
+                var normalMap = ImageUtilities.GetTexture(mod, ring.normalMap ?? "");
+                var emissionMap = ImageUtilities.GetTexture(mod, ring.emissionMap ?? "");
+                if (smoothnessMap != null) mat.SetTexture(SmoothnessMap, smoothnessMap);
+                if (normalMap != null) mat.SetTexture(NormalMap, normalMap);
+                if (emissionMap != null) mat.SetTexture(EmissionMap, emissionMap);
+
+                mat.SetFloat(Translucency, ring.translucency);
+                mat.SetFloat(TranslucentGlow, ring.translucentGlow ? 1 : 0);
+            }
 
             // Black holes vanish behind rings
             // However if we lower this to where black holes don't vanish, water becomes invisible when seen through rings
             // Vanishing black holes is the lesser bug
-            mat.renderQueue = 3000;
+            if (ring.transparencyType == RingTransparencyType.Fade) mat.renderQueue = 3000;
             ringMR.material = mat;
 
             // Make mesh
@@ -179,6 +215,7 @@ namespace NewHorizons.Builder.Body
             Vector3[] vertices = new Vector3[(segments + 1) * 2 * 2];
             int[] triangles = new int[segments * 6 * 2];
             Vector2[] uv = new Vector2[(segments + 1) * 2 * 2];
+            Vector2[] uv2 = new Vector2[(segments + 1) * 2 * 2];
             int halfway = (segments + 1) * 2;
 
             for (int i = 0; i < segments + 1; i++)
@@ -192,8 +229,14 @@ namespace NewHorizons.Builder.Body
                 vertices[i * 2 + 1] = vertices[i * 2 + 1 + halfway] = new Vector3(x, 0f, z) * innerRadius;
                 //uv[i * 2] = uv[i * 2 + halfway] = new Vector2(progress, 0f);
                 //uv[i * 2 + 1] = uv[i * 2 + 1 + halfway] = new Vector2(progress, 1f);	  				
-                uv[i * 2] = uv[i * 2 + halfway] = (new Vector2(x, z) / 2f) + Vector2.one * 0.5f;
+                uv[i * 2] = uv[i * 2 + halfway] = (new Vector2(x, z) * 0.5f) + new Vector2(0.5f, 0.5f);
                 uv[i * 2 + 1] = uv[i * 2 + 1 + halfway] = new Vector2(0.5f, 0.5f);
+
+                float halfwayProgress = progress + 0.5f / segments;
+                uv2[i * 2] = new Vector2(progress, 1f);
+                uv2[i * 2 + halfway] = new Vector2(halfwayProgress, 1f);
+                uv2[i * 2 + 1] = new Vector2(progress, 0f);
+                uv2[i * 2 + 1 + halfway] = new Vector2(halfwayProgress, 0f);
 
                 if (i != segments)
                 {
@@ -213,6 +256,7 @@ namespace NewHorizons.Builder.Body
             ringMesh.vertices = vertices;
             ringMesh.triangles = triangles;
             ringMesh.uv = uv;
+            ringMesh.uv2 = uv2;
             ringMesh.RecalculateNormals();
         }
 
