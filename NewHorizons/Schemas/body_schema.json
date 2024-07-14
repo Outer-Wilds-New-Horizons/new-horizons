@@ -4,14 +4,10 @@
   "type": "object",
   "description": "Describes a celestial body to generate",
   "additionalProperties": false,
-  "required": [
-    "name"
-  ],
   "properties": {
     "name": {
       "type": "string",
-      "description": "Unique name of your planet",
-      "minLength": 1
+      "description": "Unique name of your planet. If not specified, the file name (without the extension) is used."
     },
     "starSystem": {
       "type": "string",

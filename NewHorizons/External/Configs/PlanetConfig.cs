@@ -25,9 +25,8 @@ namespace NewHorizons.External.Configs
     {
         #region Fields
         /// <summary>
-        /// Unique name of your planet
+        /// Unique name of your planet. If not specified, the file name (without the extension) is used.
         /// </summary>
-        [Required]
         public string name;
 
         /// <summary>
