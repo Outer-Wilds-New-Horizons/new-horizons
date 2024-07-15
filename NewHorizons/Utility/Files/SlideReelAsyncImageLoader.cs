@@ -26,7 +26,13 @@ public class SlideReelAsyncImageLoader
     public bool FinishedLoading { get; private set; }
     private int _loadedCount = 0;
 
-    public bool deleteTexturesWhenDone;
+    /// <summary>
+    /// If we are loading images where:
+    /// 1) The slide reel cache does not exist
+    /// 2) The loader would only use the images to make the cache
+    /// Then we want to delete them immediately after loading, in order to save memory
+    /// </summary>
+    public bool deleteTexturesWhenDone = false;
 
     // TODO: set up an optional “StartLoading” and “StartUnloading” condition on AsyncTextureLoader,
     // and make use of that for at least for projector stuff (require player to be in the same sector as the slides

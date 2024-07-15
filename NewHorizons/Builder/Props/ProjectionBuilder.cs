@@ -349,6 +349,10 @@ namespace NewHorizons.Builder.Props
             slideCollection.streamingAssetIdentifier = string.Empty; // NREs if null
 
             var (invImageLoader, _, imageLoader) = StartAsyncLoader(mod, info.slides, ref slideCollection, true, false);
+
+            // Autoprojector only uses the inverted images so the original can be destroyed if they are loaded (when creating the cached inverted images)
+            imageLoader.deleteTexturesWhenDone = true;
+
             if (invImageLoader != null)
             {
                 // Loaded directly from cache
@@ -365,9 +369,6 @@ namespace NewHorizons.Builder.Props
                     var time = DateTime.Now;
                     slideCollection.slides[index]._image = ImageUtilities.InvertSlideReel(mod, tex, originalPath);
                     NHLogger.LogVerbose($"Slide reel invert time {(DateTime.Now - time).TotalMilliseconds}ms");
-
-                    // Autoprojector only uses the inverted images so the original can be destroyed now
-                    ImageUtilities.DeleteTexture(ImageUtilities.GetKey(originalPath), tex);
                 });
             }
 
