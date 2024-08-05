@@ -694,14 +694,26 @@ namespace NewHorizons
 
             if (SystemDict.ContainsKey(starSystemName))
             {
+                // Both changing the Mod and RelativePath are weird and will likely cause incompat issues if two mods both affected the same system
+                // It's mostly just to fix up the config compared to the default one NH makes for the base StarSystem
+
                 if (SystemDict[starSystemName].Config.GlobalMusic == null && SystemDict[starSystemName].Config.Skybox == null)
+                {
                     SystemDict[starSystemName].Mod = mod;
-                if (SystemDict[starSystemName].Config.extras == null)
-                    SystemDict[starSystemName].RelativePath = relativePath;
-                SystemDict[starSystemName].Config.Merge(starSystemConfig);
+                }
+
                 // If a mod contains a change to the default system, set the relative path.
                 // Warning: If multiple systems make changes to the default system, only the relativePath will be set to the last mod loaded.
-                SystemDict[starSystemName].RelativePath = relativePath;
+                if (string.IsNullOrEmpty(SystemDict[starSystemName].RelativePath))
+                {
+                    SystemDict[starSystemName].RelativePath = relativePath;
+                }
+                else
+                {
+                    NHLogger.LogWarning($"Two (or more) mods are making system changes to {starSystemName} which may result in errors");
+                }
+
+                SystemDict[starSystemName].Config.Merge(starSystemConfig);
             }
             else
             {
