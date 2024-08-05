@@ -9,5 +9,5 @@
   "dependencies": [ "JohnCorby.VanillaFix", "xen.CommonCameraUtility", "dgarro.CustomShipLogModes" ],
   "conflicts": [ "PacificEngine.OW_CommonResources" ],
   "pathsToPreserve": [ "planets", "systems", "translations" ],
-  "donateLink": "https://www.patreon.com/ownh"
+  "donateLink": "https://www.patreon.com/xen42"
 }
