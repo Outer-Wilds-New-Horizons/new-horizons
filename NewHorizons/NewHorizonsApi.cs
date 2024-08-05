@@ -144,7 +144,7 @@ namespace NewHorizons
         {
             var planet = Main.BodyDict[Main.Instance.CurrentStarSystem].Find((b) => b.Config.name == bodyName);
             if (planet == null){
-				NHLogger.LogError($"Could not find planet with body name {bodyName}.")
+                NHLogger.LogError($"Could not find planet with body name {bodyName}.");
 				return null;
 			}
 			return QueryJson(outType, Path.Combine(planet.Mod.ModHelper.Manifest.ModFolderPath, planet.RelativePath), jsonPath);
@@ -163,6 +163,7 @@ namespace NewHorizons
         public object QuerySystem(Type outType, string jsonPath)
         {
             var system = Main.SystemDict[Main.Instance.CurrentStarSystem];
+            NHLogger.Log("System Relative Path: " + system.RelativePath);
             return system == null
                 ? null
                 : QueryJson(outType, Path.Combine(system.Mod.ModHelper.Manifest.ModFolderPath, system.RelativePath), jsonPath);
