@@ -695,6 +695,9 @@ namespace NewHorizons
                 if (SystemDict[starSystemName].Config.GlobalMusic == null && SystemDict[starSystemName].Config.Skybox == null)
                     SystemDict[starSystemName].Mod = mod;
                 SystemDict[starSystemName].Config.Merge(starSystemConfig);
+                // If a mod contains a change to the default system, set the relative path.
+                // Warning: If multiple systems make changes to the default system, only the relativePath will be set to the last mod loaded.
+                SystemDict[starSystemName].RelativePath = relativePath;
             }
             else
             {
