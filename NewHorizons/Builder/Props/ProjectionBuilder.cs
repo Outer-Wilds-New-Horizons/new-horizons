@@ -45,6 +45,8 @@ namespace NewHorizons.Builder.Props
 
         private static bool _isInit;
 
+        public static bool CacheExists(IModBehaviour mod) => Directory.Exists(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, ATLAS_SLIDE_CACHE_FOLDER));
+
         internal static void InitPrefabs()
         {
             if (_isInit) return;
@@ -151,6 +153,9 @@ namespace NewHorizons.Builder.Props
 
             var (invImageLoader, atlasImageLoader, imageLoader) = StartAsyncLoader(mod, info.slides, ref slideCollection, true, true);
 
+            // If the cache doesn't exist it will be created here, slide reels only use the base image loader for cache creation so delete the images after to free memory
+            imageLoader.deleteTexturesWhenDone = !CacheExists(mod);
+
             var key = GetUniqueSlideReelID(mod, info.slides);
 
             if (invImageLoader != null && atlasImageLoader != null)
@@ -219,7 +224,6 @@ namespace NewHorizons.Builder.Props
                     NHLogger.LogVerbose($"Slide reel make reel texture {(DateTime.Now - time).TotalMilliseconds}ms");
                 });
             }
-
 
             // Else when you put them down you can't pick them back up
             slideReelObj.GetComponent<OWCollider>()._physicsRemoved = false;
@@ -345,6 +349,10 @@ namespace NewHorizons.Builder.Props
             slideCollection.streamingAssetIdentifier = string.Empty; // NREs if null
 
             var (invImageLoader, _, imageLoader) = StartAsyncLoader(mod, info.slides, ref slideCollection, true, false);
+
+            // Autoprojector only uses the inverted images so the original can be destroyed if they are loaded (when creating the cached inverted images)
+            imageLoader.deleteTexturesWhenDone = true;
+
             if (invImageLoader != null)
             {
                 // Loaded directly from cache
@@ -505,7 +513,7 @@ namespace NewHorizons.Builder.Props
 
             var atlasKey = GetUniqueSlideReelID(mod, slides);
 
-            var cacheExists = Directory.Exists(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, ATLAS_SLIDE_CACHE_FOLDER));
+            var cacheExists = CacheExists(mod);
 
             NHLogger.Log($"Does cache exist for slide reels? {cacheExists}");
 
@@ -531,6 +539,7 @@ namespace NewHorizons.Builder.Props
                     }
                     else
                     {
+                        // Used to then make cached stuff
                         imageLoader.PathsToLoad.Add((i, Path.Combine(Instance.ModHelper.Manifest.ModFolderPath, "Assets/textures/blank_slide_reel.png")));
                     }
                 }
@@ -554,26 +563,31 @@ namespace NewHorizons.Builder.Props
 
             if (cacheExists)
             {
+                NHLogger.Log("Loading slide reels from cache");
+
                 if (useAtlasCache)
                 {
-                    atlasImageLoader.Start(false);
+                    atlasImageLoader.Start(false, false);
                 }
                 // When using the inverted cache we never need the regular images
                 if (useInvertedCache)
                 {
-                    invertedImageLoader.Start(true);
+                    invertedImageLoader.Start(true, false);
                 }
                 else
                 {
-                    imageLoader.Start(true);
+                    imageLoader.Start(true, false);
                 }
 
                 return (invertedImageLoader, atlasImageLoader, imageLoader);
             }
             else
             {
+                NHLogger.Log("Generating slide reel cache");
+
                 // Will be slow and create the cache if needed
-                imageLoader.Start(true);
+                // Will run sequentially to ensure we don't run out of memory
+                imageLoader.Start(true, true);
 
                 return (null, null, imageLoader);
             }
