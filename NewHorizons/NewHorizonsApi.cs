@@ -147,7 +147,7 @@ namespace NewHorizons
                 NHLogger.LogError($"Could not find planet with body name {bodyName}.");
 				return null;
 			}
-			return QueryJson(outType, planet, jsonPath);
+			return QueryJson(outType, planet.Config, jsonPath);
         }
 
         public T QueryBody<T>(string bodyName, string jsonPath)
@@ -165,7 +165,7 @@ namespace NewHorizons
             var system = Main.SystemDict[Main.Instance.CurrentStarSystem];
             return system == null
                 ? null
-                : QueryJson(outType, system, jsonPath);
+                : QueryJson(outType, system.Config, jsonPath);
         }
 
         public T QuerySystem<T>(string jsonPath)
