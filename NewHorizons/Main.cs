@@ -696,6 +696,8 @@ namespace NewHorizons
             {
                 if (SystemDict[starSystemName].Config.GlobalMusic == null && SystemDict[starSystemName].Config.Skybox == null)
                     SystemDict[starSystemName].Mod = mod;
+                if (SystemDict[starSystemName].Config.extras == null)
+                    SystemDict[starSystemName].RelativePath = relativePath;
                 SystemDict[starSystemName].Config.Merge(starSystemConfig);
             }
             else
