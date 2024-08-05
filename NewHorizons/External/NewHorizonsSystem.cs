@@ -7,17 +7,15 @@ namespace NewHorizons.External
     public class NewHorizonsSystem
     {
         public string UniqueID;
-        public string RelativePath;
         public SpawnModule Spawn = null;
         public SpawnPoint SpawnPoint = null;
         public StarSystemConfig Config;
         public IModBehaviour Mod;
 
-        public NewHorizonsSystem(string uniqueID, StarSystemConfig config, string relativePath, IModBehaviour mod)
+        public NewHorizonsSystem(string uniqueID, StarSystemConfig config, IModBehaviour mod)
         {
             UniqueID = uniqueID;
             Config = config;
-            RelativePath = relativePath;
             Mod = mod;
         }
     }

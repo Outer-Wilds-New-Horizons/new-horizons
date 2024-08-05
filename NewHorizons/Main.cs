@@ -173,7 +173,7 @@ namespace NewHorizons
 
             BodyDict["SolarSystem"] = new List<NewHorizonsBody>();
             BodyDict["EyeOfTheUniverse"] = new List<NewHorizonsBody>(); // Keep this empty tho fr
-            SystemDict["SolarSystem"] = new NewHorizonsSystem("SolarSystem", new StarSystemConfig(), "", Instance)
+            SystemDict["SolarSystem"] = new NewHorizonsSystem("SolarSystem", new StarSystemConfig(), Instance)
             {
                 Config =
                 {
@@ -189,7 +189,7 @@ namespace NewHorizons
                     }
                 }
             };
-            SystemDict["EyeOfTheUniverse"] = new NewHorizonsSystem("EyeOfTheUniverse", new StarSystemConfig(), "", Instance)
+            SystemDict["EyeOfTheUniverse"] = new NewHorizonsSystem("EyeOfTheUniverse", new StarSystemConfig(), Instance)
             {
                 Config =
                 {
@@ -702,22 +702,11 @@ namespace NewHorizons
                     SystemDict[starSystemName].Mod = mod;
                 }
 
-                // If a mod contains a change to the default system, set the relative path.
-                // Warning: If multiple systems make changes to the default system, only the relativePath will be set to the last mod loaded.
-                if (string.IsNullOrEmpty(SystemDict[starSystemName].RelativePath))
-                {
-                    SystemDict[starSystemName].RelativePath = relativePath;
-                }
-                else
-                {
-                    NHLogger.LogWarning($"Two (or more) mods are making system changes to {starSystemName} which may result in errors");
-                }
-
                 SystemDict[starSystemName].Config.Merge(starSystemConfig);
             }
             else
             {
-                SystemDict[starSystemName] = new NewHorizonsSystem(starSystemName, starSystemConfig, relativePath, mod);
+                SystemDict[starSystemName] = new NewHorizonsSystem(starSystemName, starSystemConfig, mod);
             }
         }
 
@@ -911,7 +900,7 @@ namespace NewHorizons
                 starSystemConfig.Migrate();
                 starSystemConfig.FixCoordinates();
 
-                var system = new NewHorizonsSystem(config.starSystem, starSystemConfig, $"", mod);
+                var system = new NewHorizonsSystem(config.starSystem, starSystemConfig, mod);
 
                 SystemDict.Add(config.starSystem, system);
 

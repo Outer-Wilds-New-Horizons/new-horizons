@@ -120,12 +120,12 @@ namespace NewHorizons
             }
         }
 
-        private static object QueryJson(Type outType, string filePath, string jsonPath)
+        private static object QueryJson(Type outType, object jsonObject, string jsonPath)
         {
-            if (filePath == "") return null;
+            if (jsonObject == default) return null;
             try
             {
-                var jsonText = File.ReadAllText(filePath);
+                var jsonText = JsonConvert.SerializeObject(jsonObject);
                 var jsonData = JObject.Parse(jsonText);
                 return jsonData.SelectToken(jsonPath)?.ToObject(outType);
             }
@@ -147,7 +147,7 @@ namespace NewHorizons
                 NHLogger.LogError($"Could not find planet with body name {bodyName}.");
 				return null;
 			}
-			return QueryJson(outType, Path.Combine(planet.Mod.ModHelper.Manifest.ModFolderPath, planet.RelativePath), jsonPath);
+			return QueryJson(outType, planet, jsonPath);
         }
 
         public T QueryBody<T>(string bodyName, string jsonPath)
@@ -163,10 +163,9 @@ namespace NewHorizons
         public object QuerySystem(Type outType, string jsonPath)
         {
             var system = Main.SystemDict[Main.Instance.CurrentStarSystem];
-            NHLogger.Log("System Relative Path: " + system.RelativePath);
             return system == null
                 ? null
-                : QueryJson(outType, Path.Combine(system.Mod.ModHelper.Manifest.ModFolderPath, system.RelativePath), jsonPath);
+                : QueryJson(outType, system, jsonPath);
         }
 
         public T QuerySystem<T>(string jsonPath)
