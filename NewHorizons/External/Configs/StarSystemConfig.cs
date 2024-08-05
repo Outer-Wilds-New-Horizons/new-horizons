@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using NewHorizons.External.Modules;
 using NewHorizons.External.SerializableData;
+using NewHorizons.Utility.OWML;
 using Newtonsoft.Json;
 using static NewHorizons.External.Modules.ShipLogModule;
 
@@ -361,6 +363,21 @@ namespace NewHorizons.External.Configs
             entryPositions = Concatenate(entryPositions, otherConfig.entryPositions);
             curiosities = Concatenate(curiosities, otherConfig.curiosities);
             initialReveal = Concatenate(initialReveal, otherConfig.initialReveal);
+
+            if (extras == null) extras = otherConfig.extras;
+            else if (otherConfig.extras != null)
+            {
+                try
+                {
+                    var extrasDict = extras as Dictionary<string, object>;
+                    var newExtrasDict = otherConfig.extras as Dictionary<string, object>;
+                    extras = extrasDict.Concat(newExtrasDict).ToDictionary(x => x.Key, x => x.Value);
+                }
+                catch (Exception ex) 
+                {
+                    NHLogger.LogError($"Couldn't merge extras on system - {ex}");
+                }
+            }
         }
 
         private T[] Concatenate<T>(T[] array1, T[] array2)
