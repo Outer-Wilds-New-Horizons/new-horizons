@@ -4,10 +4,10 @@
   "author": "xen, Bwc9876, JohnCorby, MegaPiggy, Clay, Trifid, and friends",
   "name": "New Horizons",
   "uniqueName": "xen.NewHorizons",
-  "version": "1.22.3",
+  "version": "1.22.4",
   "owmlVersion": "2.12.1",
   "dependencies": [ "JohnCorby.VanillaFix", "xen.CommonCameraUtility", "dgarro.CustomShipLogModes" ],
   "conflicts": [ "PacificEngine.OW_CommonResources" ],
   "pathsToPreserve": [ "planets", "systems", "translations" ],
-  "donateLink": "https://www.patreon.com/ownh"
+  "donateLink": "https://www.patreon.com/xen42"
 }

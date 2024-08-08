@@ -72,6 +72,11 @@ namespace NewHorizons.Utility.Files
         {
             var path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, filename);
             var key = GetKey(path);
+            DeleteTexture(key, texture);
+        }
+
+        public static void DeleteTexture(string key, Texture2D texture) 
+        { 
             if (_textureCache.ContainsKey(key))
             {
                 if (_textureCache[key] == texture)
@@ -103,6 +108,16 @@ namespace NewHorizons.Utility.Files
         public static Texture2D InvertSlideReel(IModBehaviour mod, Texture2D texture, string originalPath)
         {
             var key = $"{texture.name} > invert";
+            var cachedPath = "";
+
+            // If we're going to end up caching the texture we must make sure it will end up using the same key
+            // Not sure why we check if the originalPath is null but it did that before so
+            if (!string.IsNullOrEmpty(originalPath))
+            {
+                cachedPath = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, ProjectionBuilder.INVERTED_SLIDE_CACHE_FOLDER, originalPath.Replace(mod.ModHelper.Manifest.ModFolderPath, ""));
+                key = GetKey(cachedPath);
+            }
+
             if (_textureCache.TryGetValue(key, out var existingTexture)) return (Texture2D)existingTexture;
 
             var pixels = texture.GetPixels();
@@ -138,12 +153,11 @@ namespace NewHorizons.Utility.Files
 
             // Since doing this is expensive we cache the results to the disk
             // Preloading cached values is done in ProjectionBuilder
-            if (!string.IsNullOrEmpty(originalPath))
+            if (!string.IsNullOrEmpty(cachedPath))
             {
-                var path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, ProjectionBuilder.INVERTED_SLIDE_CACHE_FOLDER, originalPath.Replace(mod.ModHelper.Manifest.ModFolderPath, ""));
-                NHLogger.LogVerbose($"Caching inverted image to {path}");
-                Directory.CreateDirectory(Path.GetDirectoryName(path));
-                File.WriteAllBytes(path, newTexture.EncodeToPNG());
+                NHLogger.LogVerbose($"Caching inverted image to {cachedPath}");
+                Directory.CreateDirectory(Path.GetDirectoryName(cachedPath));
+                File.WriteAllBytes(cachedPath, newTexture.EncodeToPNG());
             }
 
             return newTexture;

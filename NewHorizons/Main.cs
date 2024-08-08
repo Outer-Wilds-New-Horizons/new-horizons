@@ -46,9 +46,10 @@ namespace NewHorizons
         // Settings
         public static bool Debug { get; private set; }
         public static bool VerboseLogs { get; private set; }
-        private static bool _useCustomTitleScreen;
+        public static bool SequentialPreCaching { get; private set; }
+        public static bool CustomTitleScreen { get; private set; }
+        public static string DefaultSystemOverride { get; private set; }
         private static bool _wasConfigured = false;
-        private static string _defaultSystemOverride;
 
         public static Dictionary<string, NewHorizonsSystem> SystemDict = new();
         public static Dictionary<string, List<NewHorizonsBody>> BodyDict = new();
@@ -59,7 +60,7 @@ namespace NewHorizons
 
         public static bool IsSystemReady { get; private set; }
 
-        public string DefaultStarSystem => SystemDict.ContainsKey(_defaultSystemOverride) ? _defaultSystemOverride : _defaultStarSystem;
+        public string DefaultStarSystem => SystemDict.ContainsKey(DefaultSystemOverride) ? DefaultSystemOverride : _defaultStarSystem;
         public string CurrentStarSystem
         {
             get
@@ -130,8 +131,9 @@ namespace NewHorizons
 
             var currentScene = SceneManager.GetActiveScene().name;
 
-            Debug = config.GetSettingsValue<bool>("Debug");
-            VerboseLogs = config.GetSettingsValue<bool>("Verbose Logs");
+            Debug = config.GetSettingsValue<bool>(nameof(Debug));
+            VerboseLogs = config.GetSettingsValue<bool>(nameof(VerboseLogs));
+            SequentialPreCaching = config.GetSettingsValue<bool>(nameof(SequentialPreCaching));
 
             if (currentScene == "SolarSystem")
             {
@@ -143,19 +145,19 @@ namespace NewHorizons
             else if (Debug) NHLogger.UpdateLogLevel(NHLogger.LogType.Log);
             else NHLogger.UpdateLogLevel(NHLogger.LogType.Error);
 
-            var oldDefaultSystemOverride = _defaultSystemOverride;
-            _defaultSystemOverride = config.GetSettingsValue<string>("Default System Override");
-            if (oldDefaultSystemOverride != _defaultSystemOverride)
+            var oldDefaultSystemOverride = DefaultSystemOverride;
+            DefaultSystemOverride = config.GetSettingsValue<string>(nameof(DefaultSystemOverride));
+            if (oldDefaultSystemOverride != DefaultSystemOverride)
             {
                 ResetCurrentStarSystem();
-                NHLogger.Log($"Changed default star system override to {_defaultSystemOverride}");
+                NHLogger.Log($"Changed default star system override to {DefaultSystemOverride}");
             }
 
-            var wasUsingCustomTitleScreen = _useCustomTitleScreen;
-            _useCustomTitleScreen = config.GetSettingsValue<bool>("Custom title screen");
+            var wasUsingCustomTitleScreen = CustomTitleScreen;
+            CustomTitleScreen = config.GetSettingsValue<bool>(nameof(CustomTitleScreen));
             // Reload the title screen if this was updated on it
             // Don't reload if we haven't configured yet (called on game start)
-            if (wasUsingCustomTitleScreen != _useCustomTitleScreen && SceneManager.GetActiveScene().name == "TitleScreen" && _wasConfigured)
+            if (wasUsingCustomTitleScreen != CustomTitleScreen && SceneManager.GetActiveScene().name == "TitleScreen" && _wasConfigured)
             {
                 NHLogger.LogVerbose("Reloading");
                 SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
@@ -428,7 +430,7 @@ namespace NewHorizons
 
             IsChangingStarSystem = false;
 
-            if (isTitleScreen && _useCustomTitleScreen)
+            if (isTitleScreen && CustomTitleScreen)
             {
                 try
                 {
@@ -692,8 +694,25 @@ namespace NewHorizons
 
             if (SystemDict.ContainsKey(starSystemName))
             {
+                // Both changing the Mod and RelativePath are weird and will likely cause incompat issues if two mods both affected the same system
+                // It's mostly just to fix up the config compared to the default one NH makes for the base StarSystem
+
                 if (SystemDict[starSystemName].Config.GlobalMusic == null && SystemDict[starSystemName].Config.Skybox == null)
+                {
                     SystemDict[starSystemName].Mod = mod;
+                }
+
+                // If a mod contains a change to the default system, set the relative path.
+                // Warning: If multiple systems make changes to the default system, only the relativePath will be set to the last mod loaded.
+                if (string.IsNullOrEmpty(SystemDict[starSystemName].RelativePath))
+                {
+                    SystemDict[starSystemName].RelativePath = relativePath;
+                }
+                else
+                {
+                    NHLogger.LogWarning($"Two (or more) mods are making system changes to {starSystemName} which may result in errors");
+                }
+
                 SystemDict[starSystemName].Config.Merge(starSystemConfig);
             }
             else
@@ -1037,16 +1056,16 @@ namespace NewHorizons
 
         private void ResetCurrentStarSystem()
         {
-            if (SystemDict.ContainsKey(_defaultSystemOverride))
+            if (SystemDict.ContainsKey(DefaultSystemOverride))
             {
-                CurrentStarSystem = _defaultSystemOverride;
+                CurrentStarSystem = DefaultSystemOverride;
 
                 // #738 - Sometimes the override will not support spawning regularly, so always warp in if possible
-                if (SystemDict[_defaultSystemOverride].Config.Vessel?.spawnOnVessel == true)
+                if (SystemDict[DefaultSystemOverride].Config.Vessel?.spawnOnVessel == true)
                 {
                     IsWarpingFromVessel = true;
                 }
-                else if (BodyDict.TryGetValue(_defaultSystemOverride, out var bodies) && bodies.Any(x => x.Config?.Spawn?.shipSpawn != null))
+                else if (BodyDict.TryGetValue(DefaultSystemOverride, out var bodies) && bodies.Any(x => x.Config?.Spawn?.shipSpawn != null))
                 {
                     IsWarpingFromShip = true;
                 }
@@ -1058,9 +1077,9 @@ namespace NewHorizons
             else
             {
                 // Ignore first load because it doesn't even know what systems we have
-                if (!_firstLoad && !string.IsNullOrEmpty(_defaultSystemOverride))
+                if (!_firstLoad && !string.IsNullOrEmpty(DefaultSystemOverride))
                 {
-                    NHLogger.LogError($"The given default system override {_defaultSystemOverride} is invalid - no system exists with that name");
+                    NHLogger.LogError($"The given default system override {DefaultSystemOverride} is invalid - no system exists with that name");
                 }
 
                 CurrentStarSystem = _defaultStarSystem;
