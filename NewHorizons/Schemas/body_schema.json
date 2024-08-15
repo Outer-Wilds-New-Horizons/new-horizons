@@ -1625,6 +1625,17 @@
           "format": "float",
           "default": 2.0
         },
+        "attentionPoint": {
+          "description": "The point that the camera looks at when dialogue advances.",
+          "$ref": "#/definitions/AttentionPointInfo"
+        },
+        "swappedAttentionPoints": {
+          "type": "array",
+          "description": "Additional points that the camera looks at when dialogue advances through specific dialogue nodes and pages.",
+          "items": {
+            "$ref": "#/definitions/SwappedAttentionPointInfo"
+          }
+        },
         "remoteTrigger": {
           "description": "Allows you to trigger dialogue from a distance when you walk into an area.",
           "$ref": "#/definitions/RemoteTriggerInfo"
@@ -1637,6 +1648,73 @@
           "description": "What type of flashlight toggle to do when dialogue is interacted with",
           "default": "none",
           "$ref": "#/definitions/FlashlightToggle"
+        }
+      }
+    },
+    "AttentionPointInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "offset": {
+          "description": "An additional offset to apply to apply when the camera looks at this attention point.",
+          "$ref": "#/definitions/MVector3"
+        }
+      }
+    },
+    "SwappedAttentionPointInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "offset": {
+          "description": "An additional offset to apply to apply when the camera looks at this attention point.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "dialogueNode": {
+          "type": "string",
+          "description": "The name of the dialogue node to activate this attention point for. If null or blank, activates for every node."
+        },
+        "dialoguePage": {
+          "type": "integer",
+          "description": "The index of the page in the current dialogue node to activate this attention point for, if the node has multiple pages.",
+          "format": "int32"
+        },
+        "lookEasing": {
+          "type": "number",
+          "description": "The easing factor which determines how 'snappy' the camera is when looking at the attention point.",
+          "format": "float",
+          "default": 1
         }
       }
     },
