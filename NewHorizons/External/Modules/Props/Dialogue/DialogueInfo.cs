@@ -48,6 +48,16 @@ namespace NewHorizons.External.Modules.Props.Dialogue
         [DefaultValue(2f)] public float range = 2f;
 
         /// <summary>
+        /// The point that the camera looks at when dialogue advances.
+        /// </summary>
+        public AttentionPointInfo attentionPoint;
+
+        /// <summary>
+        /// Additional points that the camera looks at when dialogue advances through specific dialogue nodes and pages.
+        /// </summary>
+        public SwappedAttentionPointInfo[] swappedAttentionPoints;
+
+        /// <summary>
         /// Allows you to trigger dialogue from a distance when you walk into an area.
         /// </summary>
         public RemoteTriggerInfo remoteTrigger;
