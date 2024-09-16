@@ -935,6 +935,10 @@ namespace NewHorizons
             {
                 _defaultStarSystem = defaultSystem;
             }
+            if (LoadManager.GetCurrentScene() != OWScene.SolarSystem && LoadManager.GetCurrentScene() != OWScene.EyeOfTheUniverse)
+            {
+                CurrentStarSystem = _defaultStarSystem;
+            }
         }
 
         #endregion Load
