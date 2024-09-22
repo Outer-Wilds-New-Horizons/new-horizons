@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlTypes;
 using System.IO;
+using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 using UnityEngine;
@@ -35,7 +36,7 @@ namespace NewHorizons.Builder.Props
             }
             else
             {
-                return (AddToExistingDialogue(go, info, xml, dialogueName), null);
+                return (AddToExistingDialogue(go, sector, info, xml, dialogueName), null);
             }
         }
 
@@ -52,6 +53,8 @@ namespace NewHorizons.Builder.Props
             }
 
             var dialogue = MakeConversationZone(go, sector, info, xml, dialogueName);
+
+            MakeAttentionPoints(go, sector, dialogue, info);
             
             RemoteDialogueTrigger remoteTrigger = null;
             if (info.remoteTrigger != null)
@@ -70,7 +73,7 @@ namespace NewHorizons.Builder.Props
             return (dialogue, remoteTrigger);
         }
 
-        private static CharacterDialogueTree AddToExistingDialogue(GameObject go, DialogueInfo info, string xml, string dialogueName)
+        private static CharacterDialogueTree AddToExistingDialogue(GameObject go, Sector sector, DialogueInfo info, string xml, string dialogueName)
         {
             var dialogueObject = go.FindChild(info.pathToExistingDialogue);
             if (dialogueObject == null) dialogueObject = SearchUtilities.Find(info.pathToExistingDialogue);
@@ -162,6 +165,8 @@ namespace NewHorizons.Builder.Props
             existingDialogue.SetTextXml(newTextAsset);
 
             FixDialogueNextFrame(existingDialogue);
+
+            MakeAttentionPoints(go, sector, existingDialogue, info);
 
             return existingDialogue;
         }
@@ -330,6 +335,32 @@ namespace NewHorizons.Builder.Props
             FixDialogueNextFrame(dialogueTree);
 
             return dialogueTree;
+        }
+
+        private static void MakeAttentionPoints(GameObject go, Sector sector, CharacterDialogueTree dialogue, DialogueInfo info)
+        {
+            if (info.attentionPoint != null)
+            {
+                var ptGo = GeneralPropBuilder.MakeNew("AttentionPoint", go, sector, info.attentionPoint, defaultParent: dialogue.transform);
+                dialogue._attentionPoint = ptGo.transform;
+                dialogue._attentionPointOffset = info.attentionPoint.offset;
+                ptGo.SetActive(true);
+            }
+            if (info.swappedAttentionPoints != null && info.swappedAttentionPoints.Length > 0)
+            {
+                foreach (var pointInfo in info.swappedAttentionPoints)
+                {
+                    var ptGo = GeneralPropBuilder.MakeNew($"AttentionPoint_{pointInfo.dialogueNode}_{pointInfo.dialoguePage}", go, sector, pointInfo, defaultParent: dialogue.transform);
+                    var swapper = ptGo.AddComponent<DialogueAttentionPointSwapper>();
+                    swapper._dialogueTree = dialogue;
+                    swapper._attentionPoint = ptGo.transform;
+                    swapper._attentionPointOffset = pointInfo.offset;
+                    swapper._nodeName = pointInfo.dialogueNode;
+                    swapper._dialoguePage = pointInfo.dialoguePage;
+                    swapper._lookEasing = pointInfo.lookEasing;
+                    ptGo.SetActive(true);
+                }
+            }
         }
 
         private static void MakePlayerTrackingZone(GameObject go, CharacterDialogueTree dialogue, DialogueInfo info)
