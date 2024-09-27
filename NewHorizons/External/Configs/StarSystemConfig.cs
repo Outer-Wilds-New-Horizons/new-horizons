@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Xml;
 using NewHorizons.External.Modules;
 using NewHorizons.External.SerializableData;
 using Newtonsoft.Json;
@@ -31,9 +32,28 @@ namespace NewHorizons.External.Configs
         public float farClipPlaneOverride;
 
         /// <summary>
-        /// Whether this system can be warped to via the warp drive. If you set factRequiredForWarp, this will be true.
+        /// Whether this system can be warped to via the warp drive. If you set `factRequiredForWarp`, this will be true.
+        /// Does NOT effect the base SolarSystem. For that, see `canExitViaWarpDrive` and `factRequiredToExitViaWarpDrive`
         /// </summary>
         [DefaultValue(true)] public bool canEnterViaWarpDrive = true;
+
+        /// <summary>
+        /// The FactID that must be revealed before it can be warped to. Don't set `canEnterViaWarpDrive` to `false` if
+        /// you're using this, because it will be overwritten.
+        /// </summary>
+        public string factRequiredForWarp;
+
+        /// <summary>
+        /// Can you use the warp drive to leave this system? If you set `factRequiredToExitViaWarpDrive`
+        /// this will be true.
+        /// </summary>
+        [DefaultValue(true)] public bool canExitViaWarpDrive = true;
+
+        /// <summary>
+        /// The FactID that must be revealed for you to warp back to the main solar system from here. Don't set `canWarpHome`
+        /// to `false` if you're using this, because it will be overwritten.
+        /// </summary>
+        public string factRequiredToExitViaWarpDrive;
 
         /// <summary>
         /// Do you want a clean slate for this star system? Or will it be a modified version of the original.
@@ -44,12 +64,6 @@ namespace NewHorizons.External.Configs
         /// Should the time loop be enabled in this system?
         /// </summary>
         [DefaultValue(true)] public bool enableTimeLoop = true;
-
-        /// <summary>
-        /// The FactID that must be revealed before it can be warped to. Don't set `canEnterViaWarpDrive` to `false` if
-        /// you're using this, because it will be overwritten.
-        /// </summary>
-        public string factRequiredForWarp;
 
         /// <summary>
         /// The duration of the time loop in minutes. This is the time the sun explodes. End Times plays 85 seconds before this time, and your memories get sent back about 40 seconds after this time.
@@ -413,6 +427,10 @@ namespace NewHorizons.External.Configs
                     Vessel.warpExit.rotation ??= Vessel.warpExitRotation;
                     Vessel.warpExit.attachToVessel = true;
                 }
+            }
+            if (!string.IsNullOrEmpty(factRequiredToExitViaWarpDrive))
+            {
+                canExitViaWarpDrive = true;
             }
         }
     }
