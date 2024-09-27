@@ -59,6 +59,8 @@ namespace NewHorizons.Handlers
             _starSystemToFactID = new Dictionary<string, string>();
             _factIDToStarSystem = new Dictionary<string, string>();
 
+            _factRequiredToExitViaWarpDrive = string.Empty;
+
             foreach (NewHorizonsSystem system in _systems)
             {
                 if (system.Config.factRequiredForWarp != default && system.UniqueID != "SolarSystem")
@@ -112,8 +114,8 @@ namespace NewHorizons.Handlers
             return ShipLogHandler.KnowsFact(factID);
         }
 
-        public static bool CanExitViaWarpDrive() => _canExitViaWarpDrive
-                && (string.IsNullOrEmpty(_factRequiredToExitViaWarpDrive) || ShipLogHandler.KnowsFact(_factRequiredToExitViaWarpDrive));
+        public static bool CanExitViaWarpDrive() => Main.Instance.CurrentStarSystem == "SolarSystem" || (_canExitViaWarpDrive
+                && (string.IsNullOrEmpty(_factRequiredToExitViaWarpDrive) || ShipLogHandler.KnowsFact(_factRequiredToExitViaWarpDrive)));
 
         /// <summary>
         /// Is it actually a valid warp target
