@@ -33,7 +33,7 @@ namespace NewHorizons.External.Configs
 
         /// <summary>
         /// Whether this system can be warped to via the warp drive. If you set `factRequiredForWarp`, this will be true.
-        /// Does NOT effect the base SolarSystem. For that, see `canWarpHome` and `factRequiredForWarpHome`
+        /// Does NOT effect the base SolarSystem. For that, see `canExitViaWarpDrive` and `factRequiredToExitViaWarpDrive`
         /// </summary>
         [DefaultValue(true)] public bool canEnterViaWarpDrive = true;
 
@@ -44,16 +44,16 @@ namespace NewHorizons.External.Configs
         public string factRequiredForWarp;
 
         /// <summary>
-        /// Can you use the warp drive to return home to the Outer Wilds from this system? If you set `factRequiredForWarpHome`
+        /// Can you use the warp drive to leave this system? If you set `factRequiredToExitViaWarpDrive`
         /// this will be true.
         /// </summary>
-        [DefaultValue(true)] public bool canWarpHome = true;
+        [DefaultValue(true)] public bool canExitViaWarpDrive = true;
 
         /// <summary>
         /// The FactID that must be revealed for you to warp back to the main solar system from here. Don't set `canWarpHome`
         /// to `false` if you're using this, because it will be overwritten.
         /// </summary>
-        public string factRequiredForWarpHome;
+        public string factRequiredToExitViaWarpDrive;
 
         /// <summary>
         /// Do you want a clean slate for this star system? Or will it be a modified version of the original.
@@ -428,9 +428,9 @@ namespace NewHorizons.External.Configs
                     Vessel.warpExit.attachToVessel = true;
                 }
             }
-            if (!string.IsNullOrEmpty(factRequiredForWarpHome))
+            if (!string.IsNullOrEmpty(factRequiredToExitViaWarpDrive))
             {
-                canWarpHome = true;
+                canExitViaWarpDrive = true;
             }
         }
     }

@@ -24,7 +24,7 @@ namespace NewHorizons.External
             // Backwards compat
             if (new string[] { "2walker2.OogaBooga", "2walker2.EndingIfYouWarpHereYouAreMean", "FeldsparSystem" }.Contains(uniqueID))
             {
-                config.canWarpHome = false;
+                config.canExitViaWarpDrive = false;
             }
         }
     }

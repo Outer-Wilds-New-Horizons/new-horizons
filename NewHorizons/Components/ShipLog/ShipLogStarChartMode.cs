@@ -96,7 +96,7 @@ namespace NewHorizons.Components.ShipLog
             if (_cardTemplate == null)
             {
                 var panRoot = SearchUtilities.Find("Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/ShipLogPivot/ShipLogCanvas/DetectiveMode/ScaleRoot/PanRoot");
-                _cardTemplate = Instantiate(panRoot.GetComponentInChildren<ShipLogEntryCard>().gameObject);
+                _cardTemplate = Instantiate(panRoot.GetComponentInChildren<ShipLogEntryCard>(true).gameObject);
                 _cardTemplate.SetActive(false);
             }
 
@@ -209,6 +209,12 @@ namespace NewHorizons.Components.ShipLog
 
         private void UpdateMapCamera()
         {
+            if (_starSystemCards.Count == 0)
+            {
+                NHLogger.LogWarning("Showing star chart mode when there are no avaialble systems");
+                return;
+            }
+
             Vector2 b = -_starSystemCards[_cardIndex].transform.localPosition;
             float num = Mathf.InverseLerp(_startPanTime, _startPanTime + _panDuration, Time.unscaledTime);
             num = 1f - (num - 1f) * (num - 1f);
