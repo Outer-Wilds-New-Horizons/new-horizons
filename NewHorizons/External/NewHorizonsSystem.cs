@@ -1,6 +1,7 @@
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using OWML.Common;
+using System.Linq;
 
 namespace NewHorizons.External
 {
@@ -19,6 +20,12 @@ namespace NewHorizons.External
             Config = config;
             RelativePath = relativePath;
             Mod = mod;
+
+            // Backwards compat
+            if (new string[] { "2walker2.OogaBooga", "2walker2.EndingIfYouWarpHereYouAreMean", "FeldsparSystem" }.Contains(uniqueID))
+            {
+                config.canWarpHome = false;
+            }
         }
     }
 }

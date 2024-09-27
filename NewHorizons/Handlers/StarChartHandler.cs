@@ -58,9 +58,14 @@ namespace NewHorizons.Handlers
 
             foreach (NewHorizonsSystem system in _systems)
             {
-                if (system.Config.factRequiredForWarp != default)
+                if (system.Config.factRequiredForWarp != default && system.UniqueID != "SolarSystem")
                 {
                     RegisterFactForSystem(system.Config.factRequiredForWarp, system.UniqueID);
+                }
+
+                if (system.UniqueID == Main.Instance.CurrentStarSystem && !string.IsNullOrEmpty(system.Config.factRequiredForWarpHome))
+                {
+                    RegisterFactForSystem(system.Config.factRequiredForWarpHome, "SolarSystem");
                 }
             }
         }
@@ -113,8 +118,16 @@ namespace NewHorizons.Handlers
             else if (system.Equals("EyeOfTheUniverse")) canWarpTo = false;
             else if (config.Spawn?.shipSpawn != null) canWarpTo = true;
 
+            var canEnterViaWarpDrive = Main.SystemDict[system].Config.canEnterViaWarpDrive;
+
+            // For the base solar system, use canWarpHome instead for better mod compat
+            if (system.Equals("SolarSystem"))
+            {
+                canEnterViaWarpDrive = Main.SystemDict[Main.Instance.CurrentStarSystem].Config.canWarpHome;
+            }
+
             return canWarpTo
-                    && Main.SystemDict[system].Config.canEnterViaWarpDrive
+                    && canEnterViaWarpDrive
                     && system != Main.Instance.CurrentStarSystem
                     && HasUnlockedSystem(system);
         }
