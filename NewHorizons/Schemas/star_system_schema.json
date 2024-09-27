@@ -20,19 +20,19 @@
     },
     "canEnterViaWarpDrive": {
       "type": "boolean",
-      "description": "Whether this system can be warped to via the warp drive. If you set `factRequiredForWarp`, this will be true.\nDoes NOT effect the base SolarSystem. For that, see `canWarpHome` and `factRequiredForWarpHome`",
+      "description": "Whether this system can be warped to via the warp drive. If you set `factRequiredForWarp`, this will be true.\nDoes NOT effect the base SolarSystem. For that, see `canExitViaWarpDrive` and `factRequiredToExitViaWarpDrive`",
       "default": true
     },
     "factRequiredForWarp": {
       "type": "string",
       "description": "The FactID that must be revealed before it can be warped to. Don't set `canEnterViaWarpDrive` to `false` if\nyou're using this, because it will be overwritten."
     },
-    "canWarpHome": {
+    "canExitViaWarpDrive": {
       "type": "boolean",
-      "description": "Can you use the warp drive to return home to the Outer Wilds from this system? If you set `factRequiredForWarpHome`\nthis will be true.",
+      "description": "Can you use the warp drive to leave this system? If you set `factRequiredToExitViaWarpDrive`\nthis will be true.",
       "default": true
     },
-    "factRequiredForWarpHome": {
+    "factRequiredToExitViaWarpDrive": {
       "type": "string",
       "description": "The FactID that must be revealed for you to warp back to the main solar system from here. Don't set `canWarpHome`\nto `false` if you're using this, because it will be overwritten."
     },
