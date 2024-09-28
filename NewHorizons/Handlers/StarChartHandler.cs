@@ -68,10 +68,11 @@ namespace NewHorizons.Handlers
                     RegisterFactForSystem(system.Config.factRequiredForWarp, system.UniqueID);
                 }
 
-                if (system.UniqueID == Main.Instance.CurrentStarSystem && !string.IsNullOrEmpty(system.Config.factRequiredToExitViaWarpDrive))
+                if (system.UniqueID == Main.Instance.CurrentStarSystem)
                 {
                     _factRequiredToExitViaWarpDrive = system.Config.factRequiredToExitViaWarpDrive;
                     _canExitViaWarpDrive = system.Config.canExitViaWarpDrive || !string.IsNullOrEmpty(_factRequiredToExitViaWarpDrive);
+                    NHLogger.LogVerbose($"In system {system.UniqueID} can exit via warp drive? {system.Config.canExitViaWarpDrive} {_canExitViaWarpDrive} {_factRequiredToExitViaWarpDrive}");
                 }
             }
         }
@@ -139,7 +140,7 @@ namespace NewHorizons.Handlers
             if (Main.Instance.CurrentStarSystem == "SolarSystem")
                 canExitViaWarpDrive = true;
 
-            NHLogger.Log(canEnterViaWarpDrive, canExitViaWarpDrive, system, HasUnlockedSystem(system));
+            NHLogger.LogVerbose(canEnterViaWarpDrive, canExitViaWarpDrive, system, HasUnlockedSystem(system));
 
             return canWarpTo
                     && canEnterViaWarpDrive
@@ -152,6 +153,7 @@ namespace NewHorizons.Handlers
         {
             if (!string.IsNullOrEmpty(_factRequiredToExitViaWarpDrive) && factID == _factRequiredToExitViaWarpDrive)
             {
+                _canExitViaWarpDrive = true;
                 if (!Main.HasWarpDrive)
                 {
                     Main.Instance.EnableWarpDrive();
