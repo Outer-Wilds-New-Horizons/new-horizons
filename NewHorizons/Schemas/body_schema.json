@@ -568,7 +568,7 @@
         },
         "surfaceSize": {
           "type": "number",
-          "description": "A scale height used for a number of things. Should be the approximate radius of the body.",
+          "description": "A scale height used for a number of things. Should be the approximate radius of the body.\n\nAffected settings include: Base sector size, proxy body scaling, surface gravity",
           "format": "float"
         },
         "gravityVolumePriority": {
