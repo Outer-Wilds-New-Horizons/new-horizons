@@ -3,6 +3,7 @@ using NewHorizons.Utility.Files;
 using NewHorizons.Utility.OWML;
 using OWML.Common;
 using OWML.Common.Menus;
+using OWML.Utils;
 using System;
 
 namespace NewHorizons.Utility.DebugTools
@@ -10,22 +11,18 @@ namespace NewHorizons.Utility.DebugTools
     public static class DebugReload
     {
 
-        private static IModButton _reloadButton;
+        private static SubmitAction _reloadButton;
 
-        public static void InitializePauseMenu()
+        public static void InitializePauseMenu(IPauseMenuManager pauseMenu)
         {
-            _reloadButton = Main.Instance.ModHelper.Menus.PauseMenu.OptionsButton.Duplicate(TranslationHandler.GetTranslation("Reload Configs", TranslationHandler.TextType.UI).ToUpper());
-            _reloadButton.OnClick += ReloadConfigs;
+            _reloadButton = pauseMenu.MakeSimpleButton(TranslationHandler.GetTranslation("Reload Configs", TranslationHandler.TextType.UI).ToUpperFixed(), 3, true);
+            _reloadButton.OnSubmitAction += ReloadConfigs;
             UpdateReloadButton();
         }
 
         public static void UpdateReloadButton()
         {
-            if (_reloadButton != null)
-            {
-                if (Main.Debug) _reloadButton.Show();
-                else _reloadButton.Hide();
-            }
+            _reloadButton?.SetButtonVisible(Main.Debug);
         }
 
         private static void ReloadConfigs()
@@ -46,10 +43,21 @@ namespace NewHorizons.Utility.DebugTools
                 NHLogger.LogWarning("Error While Reloading");
             }
 
+            Main.Instance.ForceClearCaches = true;
+
+
             SearchUtilities.Find("/PauseMenu/PauseMenuManagers").GetComponent<PauseMenuManager>().OnSkipToNextTimeLoop();
 
-            Main.Instance.ForceClearCaches = true;
-            Main.Instance.ChangeCurrentStarSystem(Main.Instance.CurrentStarSystem);
+            if (Main.Instance.CurrentStarSystem == "EyeOfTheUniverse")
+            {
+                Main.Instance.IsWarpingBackToEye = true;
+                EyeDetailCacher.IsInitialized = false;
+                Main.Instance.ChangeCurrentStarSystem("SolarSystem");
+            }
+            else
+            {
+                Main.Instance.ChangeCurrentStarSystem(Main.Instance.CurrentStarSystem, Main.Instance.DidWarpFromShip, Main.Instance.DidWarpFromVessel);
+            }
 
             Main.SecondsElapsedInLoop = -1f;
         }

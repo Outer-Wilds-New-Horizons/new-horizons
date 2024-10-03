@@ -6,6 +6,8 @@ namespace NewHorizons.Components.Props
 {
     public class ConditionalObjectActivation : MonoBehaviour
     {
+        private bool _playerAwake, _playerDoneAwake;
+
         public GameObject GameObject;
         public string DialogueCondition;
         public bool CloseEyes;
@@ -19,6 +21,7 @@ namespace NewHorizons.Components.Props
         {
             var conditionalObjectActivationGO = new GameObject($"{go.name}_{condition}");
             var component = conditionalObjectActivationGO.AddComponent<ConditionalObjectActivation>();
+            component.transform.parent = go.transform.parent;
             component.GameObject = go;
             component.DialogueCondition = condition;
             component.CloseEyes = closeEyes;
@@ -46,6 +49,7 @@ namespace NewHorizons.Components.Props
             GlobalMessenger<string, bool>.AddListener("DialogueConditionChanged", OnDialogueConditionChanged);
             GlobalMessenger.AddListener("ExitConversation", OnExitConversation);
             GlobalMessenger.AddListener("EnterConversation", OnEnterConversation);
+            GlobalMessenger.AddListener("WakeUp", OnWakeUp);
         }
 
         public void OnDestroy()
@@ -53,6 +57,23 @@ namespace NewHorizons.Components.Props
             GlobalMessenger<string, bool>.RemoveListener("DialogueConditionChanged", OnDialogueConditionChanged);
             GlobalMessenger.RemoveListener("ExitConversation", OnExitConversation);
             GlobalMessenger.RemoveListener("EnterConversation", OnEnterConversation);
+            GlobalMessenger.RemoveListener("WakeUp", OnWakeUp);
+        }
+
+        private void OnWakeUp()
+        {
+            _playerAwake = true;
+        }
+
+        public void Update()
+        {
+            if (!_playerDoneAwake && _playerAwake)
+            {
+                if (!_playerCameraEffectController._isOpeningEyes)
+                {
+                    _playerDoneAwake = true;
+                }
+            }
         }
 
         public void OnExitConversation()
@@ -87,7 +108,7 @@ namespace NewHorizons.Components.Props
 
         public void SetActive(bool active)
         {
-            if (CloseEyes)
+            if (CloseEyes && _playerDoneAwake && LateInitializerManager.isDoneInitializing)
             {
                 Delay.StartCoroutine(Coroutine(active));
             }

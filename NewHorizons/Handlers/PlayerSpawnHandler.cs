@@ -115,6 +115,17 @@ namespace NewHorizons.Handlers
                     }
                     // For some reason none of this seems to apply to the Player.
                     // If somebody ever makes a sound volume thats somehow always applying to the player tho then itd probably be this
+
+                    // Sometimes the ship isn't added to the volumes it's meant to now be in
+                    foreach (var volume in SpawnPointBuilder.ShipSpawn.GetAttachedOWRigidbody().GetComponentsInChildren<EffectVolume>())
+                    {
+                        if (volume.GetOWTriggerVolume().GetPenetrationDistance(ship.transform.position) > 0)
+                        {
+                            // Add ship to volume
+                            // If it's already tracking it it will complain here but thats fine
+                            volume.GetOWTriggerVolume().AddObjectToVolume(Locator.GetShipDetector());
+                        }
+                    }
                 }
             }
             else if (Main.Instance.CurrentStarSystem != "SolarSystem" && !Main.Instance.IsWarpingFromShip)
@@ -126,30 +137,39 @@ namespace NewHorizons.Handlers
 
         private static IEnumerator SpawnCoroutine(int length)
         {
+            FixPlayerVelocity();
             for(int i = 0; i < length; i++) 
             {
-                FixPlayerVelocity();
+                FixPlayerVelocity(false); // dont recenter universe here or else it spams and lags game
                 yield return new WaitForEndOfFrame();
             }
+            FixPlayerVelocity();
 
             InvulnerabilityHandler.MakeInvulnerable(false);
         }
 
-        private static void FixPlayerVelocity()
+        private static void FixPlayerVelocity(bool recenter = true)
         {
             var playerBody = SearchUtilities.Find("Player_Body").GetAttachedOWRigidbody();
             var resources = playerBody.GetComponent<PlayerResources>();
 
-            SpawnBody(playerBody, GetDefaultSpawn());
+            SpawnBody(playerBody, GetDefaultSpawn(), recenter: recenter);
 
             resources._currentHealth = 100f;
         }
 
-        public static void SpawnBody(OWRigidbody body, SpawnPoint spawn, Vector3? positionOverride = null)
+        public static void SpawnBody(OWRigidbody body, SpawnPoint spawn, Vector3? positionOverride = null, bool recenter = true)
         {
             var pos = positionOverride ?? spawn.transform.position;
 
-            body.WarpToPositionRotation(pos, spawn.transform.rotation);
+            if (recenter)
+            {
+                body.WarpToPositionRotation(pos, spawn.transform.rotation);
+            }
+            else
+            {
+                body.transform.SetPositionAndRotation(pos, spawn.transform.rotation);
+            }
 
             var spawnVelocity = spawn._attachedBody.GetVelocity();
             var spawnAngularVelocity = spawn._attachedBody.GetPointTangentialVelocity(pos);

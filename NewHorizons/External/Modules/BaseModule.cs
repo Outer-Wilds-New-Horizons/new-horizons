@@ -37,11 +37,6 @@ namespace NewHorizons.External.Modules
         public float groundSize;
 
         /// <summary>
-        /// If the body should have a marker on the map screen.
-        /// </summary>
-        public bool hasMapMarker;
-
-        /// <summary>
         /// Can this planet survive entering a star?
         /// </summary>
         public bool invulnerableToSun;
@@ -107,6 +102,9 @@ namespace NewHorizons.External.Modules
 
         [Obsolete("AmbientLight is deprecated, please use AmbientLightModule instead")]
         public float ambientLight;
+
+        [Obsolete("HasMapMarker is deprecated, please use MapMarkerModule instead")]
+        public bool hasMapMarker;
 
         [Obsolete("HasReferenceFrame is deprecated, please use ReferenceModule instead")]
         [DefaultValue(true)] public bool hasReferenceFrame = true;

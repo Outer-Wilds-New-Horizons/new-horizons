@@ -19,13 +19,18 @@ namespace NewHorizons.External.Modules.Props.Item
         /// </summary>
         public string name;
         /// <summary>
-        /// The type of the item, which determines its orientation when held and what sockets it fits into. This can be a custom string, or a vanilla ItemType (Scroll, WarpCode, SharedStone, ConversationStone, Lantern, SlideReel, DreamLantern, or VisionTorch). Defaults to the item name.
+        /// The type of the item, which determines its orientation when held and what sockets it fits into. This can be a custom string, or a vanilla ItemType (Scroll, WarpCore, SharedStone, ConversationStone, Lantern, SlideReel, DreamLantern, or VisionTorch). Defaults to the item name.
         /// </summary>
         public string itemType;
         /// <summary>
         /// The furthest distance where the player can interact with this item. Defaults to two meters, same as most vanilla items. Set this to zero to disable all interaction by default.
         /// </summary>
         [DefaultValue(2f)] public float interactRange = 2f;
+        /// <summary>
+        /// The radius that the added sphere collider will use for collision and hover detection.
+        /// If there's already a collider on the detail, you can make this 0.
+        /// </summary>
+        [DefaultValue(0.5f)] public float colliderRadius = 0.5f;
         /// <summary>
         /// Whether the item can be dropped. Defaults to true.
         /// </summary>
@@ -38,6 +43,22 @@ namespace NewHorizons.External.Modules.Props.Item
         /// The direction the item will be oriented when dropping it on the ground. Defaults to up (0, 1, 0).
         /// </summary>
         public MVector3 dropNormal;
+        /// <summary>
+        /// A relative offset to apply to the item's position when holding it. The initial position varies for vanilla item types.
+        /// </summary>
+        public MVector3 holdOffset;
+        /// <summary>
+        /// A relative offset to apply to the item's rotation when holding it.
+        /// </summary>
+        public MVector3 holdRotation;
+        /// <summary>
+        /// A relative offset to apply to the item's position when placing it into a socket.
+        /// </summary>
+        public MVector3 socketOffset;
+        /// <summary>
+        /// A relative offset to apply to the item's rotation when placing it into a socket.
+        /// </summary>
+        public MVector3 socketRotation;
         /// <summary>
         /// The audio to play when this item is picked up. Only applies to custom/non-vanilla item types.
         /// Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list.

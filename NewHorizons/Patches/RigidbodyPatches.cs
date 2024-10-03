@@ -1,5 +1,5 @@
 using HarmonyLib;
-using NewHorizons.Utility;
+using OWML.Utils;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -20,6 +20,12 @@ public static class OWRigidbodyPatches
     [HarmonyPatch(nameof(OWRigidbody.Awake))]
     private static bool Awake(OWRigidbody __instance)
     {
+        if (Main.Instance.ModHelper.Interaction.ModExists("Raicuparta.QuantumSpaceBuddies"))
+        {
+            // QSB already does all this, so don't run it again if it's installed.
+            return true;
+        }
+
         __instance._transform = __instance.transform;
 
         if (!__instance._scaleRoot)
@@ -63,6 +69,12 @@ public static class OWRigidbodyPatches
     [HarmonyPatch(nameof(OWRigidbody.Start))]
     private static void Start(OWRigidbody __instance)
     {
+        if (Main.Instance.ModHelper.Interaction.ModExists("Raicuparta.QuantumSpaceBuddies"))
+        {
+            // QSB already does all this, so don't run it again if it's installed.
+            return;
+        }
+
         if (_setParentQueue.TryGetValue(__instance, out var parent))
         {
             __instance._transform.parent = parent;
@@ -74,6 +86,12 @@ public static class OWRigidbodyPatches
     [HarmonyPatch(nameof(OWRigidbody.OnDestroy))]
     private static void OnDestroy(OWRigidbody __instance)
     {
+        if (Main.Instance.ModHelper.Interaction.ModExists("Raicuparta.QuantumSpaceBuddies"))
+        {
+            // QSB already does all this, so don't run it again if it's installed.
+            return;
+        }
+
         _setParentQueue.Remove(__instance);
     }
 
@@ -81,6 +99,12 @@ public static class OWRigidbodyPatches
     [HarmonyPatch(nameof(OWRigidbody.Suspend), typeof(Transform), typeof(OWRigidbody))]
     private static bool Suspend(OWRigidbody __instance, Transform suspensionParent, OWRigidbody suspensionBody)
     {
+        if (Main.Instance.ModHelper.Interaction.ModExists("Raicuparta.QuantumSpaceBuddies"))
+        {
+            // QSB already does all this, so don't run it again if it's installed.
+            return true;
+        }
+
         if (!__instance._suspended || __instance._unsuspendNextUpdate)
         {
             __instance._suspensionBody = suspensionBody;
@@ -133,6 +157,12 @@ public static class OWRigidbodyPatches
     [HarmonyPatch(nameof(OWRigidbody.ChangeSuspensionBody))]
     private static bool ChangeSuspensionBody(OWRigidbody __instance, OWRigidbody newSuspensionBody)
     {
+        if (Main.Instance.ModHelper.Interaction.ModExists("Raicuparta.QuantumSpaceBuddies"))
+        {
+            // QSB already does all this, so don't run it again if it's installed.
+            return true;
+        }
+
         if (__instance._suspended)
         {
             __instance._cachedRelativeVelocity = Vector3.zero;
@@ -154,6 +184,12 @@ public static class OWRigidbodyPatches
     [HarmonyPatch(nameof(OWRigidbody.UnsuspendImmediate))]
     private static bool UnsuspendImmediate(OWRigidbody __instance, bool restoreCachedVelocity)
     {
+        if (Main.Instance.ModHelper.Interaction.ModExists("Raicuparta.QuantumSpaceBuddies"))
+        {
+            // QSB already does all this, so don't run it again if it's installed.
+            return true;
+        }
+
         if (__instance._suspended)
         {
             if (__instance.RunningKinematicSimulation())

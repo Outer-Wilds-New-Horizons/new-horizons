@@ -471,12 +471,12 @@ namespace NewHorizons.Builder.Props.TranslatorText
 
             if (info.arcInfo != null && info.arcInfo.Count() != dict.Values.Count())
             {
-                NHLogger.LogError($"Can't make NomaiWallText, arcInfo length [{info.arcInfo.Count()}] doesn't equal text entries [{dict.Values.Count()}]");
+                NHLogger.LogError($"Can't make NomaiWallText, arcInfo length [{info.arcInfo.Count()}] doesn't equal number of TextBlocks [{dict.Values.Count()}] in the xml");
                 return;
             }
 
             ArcCacheData[] cachedData = null;
-            if (nhBody.Cache?.ContainsKey(cacheKey) ?? false)
+            if (nhBody?.Cache?.ContainsKey(cacheKey) ?? false)
                 cachedData = nhBody.Cache.Get<ArcCacheData[]>(cacheKey);
 
             var arranger = nomaiWallText.gameObject.AddComponent<NomaiTextArcArranger>();

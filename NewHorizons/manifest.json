@@ -1,13 +1,13 @@
 {
   "$schema": "https://raw.githubusercontent.com/amazingalek/owml/master/schemas/manifest_schema.json",
   "filename": "NewHorizons.dll",
-  "author": "xen, Bwc9876, clay, MegaPiggy, John, Trifid, Hawkbar, Book",
+  "author": "xen, Bwc9876, JohnCorby, MegaPiggy, Clay, Trifid, and friends",
   "name": "New Horizons",
   "uniqueName": "xen.NewHorizons",
-  "version": "1.18.4",
-  "owmlVersion": "2.9.8",
-  "dependencies": [ "JohnCorby.VanillaFix", "_nebula.MenuFramework", "xen.CommonCameraUtility", "dgarro.CustomShipLogModes" ],
-  "conflicts": [ "Raicuparta.QuantumSpaceBuddies", "PacificEngine.OW_CommonResources" ],
+  "version": "1.22.7",
+  "owmlVersion": "2.12.1",
+  "dependencies": [ "JohnCorby.VanillaFix", "xen.CommonCameraUtility", "dgarro.CustomShipLogModes" ],
+  "conflicts": [ "PacificEngine.OW_CommonResources" ],
   "pathsToPreserve": [ "planets", "systems", "translations" ],
-  "donateLink": "https://www.patreon.com/ownh"
+  "donateLink": "https://www.patreon.com/xen42"
 }

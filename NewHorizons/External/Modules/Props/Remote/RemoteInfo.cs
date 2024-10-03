@@ -23,11 +23,11 @@ namespace NewHorizons.External.Modules.Props.Remote
         /// <summary>
         /// Camera platform that the stones can project to and from
         /// </summary>
-        public PlatformInfo platform;
+        public RemotePlatformInfo platform;
 
         /// <summary>
         /// Projection stones
         /// </summary>
-        public StoneInfo[] stones;
+        public ProjectionStoneInfo[] stones;
     }
 }

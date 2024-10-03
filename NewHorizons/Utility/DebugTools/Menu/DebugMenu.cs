@@ -5,6 +5,7 @@ using NewHorizons.Utility.OWML;
 using Newtonsoft.Json;
 using OWML.Common;
 using OWML.Common.Menus;
+using OWML.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,7 +16,7 @@ namespace NewHorizons.Utility.DebugTools.Menu
 {
     class DebugMenu : MonoBehaviour
     {
-        private static IModButton pauseMenuButton;
+        private static SubmitAction pauseMenuButton;
 
         public GUIStyle _editorMenuStyle;
         public GUIStyle _tabBarStyle;
@@ -23,7 +24,6 @@ namespace NewHorizons.Utility.DebugTools.Menu
         internal Vector2 EditorMenuSize = new Vector2(600, 900);
         bool menuOpen = false;
         static bool openMenuOnPause;
-        static bool staticInitialized;
 
         // Menu params
         internal static IModBehaviour loadedMod = null;
@@ -34,6 +34,8 @@ namespace NewHorizons.Utility.DebugTools.Menu
         // Submenus
         private List<DebugSubmenu> submenus;
         private int activeSubmenu = 0;
+
+        private static DebugMenu _instance;
         
         internal static JsonSerializerSettings jsonSettings = new JsonSerializerSettings
         {
@@ -55,28 +57,13 @@ namespace NewHorizons.Utility.DebugTools.Menu
 
         private void Start()
         {
-            if (!staticInitialized)
-            {
-                staticInitialized = true;
+            _instance = this;
 
-                Main.Instance.ModHelper.Menus.PauseMenu.OnInit += PauseMenuInitHook;
-                Main.Instance.ModHelper.Menus.PauseMenu.OnClosed += CloseMenu;
-                Main.Instance.ModHelper.Menus.PauseMenu.OnOpened += RestoreMenuOpennessState;
+            Main.Instance.ModHelper.MenuHelper.PauseMenuManager.PauseMenuOpened += OnOpenMenu;
+            Main.Instance.ModHelper.MenuHelper.PauseMenuManager.PauseMenuClosed += OnCloseMenu;
+            Main.Instance.OnChangeStarSystem.AddListener(OnChangeStarSystem);
 
-                PauseMenuInitHook();
-
-                Main.Instance.OnChangeStarSystem.AddListener((string s) => {
-                    if (saveButtonUnlocked)
-                    {
-                        SaveLoadedConfigsForRecentSystem();
-                        saveButtonUnlocked = false;
-                    }
-                });
-            }
-            else
-            {
-                InitMenu();
-            }
+            InitMenu();
 
             if (loadedMod != null)
             {
@@ -84,26 +71,38 @@ namespace NewHorizons.Utility.DebugTools.Menu
             }
         }
 
-        private void PauseMenuInitHook()
+        public void OnDestroy()
         {
-            pauseMenuButton = Main.Instance.ModHelper.Menus.PauseMenu.OptionsButton.Duplicate(TranslationHandler.GetTranslation("Toggle Dev Tools Menu", TranslationHandler.TextType.UI).ToUpper());
-            InitMenu();
+            Main.Instance.ModHelper.MenuHelper.PauseMenuManager.PauseMenuOpened -= OnOpenMenu;
+            Main.Instance.ModHelper.MenuHelper.PauseMenuManager.PauseMenuClosed -= OnCloseMenu;
+            Main.Instance.OnChangeStarSystem.RemoveListener(OnChangeStarSystem);
+        }
+
+        private void OnChangeStarSystem(string _)
+        {
+            if (saveButtonUnlocked)
+            {
+                SaveLoadedConfigsForRecentSystem();
+                saveButtonUnlocked = false;
+            }
+        }
+
+        public static void InitializePauseMenu(IPauseMenuManager pauseMenu)
+        {
+            pauseMenuButton = pauseMenu.MakeSimpleButton(TranslationHandler.GetTranslation("Toggle Dev Tools Menu", TranslationHandler.TextType.UI).ToUpperFixed(), 3, true);
+            _instance?.InitMenu();
         }
 
         public static void UpdatePauseMenuButton()
         {
-            if (pauseMenuButton != null)
-            {
-                if (Main.Debug) pauseMenuButton.Show();
-                else pauseMenuButton.Hide();
-            }
+            pauseMenuButton?.SetButtonVisible(Main.Debug);
         }
 
-        private void RestoreMenuOpennessState() { menuOpen = openMenuOnPause; }
+        private void OnOpenMenu() { menuOpen = openMenuOnPause; }
 
         private void ToggleMenu() { menuOpen = !menuOpen; openMenuOnPause = !openMenuOnPause; }
 
-        private void CloseMenu() { menuOpen = false; }
+        private void OnCloseMenu() { menuOpen = false; }
 
         private void OnGUI()
         {
@@ -284,7 +283,7 @@ namespace NewHorizons.Utility.DebugTools.Menu
             UpdatePauseMenuButton();
 
             // TODO: figure out how to clear this event list so that we don't pile up useless instances of the DebugMenu that can't get garbage collected
-            pauseMenuButton.OnClick += ToggleMenu;
+            pauseMenuButton.OnSubmitAction += ToggleMenu;
 
             submenus.ForEach(submenu => submenu.OnInit(this));
 

@@ -1,4 +1,6 @@
 using HarmonyLib;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace NewHorizons.Patches
 {
@@ -107,6 +109,13 @@ namespace NewHorizons.Patches
             _hollowsLantern = null;
             _mapSatellite = null;
             _sunStation = null;
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(nameof(Locator.GetAudioSignals))]
+        public static void Locator_GetAudioSignals(ref List<AudioSignal> __result)
+        {
+            __result = __result.Where(signal => signal.IsActive()).ToList();
         }
     }
 }

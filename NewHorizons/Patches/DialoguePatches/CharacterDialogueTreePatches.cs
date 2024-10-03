@@ -24,7 +24,10 @@ public static class CharacterDialogueTreePatches
 
     private static void OnAttachPlayerToPoint(this CharacterDialogueTree characterDialogueTree, OWRigidbody rigidbody)
     {
-        characterDialogueTree.EndConversation();
+        if (characterDialogueTree.InConversation())
+        {
+            characterDialogueTree.EndConversation();
+        }
     }
 
     [HarmonyPostfix]

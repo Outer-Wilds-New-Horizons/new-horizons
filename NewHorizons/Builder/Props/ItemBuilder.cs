@@ -51,6 +51,10 @@ namespace NewHorizons.Builder.Props
             item.DisplayName = itemName;
             item.ItemType = itemType;
             item.Droppable = info.droppable;
+            item.HoldOffset = info.holdOffset ?? Vector3.zero;
+            item.HoldRotation = info.holdRotation ?? Vector3.zero;
+            item.SocketOffset = info.socketOffset ?? Vector3.zero;
+            item.SocketRotation = info.socketRotation ?? Vector3.zero;
             if (!string.IsNullOrEmpty(info.pickupAudio))
             {
                 item.PickupAudio = AudioTypeHandler.GetAudioType(info.pickupAudio, mod);
@@ -78,6 +82,12 @@ namespace NewHorizons.Builder.Props
             item.PickupCondition = info.pickupCondition;
             item.ClearPickupConditionOnDrop = info.clearPickupConditionOnDrop;
             item.PickupFact = info.pickupFact;
+
+            if (info.colliderRadius > 0f)
+            {
+                go.AddComponent<SphereCollider>().radius = info.colliderRadius;
+                go.GetAddComponent<OWCollider>();
+            }
 
             Delay.FireOnNextUpdate(() =>
             {

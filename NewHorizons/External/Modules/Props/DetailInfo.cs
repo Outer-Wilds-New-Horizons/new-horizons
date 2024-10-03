@@ -54,7 +54,9 @@ namespace NewHorizons.External.Modules.Props
         public string quantumGroupID;
 
         /// <summary>
-        /// Should this detail stay loaded even if you're outside the sector (good for very large props)
+        /// Should this detail stay loaded (visible and collideable) even if you're outside the sector (good for very large props)?
+        /// Also makes this detail visible on the map.
+        /// Most logic/behavior scripts will still only work inside the sector, as most of those scripts break if a sector is not provided.
         /// </summary>
         public bool keepLoaded;
 

@@ -101,6 +101,7 @@ namespace NewHorizons.Builder.Props
             GameObject prop;
             bool isItem;
             bool invalidComponentFound = false;
+            bool isFromAssetBundle = !string.IsNullOrEmpty(detail.assetBundle);
 
             // We save copies with all their components fixed, good if the user is placing the same detail more than once
             if (detail?.path != null && _fixedPrefabCache.TryGetValue((sector, detail.path), out var storedPrefab))
@@ -139,7 +140,29 @@ namespace NewHorizons.Builder.Props
                         }
                         else
                         {
-                            FixSectoredComponent(component, sector, existingSectors, detail.keepLoaded);
+                            // Fix cull groups only when not from an asset bundle (because then they're there on purpose!)
+                            // keepLoaded should remove existing groups
+                            // renderers/colliders get enabled later so we dont have to do that here
+                            if (detail.keepLoaded && !isFromAssetBundle && component is SectorCullGroup or SectorCollisionGroup or SectorLightsCullGroup)
+                            {
+                                UnityEngine.Object.DestroyImmediate(component);
+                                continue;
+                            }
+
+                            FixSectoredComponent(component, sector, existingSectors);
+                        }
+
+                        // Asset bundle is a real string -> Object loaded from unity
+                        // If they're adding dialogue we have to manually register the xml text
+                        if (isFromAssetBundle && component is CharacterDialogueTree dialogue)
+                        {
+                            DialogueBuilder.HandleUnityCreatedDialogue(dialogue);
+                        }
+
+                        // copied details need their lanterns fixed
+                        if (!isFromAssetBundle && component is DreamLanternController lantern)
+                        {
+                            lantern.gameObject.AddComponent<DreamLanternControllerFixer>();
                         }
 
                         FixComponent(component, go, detail.ignoreSun);
@@ -171,6 +194,11 @@ namespace NewHorizons.Builder.Props
             if (detail.item != null)
             {
                 ItemBuilder.MakeItem(prop, go, sector, detail.item, mod);
+                isItem = true;
+                if (detail.hasPhysics)
+                {
+                    NHLogger.LogWarning($"An item with the path {detail.path} has both '{nameof(DetailInfo.hasPhysics)}' and '{nameof(DetailInfo.item)}' set. This will usually result in undesirable behavior.");
+                }
             }
 
             if (detail.itemSocket != null)
@@ -266,16 +294,8 @@ namespace NewHorizons.Builder.Props
         /// <summary>
         /// Fix components that have sectors. Has a specific fix if there is a VisionTorchItem on the object.
         /// </summary>
-        private static void FixSectoredComponent(Component component, Sector sector, HashSet<Sector> existingSectors, bool keepLoaded)
+        private static void FixSectoredComponent(Component component, Sector sector, HashSet<Sector> existingSectors)
         {
-            // keepLoaded should remove existing groups
-            // renderers/colliders get enabled later so we dont have to do that here
-            if (keepLoaded && component is SectorCullGroup or SectorCollisionGroup or SectorLightsCullGroup)
-            {
-                UnityEngine.Object.DestroyImmediate(component);
-                return;
-            }
-
             // fix Sector stuff, eg SectorCullGroup (without this, props that have a SectorCullGroup component will become invisible inappropriately)
             if (component is ISectorGroup sectorGroup && !existingSectors.Contains(sectorGroup.GetSector()))
             {
@@ -283,26 +303,8 @@ namespace NewHorizons.Builder.Props
             }
 
             // Not doing else if here because idk if any of the classes below implement ISectorGroup
-            
-            // Null check else shuttles controls break
-            // parent sector is always null before Awake so this code actually never runs lol
-            if (component is Sector s && s.GetParentSector() != null && !existingSectors.Contains(s.GetParentSector()))
-            {
-                s.SetParentSector(sector);
-            }
 
-            else if (component is SectorCullGroup sectorCullGroup)
-            {
-                sectorCullGroup._controllingProxy = null;
-                
-                // fixes sector cull group deactivating renderers on map view enter and fast foward
-                // TODO: does this actually work? what? how?
-                sectorCullGroup._inMapView = false;
-                sectorCullGroup._isFastForwarding = false;
-                sectorCullGroup.SetVisible(sectorCullGroup.ShouldBeVisible(), true, false);
-            }
-
-            else if(component is SectoredMonoBehaviour behaviour && !existingSectors.Contains(behaviour._sector))
+            if(component is SectoredMonoBehaviour behaviour && !existingSectors.Contains(behaviour._sector))
             {
                 // not using SetSector here because it registers the events twice
                 // perhaps this happens with ISectorGroup.SetSector or Sector.SetParentSector too? idk and nothing seems to break because of it yet
@@ -421,6 +423,11 @@ namespace NewHorizons.Builder.Props
             {
                 component.gameObject.AddComponent<AnglerAnimFixer>();
             }
+            // Add custom logic to NH-spawned rafts to handle fluid changes
+            else if (component is RaftController raft)
+            {
+                component.gameObject.AddComponent<NHRaftController>();
+            }
         }
 
         /// <summary>
@@ -437,7 +444,7 @@ namespace NewHorizons.Builder.Props
 
                 NHLogger.LogVerbose("Fixing anglerfish animation");
 
-                // Remove any event reference to its angler
+                // Remove any event reference to its angler so that they dont change its state
                 if (angler._anglerfishController)
                 {
                     angler._anglerfishController.OnChangeAnglerState -= angler.OnChangeAnglerState;
@@ -445,7 +452,8 @@ namespace NewHorizons.Builder.Props
                     angler._anglerfishController.OnAnglerSuspended -= angler.OnAnglerSuspended;
                     angler._anglerfishController.OnAnglerUnsuspended -= angler.OnAnglerUnsuspended;
                 }
-                angler.enabled = true;
+                // Disable the angler anim controller because we don't want Update or LateUpdate to run, just need it to set the initial Animator state
+                angler.enabled = false;
                 angler.OnChangeAnglerState(AnglerfishController.AnglerState.Lurking);
                 
                 Destroy(this);
@@ -496,6 +504,54 @@ namespace NewHorizons.Builder.Props
                 var torchItem = GetComponent<VisionTorchItem>();
                 torchItem.mindSlideProjector._mindProjectorImageEffect = Locator.GetPlayerCamera().GetComponent<MindProjectorImageEffect>();
 
+                Destroy(this);
+            }
+        }
+
+        /// <summary>
+        /// need component here to run after DreamLanternController.Awake
+        /// </summary>
+        [RequireComponent(typeof(DreamLanternController))]
+        private class DreamLanternControllerFixer : MonoBehaviour
+        {
+            private void Start()
+            {
+                // based on https://github.com/Bwc9876/OW-Amogus/blob/master/Amogus/LanternCreator.cs
+                // needed to fix petals looking backwards, among other things
+
+                var lantern = GetComponent<DreamLanternController>();
+
+                // this is set in Awake, we wanna override it
+
+                // Manually copied these values from a artifact lantern so that we don't have to find it (works in Eye)
+                lantern._origLensFlareBrightness = 0f;
+                lantern._focuserPetalsBaseEulerAngles = new Vector3[] 
+                { 
+                    new Vector3(0.7f, 270.0f, 357.5f), 
+                    new Vector3(288.7f, 270.1f, 357.4f), 
+                    new Vector3(323.3f, 90.0f, 177.5f),
+                    new Vector3(35.3f, 90.0f, 177.5f), 
+                    new Vector3(72.7f, 270.1f, 357.5f) 
+                };
+                lantern._dirtyFlag_focus = true;
+                lantern._concealerRootsBaseScale = new Vector3[] 
+                {
+                    Vector3.one,
+                    Vector3.one,
+                    Vector3.one
+                };
+                lantern._concealerCoversStartPos = new Vector3[] 
+                {
+                    new Vector3(0.0f, 0.0f, 0.0f),
+                    new Vector3(0.0f, -0.1f, 0.0f),
+                    new Vector3(0.0f, -0.2f, 0.0f),
+                    new Vector3(0.0f, 0.2f, 0.0f),
+                    new Vector3(0.0f, 0.1f, 0.0f),
+                    new Vector3(0.0f, 0.0f, 0.0f)
+                };
+                lantern._dirtyFlag_concealment = true;
+                lantern.UpdateVisuals();
+                
                 Destroy(this);
             }
         }

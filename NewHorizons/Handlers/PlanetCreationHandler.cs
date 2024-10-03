@@ -3,15 +3,19 @@ using NewHorizons.Builder.Body;
 using NewHorizons.Builder.General;
 using NewHorizons.Builder.Orbital;
 using NewHorizons.Builder.Props;
+using NewHorizons.Builder.ShipLog;
 using NewHorizons.Builder.Volumes;
 using NewHorizons.Components.Orbital;
 using NewHorizons.Components.Quantum;
 using NewHorizons.Components.Stars;
 using NewHorizons.External;
 using NewHorizons.OtherMods.OWRichPresence;
+using NewHorizons.Streaming;
 using NewHorizons.Utility;
-using NewHorizons.Utility.OWML;
 using NewHorizons.Utility.OuterWilds;
+using NewHorizons.Utility.OWML;
+using Newtonsoft.Json;
+using OWML.ModHelper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -345,6 +349,13 @@ namespace NewHorizons.Handlers
             // Do stuff that's shared between generating new planets and updating old ones
             go = SharedGenerateBody(body, go, sector, rb);
 
+            if (body.Config.ShipLog?.mapMode != null)
+            {
+                MapModeBuilder.TryReplaceExistingMapModeIcon(body, body.Mod as ModBehaviour, body.Config.ShipLog.mapMode);
+            }
+
+            body.Object = go;
+
             return go;
         }
 
@@ -367,12 +378,12 @@ namespace NewHorizons.Handlers
             go.SetActive(false);
 
             body.Config.Base.showMinimap = false;
-            body.Config.Base.hasMapMarker = false;
+            body.Config.MapMarker.enabled = false;
 
             const float sphereOfInfluence = 2000f;
             
             var owRigidBody = RigidBodyBuilder.Make(go, sphereOfInfluence, body.Config);
-            var ao = AstroObjectBuilder.Make(go, null, body.Config, false);
+            var ao = AstroObjectBuilder.Make(go, null, body, false);
 
             var sector = SectorBuilder.Make(go, owRigidBody, sphereOfInfluence);
             ao._rootSector = sector;
@@ -448,7 +459,7 @@ namespace NewHorizons.Handlers
             var sphereOfInfluence = GetSphereOfInfluence(body);
             
             var owRigidBody = RigidBodyBuilder.Make(go, sphereOfInfluence, body.Config);
-            var ao = AstroObjectBuilder.Make(go, primaryBody, body.Config, false);
+            var ao = AstroObjectBuilder.Make(go, primaryBody, body, false);
 
             var sector = SectorBuilder.Make(go, owRigidBody, sphereOfInfluence * 2f);
             ao._rootSector = sector;
@@ -460,7 +471,7 @@ namespace NewHorizons.Handlers
 
             RFVolumeBuilder.Make(go, owRigidBody, sphereOfInfluence, body.Config.ReferenceFrame);
 
-            if (body.Config.Base.hasMapMarker)
+            if (body.Config.MapMarker.enabled)
             {
                 MarkerBuilder.Make(go, body.Config.name, body.Config);
             }
@@ -791,7 +802,7 @@ namespace NewHorizons.Handlers
                 }
 
                 // Just destroy the existing AO after copying everything over
-                var newAO = AstroObjectBuilder.Make(go, primary, body.Config, true);
+                var newAO = AstroObjectBuilder.Make(go, primary, body, true);
                 newAO._gravityVolume = ao._gravityVolume;
                 newAO._moon = ao._moon;
                 newAO._name = ao._name;
@@ -931,7 +942,7 @@ namespace NewHorizons.Handlers
             }
 
             // Uses the ratio of the interlopers furthest point to what the base game considers the edge of the solar system
-            var distanceToCenter = go.transform.position.magnitude * (24000 / 30000f);
+            var distanceToCenter = go.transform.position.magnitude / (24000 / 30000f);
             if (distanceToCenter > SolarSystemRadius)
             {
                 SolarSystemRadius = distanceToCenter;

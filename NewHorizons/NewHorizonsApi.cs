@@ -28,7 +28,6 @@ using static NewHorizons.External.Modules.ShipLogModule;
 
 namespace NewHorizons
 {
-
     public class NewHorizonsApi : INewHorizons
     {
         [Obsolete("Create(Dictionary<string, object> config) is deprecated, please use LoadConfigs(IModBehaviour mod) instead")]
@@ -144,9 +143,11 @@ namespace NewHorizons
         public object QueryBody(Type outType, string bodyName, string jsonPath)
         {
             var planet = Main.BodyDict[Main.Instance.CurrentStarSystem].Find((b) => b.Config.name == bodyName);
-            return planet == null
-                ? null
-                : QueryJson(outType, Path.Combine(planet.Mod.ModHelper.Manifest.ModFolderPath, planet.RelativePath), jsonPath);
+            if (planet == null){
+                NHLogger.LogError($"Could not find planet with body name {bodyName}.");
+				return null;
+			}
+			return QueryJson(outType, Path.Combine(planet.Mod.ModHelper.Manifest.ModFolderPath, planet.RelativePath), jsonPath);
         }
 
         public T QueryBody<T>(string bodyName, string jsonPath)
@@ -337,5 +338,7 @@ namespace NewHorizons
         public string GetTranslationForUI(string text) => TranslationHandler.GetTranslation(text, TranslationHandler.TextType.UI);
 
         public string GetTranslationForOtherText(string text) => TranslationHandler.GetTranslation(text, TranslationHandler.TextType.OTHER);
+
+        public void AddSubtitle(IModBehaviour mod, string filePath) => SubtitlesHandler.RegisterAdditionalSubtitle(mod, filePath);
     }
 }

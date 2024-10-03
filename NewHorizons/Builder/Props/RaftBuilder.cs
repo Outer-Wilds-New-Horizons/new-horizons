@@ -1,3 +1,4 @@
+using NewHorizons.Components.Props;
 using NewHorizons.External.Modules.Props.EchoesOfTheEye;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
@@ -72,6 +73,8 @@ namespace NewHorizons.Builder.Props
                 lightSensor._sector = sector;
                 sector.OnSectorOccupantsUpdated += lightSensor.OnSectorOccupantsUpdated;
             }
+
+            var nhRaftController = raftObject.AddComponent<NHRaftController>();
 
             var achievementObject = new GameObject("AchievementVolume");
             achievementObject.transform.SetParent(raftObject.transform, false);
