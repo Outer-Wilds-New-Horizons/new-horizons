@@ -909,8 +909,15 @@ namespace NewHorizons
         {
             if (!SystemDict.ContainsKey(config.starSystem))
             {
-                NHLogger.LogError($"System config for {config.starSystem} does not exist?");
-                return null;
+                var starSystemConfig = new StarSystemConfig() { name = config.starSystem };
+                starSystemConfig.Migrate();
+                starSystemConfig.FixCoordinates();
+
+                var system = new NewHorizonsSystem(config.starSystem, starSystemConfig, $"", mod);
+
+                SystemDict.Add(config.starSystem, system);
+
+                BodyDict.Add(config.starSystem, new List<NewHorizonsBody>());
             }
 
             // Has to happen after we make sure theres a system config
