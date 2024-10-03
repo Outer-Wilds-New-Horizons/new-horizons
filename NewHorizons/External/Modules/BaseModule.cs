@@ -58,6 +58,8 @@ namespace NewHorizons.External.Modules
 
         /// <summary>
         /// A scale height used for a number of things. Should be the approximate radius of the body.
+        /// 
+        /// Affected settings include: Base sector size, proxy body scaling, surface gravity
         /// </summary>
         public float surfaceSize;
 
