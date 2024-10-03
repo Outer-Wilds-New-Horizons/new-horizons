@@ -1,5 +1,6 @@
 using NewHorizons.Builder.General;
 using NewHorizons.Components;
+using NewHorizons.Components.Orbital;
 using NewHorizons.Components.Props;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.Handlers;
@@ -374,6 +375,12 @@ namespace NewHorizons.Builder.Props
             // Fix anglerfish speed on orbiting planets
             else if (component is AnglerfishController angler)
             {
+                if (planetGO?.GetComponent<NHAstroObject>() is NHAstroObject nhao && !nhao.invulnerableToSun)
+                {
+                    // Has a fluid detector, will go gorp (#830)
+                    NHLogger.LogWarning("Having an anglerfish on a planet that has a fluid detector can lead to things breaking!");
+                }
+
                 try
                 {
                     angler._chaseSpeed += OWPhysics.CalculateOrbitVelocity(planetGO.GetAttachedOWRigidbody(), planetGO.GetComponent<AstroObject>().GetPrimaryBody().GetAttachedOWRigidbody()).magnitude;
