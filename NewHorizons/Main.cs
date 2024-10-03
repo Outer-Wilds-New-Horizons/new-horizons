@@ -585,8 +585,15 @@ namespace NewHorizons
 
 
         #region Load
-        public void LoadStarSystemConfig(string starSystemName, StarSystemConfig starSystemConfig, string relativePath, IModBehaviour mod)
+        public void LoadStarSystemConfig(StarSystemConfig starSystemConfig, string relativePath, IModBehaviour mod)
         {
+            if (string.IsNullOrEmpty(starSystemConfig.name))
+            {
+                starSystemConfig.name = Path.GetFileNameWithoutExtension(relativePath);
+            }
+
+            var starSystemName = starSystemConfig.name;
+
             starSystemConfig.Migrate();
             starSystemConfig.FixCoordinates();
 
@@ -639,13 +646,12 @@ namespace NewHorizons
 
                     foreach (var file in systemFiles)
                     {
-                        var starSystemName = Path.GetFileNameWithoutExtension(file);
-
-                        NHLogger.LogVerbose($"Loading system {starSystemName}");
-
                         var relativePath = file.Replace(folder, "");
+
+                        NHLogger.LogVerbose($"Loading system {Path.GetFileNameWithoutExtension(relativePath)}");
+
                         var starSystemConfig = mod.ModHelper.Storage.Load<StarSystemConfig>(relativePath, false);
-                        LoadStarSystemConfig(starSystemName, starSystemConfig, relativePath, mod);
+                        LoadStarSystemConfig(starSystemConfig, relativePath, mod);
                     }
                 }
                 if (Directory.Exists(planetsFolder))
@@ -771,19 +777,8 @@ namespace NewHorizons
         {
             if (!SystemDict.ContainsKey(config.starSystem))
             {
-                // Since we didn't load it earlier there shouldn't be a star system config
-                var starSystemConfig = mod.ModHelper.Storage.Load<StarSystemConfig>(Path.Combine("systems", config.starSystem + ".json"), false);
-                if (starSystemConfig == null) starSystemConfig = new StarSystemConfig();
-                else NHLogger.LogWarning($"Loaded system config for {config.starSystem}. Why wasn't this loaded earlier?");
-
-                starSystemConfig.Migrate();
-                starSystemConfig.FixCoordinates();
-
-                var system = new NewHorizonsSystem(config.starSystem, starSystemConfig, $"", mod);
-
-                SystemDict.Add(config.starSystem, system);
-
-                BodyDict.Add(config.starSystem, new List<NewHorizonsBody>());
+                NHLogger.LogError($"System config for {config.starSystem} does not exist?");
+                return null;
             }
 
             // Has to happen after we make sure theres a system config
