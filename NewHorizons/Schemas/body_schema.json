@@ -1368,7 +1368,7 @@
         },
         "keepLoaded": {
           "type": "boolean",
-          "description": "Should this detail stay loaded (visible and collideable) even if you're outside the sector (good for very large props)?\nAlso makes this detail visible on the map.\nMost logic/behavior scripts will still only work inside the sector, as most of those scripts break if a sector is not provided."
+          "description": "Should this detail stay loaded (visible and collideable) even if you're outside the sector (good for very large props)?\nAlso makes this detail visible on the map.\nKeeping many props loaded is bad for performance so use this only when it's actually relevant\nMost logic/behavior scripts will still only work inside the sector, as most of those scripts break if a sector is not provided."
         },
         "hasPhysics": {
           "type": "boolean",
