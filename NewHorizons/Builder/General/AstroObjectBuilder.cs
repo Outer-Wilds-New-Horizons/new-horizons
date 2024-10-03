@@ -8,6 +8,8 @@ namespace NewHorizons.Builder.General
 {
     public static class AstroObjectBuilder
     {
+        public static GameObject CenterOfUniverse { get; private set; }
+
         public static NHAstroObject Make(GameObject body, AstroObject primaryBody, NewHorizonsBody nhBody, bool isVanilla)
         {
             NHAstroObject astroObject = body.AddComponent<NHAstroObject>();
@@ -62,6 +64,8 @@ namespace NewHorizons.Builder.General
 
             if (config.Base.centerOfSolarSystem)
             {
+                CenterOfUniverse = body;
+
                 NHLogger.Log($"Setting center of universe to {config.name}");
 
                 Delay.RunWhen(
