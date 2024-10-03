@@ -5,7 +5,7 @@ on:
     inputs:
       schemas_artifact:
         description: "Name of the artifact that has updated schemas, set to `null` to not update"
-        default: 'null'
+        default: "null"
         required: false
         type: string
   push:
@@ -13,77 +13,46 @@ on:
     paths:
       - docs/**
       - NewHorizons/Schemas/*
-
-env:
-  URL_PREFIX: '/'
-  PIPENV_VENV_IN_PROJECT: 1
+      - .github/workflows/docs_build.yml
 
 permissions:
   contents: read
   pages: write
   id-token: write
-  
+
 concurrency:
   group: "pages"
   cancel-in-progress: true
 
 jobs:
   build:
-    name: Build Docs
     runs-on: ubuntu-latest
-    
     steps:
-      - uses: actions/checkout@v3
-      
-      - run: mkdir ./.venv
-      
-      - run: cp -r docs/** .
-          
-      - name: Cache Dependencies
-        uses: actions/cache@v3
-        id: cache-dependencies
-        with:
-          path: ./.venv
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/Pipfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pipenv
-
-      - name: Install dependecies
-        uses: VaultVulp/action-pipenv@v2.0.1
-        with:
-          command: install --dev
-
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Download Schemas
         if: ${{ inputs.schemas_artifact != 'null' }}
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.schemas_artifact }}
           path: NewHorizons/Schemas
-          
-      - name: Copy Schemas
-        run: cp -rf NewHorizons/Schemas content/pages/
-          
+      - name: Move Stuff Becuase PNPM Can't FUCKING INSTALL IF YOU DONT HAVE PACKAGE JSON IN THE ROOT
+        run: |
+          cp docs/package.json .
+          cp docs/pnpm-lock.yaml .
       - name: Build Site
-        uses: VaultVulp/action-pipenv@v2.0.1
+        uses: withastro/action@v2
         with:
-          command: run menagerie generate
-          
-      - name: Upload Artifact
-        if: success() && github.ref == 'refs/heads/main'
-        uses: actions/upload-pages-artifact@v1
-        with:
-          path: out/
-          
+          path: ./docs
+          package-manager: pnpm@latest
+
   deploy:
+    needs: build
+    runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    name: Deploy Docs
-    needs: build
-    if: github.ref == 'refs/heads/main'
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v1
-          
+        uses: actions/deploy-pages@v4

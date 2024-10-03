@@ -1,18 +1,18 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!-- Ship Log Entries -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
     <!-- Astro Object Entry Info -->
     <xs:element name="AstroObjectEntry">
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="ID" type="xs:string">
+                <xs:element name="ID" type="xs:string" minOccurs="1" maxOccurs="1">
                     <xs:annotation>
                         <xs:documentation>
                             ID of the planet these entries are for
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>
-                <xs:element name="Entry" type="Entry" maxOccurs="unbounded">
+                <xs:element name="Entry" type="Entry" minOccurs="0" maxOccurs="unbounded">
                     <xs:annotation>
                         <xs:documentation>
                             A set of entries that belong to this planet
@@ -29,49 +29,56 @@
     <!-- Entry Info -->
     <xs:complexType name="Entry">
         <xs:sequence>
-            <xs:element name="ID" type="xs:string">
+            <xs:element name="ID" type="xs:string" minOccurs="1" maxOccurs="1">
                 <xs:annotation>
                     <xs:documentation>
                         The ID of this entry
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="Name" type="xs:string">
+            <xs:element name="Name" type="xs:string" minOccurs="1" maxOccurs="1">
                 <xs:annotation>
                     <xs:documentation>
                         Name of this entry
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="Curiosity" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="Curiosity" type="xs:string" minOccurs="0" maxOccurs="1">
                 <xs:annotation>
                     <xs:documentation>
                         The curiosity this entry belongs to
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="IsCuriosity" type="empty" minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="IsCuriosity" type="empty" minOccurs="0" maxOccurs="1">
                 <xs:annotation>
                     <xs:documentation>
                         Whether this entry is a curiosity
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="IgnoreMoreToExplore" type="empty" minOccurs="0">
+            <xs:element name="IgnoreMoreToExplore" type="empty" minOccurs="0" maxOccurs="1">
                 <xs:annotation>
                     <xs:documentation>
                         Whether to hide the "More To Explore" text on this entry
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="IgnoreMoreToExploreCondition" type="xs:string" minOccurs="0">
+            <xs:element name="ParentIgnoreNotRevealed" type="empty" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>
+                        When the parent of this entry is determining whether its "More To Explore" text should appear, this child entry will be ignored.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="IgnoreMoreToExploreCondition" type="xs:string" minOccurs="0" maxOccurs="1">
                 <xs:annotation>
                     <xs:documentation>
                         Ignore more to explore if a persistent condition is `true`
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="AltPhotoCondition" type="xs:string" minOccurs="0">
+            <xs:element name="AltPhotoCondition" type="xs:string" minOccurs="0" maxOccurs="1">
                 <xs:annotation>
                     <xs:documentation>
                         If this fact is revealed, show the Alt picture
@@ -105,35 +112,35 @@
     <!-- Rumor Fact Info -->
     <xs:complexType name="RumorFact">
         <xs:sequence>
-            <xs:element name="ID" type="xs:string">
+            <xs:element name="ID" type="xs:string" minOccurs="1" maxOccurs="1">
                 <xs:annotation>
                     <xs:documentation>
                         The ID of this rumor fact
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="SourceID" type="xs:string" minOccurs="0">
+            <xs:element name="SourceID" type="xs:string" minOccurs="0" maxOccurs="1">
                 <xs:annotation>
                     <xs:documentation>
                         The source of this rumor, this draws a line in detective mode
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="RumorName" type="xs:string" minOccurs="0">
+            <xs:element name="RumorName" type="xs:string" minOccurs="0" maxOccurs="1">
                 <xs:annotation>
                     <xs:documentation>
                         Displays on the card in detective mode if no ExploreFacts have been revealed on the parent entry
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="RumorNamePriority" type="xs:int" minOccurs="0">
+            <xs:element name="RumorNamePriority" type="xs:int" minOccurs="0" maxOccurs="1">
                 <xs:annotation>
                     <xs:documentation>
                         Priority over other RumorFacts to appear as the entry card's title
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="IgnoreMoreToExplore" type="empty" minOccurs="0">
+            <xs:element name="IgnoreMoreToExplore" type="empty" minOccurs="0" maxOccurs="1">
                 <xs:annotation>
                     <xs:documentation>
                         Whether to hide the "More to explore" on this rumor fact
@@ -147,14 +154,14 @@
     <!-- Explore Fact Info -->
     <xs:complexType name="ExploreFact">
         <xs:sequence>
-            <xs:element name="ID" type="xs:string">
+            <xs:element name="ID" type="xs:string" minOccurs="1" maxOccurs="1">
                 <xs:annotation>
                     <xs:documentation>
                         The ID of this explore fact
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="IgnoreMoreToExplore" type="empty" minOccurs="0">
+            <xs:element name="IgnoreMoreToExplore" type="empty" minOccurs="0" maxOccurs="1">
                 <xs:annotation>
                     <xs:documentation>
                         Whether to hide the "More to explore" text for this fact
@@ -168,14 +175,14 @@
     <!-- Text Data Group -->
     <xs:group name="TextData">
         <xs:sequence>
-            <xs:element name="Text" type="xs:string">
+            <xs:element name="Text" type="xs:string" minOccurs="1" maxOccurs="1">
                 <xs:annotation>
                     <xs:documentation>
                         The text content for this fact
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="AltText" minOccurs="0">
+            <xs:element name="AltText" minOccurs="0" maxOccurs="1">
                 <xs:annotation>
                     <xs:documentation>
                         Display alt-text given a certain fact is revealed
@@ -183,14 +190,14 @@
                 </xs:annotation>
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element name="Text" type="xs:string">
+                        <xs:element name="Text" type="xs:string" minOccurs="1" maxOccurs="1">
                             <xs:annotation>
                                 <xs:documentation>
                                     The text to display if the condition is met
                                 </xs:documentation>
                             </xs:annotation>
                         </xs:element>
-                        <xs:element name="Condition" type="xs:string">
+                        <xs:element name="Condition" type="xs:string" minOccurs="1" maxOccurs="unbounded">
                             <xs:annotation>
                                 <xs:documentation>
                                     The condition that needs to be fulfilled to have the alt text be displayed

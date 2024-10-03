@@ -1,0 +1,15 @@
+---
+import { SchemaTools } from '@/util/schema_utils';
+import Content from '@/components/Schemas/Content.astro';
+
+interface Props {
+    fileName: string;
+}
+
+const { fileName } = Astro.props; 
+
+const schema = SchemaTools.readSchema(fileName);
+
+---
+
+<Content schema={schema} level={0} />

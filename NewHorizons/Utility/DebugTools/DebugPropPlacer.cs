@@ -156,8 +156,9 @@ namespace NewHorizons.Utility.DebugTools
                 {
                     position = data.pos,
                     rotation = data.rot.eulerAngles,
+                    keepLoaded = true
                 };
-                var prop = DetailBuilder.Make(planetGO, sector, prefab, detailInfo);
+                var prop = DetailBuilder.Make(planetGO, sector, null, prefab, detailInfo);
 
                 var body = data.hitBodyGameObject.GetComponent<AstroObject>();
                 if (body != null) RegisterProp(body, prop);

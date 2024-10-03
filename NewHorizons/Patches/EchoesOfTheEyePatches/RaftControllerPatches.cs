@@ -63,7 +63,8 @@ namespace NewHorizons.Patches.EchoesOfTheEyePatches
             if (__instance._playerInEffectsRange)
             {
                 // All this to change what fluidVolume we use on this line
-                float num = __instance._fluidDetector.InFluidType(FluidVolume.Type.WATER) ? __instance._fluidDetector._alignmentFluid.GetFractionSubmerged(__instance._fluidDetector) : 0f;
+                FluidVolume volume = __instance._fluidDetector._alignmentFluid;
+                float num = __instance._fluidDetector.InFluidType(FluidVolume.Type.WATER) && volume != null ? volume.GetFractionSubmerged(__instance._fluidDetector) : 0f;
                 bool allowMovement = num > 0.25f && num < 1f;
                 __instance._effectsController.UpdateMovementAudio(allowMovement, __instance._lightSensors);
                 __instance._effectsController.UpdateGroundedAudio(__instance._fluidDetector);

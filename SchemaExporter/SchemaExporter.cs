@@ -87,6 +87,8 @@ public static class SchemaExporter
                     schema.Definitions["NomaiTextType"].EnumerationNames.Remove("CairnVariant");
                     schema.Definitions["QuantumGroupType"].Enumeration.Remove("FailedValidation");
                     schema.Definitions["QuantumGroupType"].EnumerationNames.Remove("FailedValidation");
+                    schema.Definitions["StellarRemnantType"].Enumeration.Remove("Pulsar");
+                    schema.Definitions["StellarRemnantType"].EnumerationNames.Remove("Pulsar");
                     break;
                 case "Star System Schema":
                     schema.Definitions["NomaiCoordinates"].Properties["x"].UniqueItems = true;

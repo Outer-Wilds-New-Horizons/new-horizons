@@ -408,10 +408,15 @@ namespace NewHorizons.Builder.Body
                 if (starModule.endTint != null)
                 {
                     var endColour = starModule.endTint.ToColor();
-                    darkenedColor = new Color(endColour.r * modifier, endColour.g * modifier, endColour.b * modifier);
+                    var adjustedEndColour = new Color(endColour.r * modifier, endColour.g * modifier, endColour.b * modifier);
+                    Color.RGBToHSV(adjustedEndColour, out var hEnd, out var sEnd, out var vEnd);
+                    var darkenedEndColor = Color.HSVToRGB(hEnd, sEnd * 1.2f, vEnd * 0.1f);
+                    surface.sharedMaterial.SetTexture(ColorRamp, ImageUtilities.LerpGreyscaleImageAlongX(_colorOverTime, adjustedColour, darkenedColor, adjustedEndColour, darkenedEndColor));
                 }
-
-                surface.sharedMaterial.SetTexture(ColorRamp, ImageUtilities.LerpGreyscaleImage(_colorOverTime, adjustedColour, darkenedColor));
+                else
+                {
+                    surface.sharedMaterial.SetTexture(ColorRamp, ImageUtilities.LerpGreyscaleImage(_colorOverTime, adjustedColour, darkenedColor));
+                }
             }
 
             if (!string.IsNullOrEmpty(starModule.starRampTexture))

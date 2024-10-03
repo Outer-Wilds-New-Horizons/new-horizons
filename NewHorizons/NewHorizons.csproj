@@ -15,8 +15,8 @@
         <DebugType>none</DebugType>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="OuterWildsGameLibs" Version="1.1.13.457" />
-        <PackageReference Include="OWML" Version="2.9.7" />
+        <PackageReference Include="OuterWildsGameLibs" Version="1.1.15.1018" />
+        <PackageReference Include="OWML" Version="2.12.1" />
         <Reference Include="../Lib/System.ComponentModel.Annotations.dll" />
     </ItemGroup>
     <ItemGroup>

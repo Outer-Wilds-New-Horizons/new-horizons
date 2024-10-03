@@ -14,11 +14,11 @@ namespace NewHorizons.Patches.HUDPatches
             bool insideEYE = Locator.GetEyeStateManager() != null && Locator.GetEyeStateManager().IsInsideTheEye();
             bool insideQM = __instance._quantumMoon != null && (__instance._quantumMoon.IsPlayerInside() || __instance._quantumMoon.IsShipInside());
             bool insideRW = Locator.GetRingWorldController() != null && Locator.GetRingWorldController().isPlayerInside;
-            bool insideIP = Locator.GetCloakFieldController() != null && Locator.GetCloakFieldController().isPlayerInsideCloak == Locator.GetCloakFieldController().isShipInsideCloak;
-            bool insideCloak = CloakSectorController.isPlayerInside == CloakSectorController.isShipInside;
+            bool insideIPMatches = Locator.GetCloakFieldController() == null || Locator.GetCloakFieldController().isPlayerInsideCloak == Locator.GetCloakFieldController().isShipInsideCloak;
+            bool insideCloakMatches = CloakSectorController.isPlayerInside == CloakSectorController.isShipInside;
             bool sameInterference = InterferenceHandler.IsPlayerSameAsShip();
 
-            __instance._isVisible = !insideEYE && !insideQM && !insideRW && !__instance._translatorEquipped && !__instance._inConversation && !__instance._shipDestroyed && !__instance._playerInShip && PlayerState.HasPlayerEnteredShip() && __instance._isWearingHelmet && insideIP && insideCloak && sameInterference;
+            __instance._isVisible = !insideEYE && !insideQM && !insideRW && !__instance._translatorEquipped && !__instance._inConversation && !__instance._shipDestroyed && !__instance._playerInShip && PlayerState.HasPlayerEnteredShip() && __instance._isWearingHelmet && insideIPMatches && insideCloakMatches && sameInterference;
 
             if (__instance._canvasMarker != null) __instance._canvasMarker.SetVisibility(__instance._isVisible);
 

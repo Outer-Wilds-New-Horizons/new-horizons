@@ -1,5 +1,4 @@
 using NewHorizons.Builder.Props.TranslatorText;
-using NewHorizons.Components.Orbital;
 using NewHorizons.External.Modules;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.Props.Shuttle;
@@ -18,7 +17,6 @@ namespace NewHorizons.Builder.Props
     {
         private static GameObject _interfacePrefab;
         private static GameObject _detailedPlatformPrefab, _platformPrefab;
-        private static GameObject _orbPrefab;
 
         internal static void InitPrefab()
         {
@@ -59,24 +57,16 @@ namespace NewHorizons.Builder.Props
                 GameObject.DestroyImmediate(_platformPrefab.FindChild("Structure_NOM_GravityCannon_Crystals"));
                 GameObject.DestroyImmediate(_platformPrefab.FindChild("Structure_NOM_GravityCannon_Geo"));
             }
-
-            if (_orbPrefab == null)
-            {
-                _orbPrefab = SearchUtilities.Find("Prefab_NOM_InterfaceOrb")
-                    .InstantiateInactive()
-                    .Rename("Prefab_NOM_InterfaceOrb")
-                    .DontDestroyOnLoad();
-            }
         }
 
         public static GameObject Make(GameObject planetGO, Sector sector, GravityCannonInfo info, IModBehaviour mod)
         {
             InitPrefab();
 
-            if (_interfacePrefab == null || planetGO == null || sector == null || _detailedPlatformPrefab == null || _platformPrefab == null || _orbPrefab == null) return null;
+            if (_interfacePrefab == null || planetGO == null || sector == null || _detailedPlatformPrefab == null || _platformPrefab == null) return null;
 
             var detailInfo = new DetailInfo(info.controls) { keepLoaded = true };
-            var gravityCannonObject = DetailBuilder.Make(planetGO, sector, _interfacePrefab, detailInfo);
+            var gravityCannonObject = DetailBuilder.Make(planetGO, sector, mod, _interfacePrefab, detailInfo);
             gravityCannonObject.SetActive(false);
 
             var gravityCannonController = gravityCannonObject.GetComponent<GravityCannonController>();
@@ -87,7 +77,7 @@ namespace NewHorizons.Builder.Props
             gravityCannonController._retrieveShipLogFact = info.retrieveReveal ?? string.Empty;
             gravityCannonController._launchShipLogFact = info.launchReveal ?? string.Empty;
 
-            CreatePlatform(planetGO, sector, gravityCannonController, info);
+            CreatePlatform(planetGO, sector, mod, gravityCannonController, info);
 
             if (info.computer != null)
             {
@@ -102,54 +92,9 @@ namespace NewHorizons.Builder.Props
                 gravityCannonController._nomaiComputer = null;
             }
 
-            CreateOrb(planetGO, gravityCannonController);
-
             gravityCannonObject.SetActive(true);
 
             return gravityCannonObject;
-        }
-
-        private static void CreateOrb(GameObject planetGO, GravityCannonController gravityCannonController)
-        {
-            var orb = _orbPrefab.InstantiateInactive().Rename(_orbPrefab.name);
-            orb.transform.parent = gravityCannonController.transform;
-            orb.transform.localPosition = new Vector3(0f, 0.9673f, 0f);
-            orb.transform.localScale = Vector3.one;
-            orb.SetActive(true);
-
-            var planetBody = planetGO.GetComponent<OWRigidbody>();
-            var orbBody = orb.GetComponent<OWRigidbody>();
-
-            var nomaiInterfaceOrb = orb.GetComponent<NomaiInterfaceOrb>();
-            nomaiInterfaceOrb._orbBody = orbBody;
-            nomaiInterfaceOrb._slotRoot = gravityCannonController.gameObject;
-            orbBody._origParent = planetGO.transform;
-            orbBody._origParentBody = planetBody;
-            nomaiInterfaceOrb._slots = nomaiInterfaceOrb._slotRoot.GetComponentsInChildren<NomaiInterfaceSlot>();
-            nomaiInterfaceOrb.SetParentBody(planetBody);
-            nomaiInterfaceOrb._safetyRails = new OWRail[0];
-            nomaiInterfaceOrb.RemoveAllLocks();
-
-            var spawnVelocity = planetBody.GetVelocity();
-            var spawnAngularVelocity = planetBody.GetPointTangentialVelocity(orbBody.transform.position);
-            var velocity = spawnVelocity + spawnAngularVelocity;
-
-            orbBody._lastVelocity = velocity;
-            orbBody._currentVelocity = velocity;
-
-            // detect planet gravity
-            // somehow Intervention has GetAttachedOWRigidbody as null sometimes, idk why
-            var gravityVolume = planetGO.GetAttachedOWRigidbody()?.GetAttachedGravityVolume();
-            orb.GetComponent<ConstantForceDetector>()._detectableFields = gravityVolume ? new ForceVolume[] { gravityVolume } : new ForceVolume[0];
-
-            Delay.RunWhenAndInNUpdates(() =>
-            {
-                foreach (var component in orb.GetComponents<MonoBehaviour>())
-                {
-                    component.enabled = true;
-                }
-                nomaiInterfaceOrb.RemoveAllLocks();
-            }, () => Main.IsSystemReady, 10);
         }
 
         private static NomaiComputer CreateComputer(GameObject planetGO, Sector sector, GeneralPropInfo computerInfo, NomaiShuttleController.ShuttleID id)
@@ -175,9 +120,9 @@ namespace NewHorizons.Builder.Props
             return computer;
         }
 
-        private static GameObject CreatePlatform(GameObject planetGO, Sector sector, GravityCannonController gravityCannonController, GravityCannonInfo platformInfo)
+        private static GameObject CreatePlatform(GameObject planetGO, Sector sector, IModBehaviour mod, GravityCannonController gravityCannonController, GravityCannonInfo platformInfo)
         {
-            var platform = DetailBuilder.Make(planetGO, sector, platformInfo.detailed ? _detailedPlatformPrefab : _platformPrefab, new DetailInfo(platformInfo) { keepLoaded = true });
+            var platform = DetailBuilder.Make(planetGO, sector, mod, platformInfo.detailed ? _detailedPlatformPrefab : _platformPrefab, new DetailInfo(platformInfo) { keepLoaded = true });
 
             gravityCannonController._forceVolume = platform.FindChild("ForceVolume").GetComponent<DirectionalForceVolume>();
             gravityCannonController._platformTrigger = platform.FindChild("PlatformTrigger").GetComponent<OWTriggerVolume>();

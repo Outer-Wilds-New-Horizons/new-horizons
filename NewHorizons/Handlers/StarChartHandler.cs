@@ -1,3 +1,4 @@
+using Epic.OnlineServices;
 using NewHorizons.Components.ShipLog;
 using NewHorizons.External;
 using NewHorizons.OtherMods.CustomShipLogModes;
@@ -14,6 +15,9 @@ namespace NewHorizons.Handlers
 
         private static Dictionary<string, string> _starSystemToFactID;
         private static Dictionary<string, string> _factIDToStarSystem;
+
+        private static bool _canExitViaWarpDrive;
+        private static string _factRequiredToExitViaWarpDrive;
 
         private static NewHorizonsSystem[] _systems;
 
@@ -55,20 +59,33 @@ namespace NewHorizons.Handlers
             _starSystemToFactID = new Dictionary<string, string>();
             _factIDToStarSystem = new Dictionary<string, string>();
 
+            _factRequiredToExitViaWarpDrive = string.Empty;
+
             foreach (NewHorizonsSystem system in _systems)
             {
-                if (system.Config.factRequiredForWarp != default)
+                if (system.Config.factRequiredForWarp != default && system.UniqueID != "SolarSystem")
                 {
                     RegisterFactForSystem(system.Config.factRequiredForWarp, system.UniqueID);
+                }
+
+                if (system.UniqueID == Main.Instance.CurrentStarSystem)
+                {
+                    _factRequiredToExitViaWarpDrive = system.Config.factRequiredToExitViaWarpDrive;
+                    _canExitViaWarpDrive = system.Config.canExitViaWarpDrive || !string.IsNullOrEmpty(_factRequiredToExitViaWarpDrive);
+                    NHLogger.LogVerbose($"In system {system.UniqueID} can exit via warp drive? {system.Config.canExitViaWarpDrive} {_canExitViaWarpDrive} {_factRequiredToExitViaWarpDrive}");
                 }
             }
         }
 
+        /// <summary>
+        /// Can the player warp to any system at all
+        /// </summary>
+        /// <returns></returns>
         public static bool CanWarp()
         {
             foreach (var system in _systems)
             {
-                if (system.Config.canEnterViaWarpDrive && system.Spawn?.shipSpawn != null && HasUnlockedSystem(system.UniqueID))
+                if (CanWarpToSystem(system.UniqueID))
                 {
                     return true;
                 }
@@ -76,8 +93,17 @@ namespace NewHorizons.Handlers
             return false;
         }
 
+        /// <summary>
+        /// Do they have the fact required for a system
+        /// </summary>
+        /// <param name="system"></param>
+        /// <returns></returns>
         public static bool HasUnlockedSystem(string system)
         {
+            // If warp drive is entirely disabled, then no
+            if (!CanExitViaWarpDrive())
+                return false;
+
             if (_starSystemToFactID == null || _starSystemToFactID.Count == 0)
                 return true;
 
@@ -89,15 +115,73 @@ namespace NewHorizons.Handlers
             return ShipLogHandler.KnowsFact(factID);
         }
 
+        public static bool CanExitViaWarpDrive() => Main.Instance.CurrentStarSystem == "SolarSystem" || (_canExitViaWarpDrive
+                && (string.IsNullOrEmpty(_factRequiredToExitViaWarpDrive) || ShipLogHandler.KnowsFact(_factRequiredToExitViaWarpDrive)));
+
+        /// <summary>
+        /// Is it actually a valid warp target
+        /// </summary>
+        /// <param name="system"></param>
+        /// <returns></returns>
+        public static bool CanWarpToSystem(string system)
+        {
+            var config = Main.SystemDict[system];
+
+            var canWarpTo = false;
+            if (system.Equals("SolarSystem")) canWarpTo = true;
+            else if (system.Equals("EyeOfTheUniverse")) canWarpTo = false;
+            else if (config.Spawn?.shipSpawn != null) canWarpTo = true;
+
+            var canEnterViaWarpDrive = Main.SystemDict[system].Config.canEnterViaWarpDrive || system == "SolarSystem";
+
+            var canExitViaWarpDrive = CanExitViaWarpDrive();
+
+            // Make base system always ignore canExitViaWarpDrive
+            if (Main.Instance.CurrentStarSystem == "SolarSystem")
+                canExitViaWarpDrive = true;
+
+            NHLogger.LogVerbose(canEnterViaWarpDrive, canExitViaWarpDrive, system, HasUnlockedSystem(system));
+
+            return canWarpTo
+                    && canEnterViaWarpDrive
+                    && canExitViaWarpDrive
+                    && system != Main.Instance.CurrentStarSystem
+                    && HasUnlockedSystem(system);
+        }
+
         public static void OnRevealFact(string factID)
         {
-            if (_factIDToStarSystem.TryGetValue(factID, out var systemUnlocked))
+            if (!string.IsNullOrEmpty(_factRequiredToExitViaWarpDrive) && factID == _factRequiredToExitViaWarpDrive)
             {
-                NHLogger.Log($"Just learned [{factID}] and unlocked [{systemUnlocked}]");
+                _canExitViaWarpDrive = true;
                 if (!Main.HasWarpDrive)
+                {
                     Main.Instance.EnableWarpDrive();
-                if (ShipLogStarChartMode != null)
-                    ShipLogStarChartMode.AddSystemCard(systemUnlocked);
+                    // Add all cards that now work
+                    foreach (var starSystem in Main.SystemDict.Keys)
+                    {
+                        if (CanWarpToSystem(starSystem))
+                        {
+                            ShipLogStarChartMode.AddSystemCard(starSystem);
+                        }
+                    }
+                }
+                else
+                {
+                    NHLogger.LogWarning("Warp drive was enabled before learning fact?");
+                }
+            }
+
+            if (_factIDToStarSystem != null && _factIDToStarSystem.TryGetValue(factID, out var systemUnlocked))
+            {
+                var knowsWarpFact = string.IsNullOrEmpty(_factRequiredToExitViaWarpDrive) || ShipLogHandler.KnowsFact(_factRequiredToExitViaWarpDrive);
+
+                NHLogger.Log($"Just learned [{factID}] and unlocked [{systemUnlocked}]");
+                if (!Main.HasWarpDrive && knowsWarpFact)
+                {
+                    Main.Instance.EnableWarpDrive();
+                }
+                ShipLogStarChartMode?.AddSystemCard(systemUnlocked);
             }
         }
 

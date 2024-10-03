@@ -30,6 +30,13 @@ namespace NewHorizons.Components
                 nnc._inactiveMaterial = materials[0];
                 nnc._activeMaterial = materials[1];
             }
+
+            NomaiLamp nl = GetComponentInParent<NomaiLamp>();
+            if (nl != null)
+            {
+                nl.enabled = true;
+                nl.Awake();
+            }
         }
     }
 }

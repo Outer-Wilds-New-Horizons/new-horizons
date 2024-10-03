@@ -6,6 +6,7 @@ using NewHorizons.External.Modules;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OWML;
+using OWML.Common;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -80,7 +81,7 @@ namespace NewHorizons.Builder.Body
             if (_wallCollision == null) _wallCollision = Main.NHPrivateAssetBundle.LoadAsset<GameObject>("BrambleCollision");
         }
 
-        public static GameObject Make(NewHorizonsBody body, GameObject go, NHAstroObject ao, Sector sector, OWRigidbody owRigidBody)
+        public static GameObject Make(NewHorizonsBody body, GameObject go, NHAstroObject ao, Sector sector, IModBehaviour mod, OWRigidbody owRigidBody)
         {
             InitPrefabs();
 
@@ -102,7 +103,7 @@ namespace NewHorizons.Builder.Body
                 default: geometryPrefab = _hubGeometry; break;
             }
 
-            var geometry = DetailBuilder.Make(go, sector, geometryPrefab, new DetailInfo());
+            var geometry = DetailBuilder.Make(go, sector, mod, geometryPrefab, new DetailInfo());
 
             var exitWarps = _exitWarps.InstantiateInactive();
             var repelVolume = _repelVolume.InstantiateInactive();
