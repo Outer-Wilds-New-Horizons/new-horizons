@@ -67,6 +67,8 @@ namespace NewHorizons.Builder.Props
         /// </summary>
         public static GameObject Make(GameObject planetGO, Sector sector, IModBehaviour mod, DetailInfo info)
         {
+            if (sector == null) info.keepLoaded = true;
+
             if (info.assetBundle != null)
             {
                 // Shouldn't happen
@@ -97,6 +99,8 @@ namespace NewHorizons.Builder.Props
         public static GameObject Make(GameObject go, Sector sector, IModBehaviour mod, GameObject prefab, DetailInfo detail)
         {
             if (prefab == null) return null;
+
+            if (sector == null) detail.keepLoaded = true;
 
             GameObject prop;
             bool isItem;
