@@ -109,7 +109,7 @@ namespace NewHorizons.Handlers
             var tex = ImageUtilities.GetTexture(mod, filepath, false);
             if (tex == null) return;
 
-            var sprite = Sprite.Create(tex, new Rect(0.0f, 0.0f, tex.width, Mathf.Max(SUBTITLE_HEIGHT, tex.height)), new Vector2(0.5f, 0.5f), 100.0f);
+            var sprite = Sprite.Create(tex, new Rect(0.0f, 0.0f, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100.0f);
             AddSubtitle(sprite);
         }
 
