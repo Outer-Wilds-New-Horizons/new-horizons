@@ -11,9 +11,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using UnityEngine;
 
 namespace NewHorizons.External.Configs
 {
@@ -25,9 +23,8 @@ namespace NewHorizons.External.Configs
     {
         #region Fields
         /// <summary>
-        /// Unique name of your planet
+        /// Unique name of your planet. If not specified, the file name (without the extension) is used.
         /// </summary>
-        [Required]
         public string name;
 
         /// <summary>

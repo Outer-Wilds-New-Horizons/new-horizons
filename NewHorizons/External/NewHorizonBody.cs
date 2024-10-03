@@ -3,6 +3,7 @@ using NewHorizons.Utility.Files;
 using NewHorizons.Utility.OWML;
 using OWML.Common;
 using System;
+using System.IO;
 using System.Linq;
 using UnityEngine;
 
@@ -15,6 +16,12 @@ namespace NewHorizons.External
             Config = config;
             Mod = mod;
             RelativePath = relativePath;
+
+            // Fall back to file name if name not given
+            if (!string.IsNullOrEmpty(relativePath) && string.IsNullOrEmpty(config.name))
+            {
+                config.name = Path.GetFileNameWithoutExtension(relativePath);
+            }
 
             Migrate();
         }
