@@ -8,3 +8,8 @@ description: A guide to troubleshooting common issues with mods
 Certain images (such as slide reels) get modified by New Horizons before usage, to save on resources NH will cache
 the modified version of these images on the file system to be recalled later for easier access. If you are changing
 an image you'll need to clear the cache located in the `SlideReelsCache` folder of your mod's directory to see changes. To do this simply delete the folder and restart the game.
+
+## My planet is flying away at light speed and also I have anglerfish
+
+Be sure to disable `hasFluidDetector` (previous had to enable `invulnerableToSun`). The anglerfish have fluid volumes in their mouths for killing you 
+which interact poorly with the fluid detector and can mess up the movement of the planet.
