@@ -107,6 +107,12 @@ namespace NewHorizons.External.Modules
         /// </summary>
         [DefaultValue(300f)] public float maxShockSpeed = 300f;
 
+        /// <summary>
+        /// Will the ship automatically try to orient itself to face upwards while in this volume?
+        /// </summary>
+        [DefaultValue(true)]
+        public bool allowShipAutoroll = true;
+
         [JsonObject]
         public class CloudInfo
         {
