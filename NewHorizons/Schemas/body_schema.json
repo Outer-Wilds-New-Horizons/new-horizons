@@ -409,6 +409,11 @@
           "description": "Maximum speed that your ship can go in the atmosphere where flames will appear at their brightest.",
           "format": "float",
           "default": 300.0
+        },
+        "allowShipAutoroll": {
+          "type": "boolean",
+          "description": "Will the ship automatically try to orient itself to face upwards while in this volume?",
+          "default": true
         }
       }
     },
@@ -3907,6 +3912,11 @@
         "tint": {
           "description": "Tint of the water",
           "$ref": "#/definitions/MColor"
+        },
+        "allowShipAutoroll": {
+          "type": "boolean",
+          "description": "Will the ship automatically try to orient itself to face upwards while in this volume?",
+          "default": true
         }
       }
     },
