@@ -1,5 +1,6 @@
-﻿#region
+#region
 
+using NewHorizons.Components;
 using NewHorizons.External.Configs;
 using NewHorizons.Handlers;
 using UnityEngine;
@@ -12,7 +13,8 @@ namespace NewHorizons.Builder.General
     {
         public static void Make(GameObject body, string name, PlanetConfig config)
         {
-            MapMarker mapMarker = body.AddComponent<MapMarker>();
+            var module = config.MapMarker;
+            NHMapMarker mapMarker = body.AddComponent<NHMapMarker>();
             mapMarker._labelID = (UITextType)TranslationHandler.AddUI(config.name);
 
             var markerType = MapMarker.MarkerType.Planet;
@@ -37,6 +39,9 @@ namespace NewHorizons.Builder.General
             */
 
             mapMarker._markerType = markerType;
+
+            mapMarker.minDisplayDistanceOverride = module.minDisplayDistanceOverride;
+            mapMarker.maxDisplayDistanceOverride = module.maxDisplayDistanceOverride;
         }
     }
 }

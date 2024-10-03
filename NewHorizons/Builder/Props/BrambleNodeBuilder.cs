@@ -6,6 +6,7 @@ using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OuterWilds;
 using NewHorizons.Utility.OWML;
+using Newtonsoft.Json;
 using OWML.Common;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,12 +34,17 @@ namespace NewHorizons.Builder.Props
         private static GameObject _brambleSeedPrefab;
         private static GameObject _brambleNodePrefab;
 
+        private static HashSet<FogWarpVolume> _nhFogWarpVolumes = new();
+
+        public static bool IsNHFogWarpVolume(FogWarpVolume volume) => _nhFogWarpVolumes.Contains(volume);
+
         public static void Init(PlanetConfig[] dimensionConfigs)
         {
             _unpairedNodes.Clear();
             _propagatedSignals.Clear();
             namedNodes.Clear();
             builtBrambleNodes.Clear();
+            _nhFogWarpVolumes.Clear();
 
             PropagateSignals(dimensionConfigs);
         }
@@ -107,6 +113,10 @@ namespace NewHorizons.Builder.Props
                 if (dimension.Bramble.nodes == null) continue;
                 foreach (var node in dimension.Bramble.nodes)
                 {
+                    if (!dimensionNameToIndex.ContainsKey(node.linksTo))
+                    {
+                        NHLogger.LogError($"There is no bramble dimension named {node.linksTo}");
+                    }
                     var destinationDimensionIndex = dimensionNameToIndex[node.linksTo];
                     access[dimensionIndex, destinationDimensionIndex] = true;
                 }
@@ -190,6 +200,12 @@ namespace NewHorizons.Builder.Props
                 collider.enabled = true; 
             }
 
+            // We track all the fog warp volumes that NH created so we can only effect those in patches, this way we leave base game stuff alone.
+            foreach (var fogWarpVolume in brambleNode.GetComponentsInChildren<FogWarpVolume>(true).Append(brambleNode.GetComponent<FogWarpVolume>()))
+            {
+                _nhFogWarpVolumes.Add(fogWarpVolume);
+            }
+
             var innerFogWarpVolume = brambleNode.GetComponent<InnerFogWarpVolume>();
             var outerFogWarpVolume = GetOuterFogWarpVolumeFromAstroObject(go);
             var fogLight = brambleNode.GetComponent<FogLight>();
@@ -235,7 +251,17 @@ namespace NewHorizons.Builder.Props
             // account for scale (this will fix the issue with screen fog caused by scaled down nodes)
 
             // Set the main scale
-            brambleNode.transform.localScale = Vector3.one * config.scale;
+            // Can't just use localScale of root, that makes the preview fog lights get pulled in too much
+            foreach(Transform child in brambleNode.transform)
+            {
+                child.localScale = Vector3.one * config.scale;
+
+                // The fog on bramble seeds has a specific scale we need to copy over
+                if (child.name == "VolumetricFogSphere (2)")
+                {
+                    child.localScale *= 6.3809f;
+                }
+            }
             innerFogWarpVolume._warpRadius *= config.scale;
             innerFogWarpVolume._exitRadius *= config.scale;
 
@@ -259,7 +285,7 @@ namespace NewHorizons.Builder.Props
                 // (it's also located on a different child path, so the below FindChild calls wouldn't work)
                 // Default size is 70
                 var fog = brambleNode.FindChild("Effects/InnerWarpFogSphere");
-                fog.transform.localScale = Vector3.one * config.scale * 70f;
+                //fog.transform.localScale = Vector3.one * config.scale * 70f; This is already scaled by its parent, don't know why we scale it again
 
                 // Copy shared material to not be shared
                 var fogRenderer = fog.GetComponent<MeshRenderer>();
@@ -393,11 +419,22 @@ namespace NewHorizons.Builder.Props
             {
                 foreach (var signalConfig in connectedSignals)
                 {
-                    var signalGO = SignalBuilder.Make(go, sector, signalConfig, mod);
+                    // Have to ensure that this new signal doesn't use parent path, else it looks for a parent that only exists on the original body
+                    // Have to make a copy of it as well to avoid modifying the old body's info
+                    var signalConfigCopy = JsonConvert.DeserializeObject<SignalInfo>(JsonConvert.SerializeObject(signalConfig));
+                    signalConfigCopy.parentPath = null;
+                    signalConfigCopy.isRelativeToParent = false;
+
+                    var signalGO = SignalBuilder.Make(go, sector, signalConfigCopy, mod);
                     signalGO.GetComponent<AudioSignal>()._identificationDistance = 0;
                     signalGO.GetComponent<AudioSignal>()._sourceRadius = 1;
                     signalGO.transform.position = brambleNode.transform.position;
                     signalGO.transform.parent = brambleNode.transform;
+
+                    //Don't need the unknown signal detection bits
+                    Component.Destroy(signalGO.GetComponent<AudioSignalDetectionTrigger>());
+                    Component.Destroy(signalGO.GetComponent<OWTriggerVolume>());
+                    Component.Destroy(signalGO.GetComponent<SphereShape>());
                 }
             }
 

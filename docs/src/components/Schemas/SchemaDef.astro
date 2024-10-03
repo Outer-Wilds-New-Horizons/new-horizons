@@ -1,0 +1,21 @@
+---
+import { SchemaTools } from '@/util/schema_utils';
+import Breadcrumb from '@/components/Schemas/Breadcrumb.astro';
+import Content from '@/components/Schemas/Content.astro';
+
+interface Props {
+    fileName: string;
+    def: string;
+}
+
+const { fileName, def } = Astro.props; 
+
+const schema = SchemaTools.readSchema(fileName);
+const defs = SchemaTools.getDefs(schema);
+
+const targetDef = defs.find(d => d.slug === def);
+
+---
+
+<Breadcrumb schema={targetDef!} />
+<Content schema={targetDef!} level={0} isDef />

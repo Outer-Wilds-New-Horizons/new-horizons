@@ -26,6 +26,24 @@ namespace NewHorizons.External
 
         public GameObject Object;
 
+        public bool RequiresDLC()
+        {
+            try
+            {
+                var detailPaths = Config?.Props?.details?.Select(x => x.path) ?? Array.Empty<string>();
+                return Config?.Cloak != null
+                    || Config?.Props?.rafts != null
+                    || Config?.Props?.slideShows != null
+                    || detailPaths.Any(x => x.StartsWith("RingWorld_Body") || x.StartsWith("DreamWorld_Body"));
+            }
+            catch
+            {
+                NHLogger.LogWarning($"Failed to check if {Mod.ModHelper.Manifest.Name} requires the DLC");
+                return false;
+            }
+
+        }
+
         #region Cache
         public void LoadCache()
         {

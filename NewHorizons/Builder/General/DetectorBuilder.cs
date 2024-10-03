@@ -143,13 +143,15 @@ namespace NewHorizons.Builder.General
                     // It's a planet
                     if (binaryFocalPoint.Primary != null && binaryFocalPoint.Secondary != null)
                     {
-                        forceDetector._detectableFields = new ForceVolume[] { parentGravityVolume };
+                        if (!parentGravityVolume) NHLogger.LogError($"{astroObject?.name} trying to orbit {primaryBody?.name}, which has no gravity volume!");
+                        forceDetector._detectableFields = parentGravityVolume ? new ForceVolume[] { parentGravityVolume } : new ForceVolume[0];
                     }
                 }
             }
             else
             {
-                forceDetector._detectableFields = new ForceVolume[] { parentGravityVolume };
+                if (!parentGravityVolume) NHLogger.LogError($"{astroObject?.name} trying to orbit {primaryBody?.name}, which has no gravity volume!");
+                forceDetector._detectableFields = parentGravityVolume ? new ForceVolume[] { parentGravityVolume } : new ForceVolume[0];
             }
         }
 
@@ -164,7 +166,7 @@ namespace NewHorizons.Builder.General
             var primaryGV = primary.GetGravityVolume();
             var secondaryGV = secondary.GetGravityVolume();
 
-            if (primaryGV._falloffType != secondaryGV._falloffType)
+            if (primaryGV && secondaryGV && primaryGV._falloffType != secondaryGV._falloffType)
             {
                 NHLogger.LogError($"Binaries must have the same gravity falloff! {primaryGV._falloffType} != {secondaryGV._falloffType}");
                 return;
@@ -173,12 +175,14 @@ namespace NewHorizons.Builder.General
             var pointForceDetector = point.GetAttachedOWRigidbody().GetAttachedForceDetector();
 
             // Set detectable fields
-            primaryCFD._detectableFields = new ForceVolume[] { secondaryGV };
+            if (!secondaryGV) NHLogger.LogError($"{point.PrimaryName} trying to orbit {point.SecondaryName}, which has no gravity volume!");
+            primaryCFD._detectableFields = secondaryGV ? new ForceVolume[] { secondaryGV } : new ForceVolume[0];
             primaryCFD._inheritDetector = pointForceDetector;
             primaryCFD._activeInheritedDetector = pointForceDetector;
             primaryCFD._inheritElement0 = false;
 
-            secondaryCFD._detectableFields = new ForceVolume[] { primaryGV };
+            if (!primaryGV) NHLogger.LogError($"{point.SecondaryName} trying to orbit {point.PrimaryName}, which has no gravity volume!");
+            secondaryCFD._detectableFields = primaryGV ? new ForceVolume[] { primaryGV } : new ForceVolume[0];
             secondaryCFD._inheritDetector = pointForceDetector;
             secondaryCFD._activeInheritedDetector = pointForceDetector;
             secondaryCFD._inheritElement0 = false;

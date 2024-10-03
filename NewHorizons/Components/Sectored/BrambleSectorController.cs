@@ -34,12 +34,15 @@ namespace NewHorizons.Components.Sectored
 
         private void Start()
         {
+            DisableRenderers();
+        }
+
+        private void GetRenderers()
+        {
             _renderers = gameObject.GetComponentsInChildren<Renderer>();
             _tessellatedRenderers = gameObject.GetComponentsInChildren<TessellatedRenderer>();
             _colliders = gameObject.GetComponentsInChildren<Collider>();
             _lights = gameObject.GetComponentsInChildren<Light>();
-
-            DisableRenderers();
         }
 
         private void OnSectorOccupantsUpdated()
@@ -54,54 +57,35 @@ namespace NewHorizons.Components.Sectored
             }
         }
 
-        private void EnableRenderers()
+        private void EnableRenderers() => ToggleRenderers(true);
+
+        private void DisableRenderers() => ToggleRenderers(false);
+
+        private void ToggleRenderers(bool visible)
         {
+            GetRenderers();
+
             foreach (var renderer in _renderers)
             {
-                renderer.forceRenderingOff = false;
+                renderer.forceRenderingOff = !visible;
             }
 
             foreach (var tessellatedRenderer in _tessellatedRenderers)
             {
-                tessellatedRenderer.enabled = true;
+                tessellatedRenderer.enabled = visible;
             }
 
             foreach (var collider in _colliders)
             {
-                collider.enabled = true;
+                collider.enabled = visible;
             }
 
             foreach (var light in _lights)
             {
-                light.enabled = true;
+                light.enabled = visible;
             }
 
-            _renderersShown = true;
-        }
-
-        private void DisableRenderers()
-        {
-            foreach (var renderer in _renderers)
-            {
-                renderer.forceRenderingOff = true;
-            }
-
-            foreach (var tessellatedRenderer in _tessellatedRenderers)
-            {
-                tessellatedRenderer.enabled = false;
-            }
-
-            foreach (var collider in _colliders)
-            {
-                collider.enabled = false;
-            }
-
-            foreach (var light in _lights)
-            {
-                light.enabled = false;
-            }
-
-            _renderersShown = false;
+            _renderersShown = visible;
         }
     }
 }

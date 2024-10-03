@@ -9,8 +9,23 @@ namespace NewHorizons.Utility
 {
     public static class SearchUtilities
     {
+        private static readonly Dictionary<string, GameObject> DontDestroyOnLoadCachedGameObjects = new Dictionary<string, GameObject>();
         private static readonly Dictionary<string, GameObject> CachedGameObjects = new Dictionary<string, GameObject>();
         private static readonly Dictionary<string, GameObject> CachedRootGameObjects = new Dictionary<string, GameObject>();
+
+        public static void AddToDontDestroyOnLoadCache(string path, GameObject go)
+        {
+            DontDestroyOnLoadCachedGameObjects[path] = go.InstantiateInactive().DontDestroyOnLoad();
+        }
+
+        public static void ClearDontDestroyOnLoadCache()
+        {
+            foreach (var go in DontDestroyOnLoadCachedGameObjects.Values)
+            {
+                GameObject.Destroy(go);
+            }
+            DontDestroyOnLoadCachedGameObjects.Clear();
+        }
 
         public static void ClearCache()
         {
@@ -96,6 +111,8 @@ namespace NewHorizons.Utility
         /// </summary>
         public static GameObject Find(string path, bool warn = true)
         {
+            if (DontDestroyOnLoadCachedGameObjects.TryGetValue(path, out var gameObject)) return gameObject;
+
             if (CachedGameObjects.TryGetValue(path, out var go)) return go;
 
             // 1: normal find

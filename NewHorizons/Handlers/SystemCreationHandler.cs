@@ -7,6 +7,10 @@ using NewHorizons.Utility.OWML;
 using NewHorizons.Utility.OuterWilds;
 using UnityEngine;
 using Object = UnityEngine.Object;
+using NewHorizons.OtherMods;
+using NewHorizons.Components.EOTE;
+using Epic.OnlineServices.Presence;
+
 namespace NewHorizons.Handlers
 {
     public static class SystemCreationHandler
@@ -31,7 +35,9 @@ namespace NewHorizons.Handlers
             // No time loop or travel audio at the eye
             if (Main.Instance.CurrentStarSystem == "EyeOfTheUniverse") return;
 
-            if (system.Config.enableTimeLoop)
+            // Small mod compat change for StopTime - do nothing if it's enabled
+            // Do not add our custom time loop controller in the base game system: It will handle itself
+            if (Main.Instance.CurrentStarSystem != "SolarSystem" && system.Config.enableTimeLoop && !OtherModUtil.IsEnabled("_nebula.StopTime"))
             {
                 var timeLoopController = new GameObject("TimeLoopController");
                 timeLoopController.AddComponent<TimeLoopController>();
@@ -42,9 +48,52 @@ namespace NewHorizons.Handlers
                 TimeLoopUtilities.SetLoopDuration(system.Config.loopDuration);
             }
 
-            if (!string.IsNullOrEmpty(system.Config.travelAudio))
+            if (system.Config.GlobalMusic != null)
             {
-                Delay.FireOnNextUpdate(() => AudioUtilities.SetAudioClip(Locator.GetGlobalMusicController()._travelSource, system.Config.travelAudio, system.Mod));
+                if (!string.IsNullOrEmpty(system.Config.GlobalMusic.travelAudio))
+                {
+                    var audioType = AudioTypeHandler.GetAudioType(system.Config.GlobalMusic.travelAudio, system.Mod);
+                    Delay.FireOnNextUpdate(() => Locator.GetGlobalMusicController()._travelSource.AssignAudioLibraryClip(audioType));
+                }
+
+                if (!string.IsNullOrEmpty(system.Config.GlobalMusic.endTimesAudio))
+                {
+                    var audioType = AudioTypeHandler.GetAudioType(system.Config.GlobalMusic.endTimesAudio, system.Mod);
+                    Delay.FireOnNextUpdate(() => {
+                        Locator.GetGlobalMusicController().gameObject.GetAddComponent<DreamWorldEndTimes>().SetEndTimesAudio(audioType);
+                        Locator.GetGlobalMusicController()._endTimesSource.AssignAudioLibraryClip(audioType);
+                    });
+                }
+
+                if (!string.IsNullOrEmpty(system.Config.GlobalMusic.endTimesDreamAudio))
+                {
+                    var audioType = AudioTypeHandler.GetAudioType(system.Config.GlobalMusic.endTimesDreamAudio, system.Mod);
+                    Delay.FireOnNextUpdate(() => Locator.GetGlobalMusicController().gameObject.GetAddComponent<DreamWorldEndTimes>().SetEndTimesDreamAudio(audioType));
+                }
+
+                if (!string.IsNullOrEmpty(system.Config.GlobalMusic.brambleDimensionAudio))
+                {
+                    var audioType = AudioTypeHandler.GetAudioType(system.Config.GlobalMusic.brambleDimensionAudio, system.Mod);
+                    Delay.FireOnNextUpdate(() => Locator.GetGlobalMusicController()._darkBrambleSource.AssignAudioLibraryClip(audioType));
+                }
+
+                if (!string.IsNullOrEmpty(system.Config.GlobalMusic.finalEndTimesIntroAudio))
+                {
+                    var audioType = AudioTypeHandler.GetAudioType(system.Config.GlobalMusic.finalEndTimesIntroAudio, system.Mod);
+                    Delay.FireOnNextUpdate(() => Locator.GetGlobalMusicController()._finalEndTimesIntroSource.AssignAudioLibraryClip(audioType));
+                }
+
+                if (!string.IsNullOrEmpty(system.Config.GlobalMusic.finalEndTimesLoopAudio))
+                {
+                    var audioType = AudioTypeHandler.GetAudioType(system.Config.GlobalMusic.finalEndTimesLoopAudio, system.Mod);
+                    Delay.FireOnNextUpdate(() => Locator.GetGlobalMusicController()._finalEndTimesLoopSource.AssignAudioLibraryClip(audioType));
+                }
+
+                if (!string.IsNullOrEmpty(system.Config.GlobalMusic.finalEndTimesBrambleDimensionAudio))
+                {
+                    var audioType = AudioTypeHandler.GetAudioType(system.Config.GlobalMusic.finalEndTimesBrambleDimensionAudio, system.Mod);
+                    Delay.FireOnNextUpdate(() => Locator.GetGlobalMusicController()._finalEndTimesDarkBrambleSource.AssignAudioLibraryClip(audioType));
+                }
             }
         }
     }

@@ -242,7 +242,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
                     }
                 case NomaiTextType.PreCrashComputer:
                     {
-                        var computerObject = DetailBuilder.Make(planetGO, sector, PreCrashComputerPrefab, new DetailInfo(info));
+                        var computerObject = DetailBuilder.Make(planetGO, sector, nhBody.Mod, PreCrashComputerPrefab, new DetailInfo(info));
                         computerObject.SetActive(false);
 
                         var computer = computerObject.GetComponent<NomaiVesselComputer>();
@@ -323,7 +323,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
                 case NomaiTextType.Recorder:
                     {
                         var prefab = (info.type == NomaiTextType.PreCrashRecorder ? _preCrashRecorderPrefab : _recorderPrefab);
-                        var recorderObject = DetailBuilder.Make(planetGO, sector, prefab, new DetailInfo(info));
+                        var recorderObject = DetailBuilder.Make(planetGO, sector, nhBody.Mod, prefab, new DetailInfo(info));
                         recorderObject.SetActive(false);
 
                         var nomaiText = recorderObject.GetComponentInChildren<NomaiText>();
@@ -373,7 +373,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
                             path = "BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_HangingCity/Sector_HangingCity_District2/Interactables_HangingCity_District2/VisibleFrom_HangingCity/Props_NOM_Whiteboard (1)",
                             rename = info.rename ?? "Props_NOM_Whiteboard",
                         };
-                        var whiteboardObject = DetailBuilder.Make(planetGO, sector, whiteboardInfo);
+                        var whiteboardObject = DetailBuilder.Make(planetGO, sector, nhBody.Mod, whiteboardInfo);
 
                         // Spawn a scroll and insert it into the whiteboard, but only if text is provided
                         if (!string.IsNullOrEmpty(info.xmlFile))
@@ -471,12 +471,12 @@ namespace NewHorizons.Builder.Props.TranslatorText
 
             if (info.arcInfo != null && info.arcInfo.Count() != dict.Values.Count())
             {
-                NHLogger.LogError($"Can't make NomaiWallText, arcInfo length [{info.arcInfo.Count()}] doesn't equal text entries [{dict.Values.Count()}]");
+                NHLogger.LogError($"Can't make NomaiWallText, arcInfo length [{info.arcInfo.Count()}] doesn't equal number of TextBlocks [{dict.Values.Count()}] in the xml");
                 return;
             }
 
             ArcCacheData[] cachedData = null;
-            if (nhBody.Cache?.ContainsKey(cacheKey) ?? false)
+            if (nhBody?.Cache?.ContainsKey(cacheKey) ?? false)
                 cachedData = nhBody.Cache.Get<ArcCacheData[]>(cacheKey);
 
             var arranger = nomaiWallText.gameObject.AddComponent<NomaiTextArcArranger>();

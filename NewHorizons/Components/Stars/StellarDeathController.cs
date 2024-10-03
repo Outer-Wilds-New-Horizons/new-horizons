@@ -35,12 +35,19 @@ namespace NewHorizons.Components.Stars
         public void Activate()
         {
             enabled = true;
-            shockwave.enabled = _renderingEnabled;
-            for (int i = 0; i < explosionParticles.Length; i++)
+
+            var proxy = IsProxy() ? this.GetComponentInParent<NHProxy>() : null;
+
+            if (proxy == null || proxy._renderingEnabled)
             {
-                explosionParticles[i].Play();
-                _cachedParticleRenderers[i].enabled = _renderingEnabled;
+                shockwave.enabled = _renderingEnabled;
+                for (int i = 0; i < explosionParticles.Length; i++)
+                {
+                    explosionParticles[i].Play();
+                    _cachedParticleRenderers[i].enabled = _renderingEnabled;
+                }
             }
+
             _time = 0.0f;
             _currentSupernovaScale = supernovaScale.Evaluate(0.0f);
             _localSupernovaMat = new Material(supernovaMaterial);

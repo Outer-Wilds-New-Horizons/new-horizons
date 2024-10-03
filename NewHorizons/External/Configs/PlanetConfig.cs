@@ -114,6 +114,11 @@ namespace NewHorizons.External.Configs
         public LavaModule Lava;
 
         /// <summary>
+        /// Map marker properties of this body
+        /// </summary>
+        public MapMarkerModule MapMarker;
+
+        /// <summary>
         /// Describes this Body's orbit (or lack there of)
         /// </summary>
         public OrbitModule Orbit;
@@ -213,8 +218,8 @@ namespace NewHorizons.External.Configs
             // Always have to have a base module
             if (Base == null) Base = new BaseModule();
             if (Orbit == null) Orbit = new OrbitModule();
-            if (ShipLog == null) ShipLog = new ShipLogModule();
             if (ReferenceFrame == null) ReferenceFrame = new ReferenceFrameModule();
+            if (MapMarker == null) MapMarker = new MapMarkerModule();
         }
 
         public void Validate()
@@ -281,7 +286,7 @@ namespace NewHorizons.External.Configs
 
         public void Migrate()
         {
-            // Backwards compatability
+            // Backwards compatibility
             // Should be the only place that obsolete things are referenced
 #pragma warning disable 612, 618
             if (Base.waterSize != 0)
@@ -307,6 +312,8 @@ namespace NewHorizons.External.Configs
             if (Base.isSatellite) Base.showMinimap = false;
 
             if (!Base.hasReferenceFrame) ReferenceFrame.enabled = false;
+
+            if (Base.hasMapMarker) MapMarker.enabled = true;
 
             if (childrenToDestroy != null) removeChildren = childrenToDestroy;
 
@@ -459,6 +466,9 @@ namespace NewHorizons.External.Configs
             if (Star != null)
             {
                 if (!Star.goSupernova) Star.stellarDeathType = StellarDeathType.None;
+
+                // Gave up on supporting pulsars
+                if (Star.stellarRemnantType == StellarRemnantType.Pulsar) Star.stellarRemnantType = StellarRemnantType.NeutronStar;
             }
 
             // Signals no longer use two different variables for audio

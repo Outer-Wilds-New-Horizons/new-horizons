@@ -3,6 +3,7 @@ using NewHorizons.External.Modules.Props;
 using NewHorizons.Utility;
 using NewHorizons.Utility.Files;
 using NewHorizons.Utility.Geometry;
+using NewHorizons.Utility.OWML;
 using OWML.Common;
 using System;
 using System.Collections.Generic;
@@ -77,7 +78,7 @@ namespace NewHorizons.Builder.Props
                     stretch = propInfo.stretch,
 					keepLoaded = propInfo.keepLoaded
                 };
-                var scatterPrefab = DetailBuilder.Make(go, sector, prefab, detailInfo);
+                var scatterPrefab = DetailBuilder.Make(go, sector, mod, prefab, detailInfo);
 
                 for (int i = 0; i < propInfo.count; i++)
                 {
@@ -120,10 +121,28 @@ namespace NewHorizons.Builder.Props
                         }
                     }
 
+
+                    var parent = sector?.transform ?? go.transform;
+
+                    if (go != null && !string.IsNullOrEmpty(propInfo.parentPath))
+                    {
+                        var newParent = go.transform.Find(propInfo.parentPath);
+                        if (newParent != null)
+                        {
+                            parent = newParent;
+                            sector = newParent.GetComponentInParent<Sector>();
+                        }
+                        else
+                        {
+                            NHLogger.LogError($"Cannot find parent object at path: {go.name}/{propInfo.parentPath}");
+                        }
+                    }
+
                     var prop = scatterPrefab.InstantiateInactive();
-                    prop.transform.SetParent(sector?.transform ?? go.transform);
-                    prop.transform.localPosition = go.transform.TransformPoint(point * height);
-                    var up = go.transform.InverseTransformPoint(prop.transform.position).normalized;
+                    // Have to use SetParent method to work with tidally locked bodies #872
+                    prop.transform.SetParent(parent, false);
+                    prop.transform.localPosition = point * height;
+                    var up = (prop.transform.position - go.transform.position).normalized;
                     prop.transform.rotation = Quaternion.FromToRotation(Vector3.up, up);
 
                     if (propInfo.offset != null) prop.transform.localPosition += prop.transform.TransformVector(propInfo.offset);

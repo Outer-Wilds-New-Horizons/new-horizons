@@ -5,10 +5,10 @@ on:
     inputs:
       artifact_name:
         required: true
-        description: 'Name of the artifact to download and check against'
+        description: "Name of the artifact to download and check against"
         type: string
 
-# Prevents schemas from trying to update on old commits  
+# Prevents schemas from trying to update on old commits
 concurrency:
   group: "schemas-${{ github.ref }}"
   cancel-in-progress: true
@@ -18,23 +18,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           token: ${{ secrets.SCHEMAS_TOKEN }}
 
       - name: Download Artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.artifact_name }}
           path: NewHorizons/Schemas/
-          
+
       - name: Commit Schemas
         run: |
           git config --local user.email "bwc9876@gmail.com"
           git config --local user.name "Ben C"
           git add NewHorizons/Schemas/**
           git commit -m "Updated Schemas"
-          
+
       - name: Push Schemas
         uses: ad-m/github-push-action@master
         with:

@@ -1,3 +1,4 @@
+using NewHorizons.External.Modules.Props.Item;
 using NewHorizons.External.SerializableData;
 using Newtonsoft.Json;
 using System;
@@ -53,7 +54,9 @@ namespace NewHorizons.External.Modules.Props
         public string quantumGroupID;
 
         /// <summary>
-        /// Should this detail stay loaded even if you're outside the sector (good for very large props)
+        /// Should this detail stay loaded (visible and collideable) even if you're outside the sector (good for very large props)?
+        /// Also makes this detail visible on the map.
+        /// Most logic/behavior scripts will still only work inside the sector, as most of those scripts break if a sector is not provided.
         /// </summary>
         public bool keepLoaded;
 
@@ -100,6 +103,16 @@ namespace NewHorizons.External.Modules.Props
         /// Should the player close their eyes while the activation state changes. Only relevant if activationCondition or deactivationCondition are set.
         /// </summary>
         [DefaultValue(true)] public bool blinkWhenActiveChanged = true;
+
+        /// <summary>
+        /// Should this detail be treated as an interactible item
+        /// </summary>
+        public ItemInfo item;
+
+        /// <summary>
+        /// Should this detail be treated as a socket for an interactible item
+        /// </summary>
+        public ItemSocketInfo itemSocket;
 
         [Obsolete("alignToNormal is deprecated. Use alignRadial instead")] public bool alignToNormal;
     }

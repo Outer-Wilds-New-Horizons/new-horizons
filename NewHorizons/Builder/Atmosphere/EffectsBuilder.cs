@@ -1,7 +1,10 @@
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWML;
+using System;
 using UnityEngine;
+
 namespace NewHorizons.Builder.Atmosphere
 {
     public static class EffectsBuilder
@@ -51,55 +54,69 @@ namespace NewHorizons.Builder.Atmosphere
             if (_fogEmitterPrefab == null) _fogEmitterPrefab = SearchUtilities.Find("DB_EscapePodDimension_Body/Sector_EscapePodDimension/Effects_EscapePodDimension/Effects_DB_Fog (1)").InstantiateInactive().Rename("Prefab_Effects_Fog").DontDestroyOnLoad();
         }
 
+
+        #region obsolete
+        // Never change method signatures, people directly reference the NH dll and it can break backwards compatibility
+        // Dreamstalker needed this one
+        [Obsolete]
+        public static void Make(GameObject planetGO, Sector sector, PlanetConfig config, float surfaceHeight)
+            => InternalMake(planetGO, sector, config, surfaceHeight);
+        #endregion
+
         public static void Make(GameObject planetGO, Sector sector, PlanetConfig config)
+            => InternalMake(planetGO, sector, config, null);
+
+        /// <summary>
+        /// Nullable surface height for backwards compat
+        /// </summary>
+        /// <param name="planetGO"></param>
+        /// <param name="sector"></param>
+        /// <param name="config"></param>
+        /// <param name="surfaceHeight"></param>
+        private static void InternalMake(GameObject planetGO, Sector sector, PlanetConfig config, float? surfaceHeight)
         {
             InitPrefabs();
 
-            GameObject effectsGO = new GameObject("Effects");
+            var effectsGO = new GameObject("Effects");
             effectsGO.SetActive(false);
             effectsGO.transform.parent = sector?.transform ?? planetGO.transform;
             effectsGO.transform.position = planetGO.transform.position;
 
-            SectorCullGroup SCG = effectsGO.AddComponent<SectorCullGroup>();
-            SCG._sector = sector;
-            SCG._particleSystemSuspendMode = CullGroup.ParticleSystemSuspendMode.Stop;
-            SCG._occlusionCulling = false;
-            SCG._dynamicCullingBounds = false;
-            SCG._waitForStreaming = false;
+            var sectorCullGroup = effectsGO.AddComponent<SectorCullGroup>();
+            sectorCullGroup._sector = sector;
+            sectorCullGroup._particleSystemSuspendMode = CullGroup.ParticleSystemSuspendMode.Stop;
+            sectorCullGroup._occlusionCulling = false;
+            sectorCullGroup._dynamicCullingBounds = false;
+            sectorCullGroup._waitForStreaming = false;
 
-            var minHeight = config.Base.surfaceSize;
-            if (config.HeightMap?.minHeight != null)
+            var (minHeight, maxHeight) = GetDefaultHeightRange(config);
+            // min height override for backwards compat
+            minHeight = surfaceHeight ?? minHeight;
+
+            if (config.ParticleFields != null)
             {
-                if (config.Water?.size >= config.HeightMap.minHeight) minHeight = config.Water.size; // use sea level if its higher
-                else minHeight = config.HeightMap.minHeight;
-            }
-            else if (config.Water?.size != null) minHeight = config.Water.size;
-            else if (config.Lava?.size != null) minHeight = config.Lava.size;
-
-            var maxHeight = config.Atmosphere.size;
-            if (config.Atmosphere.clouds?.outerCloudRadius != null) maxHeight = config.Atmosphere.clouds.outerCloudRadius;
-
-            foreach (var particleField in config.ParticleFields)
-            {
-                var prefab = GetPrefabByType(particleField.type);
-                var emitter = Object.Instantiate(prefab, effectsGO.transform);
-                emitter.name = !string.IsNullOrWhiteSpace(particleField.rename) ? particleField.rename : prefab.name.Replace("Prefab_", "");
-                emitter.transform.position = planetGO.transform.position;
-
-                var vfe = emitter.GetComponent<VectionFieldEmitter>();
-                var pvc = emitter.GetComponent<PlanetaryVectionController>();
-                pvc._vectionFieldEmitter = vfe;
-                pvc._densityByHeight = particleField.densityByHeightCurve != null ? particleField.densityByHeightCurve.ToAnimationCurve() : new AnimationCurve(new Keyframe[]
+                foreach (var particleField in config.ParticleFields)
                 {
-                    new Keyframe(minHeight - 0.5f, 0),
-                    new Keyframe(minHeight, 10f),
-                    new Keyframe(maxHeight, 0f)
-                });
-                pvc._followTarget = particleField.followTarget == ParticleFieldModule.FollowTarget.Probe ? PlanetaryVectionController.FollowTarget.Probe : PlanetaryVectionController.FollowTarget.Player;
-                pvc._activeInSector = sector;
-                pvc._exclusionSectors = new Sector[] { };
+                    var prefab = GetPrefabByType(particleField.type);
+                    var emitter = GameObject.Instantiate(prefab, effectsGO.transform);
+                    emitter.name = !string.IsNullOrWhiteSpace(particleField.rename) ? particleField.rename : prefab.name.Replace("Prefab_", "");
+                    emitter.transform.position = planetGO.transform.position;
 
-                emitter.SetActive(true);
+                    var vfe = emitter.GetComponent<VectionFieldEmitter>();
+                    var pvc = emitter.GetComponent<PlanetaryVectionController>();
+                    pvc._vectionFieldEmitter = vfe;
+                    pvc._densityByHeight = particleField.densityByHeightCurve != null ? particleField.densityByHeightCurve.ToAnimationCurve() : new AnimationCurve(new Keyframe[]
+                    {
+                        new Keyframe(minHeight - 0.5f, 0),
+                        new Keyframe(minHeight, 10f),
+                        new Keyframe(maxHeight, 0f)
+                    });
+                    pvc._followTarget = particleField.followTarget == ParticleFieldModule.FollowTarget.Probe ? PlanetaryVectionController.FollowTarget.Probe : PlanetaryVectionController.FollowTarget.Player;
+                    pvc._activeInSector = sector;
+                    pvc._exclusionSectors = new Sector[] { };
+
+                    emitter.SetActive(true);
+                }
             }
 
             effectsGO.transform.position = planetGO.transform.position;
@@ -129,6 +146,49 @@ namespace NewHorizons.Builder.Atmosphere
                 ParticleFieldModule.ParticleFieldType.Current => _currentEmitterPrefab,
                 _ => null,
             };
+        }
+
+        private static (float, float) GetDefaultHeightRange(PlanetConfig config)
+        {
+            var minHeight = 0f;
+
+            if (config.HeightMap?.minHeight != null)
+            {
+                if (config.Water?.size >= config.HeightMap.minHeight) minHeight = config.Water.size; // use sea level if its higher
+                else minHeight = config.HeightMap.minHeight;
+            }
+            else if (config.Water?.size != null)
+            {
+                minHeight = config.Water.size;
+            }
+            else if (config.Lava?.size != null)
+            {
+                minHeight = config.Lava.size;
+            }
+            else if (config.Base != null)
+            {
+                minHeight = config.Base.surfaceSize;
+            }
+
+            var maxHeight = 100f;
+
+            if (config.Atmosphere != null)
+            {
+                if (config.Atmosphere.clouds?.outerCloudRadius != null)
+                {
+                    maxHeight = config.Atmosphere.clouds.outerCloudRadius;
+                }
+                else
+                {
+                    maxHeight = config.Atmosphere.size;
+                }
+            }
+            else if (minHeight != 0f)
+            {
+                maxHeight = minHeight * 2f;
+            }
+
+            return (minHeight, maxHeight);
         }
     }
 }

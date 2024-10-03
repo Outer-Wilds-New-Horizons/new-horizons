@@ -34,10 +34,13 @@ namespace NewHorizons.Components.ShipLog
 
         private int _nextCardIndex;
 
+        private HashSet<string> _systemCards = new();
+
         private void Awake()
         {
             // Prompts
             Locator.GetPromptManager().AddScreenPrompt(_warpPrompt, PromptPosition.UpperLeft, false);
+            _systemCards.Clear();
         }
 
         public override void Initialize(ScreenPromptList centerPromptList, ScreenPromptList upperRightPromptList, OWAudioSource oneShotSource)
@@ -54,20 +57,7 @@ namespace NewHorizons.Components.ShipLog
             _nextCardIndex = 0;
             foreach (var starSystem in Main.SystemDict.Keys)
             {
-                // Get rid of the warp option for the current system
-                if (starSystem == Main.Instance.CurrentStarSystem) continue;
-
-                var config = Main.SystemDict[starSystem];
-
-                // Conditions to allow warping into that system (either no planets (stock system) or has a ship spawn point)
-                var flag = false;
-                if (starSystem.Equals("SolarSystem")) flag = true;
-                else if (starSystem.Equals("EyeOfTheUniverse")) flag = false;
-                else if (config.Spawn?.shipSpawn != null) flag = true;
-
-                if (!StarChartHandler.HasUnlockedSystem(starSystem)) continue;
-
-                if (flag && Main.SystemDict[starSystem].Config.canEnterViaWarpDrive)
+                if (StarChartHandler.CanWarpToSystem(starSystem))
                 {
                     AddSystemCard(starSystem);
                 }
@@ -83,8 +73,15 @@ namespace NewHorizons.Components.ShipLog
 
         public void AddSystemCard(string uniqueID)
         {
-            var card = CreateCard(uniqueID, root.transform, new Vector2(_nextCardIndex++ * 200, 0));
-            _starSystemCards.Add(card);
+            if (!_systemCards.Contains(uniqueID))
+            {
+                var card = CreateCard(uniqueID, root.transform, new Vector2(_nextCardIndex++ * 200, 0));
+                _starSystemCards.Add(card);
+            }
+            else
+            {
+                NHLogger.LogWarning($"Tried making duplicate system card {uniqueID}");
+            }
         }
 
         public void OnDestroy()
@@ -99,7 +96,7 @@ namespace NewHorizons.Components.ShipLog
             if (_cardTemplate == null)
             {
                 var panRoot = SearchUtilities.Find("Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/ShipLogPivot/ShipLogCanvas/DetectiveMode/ScaleRoot/PanRoot");
-                _cardTemplate = Instantiate(panRoot.GetComponentInChildren<ShipLogEntryCard>().gameObject);
+                _cardTemplate = Instantiate(panRoot.GetComponentInChildren<ShipLogEntryCard>(true).gameObject);
                 _cardTemplate.SetActive(false);
             }
 
@@ -212,6 +209,12 @@ namespace NewHorizons.Components.ShipLog
 
         private void UpdateMapCamera()
         {
+            if (_starSystemCards.Count == 0)
+            {
+                NHLogger.LogWarning("Showing star chart mode when there are no avaialble systems");
+                return;
+            }
+
             Vector2 b = -_starSystemCards[_cardIndex].transform.localPosition;
             float num = Mathf.InverseLerp(_startPanTime, _startPanTime + _panDuration, Time.unscaledTime);
             num = 1f - (num - 1f) * (num - 1f);
@@ -295,7 +298,7 @@ namespace NewHorizons.Components.ShipLog
 
             var name = UniqueIDToName(shipLogEntryCard.name);
 
-            var warpNotificationDataText = TranslationHandler.GetTranslation("WARP_LOCKED", TranslationHandler.TextType.UI).Replace("{0}", name.ToUpper());
+            var warpNotificationDataText = TranslationHandler.GetTranslation("WARP_LOCKED", TranslationHandler.TextType.UI).Replace("{0}", name.ToUpperFixed());
             _warpNotificationData = new NotificationData(warpNotificationDataText);
             NotificationManager.SharedInstance.PostNotification(_warpNotificationData, true);
 

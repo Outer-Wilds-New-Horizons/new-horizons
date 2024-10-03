@@ -1,0 +1,186 @@
+---
+import { SchemaTools } from "@/util/schema_utils";
+import type { Schema } from "@/util/schema_utils";
+
+export interface Props {
+    schema: Schema;
+    level: number;
+    isDef?: boolean;
+}
+
+// Makes TS Happy
+type HeadingType = "h2" | "h3" | "h4" | "h5" | "h6";
+
+const levelMap: HeadingType[] = ["h2", "h2", "h3", "h4", "h5", "h6"];
+
+const { schema, level, isDef } = Astro.props;
+
+const description = SchemaTools.getDescription(schema);
+const type = SchemaTools.getType(schema);
+const link = `https://raw.githubusercontent.com/Outer-Wilds-New-Horizons/new-horizons/main/NewHorizons/Schemas/${schema.fileName}`;
+const refSlug = SchemaTools.getRefSlug(schema);
+const enumVals = SchemaTools.getEnumValues(schema);
+const props = SchemaTools.getProps(schema, level);
+
+const descSplit = description?.toString().split("\n");
+
+const HeadingTag = levelMap[level] ?? "h6";
+---
+
+<div data-level={level} class="wrapper">
+    <div class="header">
+            {
+                level !== 0 && (
+                    <HeadingTag class="title" id={schema.slug}>
+                        {level !== 0 && (
+                            <a aria-hidden="true" tabindex="-1" class="anchor" href={`#${schema.slug}`}>
+                                #
+                            </a>
+                        )}
+                        {SchemaTools.getTitle(schema)}
+                    </HeadingTag>
+                )
+            }
+        <div class="badges">
+            {level === 0 && <span>Schema Type: {schema.internalSchema.type}</span>}
+            {
+                SchemaTools.getRequired(schema) && level !== 0 && (
+                    <span class="required">Required</span>
+                )
+            }
+            {type && <span>Type: {type}</span>}
+            {SchemaTools.getAdditionalBadges(schema).map((b) => <span>{b}</span>)}
+        </div>
+    </div>
+    {
+        level === 0 && !isDef && (
+            <div class="tool-links">
+                <a href={`/schemas/${schema.slug}/defs`}>View Definitions</a>|
+                <a rel="noreferer" target="_blank" href={link}>
+                    View Raw
+                </a>
+            </div>
+        )
+    }
+    <p>{descSplit?.map(l => <>{l}<br></>) ?? <>No Description Found</>}</p>
+    {
+        enumVals.length !== 0 && (
+            <>
+                <p>Must be equal to any of the following:</p>
+                <ul>
+                    {enumVals.map((v) => (
+                        <li>
+                            <code>{v}</code>
+                        </li>
+                    ))}
+                </ul>
+            </>
+        )
+    }
+    {
+        refSlug && (
+            <a href={`/schemas/${schema.rootSlug}/defs/${refSlug.toLowerCase()}`}>
+                See Definitions/{refSlug}
+            </a>
+        )
+    }
+    {
+        props.length !== 0 && (
+            <div class="children">
+                {props.map(([_, child], i) => (
+                    <>
+                        {i !== 0 && <hr />}
+                        <Astro.self level={level + 1} schema={child} />
+                    </>
+                ))}
+            </div>
+        )
+    }
+</div>
+
+<style>
+    @keyframes flash {
+        0% {
+            color: var(--sl-color-white);
+        }
+        50% {
+            color: var(--sl-color-accent);
+        }
+        100% {
+            color: var(--sl-color-white);
+        }
+    }
+
+    .title:target {
+        animation: flash 600ms cubic-bezier(0.45, 0.05, 0.55, 0.95) 3;
+    }
+
+    .title:hover a.anchor {
+        display: initial;
+    }
+
+    a.anchor {
+        text-decoration: none;
+        float: left;
+        margin-left: -26px;
+        padding-right: 5px; 
+        display: none;
+    }
+
+    a.anchor:hover {
+        display: initial;
+        color: var(--sl-color-accent);
+    }
+
+    div.header {
+        display: flex;
+        flex-direction: column;
+    }
+
+    div.wrapper[data-level="2"] {
+        margin-left: 2rem;
+    }
+
+    div.wrapper[data-level="3"] {
+        margin-left: 3.5rem;
+    }
+
+    div.wrapper[data-level="4"] {
+        margin-left: 5rem;
+    }
+
+    div.wrapper {
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+    }
+
+    div.children {
+        display: flex;
+        flex-direction: column;
+    }
+
+    div.tool-links {
+        display: flex;
+        gap: .5rem;
+    }
+
+    span {
+        background-color: var(--sl-color-accent-low);
+        font-size: small;
+        padding: 0.5rem;
+        border: solid 2px var(--sl-color-accent);
+        border-radius: 5rem;
+    }
+
+    span.required {
+        --hue-yellow: 53;
+        background-color: hsl(var(--hue-yellow) 50% 20%);
+        border-color: hsl(var(--hue-yellow) 50% 50%);
+    }
+
+    :root[data-theme="light"] span.required {
+        background-color: yellow;
+        border-color: darkgoldenrod;
+    }
+</style>

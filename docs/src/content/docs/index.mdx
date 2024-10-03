@@ -1,0 +1,52 @@
+---
+title: New Horizons
+description: Create custom planets for Outer Wilds with New Horizons
+template: splash
+hero:
+    tagline: Create custom planets for Outer Wilds with New Horizons
+    image:
+        file: /src/assets/splash_hero_image.webp
+        alt: The New Horizons Logo
+    actions:
+        - text: Get Started
+          link: /start-here/getting-started
+          icon: right-arrow
+          variant: primary
+        - text: Schema Reference
+          link: /schemas/body-schema
+---
+
+import { Card, CardGrid } from "@astrojs/starlight/components";
+
+This is the official site for [New Horizons](https://github.com/xen-42/outer-wilds-new-horizons),
+a framework for creating custom planets in the game [Outer Wilds](https://www.mobiusdigitalgames.com/outer-wilds.html)
+by Mobius Digital.
+
+## Features
+
+<CardGrid stagger>
+    <Card title="Create Planets Through JSON" icon="document">
+        Use declarative JSON to create custom planets without having to write a line of code.
+    </Card>
+    <Card title="Custom Star Systems" icon="star">
+        Create solar systems seperate from the base game's with its own planets, vessel coordinates,
+        and ship log.
+    </Card>
+    <Card title="API" icon="forward-slash">
+        Interface with various life cycle events and functions during star system creation with New
+        Horizon's API.
+    </Card>
+    <Card title="Extendable Configs" icon="puzzle">
+        Use the `extras` key in JSON files to allow extendable functionality with other mods.
+    </Card>
+</CardGrid>
+
+## Disclaimer
+
+This work is unofficial fan content created under permission from the [Mobius Digital Fan Content Policy](https://www.mobiusdigitalgames.com/fan-content-policy.html). It includes materials which are the property of Mobius Digital, and it is neither approved nor endorsed by Mobius Digital.
+
+We are not responsible for any mods created using the New Horizons modding framework and assume no responsibility in the event an addon violates the terms.
+
+## License
+
+The license for this project is available [on the GitHub repository](https://github.com/xen-42/outer-wilds-new-horizons/blob/main/LICENSE).

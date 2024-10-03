@@ -1,12 +1,12 @@
+using NewHorizons.Components;
 using NewHorizons.Components.Stars;
 using NewHorizons.Utility;
-using NewHorizons.Utility.OWML;
 using NewHorizons.Utility.OuterWilds;
+using NewHorizons.Utility.OWML;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using NewHorizons.Components;
 
 namespace NewHorizons.Handlers
 {
@@ -16,6 +16,17 @@ namespace NewHorizons.Handlers
 
         public static void RemoveStockPlanets()
         {
+            if (Main.Instance.CurrentStarSystem != "EyeOfTheUniverse")
+            {
+                // For some reason disabling planets immediately ruins the creation of everything else
+                // However, the sun breaks a lot of stuff sometimes (literally destroys it in its volumes I imagine)
+                // Eg, vision torch in Mindscapes
+                // TODO: Fix it better by disabling destruction volumes the first few frames maybe
+                // Until then
+                // I am become death, the destroyer of worlds
+                SearchUtilities.Find("Sun_Body").transform.position = Vector3.left * 1000000000f;
+            }
+
             // Adapted from EOTS thanks corby
             var toDisable = new List<GameObject>();
 
@@ -32,7 +43,12 @@ namespace NewHorizons.Handlers
             {
                 foreach (var gameObject in toDisable)
                 {
-                    gameObject.SetActive(false);
+                    // The gameObject can be null, seems to only happen if they don't have the DLC installed
+                    // null coalesence doesn't work with game objects so don't use it here
+                    if (gameObject != null)
+                    {
+                        gameObject.SetActive(false);
+                    }
                 }
                 // Kill all non nh proxies
                 foreach (var proxy in GameObject.FindObjectsOfType<ProxyBody>())
@@ -47,10 +63,17 @@ namespace NewHorizons.Handlers
                 if (Main.Instance.CurrentStarSystem != "EyeOfTheUniverse")
                 {
                     // Since we didn't call RemoveBody on the all planets there are some we have to call here
-                    StrangerRemoved();
                     TimberHearthRemoved();
                     GiantsDeepRemoved();
                     SunRemoved();
+
+                    if (Main.HasDLC)
+                    {
+                        StrangerRemoved();
+                    }
+
+                    // Put it back at the center of the universe after banishing it else there are weird graphical bugs
+                    SearchUtilities.Find("Sun_Body").gameObject.transform.position = Locator._centerOfTheUniverse._staticReferenceFrame.transform.position;
                 }
 
             }, 2); // Have to wait or shit goes wild

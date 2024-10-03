@@ -3,21 +3,23 @@ using NewHorizons.Builder.Body;
 using NewHorizons.Builder.General;
 using NewHorizons.Builder.Orbital;
 using NewHorizons.Builder.Props;
+using NewHorizons.Builder.ShipLog;
 using NewHorizons.Builder.Volumes;
 using NewHorizons.Components.Orbital;
 using NewHorizons.Components.Quantum;
 using NewHorizons.Components.Stars;
 using NewHorizons.External;
 using NewHorizons.OtherMods.OWRichPresence;
+using NewHorizons.Streaming;
 using NewHorizons.Utility;
-using NewHorizons.Utility.OWML;
 using NewHorizons.Utility.OuterWilds;
+using NewHorizons.Utility.OWML;
+using Newtonsoft.Json;
+using OWML.ModHelper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using NewHorizons.Streaming;
-using Newtonsoft.Json;
 
 namespace NewHorizons.Handlers
 {
@@ -35,7 +37,7 @@ namespace NewHorizons.Handlers
         public static float SolarSystemRadius { get; private set; }
         public static float DefaultFurthestOrbit => 30000f;
 
-        public static List<Action<GameObject, string>> CustomBuilders;
+        public static List<Action<GameObject, string>> CustomBuilders = new();
 
         public static void Init(List<NewHorizonsBody> bodies)
         {
@@ -343,6 +345,13 @@ namespace NewHorizons.Handlers
             // Do stuff that's shared between generating new planets and updating old ones
             go = SharedGenerateBody(body, go, sector, rb);
 
+            if (body.Config.ShipLog?.mapMode != null)
+            {
+                MapModeBuilder.TryReplaceExistingMapModeIcon(body, body.Mod as ModBehaviour, body.Config.ShipLog.mapMode);
+            }
+
+            body.Object = go;
+
             return go;
         }
 
@@ -365,18 +374,18 @@ namespace NewHorizons.Handlers
             go.SetActive(false);
 
             body.Config.Base.showMinimap = false;
-            body.Config.Base.hasMapMarker = false;
+            body.Config.MapMarker.enabled = false;
 
             const float sphereOfInfluence = 2000f;
             
             var owRigidBody = RigidBodyBuilder.Make(go, sphereOfInfluence, body.Config);
-            var ao = AstroObjectBuilder.Make(go, null, body.Config, false);
+            var ao = AstroObjectBuilder.Make(go, null, body, false);
 
             var sector = SectorBuilder.Make(go, owRigidBody, sphereOfInfluence);
             ao._rootSector = sector;
             ao._type = AstroObject.Type.None;
 
-            BrambleDimensionBuilder.Make(body, go, ao, sector, owRigidBody);
+            BrambleDimensionBuilder.Make(body, go, ao, sector, body.Mod, owRigidBody);
 
             go = SharedGenerateBody(body, go, sector, owRigidBody);
             
@@ -446,7 +455,7 @@ namespace NewHorizons.Handlers
             var sphereOfInfluence = GetSphereOfInfluence(body);
             
             var owRigidBody = RigidBodyBuilder.Make(go, sphereOfInfluence, body.Config);
-            var ao = AstroObjectBuilder.Make(go, primaryBody, body.Config, false);
+            var ao = AstroObjectBuilder.Make(go, primaryBody, body, false);
 
             var sector = SectorBuilder.Make(go, owRigidBody, sphereOfInfluence * 2f);
             ao._rootSector = sector;
@@ -458,7 +467,7 @@ namespace NewHorizons.Handlers
 
             RFVolumeBuilder.Make(go, owRigidBody, sphereOfInfluence, body.Config.ReferenceFrame);
 
-            if (body.Config.Base.hasMapMarker)
+            if (body.Config.MapMarker.enabled)
             {
                 MarkerBuilder.Make(go, body.Config.name, body.Config);
             }
@@ -604,10 +613,6 @@ namespace NewHorizons.Handlers
                         remnantGO.SetActive(false);
                         starEvolutionController.SetStellarRemnant(remnantGO);
                     }
-                    else
-                    {
-                        starEvolutionController.willExplode = false;
-                    }
                 }
             }
 
@@ -712,9 +717,9 @@ namespace NewHorizons.Handlers
                     {
                         customBuilder.Invoke(go, JsonConvert.SerializeObject(body.Config.extras));
                     }
-                    catch
+                    catch (Exception e)
                     {
-                        NHLogger.LogError($"Failed to use custom builder on body {body.Config.name}");
+                        NHLogger.LogError($"Failed to use custom builder on body {body.Config.name} - {e}");
                     }
                 }
             }
@@ -791,7 +796,7 @@ namespace NewHorizons.Handlers
                 }
 
                 // Just destroy the existing AO after copying everything over
-                var newAO = AstroObjectBuilder.Make(go, primary, body.Config, true);
+                var newAO = AstroObjectBuilder.Make(go, primary, body, true);
                 newAO._gravityVolume = ao._gravityVolume;
                 newAO._moon = ao._moon;
                 newAO._name = ao._name;
@@ -931,7 +936,7 @@ namespace NewHorizons.Handlers
             }
 
             // Uses the ratio of the interlopers furthest point to what the base game considers the edge of the solar system
-            var distanceToCenter = go.transform.position.magnitude * (24000 / 30000f);
+            var distanceToCenter = go.transform.position.magnitude / (24000 / 30000f);
             if (distanceToCenter > SolarSystemRadius)
             {
                 SolarSystemRadius = distanceToCenter;
@@ -952,7 +957,13 @@ namespace NewHorizons.Handlers
                 {
                     flag = false;
                     // idk why we wait here but we do
-                    Delay.FireInNUpdates(() => childObj.gameObject.SetActive(false), 2);
+                    Delay.FireInNUpdates(() =>
+                    {
+                        if (childObj != null && childObj.gameObject != null)
+                        {
+                            childObj.gameObject.SetActive(false);
+                        }
+                    }, 2);
                 }
 
                 if (flag) NHLogger.LogWarning($"Couldn't find \"{childPath}\".");

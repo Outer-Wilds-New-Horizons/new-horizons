@@ -2,7 +2,9 @@ using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using NewHorizons.Utility.Files;
 using OWML.Common;
+using System;
 using UnityEngine;
+
 namespace NewHorizons.Builder.Atmosphere
 {
     public static class FogBuilder
@@ -24,7 +26,9 @@ namespace NewHorizons.Builder.Atmosphere
 
         internal static void InitPrefabs()
         {
-            if (_ramp == null) _ramp = ImageUtilities.GetTexture(Main.Instance, "Assets/textures/FogColorRamp.png");
+            // Checking null here it was getting destroyed and wouldnt reload and never worked outside of the first loop
+            // GetTexture caches itself anyway so it doesn't matter that this gets called multiple times
+             _ramp = ImageUtilities.GetTexture(Main.Instance, "Assets/textures/FogColorRamp.png");
 
             if (_isInit) return;
 
@@ -35,6 +39,14 @@ namespace NewHorizons.Builder.Atmosphere
             if (_dbImpostorMesh == null) _dbImpostorMesh = SearchUtilities.Find("DarkBramble_Body/Atmosphere_DB/FogLOD").GetComponent<MeshFilter>().mesh.DontDestroyOnLoad();
             if (_dbImpostorMaterials == null) _dbImpostorMaterials = SearchUtilities.Find("DarkBramble_Body/Atmosphere_DB/FogLOD").GetComponent<MeshRenderer>().sharedMaterials.MakePrefabMaterials();
         }
+
+        #region obsolete
+        // Never change method signatures, people directly reference the NH dll and it can break backwards compatibility
+        // Dreamstalker needs this method signature
+        [Obsolete]
+        public static PlanetaryFogController Make(GameObject planetGO, Sector sector, AtmosphereModule atmo)
+            => Make(planetGO, sector, atmo, null);
+        #endregion
 
         public static PlanetaryFogController Make(GameObject planetGO, Sector sector, AtmosphereModule atmo, IModBehaviour mod)
         {
@@ -63,6 +75,7 @@ namespace NewHorizons.Builder.Atmosphere
                 atmo.fogRampPath != null ? ImageUtilities.GetTexture(mod, atmo.fogRampPath) :
                 atmo.fogTint != null ? ImageUtilities.TintImage(_ramp, atmo.fogTint.ToColor()) :
                 _ramp;
+
             PFC.fogColorRampTexture = colorRampTexture;
             PFC.fogColorRampIntensity = 1f;
             if (atmo.fogTint != null)

@@ -1,6 +1,6 @@
 using NewHorizons.Components;
 using NewHorizons.Components.Orbital;
-using NewHorizons.External.Configs;
+using NewHorizons.External;
 using NewHorizons.Utility.OWML;
 using UnityEngine;
 
@@ -8,11 +8,15 @@ namespace NewHorizons.Builder.General
 {
     public static class AstroObjectBuilder
     {
-        public static NHAstroObject Make(GameObject body, AstroObject primaryBody, PlanetConfig config, bool isVanilla)
+        public static NHAstroObject Make(GameObject body, AstroObject primaryBody, NewHorizonsBody nhBody, bool isVanilla)
         {
             NHAstroObject astroObject = body.AddComponent<NHAstroObject>();
+            astroObject.modUniqueName = nhBody.Mod.ModHelper.Manifest.UniqueName;
+
+            var config = nhBody.Config;
+
             astroObject.isVanilla = isVanilla;
-            astroObject.HideDisplayName = !config.Base.hasMapMarker;
+            astroObject.HideDisplayName = !config.MapMarker.enabled;
             astroObject.invulnerableToSun = config.Base.invulnerableToSun;
 
             if (config.Orbit != null) astroObject.SetOrbitalParametersFromConfig(config.Orbit);

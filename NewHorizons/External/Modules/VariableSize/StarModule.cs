@@ -154,6 +154,7 @@ namespace NewHorizons.External.Modules.VariableSize
         [EnumMember(Value = @"default")] Default,
         [EnumMember(Value = @"whiteDwarf")] WhiteDwarf,
         [EnumMember(Value = @"neutronStar")] NeutronStar,
+        [Obsolete] Pulsar,
         [EnumMember(Value = @"blackHole")] BlackHole,
         [EnumMember(Value = @"custom")] Custom
     }

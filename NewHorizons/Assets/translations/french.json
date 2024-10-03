@@ -17,7 +17,8 @@
     "RICH_PRESENCE_WARPING": "En route vers {0}.",
     "OUTDATED_VERSION_WARNING": "AVERTISSEMENT\n\nNew Horizons fonctionne seulement sur la version {0} ou plus récente. Vous êtes sur la version {1}.\n\nVeuillez mettre à jour votre jeu ou désinstaller NH.",
     "JSON_FAILED_TO_LOAD": "Fichier(s) invalide(s): {0}",
-    "Vessel": "Vaisseau"
+    "Vessel": "Vaisseau",
+    "DLC_REQUIRED": "AVERTISSEMENT\n\nVous avez installé des addons (par exemple, {0}) qui nécessitent le DLC mais il n'est pas activé.\n\nVos mods peuvent ne pas fonctionner."
   },
   "AchievementTranslations": {
     "NH_EATEN_OUTSIDE_BRAMBLE": {
