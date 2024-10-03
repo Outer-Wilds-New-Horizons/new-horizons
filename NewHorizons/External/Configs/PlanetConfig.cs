@@ -281,7 +281,7 @@ namespace NewHorizons.External.Configs
             }
 
             // Stars and focal points shouldnt be destroyed by stars
-            if (Star != null || FocalPoint != null) Base.invulnerableToSun = true;
+            if (Star != null || FocalPoint != null) Base.hasFluidDetector = false;
         }
 
         public void Migrate()
@@ -663,6 +663,11 @@ namespace NewHorizons.External.Configs
                 {
                     if (destructionVolume.onlyAffectsPlayerAndShip) destructionVolume.onlyAffectsPlayerRelatedBodies = true;
                 }
+            }
+
+            if (Base.invulnerableToSun)
+            {
+                Base.hasFluidDetector = false;
             }
         }
         #endregion

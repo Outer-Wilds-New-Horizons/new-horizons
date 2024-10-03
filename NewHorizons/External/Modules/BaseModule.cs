@@ -37,9 +37,11 @@ namespace NewHorizons.External.Modules
         public float groundSize;
 
         /// <summary>
-        /// Can this planet survive entering a star?
+        /// Is this planet able to detect fluid volumes? Disabling this means that entering a star or lava volume will not destroy this planet
+        /// May have adverse effects if anglerfish are added to this planet, disable this if you want those to work (they have fluid volumes in their mouths)
         /// </summary>
-        public bool invulnerableToSun;
+        [DefaultValue(true)]
+        public bool hasFluidDetector = true;
 
         /// <summary>
         /// Do we show the minimap when walking around this planet?
@@ -83,6 +85,9 @@ namespace NewHorizons.External.Modules
         public bool hideProxy;
 
         #region Obsolete
+
+        [Obsolete("invulnerableToSun is deprecated, please use hasFluidDetector instead")]
+        public bool invulnerableToSun;
 
         [Obsolete("IsSatellite is deprecated, please use ShowMinimap instead")]
         public bool isSatellite;

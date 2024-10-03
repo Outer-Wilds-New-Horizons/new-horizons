@@ -19,7 +19,7 @@ namespace NewHorizons.Builder.General
 
             astroObject.isVanilla = isVanilla;
             astroObject.HideDisplayName = !config.MapMarker.enabled;
-            astroObject.invulnerableToSun = config.Base.invulnerableToSun;
+            astroObject.invulnerableToSun = !config.Base.hasFluidDetector;
 
             if (config.Orbit != null) astroObject.SetOrbitalParametersFromConfig(config.Orbit);
 
