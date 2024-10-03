@@ -552,9 +552,10 @@
           "description": "Radius of a simple sphere used as the ground for the planet. If you want to use more complex terrain, leave this as\n0.",
           "format": "float"
         },
-        "invulnerableToSun": {
+        "hasFluidDetector": {
           "type": "boolean",
-          "description": "Can this planet survive entering a star?"
+          "description": "Is this planet able to detect fluid volumes? Disabling this means that entering a star or lava volume will not destroy this planet\nMay have adverse effects if anglerfish are added to this planet, disable this if you want those to work (they have fluid volumes in their mouths)",
+          "default": true
         },
         "showMinimap": {
           "type": "boolean",
