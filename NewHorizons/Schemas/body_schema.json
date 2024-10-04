@@ -2722,6 +2722,10 @@
           "type": "string",
           "description": "If you want a black hole to load a new star system scene, put its name here."
         },
+        "spawnPointID": {
+          "type": "string",
+          "description": "If this is a black hole loading a new star system, set the ID of the spawn point you want to use\nOtherwise, will use the default spawn"
+        },
         "type": {
           "description": "Type of singularity (white hole or black hole)",
           "$ref": "#/definitions/SingularityType"
@@ -3655,6 +3659,10 @@
           "type": "string",
           "description": "If the given persistent condition is true, this spawn point will be used\nDo not use at the same time as isDefault or makeDefaultIfFactRevealed\nSpawns unlocked with this have second highest priority"
         },
+        "id": {
+          "type": "string",
+          "description": "ID used to have a black hole or warp volume bring the player to this spawn specifically"
+        },
         "rotation": {
           "description": "Rotation of the object",
           "$ref": "#/definitions/MVector3"
@@ -3707,6 +3715,10 @@
         "makeDefaultIfPersistentCondition": {
           "type": "string",
           "description": "If the given persistent condition is true, this spawn point will be used\nDo not use at the same time as isDefault or makeDefaultIfFactRevealed\nSpawns unlocked with this have second highest priority"
+        },
+        "id": {
+          "type": "string",
+          "description": "ID used to have a black hole or warp volume bring the player to this spawn specifically"
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -5194,6 +5206,10 @@
           "type": "string",
           "description": "The star system that entering this volume will send you to.",
           "default": "SolarSystem"
+        },
+        "spawnPointID": {
+          "type": "string",
+          "description": "ID assigned to a spawn point in the other system that the player will be sent to\nUses the default spawn if not set"
         }
       }
     },
