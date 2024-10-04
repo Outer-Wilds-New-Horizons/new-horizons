@@ -35,34 +35,41 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// Whether this planet's spawn point is the one the player/ship will initially spawn at, if multiple spawn points exist.
             /// Do not use at the same time as makeDefaultIfFactRevealed or makeDefaultIfPersistentCondition
+            /// Spawns unlocked with this have lowest priority
             /// </summary>
             public bool isDefault;
 
             /// <summary>
             /// If the given ship log fact is revealed, this spawn point will be used
             /// Do not use at the same time as isDefault or makeDefaultIfPersistentCondition
+            /// Spawns unlocked with this have highest priority
             /// </summary>
             public string makeDefaultIfFactRevealed;
 
             /// <summary>
             /// If the given persistent condition is true, this spawn point will be used
             /// Do not use at the same time as isDefault or makeDefaultIfFactRevealed
+            /// Spawns unlocked with this have second highest priority
             /// </summary>
             public string makeDefaultIfPersistentCondition;
 
-            public bool IsDefault()
+            public int GetPriority()
             {
                 if (!string.IsNullOrEmpty(makeDefaultIfFactRevealed) && ShipLogHandler.KnowsFact(makeDefaultIfFactRevealed))
                 {
-                    return true;
+                    return 2;
                 }
                 if (!string.IsNullOrEmpty(makeDefaultIfPersistentCondition) && PlayerData.GetPersistentCondition(makeDefaultIfPersistentCondition))
                 {
-                    return true;
+                    return 1;
+                }
+                if (isDefault)
+                {
+                    return 0;
                 }
                 else
                 {
-                    return isDefault;
+                    return -1;
                 }
             }
         }

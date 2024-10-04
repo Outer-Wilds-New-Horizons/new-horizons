@@ -130,7 +130,7 @@ namespace NewHorizons.Handlers
             var canWarpTo = false;
             if (system.Equals("SolarSystem")) canWarpTo = true;
             else if (system.Equals("EyeOfTheUniverse")) canWarpTo = false;
-            else if (config.Spawn?.shipSpawn != null) canWarpTo = true;
+            else if (config.HasShipSpawn) canWarpTo = true;
 
             var canEnterViaWarpDrive = Main.SystemDict[system].Config.canEnterViaWarpDrive || system == "SolarSystem";
 

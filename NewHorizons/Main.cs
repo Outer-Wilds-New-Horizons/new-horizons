@@ -789,9 +789,6 @@ namespace NewHorizons
 
                         if (body != null)
                         {
-                            // Wanna track the spawn point of each system
-                            if (body.Config.Spawn != null) SystemDict[body.Config.starSystem].Spawn = body.Config.Spawn;
-
                             // Add the new planet to the planet dictionary
                             if (!BodyDict.ContainsKey(body.Config.starSystem)) BodyDict[body.Config.starSystem] = new List<NewHorizonsBody>();
                             BodyDict[body.Config.starSystem].Add(body);
@@ -923,6 +920,12 @@ namespace NewHorizons
             // Has to happen after we make sure theres a system config
             config.Validate();
             config.Migrate();
+
+            // Check if this system can be warped to
+            if (config.Spawn?.shipSpawn != null)
+            {
+                SystemDict[config.starSystem].HasShipSpawn = true;
+            }
 
             return new NewHorizonsBody(config, mod, relativePath);
         }

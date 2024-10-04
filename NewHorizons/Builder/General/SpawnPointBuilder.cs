@@ -13,8 +13,21 @@ namespace NewHorizons.Builder.General
     public static class SpawnPointBuilder
     {
         private static bool suitUpQueued = false;
+
+        // Ship
+        public static SpawnModule.ShipSpawnPoint ShipSpawnInfo { get; private set; }
         public static SpawnPoint ShipSpawn { get; private set; }
         public static Vector3 ShipSpawnOffset { get; private set; }
+
+        // Player
+        public static SpawnModule.PlayerSpawnPoint PlayerSpawnInfo { get; private set; }
+        public static SpawnPoint PlayerSpawn { get; private set; }
+
+        public static void OverridePlayerSpawn(SpawnPoint newSpawn)
+        {
+            PlayerSpawn = newSpawn;
+            PlayerSpawnInfo = null;
+        }
 
         public static SpawnPoint Make(GameObject planetGO, SpawnModule module, OWRigidbody owRigidBody)
         {
@@ -34,6 +47,12 @@ namespace NewHorizons.Builder.General
 
                 // This was a stupid hack to stop players getting stuck in the ground and now we have to keep it forever
                 spawnGO.transform.position += spawnGO.transform.TransformDirection(module.playerSpawn.offset ?? Vector3.up * 4f);
+
+                if (PlayerSpawn == null || module.playerSpawn.GetPriority() > PlayerSpawnInfo.GetPriority())
+                {
+                    PlayerSpawn = playerSpawn;
+                    PlayerSpawnInfo = module.playerSpawn;
+                }
             }
 
             if (module.shipSpawn != null)
@@ -52,10 +71,11 @@ namespace NewHorizons.Builder.General
 
                 var shipSpawnOffset = module.shipSpawn.offset ?? (module.shipSpawn.alignRadial.GetValueOrDefault() ? Vector3.up * 4 : Vector3.zero);
 
-                if (ShipSpawn == null || module.shipSpawn.IsDefault())
+                if (ShipSpawn == null || module.shipSpawn.GetPriority() > ShipSpawnInfo.GetPriority())
                 {
                     ShipSpawn = shipSpawn;
                     ShipSpawnOffset = shipSpawnOffset;
+                    ShipSpawnInfo = module.shipSpawn;
                 }
 
                 spawnGO.SetActive(true);
