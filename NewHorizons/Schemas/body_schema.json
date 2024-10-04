@@ -623,12 +623,12 @@
       "additionalProperties": false,
       "properties": {
         "fogTint": {
-          "description": "The color of the fog inside this dimension. \nLeave blank for the default grayish color: (84, 83, 73)",
+          "description": "The color of the fog inside this dimension. \nLeave blank for the default grayish color: (84, 83, 73)\nThe alpha value has no effect of the fog: Use fogDensity instead!",
           "$ref": "#/definitions/MColor"
         },
         "fogDensity": {
           "type": "number",
-          "description": "The density of the fog inside this dimension. The default is 6.",
+          "description": "The density of the fog inside this dimension. The default is 6. If you want no fog, set this to 0.",
           "format": "float",
           "default": 6.0
         },
