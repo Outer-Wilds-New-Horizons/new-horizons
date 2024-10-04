@@ -3613,13 +3613,19 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "playerSpawn": {
-          "description": "If you want the player to spawn on the new body, set a value for this.",
-          "$ref": "#/definitions/PlayerSpawnPoint"
+        "playerSpawnPoints": {
+          "type": "array",
+          "description": "If you want the player to spawn on the new body, set a value for this.\nDifferent spawns can be unlocked with persistent conditions and facts",
+          "items": {
+            "$ref": "#/definitions/PlayerSpawnPoint"
+          }
         },
-        "shipSpawn": {
-          "description": "Required for the system to be accessible by warp drive.",
-          "$ref": "#/definitions/ShipSpawnPoint"
+        "shipSpawnPoints": {
+          "type": "array",
+          "description": "Required for the system to be accessible by warp drive.\nDifferent spawns can be unlocked with persistent conditions and facts",
+          "items": {
+            "$ref": "#/definitions/ShipSpawnPoint"
+          }
         }
       }
     },
