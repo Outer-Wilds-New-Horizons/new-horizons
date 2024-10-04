@@ -9,6 +9,11 @@ namespace NewHorizons.Handlers
 {
     public static class PlayerSpawnHandler
     {
+        /// <summary>
+        /// Set during the previous loop, force the player to spawn here
+        /// </summary>
+        public static string TargetSpawnID { get; set; }
+
         public static void SetUpPlayerSpawn()
         {
             if (UsingCustomSpawn())
@@ -146,6 +151,9 @@ namespace NewHorizons.Handlers
             FixPlayerVelocity();
 
             InvulnerabilityHandler.MakeInvulnerable(false);
+
+            // Done spawning
+            TargetSpawnID = null;
         }
 
         private static void FixPlayerVelocity(bool recenter = true)

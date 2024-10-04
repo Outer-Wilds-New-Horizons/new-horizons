@@ -1,3 +1,4 @@
+using NewHorizons.Builder.General;
 using NewHorizons.External.SerializableData;
 using NewHorizons.Handlers;
 using Newtonsoft.Json;
@@ -61,8 +62,17 @@ namespace NewHorizons.External.Modules
             /// </summary>
             public string makeDefaultIfPersistentCondition;
 
+            /// <summary>
+            /// ID used to have a black hole or warp volume bring the player to this spawn specifically
+            /// </summary>
+            public string id;
+
             public int GetPriority()
             {
+                if (!string.IsNullOrEmpty(id) && !string.IsNullOrEmpty(PlayerSpawnHandler.TargetSpawnID) && id == PlayerSpawnHandler.TargetSpawnID)
+                {
+                    return 3;
+                }
                 if (!string.IsNullOrEmpty(makeDefaultIfFactRevealed) && ShipLogHandler.KnowsFact(makeDefaultIfFactRevealed))
                 {
                     return 2;

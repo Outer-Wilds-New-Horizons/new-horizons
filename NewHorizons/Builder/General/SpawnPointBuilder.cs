@@ -94,6 +94,7 @@ namespace NewHorizons.Builder.General
                 suitUpQueued = true;
                 Delay.RunWhen(() => Main.IsSystemReady, () =>
                 {
+                    suitUpQueued = false;
                     if (Main.Instance.IsWarpingFromVessel || (!Main.Instance.IsWarpingFromShip && (PlayerSpawnInfo?.startWithSuit ?? false)))
                     {
                         SuitUp();
@@ -108,7 +109,6 @@ namespace NewHorizons.Builder.General
 
         public static void SuitUp()
         {
-            suitUpQueued = false;
             if (!Locator.GetPlayerController()._isWearingSuit)
             {
                 Locator.GetPlayerSuit().SuitUp(false, true, true);
