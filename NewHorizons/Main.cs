@@ -922,7 +922,7 @@ namespace NewHorizons
             config.Migrate();
 
             // Check if this system can be warped to
-            if (config.Spawn?.shipSpawn != null)
+            if (config.Spawn?.shipSpawnPoints?.Any() ?? false)
             {
                 SystemDict[config.starSystem].HasShipSpawn = true;
             }
@@ -1074,7 +1074,7 @@ namespace NewHorizons
                 {
                     IsWarpingFromVessel = true;
                 }
-                else if (BodyDict.TryGetValue(DefaultSystemOverride, out var bodies) && bodies.Any(x => x.Config?.Spawn?.shipSpawn != null))
+                else if (BodyDict.TryGetValue(DefaultSystemOverride, out var bodies) && bodies.Any(x => x.Config?.Spawn?.shipSpawnPoints?.Any() ?? false))
                 {
                     IsWarpingFromShip = true;
                 }

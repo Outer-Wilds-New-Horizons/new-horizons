@@ -10,12 +10,20 @@ namespace NewHorizons.External.Modules
     {
         /// <summary>
         /// If you want the player to spawn on the new body, set a value for this.
+        /// Different spawns can be unlocked with persistent conditions and facts
         /// </summary>
-        public PlayerSpawnPoint playerSpawn;
+        public PlayerSpawnPoint[] playerSpawnPoints;
 
         /// <summary>
         /// Required for the system to be accessible by warp drive.
+        /// Different spawns can be unlocked with persistent conditions and facts
         /// </summary>
+        public ShipSpawnPoint[] shipSpawnPoints;
+
+        [Obsolete("Use playerSpawnPoints instead")]
+        public PlayerSpawnPoint playerSpawn;
+
+        [Obsolete("Use shipSpawnPoints instead")]
         public ShipSpawnPoint shipSpawn;
 
         [Obsolete("playerSpawnPoint is deprecated. Use playerSpawn.position instead")] public MVector3 playerSpawnPoint;
