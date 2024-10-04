@@ -3631,6 +3631,18 @@
           "description": "Offsets the player/ship by this local vector when spawning. Used to prevent spawning in the floor. Optional: defaults to (0, 4, 0).",
           "$ref": "#/definitions/MVector3"
         },
+        "isDefault": {
+          "type": "boolean",
+          "description": "Whether this planet's spawn point is the one the player/ship will initially spawn at, if multiple spawn points exist.\nDo not use at the same time as makeDefaultIfFactRevealed or makeDefaultIfPersistentCondition\nSpawns unlocked with this have lowest priority"
+        },
+        "makeDefaultIfFactRevealed": {
+          "type": "string",
+          "description": "If the given ship log fact is revealed, this spawn point will be used\nDo not use at the same time as isDefault or makeDefaultIfPersistentCondition\nSpawns unlocked with this have highest priority"
+        },
+        "makeDefaultIfPersistentCondition": {
+          "type": "string",
+          "description": "If the given persistent condition is true, this spawn point will be used\nDo not use at the same time as isDefault or makeDefaultIfFactRevealed\nSpawns unlocked with this have second highest priority"
+        },
         "rotation": {
           "description": "Rotation of the object",
           "$ref": "#/definitions/MVector3"
@@ -3661,10 +3673,6 @@
         "startWithSuit": {
           "type": "boolean",
           "description": "If you spawn on a planet with no oxygen, you probably want to set this to true ;;)"
-        },
-        "isDefault": {
-          "type": "boolean",
-          "description": "Whether this planet's spawn point is the one the player will initially spawn at, if multiple spawn points exist."
         }
       }
     },
@@ -3675,6 +3683,18 @@
         "offset": {
           "description": "Offsets the player/ship by this local vector when spawning. Used to prevent spawning in the floor. Optional: defaults to (0, 4, 0).",
           "$ref": "#/definitions/MVector3"
+        },
+        "isDefault": {
+          "type": "boolean",
+          "description": "Whether this planet's spawn point is the one the player/ship will initially spawn at, if multiple spawn points exist.\nDo not use at the same time as makeDefaultIfFactRevealed or makeDefaultIfPersistentCondition\nSpawns unlocked with this have lowest priority"
+        },
+        "makeDefaultIfFactRevealed": {
+          "type": "string",
+          "description": "If the given ship log fact is revealed, this spawn point will be used\nDo not use at the same time as isDefault or makeDefaultIfPersistentCondition\nSpawns unlocked with this have highest priority"
+        },
+        "makeDefaultIfPersistentCondition": {
+          "type": "string",
+          "description": "If the given persistent condition is true, this spawn point will be used\nDo not use at the same time as isDefault or makeDefaultIfFactRevealed\nSpawns unlocked with this have second highest priority"
         },
         "rotation": {
           "description": "Rotation of the object",
