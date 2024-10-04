@@ -42,15 +42,21 @@ namespace NewHorizons.Builder.General
                 spawnGO.SetActive(false);
                 spawnGO.layer = Layer.PlayerSafetyCollider;
 
-                ShipSpawn = spawnGO.AddComponent<SpawnPoint>();
-                ShipSpawn._isShipSpawn = true;
-                ShipSpawn._attachedBody = owRigidBody;
-                ShipSpawn._spawnLocation = SpawnLocation.None;
+                var shipSpawn = spawnGO.AddComponent<SpawnPoint>();
+                shipSpawn._isShipSpawn = true;
+                shipSpawn._attachedBody = owRigidBody;
+                shipSpawn._spawnLocation = SpawnLocation.None;
 
                 // #601 we need to actually set the right trigger volumes here
-                ShipSpawn._triggerVolumes = new OWTriggerVolume[0];
+                shipSpawn._triggerVolumes = new OWTriggerVolume[0];
 
-                ShipSpawnOffset = module.shipSpawn.offset ?? (module.shipSpawn.alignRadial.GetValueOrDefault() ? Vector3.up * 4 : Vector3.zero);
+                var shipSpawnOffset = module.shipSpawn.offset ?? (module.shipSpawn.alignRadial.GetValueOrDefault() ? Vector3.up * 4 : Vector3.zero);
+
+                if (ShipSpawn == null || module.shipSpawn.IsDefault())
+                {
+                    ShipSpawn = shipSpawn;
+                    ShipSpawnOffset = shipSpawnOffset;
+                }
 
                 spawnGO.SetActive(true);
             }

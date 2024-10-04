@@ -504,7 +504,7 @@ namespace NewHorizons.Handlers
                 var spawnPoint = SpawnPointBuilder.Make(go, body.Config.Spawn, owRigidBody);
                 var isVanillaSystem = body.Config.starSystem == "SolarSystem" || body.Config.starSystem == "EyeOfTheUniverse";
                 var needsSpawnPoint = Main.SystemDict[body.Config.starSystem].SpawnPoint == null || isVanillaSystem;
-                var isDefaultSpawn = body.Config.Spawn.playerSpawn?.isDefault ?? true; // Backwards compat
+                var isDefaultSpawn = body.Config.Spawn.playerSpawn?.IsDefault() ?? true; // Backwards compat
                 if (needsSpawnPoint || isDefaultSpawn)
                 {
                     Main.SystemDict[body.Config.starSystem].SpawnPoint = spawnPoint;
