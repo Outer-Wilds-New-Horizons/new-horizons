@@ -4,6 +4,7 @@ using NewHorizons.Utility;
 using NewHorizons.Utility.OuterWilds;
 using NewHorizons.Utility.OWML;
 using System;
+using System.Collections;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
@@ -126,8 +127,22 @@ namespace NewHorizons.Builder.General
                         handler.Method.Invoke(handler.Target, new object[] { command });
                     }
                     spv._interactVolume._listInteractions.First(x => x.promptText == UITextType.SuitUpPrompt).interactionEnabled = true;
+
+                    // Fix Disappearing Signalscope UI #934 after warping to new system wearing suit
+                    Delay.StartCoroutine(SignalScopeZoomCoroutine());
                 }
             }
+        }
+
+        private static IEnumerator SignalScopeZoomCoroutine()
+        {
+            while (!Locator.GetToolModeSwapper().GetSignalScope().InZoomMode())
+            {
+                yield return new WaitForEndOfFrame();
+            }
+            yield return null;
+            Locator.GetToolModeSwapper().GetSignalScope().ExitSignalscopeZoom();
+            Locator.GetToolModeSwapper().GetSignalScope().EnterSignalscopeZoom();
         }
     }
 }

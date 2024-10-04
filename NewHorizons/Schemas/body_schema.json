@@ -405,6 +405,11 @@
           "description": "Maximum speed that your ship can go in the atmosphere where flames will appear at their brightest.",
           "format": "float",
           "default": 300.0
+        },
+        "allowShipAutoroll": {
+          "type": "boolean",
+          "description": "Will the ship automatically try to orient itself to face upwards while in this volume?",
+          "default": true
         }
       }
     },
@@ -543,9 +548,10 @@
           "description": "Radius of a simple sphere used as the ground for the planet. If you want to use more complex terrain, leave this as\n0.",
           "format": "float"
         },
-        "invulnerableToSun": {
+        "hasFluidDetector": {
           "type": "boolean",
-          "description": "Can this planet survive entering a star?"
+          "description": "Is this planet able to detect fluid volumes? Disabling this means that entering a star or lava volume will not destroy this planet\nMay have adverse effects if anglerfish are added to this planet, disable this if you want those to work (they have fluid volumes in their mouths)",
+          "default": true
         },
         "showMinimap": {
           "type": "boolean",
@@ -564,7 +570,7 @@
         },
         "surfaceSize": {
           "type": "number",
-          "description": "A scale height used for a number of things. Should be the approximate radius of the body.",
+          "description": "A scale height used for a number of things. Should be the approximate radius of the body.\n\nAffected settings include: Base sector size, proxy body scaling, surface gravity",
           "format": "float"
         },
         "gravityVolumePriority": {
@@ -1357,7 +1363,7 @@
         },
         "keepLoaded": {
           "type": "boolean",
-          "description": "Should this detail stay loaded (visible and collideable) even if you're outside the sector (good for very large props)?\nAlso makes this detail visible on the map.\nMost logic/behavior scripts will still only work inside the sector, as most of those scripts break if a sector is not provided."
+          "description": "Should this detail stay loaded (visible and collideable) even if you're outside the sector (good for very large props)?\nAlso makes this detail visible on the map.\nKeeping many props loaded is bad for performance so use this only when it's actually relevant\nMost logic/behavior scripts will still only work inside the sector, as most of those scripts break if a sector is not provided."
         },
         "hasPhysics": {
           "type": "boolean",
@@ -3928,6 +3934,11 @@
         "tint": {
           "description": "Tint of the water",
           "$ref": "#/definitions/MColor"
+        },
+        "allowShipAutoroll": {
+          "type": "boolean",
+          "description": "Will the ship automatically try to orient itself to face upwards while in this volume?",
+          "default": true
         }
       }
     },
