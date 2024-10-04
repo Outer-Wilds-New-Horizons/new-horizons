@@ -90,7 +90,7 @@ namespace NewHorizons.Builder.General
             OWRB.RegisterAttachedForceDetector(forceDetector);
 
             // For falling into sun
-            if (!config.Base.invulnerableToSun && config.Star == null && config.FocalPoint == null)
+            if (config.Base.hasFluidDetector && config.Star == null && config.FocalPoint == null)
             {
                 detectorGO.layer = Layer.AdvancedDetector;
 

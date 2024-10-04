@@ -22,7 +22,7 @@ namespace NewHorizons.Builder.Atmosphere
             sfv._priority = 0;
             sfv._density = 1.2f;
             sfv._fluidType = FluidVolume.Type.AIR;
-            sfv._allowShipAutoroll = true;
+            sfv._allowShipAutoroll = config.Atmosphere.allowShipAutoroll;
             sfv._disableOnStart = false;
 
             if (config.Atmosphere.hasShockLayer)

@@ -26,5 +26,11 @@ namespace NewHorizons.External.Modules.VariableSize
         /// Tint of the water
         /// </summary>
         public MColor tint;
+
+        /// <summary>
+        /// Will the ship automatically try to orient itself to face upwards while in this volume?
+        /// </summary>
+        [DefaultValue(true)]
+        public bool allowShipAutoroll = true;
     }
 }
