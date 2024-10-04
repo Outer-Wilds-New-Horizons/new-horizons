@@ -156,14 +156,19 @@ namespace NewHorizons.Handlers
                 _canExitViaWarpDrive = true;
                 if (!Main.HasWarpDrive)
                 {
-                    Main.Instance.EnableWarpDrive();
+                    var flagActuallyAddedACard = false;
                     // Add all cards that now work
                     foreach (var starSystem in Main.SystemDict.Keys)
                     {
                         if (CanWarpToSystem(starSystem))
                         {
                             ShipLogStarChartMode.AddSystemCard(starSystem);
+                            flagActuallyAddedACard = true;
                         }
+                    }
+                    if (flagActuallyAddedACard)
+                    {
+                        Main.Instance.EnableWarpDrive();
                     }
                 }
                 else
