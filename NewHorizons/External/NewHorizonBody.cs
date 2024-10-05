@@ -106,12 +106,6 @@ namespace NewHorizons.External
                     }
                 }
             }
-
-            // Because these guys put TWO spawn points 
-            if (Mod.ModHelper.Manifest.UniqueName == "2walker2.Evacuation" && Config.name == "The Campground")
-            {
-                Config.Spawn.playerSpawn.isDefault = true;
-            }
         }
 
         #endregion

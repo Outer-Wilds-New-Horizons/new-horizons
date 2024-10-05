@@ -342,5 +342,7 @@ namespace NewHorizons
         public string GetTranslationForOtherText(string text) => TranslationHandler.GetTranslation(text, TranslationHandler.TextType.OTHER);
 
         public void AddSubtitle(IModBehaviour mod, string filePath) => SubtitlesHandler.RegisterAdditionalSubtitle(mod, filePath);
+
+        public void SetNextSpawnID(string id) => PlayerSpawnHandler.TargetSpawnID = id;
     }
 }

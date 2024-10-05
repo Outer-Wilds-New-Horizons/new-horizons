@@ -2722,6 +2722,10 @@
           "type": "string",
           "description": "If you want a black hole to load a new star system scene, put its name here."
         },
+        "spawnPointID": {
+          "type": "string",
+          "description": "If this is a black hole loading a new star system, set the ID of the spawn point you want to use\nOtherwise, will use the default spawn"
+        },
         "type": {
           "description": "Type of singularity (white hole or black hole)",
           "$ref": "#/definitions/SingularityType"
@@ -3619,13 +3623,19 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "playerSpawn": {
-          "description": "If you want the player to spawn on the new body, set a value for this.",
-          "$ref": "#/definitions/PlayerSpawnPoint"
+        "playerSpawnPoints": {
+          "type": "array",
+          "description": "If you want the player to spawn on the new body, set a value for this.\nDifferent spawns can be unlocked with persistent conditions and facts",
+          "items": {
+            "$ref": "#/definitions/PlayerSpawnPoint"
+          }
         },
-        "shipSpawn": {
-          "description": "Required for the system to be accessible by warp drive.",
-          "$ref": "#/definitions/ShipSpawnPoint"
+        "shipSpawnPoints": {
+          "type": "array",
+          "description": "Required for the system to be accessible by warp drive.\nDifferent spawns can be unlocked with persistent conditions and facts",
+          "items": {
+            "$ref": "#/definitions/ShipSpawnPoint"
+          }
         }
       }
     },
@@ -3636,6 +3646,22 @@
         "offset": {
           "description": "Offsets the player/ship by this local vector when spawning. Used to prevent spawning in the floor. Optional: defaults to (0, 4, 0).",
           "$ref": "#/definitions/MVector3"
+        },
+        "isDefault": {
+          "type": "boolean",
+          "description": "Whether this planet's spawn point is the one the player/ship will initially spawn at, if multiple spawn points exist.\nDo not use at the same time as makeDefaultIfFactRevealed or makeDefaultIfPersistentCondition\nSpawns unlocked with this have lowest priority"
+        },
+        "makeDefaultIfFactRevealed": {
+          "type": "string",
+          "description": "If the given ship log fact is revealed, this spawn point will be used\nDo not use at the same time as isDefault or makeDefaultIfPersistentCondition\nSpawns unlocked with this have highest priority"
+        },
+        "makeDefaultIfPersistentCondition": {
+          "type": "string",
+          "description": "If the given persistent condition is true, this spawn point will be used\nDo not use at the same time as isDefault or makeDefaultIfFactRevealed\nSpawns unlocked with this have second highest priority"
+        },
+        "id": {
+          "type": "string",
+          "description": "ID used to have a black hole or warp volume bring the player to this spawn specifically"
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -3667,10 +3693,6 @@
         "startWithSuit": {
           "type": "boolean",
           "description": "If you spawn on a planet with no oxygen, you probably want to set this to true ;;)"
-        },
-        "isDefault": {
-          "type": "boolean",
-          "description": "Whether this planet's spawn point is the one the player will initially spawn at, if multiple spawn points exist."
         }
       }
     },
@@ -3681,6 +3703,22 @@
         "offset": {
           "description": "Offsets the player/ship by this local vector when spawning. Used to prevent spawning in the floor. Optional: defaults to (0, 4, 0).",
           "$ref": "#/definitions/MVector3"
+        },
+        "isDefault": {
+          "type": "boolean",
+          "description": "Whether this planet's spawn point is the one the player/ship will initially spawn at, if multiple spawn points exist.\nDo not use at the same time as makeDefaultIfFactRevealed or makeDefaultIfPersistentCondition\nSpawns unlocked with this have lowest priority"
+        },
+        "makeDefaultIfFactRevealed": {
+          "type": "string",
+          "description": "If the given ship log fact is revealed, this spawn point will be used\nDo not use at the same time as isDefault or makeDefaultIfPersistentCondition\nSpawns unlocked with this have highest priority"
+        },
+        "makeDefaultIfPersistentCondition": {
+          "type": "string",
+          "description": "If the given persistent condition is true, this spawn point will be used\nDo not use at the same time as isDefault or makeDefaultIfFactRevealed\nSpawns unlocked with this have second highest priority"
+        },
+        "id": {
+          "type": "string",
+          "description": "ID used to have a black hole or warp volume bring the player to this spawn specifically"
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -5168,6 +5206,10 @@
           "type": "string",
           "description": "The star system that entering this volume will send you to.",
           "default": "SolarSystem"
+        },
+        "spawnPointID": {
+          "type": "string",
+          "description": "ID assigned to a spawn point in the other system that the player will be sent to\nUses the default spawn if not set"
         }
       }
     },

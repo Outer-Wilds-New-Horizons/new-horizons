@@ -1,3 +1,4 @@
+using Epic.OnlineServices;
 using NewHorizons.External.Modules;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.Props.Audio;
@@ -538,6 +539,22 @@ namespace NewHorizons.External.Configs
                     position = Spawn.shipSpawnPoint,
                     rotation = Spawn.shipSpawnRotation,
                 };
+            }
+
+            // Spawn points are now a list
+            if (Spawn != null && Spawn.playerSpawn != null && Spawn.playerSpawnPoints == null)
+            {
+                Spawn.playerSpawnPoints = new SpawnModule.PlayerSpawnPoint[] { Spawn.playerSpawn };
+            }
+            if (Spawn != null && Spawn.shipSpawn != null && Spawn.shipSpawnPoints == null)
+            {
+                Spawn.shipSpawnPoints = new SpawnModule.ShipSpawnPoint[] { Spawn.shipSpawn };
+            }
+
+            // Because these guys put TWO spawn points 
+            if (starSystem == "2walker2.OogaBooga" && name == "The Campground")
+            {
+                Spawn.playerSpawnPoints[0].isDefault = true;
             }
 
             // Remote dialogue trigger reorganized to use GeneralPointPropInfo
