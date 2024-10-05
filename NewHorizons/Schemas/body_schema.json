@@ -1303,7 +1303,7 @@
         },
         "dreamArrivalPoints": {
           "type": "array",
-          "description": "Add the points you will arrive at when entering the dream world/simulation from a paired dream campfire, which can be placed on this planet or elsewhere.",
+          "description": "Add the points you will arrive at when entering the dream world/simulation from a paired dream campfire, which can be placed on this planet or elsewhere. The planet with the arrival point should be statically positioned to avoid issues with the simulation view materials.",
           "items": {
             "$ref": "#/definitions/DreamArrivalPointInfo"
           }
