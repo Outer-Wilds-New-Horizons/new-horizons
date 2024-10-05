@@ -63,12 +63,12 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
                 {
                     if (c && c.gameObject.layer == Layer.DreamSimulation) return false;
                 }
-            }
-            if (go.transform.parent.parent)
-            {
-                foreach (Transform c in go.transform.parent.parent)
+                if (go.transform.parent.parent)
                 {
-                    if (c && c.gameObject.layer == Layer.DreamSimulation) return false;
+                    foreach (Transform c in go.transform.parent.parent)
+                    {
+                        if (c && c.gameObject.layer == Layer.DreamSimulation) return false;
+                    }
                 }
             }
             var t = go.transform;
