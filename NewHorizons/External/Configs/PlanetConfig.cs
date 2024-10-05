@@ -1,4 +1,3 @@
-using Epic.OnlineServices;
 using NewHorizons.External.Modules;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.Props.Audio;
