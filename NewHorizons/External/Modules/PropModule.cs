@@ -129,7 +129,7 @@ namespace NewHorizons.External.Modules
         public DreamCampfireInfo[] dreamCampfires;
         
         /// <summary>
-        /// Add the points you will arrive at when entering the dream world/simulation from a paired dream campfire, which can be placed on this planet or elsewhere.
+        /// Add the points you will arrive at when entering the dream world/simulation from a paired dream campfire, which can be placed on this planet or elsewhere. The planet with the arrival point should be statically positioned to avoid issues with the simulation view materials.
         /// </summary>
         public DreamArrivalPointInfo[] dreamArrivalPoints;
 
