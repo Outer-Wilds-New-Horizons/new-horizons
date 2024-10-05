@@ -1,4 +1,5 @@
 using HarmonyLib;
+using NewHorizons.Components.EOTE;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using UnityEngine;
@@ -31,6 +32,13 @@ namespace NewHorizons.Patches.EchoesOfTheEyePatches
         [HarmonyPatch(nameof(DreamWorldController.EnterDreamWorld))]
         public static void DreamWorldController_EnterDreamWorld(DreamWorldController __instance, DreamCampfire dreamCampfire, DreamArrivalPoint arrivalPoint)
         {
+            // If we are arriving in a custom dream dimension, activate it immediately
+            var dimension = arrivalPoint.GetAttachedOWRigidbody().GetComponent<DreamDimension>();
+            if (dimension != null)
+            {
+                dimension.SetActive(true);
+            }
+
             // Make the body/sector/volume where the player 'wakes up' in the dream match the body where the arrival point is located if it isn't the vanilla DreamWorld, or reset it if it is
             var dreamWorldAO = Locator.GetAstroObject(AstroObject.Name.DreamWorld);
             if (arrivalPoint.GetAttachedOWRigidbody() == dreamWorldAO.GetOWRigidbody())

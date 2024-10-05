@@ -94,6 +94,11 @@ namespace NewHorizons.External.Configs
         public CloakModule Cloak;
 
         /// <summary>
+        /// Make this planet part of the dream world
+        /// </summary>
+        public DreamModule Dream;
+
+        /// <summary>
         /// Make this body into a focal point (barycenter)
         /// </summary>
         public FocalPointModule FocalPoint;
@@ -282,6 +287,9 @@ namespace NewHorizons.External.Configs
 
             // Stars and focal points shouldnt be destroyed by stars
             if (Star != null || FocalPoint != null) Base.invulnerableToSun = true;
+
+            // Disable map marker for dream dimensions
+            if (Dream != null && Dream.inDreamWorld) MapMarker.enabled = false;
         }
 
         public void Migrate()

@@ -1,6 +1,10 @@
+using NewHorizons.Components.EOTE;
 using NewHorizons.Components.Props;
+using NewHorizons.External;
+using NewHorizons.External.Configs;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OuterWilds;
+using NewHorizons.Utility.OWML;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,9 +12,9 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace NewHorizons.Builder.Props.EchoesOfTheEye
+namespace NewHorizons.Builder.Body
 {
-    public static class DreamSimulationBuilder
+    public static class DreamDimensionBuilder
     {
         private static Material gridMaterial;
         private static Material waterMaterial;
@@ -29,6 +33,26 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
             "Foliage",
             "Flame",
         };
+
+        public static void Make(GameObject planetGO, Sector sector, NewHorizonsBody body)
+        {
+            var bodyWantsSimMeshes = body.Config.Dream?.generateSimulationMeshes ?? false;
+            var propsWantSimMeshes = body.Config.Props?.dreamArrivalPoints?.Any(p => p.generateSimulationMeshes) ?? false;
+            if (bodyWantsSimMeshes || propsWantSimMeshes)
+            {
+                MakeDreamSimulationMeshes(sector ? sector.gameObject : planetGO);
+            }
+
+            if (body.Config?.Dream?.inDreamWorld ?? false)
+            {
+                var dreamDimension = planetGO.AddComponent<DreamDimension>();
+                Delay.FireInNUpdates(() =>
+                {
+                    dreamDimension.Initialize();
+                }, 4);
+            }
+            
+        }
 
         public static void MakeDreamSimulationMeshes(GameObject go)
         {

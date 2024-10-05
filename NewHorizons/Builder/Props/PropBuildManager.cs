@@ -181,11 +181,6 @@ namespace NewHorizons.Builder.Props
                     }
                 }
             }
-
-            if (Main.HasDLC && config.Props.dreamArrivalPoints != null && config.Props.dreamArrivalPoints.Any(p => p.generateSimulationMeshes))
-            {
-                DreamSimulationBuilder.MakeDreamSimulationMeshes(sector ? sector.gameObject : go);
-            }
         }
 
         private static bool _ignoreParent;
