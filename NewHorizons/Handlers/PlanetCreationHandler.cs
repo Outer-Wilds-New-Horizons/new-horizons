@@ -87,6 +87,7 @@ namespace NewHorizons.Handlers
             }
 
             // Load all planets
+            _loadedBodies.Clear();
             var toLoad = bodies.ToList();
             var newPlanetGraph = new PlanetGraphHandler(toLoad);
 
@@ -151,8 +152,18 @@ namespace NewHorizons.Handlers
             SingularityBuilder.PairAllSingularities();
         }
 
+        private static List<NewHorizonsBody> _loadedBodies = new();
+
+        /// <summary>
+        /// Returns false if it failed
+        /// </summary>
+        /// <param name="body"></param>
+        /// <param name="defaultPrimaryToSun"></param>
+        /// <returns></returns>
         public static bool LoadBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)
         {
+            if (_loadedBodies.Contains(body)) return true;
+
             body.LoadCache();
 
             // I don't remember doing this why is it exceptions what am I doing
@@ -306,6 +317,7 @@ namespace NewHorizons.Handlers
             }
             
             body.UnloadCache(true);
+            _loadedBodies.Add(body);
             return true;
         }
 
