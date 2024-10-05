@@ -211,7 +211,7 @@ namespace NewHorizons.Components.ShipLog
         {
             if (_starSystemCards.Count == 0)
             {
-                NHLogger.LogWarning("Showing star chart mode when there are no avaialble systems");
+                NHLogger.LogWarning("Showing star chart mode when there are no available systems");
                 return;
             }
 

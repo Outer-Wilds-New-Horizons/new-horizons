@@ -261,7 +261,8 @@ namespace NewHorizons
         public void DefineStarSystem(string name, string config, IModBehaviour mod)
         {
             var starSystemConfig = JsonConvert.DeserializeObject<StarSystemConfig>(config);
-            Main.Instance.LoadStarSystemConfig(name, starSystemConfig, null, mod);
+            starSystemConfig.name = name;
+            Main.Instance.LoadStarSystemConfig(starSystemConfig, null, mod);
         }
 
         public (CharacterDialogueTree, RemoteDialogueTrigger) CreateDialogueFromXML(string textAssetID, string xml, string dialogueInfo, GameObject planetGO)
@@ -312,6 +313,7 @@ namespace NewHorizons
 
             var system = new StarSystemConfig()
             {
+                name = starSystem,
                 entryPositions = entryPositions?
                     .Select((pair) => new EntryPositionInfo() { id = pair.Key, position = pair.Value })
                     .ToArray(),
@@ -320,7 +322,7 @@ namespace NewHorizons
                     .ToArray()
             };
 
-            Main.Instance.LoadStarSystemConfig(starSystem, system, null, mod);
+            Main.Instance.LoadStarSystemConfig(system, null, mod);
 
             RumorModeBuilder.AddShipLogXML(GameObject.FindObjectOfType<ShipLogManager>(), xml, body);
         }
@@ -340,5 +342,7 @@ namespace NewHorizons
         public string GetTranslationForOtherText(string text) => TranslationHandler.GetTranslation(text, TranslationHandler.TextType.OTHER);
 
         public void AddSubtitle(IModBehaviour mod, string filePath) => SubtitlesHandler.RegisterAdditionalSubtitle(mod, filePath);
+
+        public void SetNextSpawnID(string id) => PlayerSpawnHandler.TargetSpawnID = id;
     }
 }
