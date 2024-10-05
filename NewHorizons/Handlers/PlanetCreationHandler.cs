@@ -813,8 +813,8 @@ namespace NewHorizons.Handlers
                 if (referenceFrame != null) referenceFrame._attachedAstroObject = newAO;
 
                 // QM and stuff don't have orbit lines
-                // Using the name since NH only creates the OrbitLine components next frame
-                var orbitLine = go.transform.Find("Orbit")?.gameObject;
+                // Using the name as well since NH only creates the OrbitLine components next frame
+                var orbitLine = go.GetComponentInChildren<OrbitLine>()?.gameObject ?? go.transform.Find("Orbit")?.gameObject;
                 if (orbitLine != null)
                 {
                     UnityEngine.Object.Destroy(orbitLine);
