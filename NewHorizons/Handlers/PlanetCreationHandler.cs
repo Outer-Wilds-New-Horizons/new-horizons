@@ -506,7 +506,7 @@ namespace NewHorizons.Handlers
 
             if (body.Config.Orbit.showOrbitLine && !body.Config.Orbit.isStatic)
             {
-                Delay.FireOnNextUpdate(() => OrbitlineBuilder.Make(body.Object, ao, body.Config.Orbit.isMoon, body.Config));
+                OrbitlineBuilder.Make(body.Object, body.Config.Orbit.isMoon, body.Config);
             }
 
             DetectorBuilder.Make(go, owRigidBody, primaryBody, ao, body.Config);
@@ -673,7 +673,7 @@ namespace NewHorizons.Handlers
                         SunOverrideBuilder.Make(go, sector, body.Config.Atmosphere, body.Config.Water, surfaceSize);
                     }
                 }
-
+                                                                   
                 if (body.Config.Atmosphere.fogSize != 0)
                 {
                     fog = FogBuilder.Make(go, sector, body.Config.Atmosphere, body.Mod);
@@ -813,11 +813,18 @@ namespace NewHorizons.Handlers
                 if (referenceFrame != null) referenceFrame._attachedAstroObject = newAO;
 
                 // QM and stuff don't have orbit lines
-                var orbitLine = go.GetComponentInChildren<OrbitLine>()?.gameObject;
-                if (orbitLine != null) UnityEngine.Object.Destroy(orbitLine);
+                // Using the name since NH only creates the OrbitLine components next frame
+                var orbitLine = go.transform.Find("Orbit")?.gameObject;
+                if (orbitLine != null)
+                {
+                    UnityEngine.Object.Destroy(orbitLine);
+                }
 
                 var isMoon = newAO.GetAstroObjectType() is AstroObject.Type.Moon or AstroObject.Type.Satellite or AstroObject.Type.SpaceStation;
-                if (body.Config.Orbit.showOrbitLine) OrbitlineBuilder.Make(go, newAO, isMoon, body.Config);
+                if (body.Config.Orbit.showOrbitLine)
+                {
+                    OrbitlineBuilder.Make(go, isMoon, body.Config);
+                }
 
                 DetectorBuilder.SetDetector(primary, newAO, go.GetComponentInChildren<ConstantForceDetector>());
 
