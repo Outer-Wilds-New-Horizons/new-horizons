@@ -30,7 +30,7 @@ namespace NewHorizons.Patches.EchoesOfTheEyePatches
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(DreamWorldController.EnterDreamWorld))]
-        public static void DreamWorldController_EnterDreamWorld(DreamWorldController __instance, DreamCampfire dreamCampfire, DreamArrivalPoint arrivalPoint)
+        public static bool DreamWorldController_EnterDreamWorld(DreamWorldController __instance, DreamCampfire dreamCampfire, DreamArrivalPoint arrivalPoint)
         {
             // If we are arriving in a custom dream dimension, activate it immediately
             var dimension = arrivalPoint.GetAttachedOWRigidbody().GetComponent<DreamDimension>();
@@ -58,6 +58,14 @@ namespace NewHorizons.Patches.EchoesOfTheEyePatches
             // Make the 'bubble' around the artifact load correctly when the destination body isn't the vanilla DreamWorld
             __instance._primarySimulationRoot.GetComponent<SectorCullGroup>().SetSector(__instance._dreamWorldSector);
 
+            // if the player's already in the dream world, we want to wake up at the first campfire we slept at, so don't override those values
+            if (PlayerState.InDreamWorld())
+            {
+                __instance._dreamArrivalPoint = arrivalPoint;
+                __instance._enteringDream = true;
+                return false;
+            }
+
             // Make the body where the player 'wakes up' out of the dream match the body where the campfire is located if it isn't the Stranger ("RingWorld"), or reset it if it is
             var ringWorldAO = Locator.GetAstroObject(AstroObject.Name.RingWorld);
             if (dreamCampfire.GetAttachedOWRigidbody() == ringWorldAO.GetOWRigidbody())
@@ -71,6 +79,8 @@ namespace NewHorizons.Patches.EchoesOfTheEyePatches
                 __instance._planetBody = departureAO.GetAttachedOWRigidbody();
                 __instance._ringWorldController = null;
             }
+
+            return true;
         }
     }
 }
