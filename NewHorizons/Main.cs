@@ -58,7 +58,7 @@ namespace NewHorizons
 
         public static float SecondsElapsedInLoop = -1;
 
-        public static bool IsSystemReady { get; private set; }
+        public static bool IsSystemReady { get; private set; }    
 
         public string DefaultStarSystem => SystemDict.ContainsKey(DefaultSystemOverride) ? DefaultSystemOverride : _defaultStarSystem;
         public string CurrentStarSystem
@@ -949,6 +949,7 @@ namespace NewHorizons
         #endregion Load
 
         #region Change star system
+        public Action StarSystemChanging { get; set; }
         public void ChangeCurrentStarSystem(string newStarSystem, bool warp = false, bool vessel = false)
         {
             // If we're just on the title screen set the system for later
@@ -977,6 +978,8 @@ namespace NewHorizons
 
             if (LoadManager.GetCurrentScene() == OWScene.SolarSystem || LoadManager.GetCurrentScene() == OWScene.EyeOfTheUniverse)
             {
+                StarSystemChanging?.Invoke();
+
                 IsWarpingFromShip = warp;
                 IsWarpingFromVessel = vessel;
                 DidWarpFromVessel = false;
