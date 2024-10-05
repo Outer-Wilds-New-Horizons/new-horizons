@@ -1,3 +1,4 @@
+using NewHorizons.Utility;
 using NewHorizons.Utility.Files;
 using NewHorizons.Utility.OWML;
 using OWML.Common;
@@ -31,6 +32,8 @@ namespace NewHorizons.Handlers
 
         private static List<(IModBehaviour mod, string filePath)> _additionalSubtitles = new();
 
+        private CanvasGroup _titleCanvasGroup;
+
         public static void RegisterAdditionalSubtitle(IModBehaviour mod, string filePath)
         {
             _additionalSubtitles.Add((mod, filePath));
@@ -63,6 +66,8 @@ namespace NewHorizons.Handlers
             image.enabled = false;
             var layout = GetComponent<LayoutElement>();
             layout.minHeight = SUBTITLE_HEIGHT;
+
+            _titleCanvasGroup = SearchUtilities.Find("TitleCanvas").GetComponent<CanvasGroup>();
 
             CheckForEOTE();
 
@@ -104,7 +109,7 @@ namespace NewHorizons.Handlers
             var tex = ImageUtilities.GetTexture(mod, filepath, false);
             if (tex == null) return;
 
-            var sprite = Sprite.Create(tex, new Rect(0.0f, 0.0f, tex.width, Mathf.Max(SUBTITLE_HEIGHT, tex.height)), new Vector2(0.5f, 0.5f), 100.0f);
+            var sprite = Sprite.Create(tex, new Rect(0.0f, 0.0f, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100.0f);
             AddSubtitle(sprite);
         }
 
@@ -133,6 +138,12 @@ namespace NewHorizons.Handlers
 
             // don't fade transition subtitles if there's only one subtitle
             if (possibleSubtitles.Count <= 1)
+            {
+                return;
+            }
+
+            // Fix subtitles start cycling before the main menu is visible #844
+            if (_titleCanvasGroup.alpha < 1)
             {
                 return;
             }

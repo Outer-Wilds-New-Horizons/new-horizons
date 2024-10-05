@@ -1,3 +1,4 @@
+using NewHorizons.Builder.Props;
 using NewHorizons.Utility.OWML;
 using System;
 using System.Collections;
@@ -115,7 +116,7 @@ public class SlideReelAsyncImageLoader
         if (hasError)
         {
             NHLogger.LogError($"Failed to load {index}:{url} - {uwr.error}");
-            if (url.Contains("SlideReelCache"))
+            if (url.Contains(ProjectionBuilder.CurrentSlideReelFolder))
             {
                 NHLogger.LogError("Missing image in SlideReelCache: If you are a dev, try deleting the folder so that New Horizons can regenerate the cache. If you are a player: do that and then complain to the mod dev.");
             }

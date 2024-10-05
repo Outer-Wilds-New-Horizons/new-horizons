@@ -174,7 +174,7 @@ namespace NewHorizons
 
             BodyDict["SolarSystem"] = new List<NewHorizonsBody>();
             BodyDict["EyeOfTheUniverse"] = new List<NewHorizonsBody>(); // Keep this empty tho fr
-            SystemDict["SolarSystem"] = new NewHorizonsSystem("SolarSystem", new StarSystemConfig(), "", Instance)
+            SystemDict["SolarSystem"] = new NewHorizonsSystem("SolarSystem", new StarSystemConfig() { name = "SolarSystem" }, "", Instance)
             {
                 Config =
                 {
@@ -190,7 +190,7 @@ namespace NewHorizons
                     }
                 }
             };
-            SystemDict["EyeOfTheUniverse"] = new NewHorizonsSystem("EyeOfTheUniverse", new StarSystemConfig(), "", Instance)
+            SystemDict["EyeOfTheUniverse"] = new NewHorizonsSystem("EyeOfTheUniverse", new StarSystemConfig() { name = "EyeOfTheUniverse" }, "", Instance)
             {
                 Config =
                 {
@@ -680,8 +680,15 @@ namespace NewHorizons
         }
 
         #region Load
-        public void LoadStarSystemConfig(string starSystemName, StarSystemConfig starSystemConfig, string relativePath, IModBehaviour mod)
+        public void LoadStarSystemConfig(StarSystemConfig starSystemConfig, string relativePath, IModBehaviour mod)
         {
+            if (string.IsNullOrEmpty(starSystemConfig.name))
+            {
+                starSystemConfig.name = Path.GetFileNameWithoutExtension(relativePath);
+            }
+
+            var starSystemName = starSystemConfig.name;
+
             starSystemConfig.Migrate();
             starSystemConfig.FixCoordinates();
 
@@ -751,13 +758,12 @@ namespace NewHorizons
 
                     foreach (var file in systemFiles)
                     {
-                        var starSystemName = Path.GetFileNameWithoutExtension(file);
-
-                        NHLogger.LogVerbose($"Loading system {starSystemName}");
-
                         var relativePath = file.Replace(folder, "");
+
+                        NHLogger.LogVerbose($"Loading system {Path.GetFileNameWithoutExtension(relativePath)}");
+
                         var starSystemConfig = mod.ModHelper.Storage.Load<StarSystemConfig>(relativePath, false);
-                        LoadStarSystemConfig(starSystemName, starSystemConfig, relativePath, mod);
+                        LoadStarSystemConfig(starSystemConfig, relativePath, mod);
                     }
                 }
                 if (Directory.Exists(planetsFolder))
@@ -786,9 +792,6 @@ namespace NewHorizons
 
                         if (body != null)
                         {
-                            // Wanna track the spawn point of each system
-                            if (body.Config.Spawn != null) SystemDict[body.Config.starSystem].Spawn = body.Config.Spawn;
-
                             // Add the new planet to the planet dictionary
                             if (!BodyDict.ContainsKey(body.Config.starSystem)) BodyDict[body.Config.starSystem] = new List<NewHorizonsBody>();
                             BodyDict[body.Config.starSystem].Add(body);
@@ -906,11 +909,7 @@ namespace NewHorizons
         {
             if (!SystemDict.ContainsKey(config.starSystem))
             {
-                // Since we didn't load it earlier there shouldn't be a star system config
-                var starSystemConfig = mod.ModHelper.Storage.Load<StarSystemConfig>(Path.Combine("systems", config.starSystem + ".json"), false);
-                if (starSystemConfig == null) starSystemConfig = new StarSystemConfig();
-                else NHLogger.LogWarning($"Loaded system config for {config.starSystem}. Why wasn't this loaded earlier?");
-
+                var starSystemConfig = new StarSystemConfig() { name = config.starSystem };
                 starSystemConfig.Migrate();
                 starSystemConfig.FixCoordinates();
 
@@ -925,6 +924,12 @@ namespace NewHorizons
             config.Validate();
             config.Migrate();
 
+            // Check if this system can be warped to
+            if (config.Spawn?.shipSpawnPoints?.Any() ?? false)
+            {
+                SystemDict[config.starSystem].HasShipSpawn = true;
+            }
+
             return new NewHorizonsBody(config, mod, relativePath);
         }
 
@@ -937,6 +942,10 @@ namespace NewHorizons
             else
             {
                 _defaultStarSystem = defaultSystem;
+            }
+            if (LoadManager.GetCurrentScene() != OWScene.SolarSystem && LoadManager.GetCurrentScene() != OWScene.EyeOfTheUniverse)
+            {
+                CurrentStarSystem = _defaultStarSystem;
             }
         }
 
@@ -1068,7 +1077,7 @@ namespace NewHorizons
                 {
                     IsWarpingFromVessel = true;
                 }
-                else if (BodyDict.TryGetValue(DefaultSystemOverride, out var bodies) && bodies.Any(x => x.Config?.Spawn?.shipSpawn != null))
+                else if (BodyDict.TryGetValue(DefaultSystemOverride, out var bodies) && bodies.Any(x => x.Config?.Spawn?.shipSpawnPoints?.Any() ?? false))
                 {
                     IsWarpingFromShip = true;
                 }

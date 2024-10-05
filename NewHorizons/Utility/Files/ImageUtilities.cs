@@ -114,7 +114,7 @@ namespace NewHorizons.Utility.Files
             // Not sure why we check if the originalPath is null but it did that before so
             if (!string.IsNullOrEmpty(originalPath))
             {
-                cachedPath = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, ProjectionBuilder.INVERTED_SLIDE_CACHE_FOLDER, originalPath.Replace(mod.ModHelper.Manifest.ModFolderPath, ""));
+                cachedPath = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, ProjectionBuilder.InvertedSlideReelCacheFolder, originalPath.Replace(mod.ModHelper.Manifest.ModFolderPath, ""));
                 key = GetKey(cachedPath);
             }
 
@@ -216,7 +216,7 @@ namespace NewHorizons.Utility.Files
 
             // Since doing this is expensive we cache the results to the disk
             // Preloading cached values is done in ProjectionBuilder
-            var path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, ProjectionBuilder.ATLAS_SLIDE_CACHE_FOLDER, $"{uniqueSlideReelID}.png");
+            var path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, ProjectionBuilder.AtlasSlideReelCacheFolder, $"{uniqueSlideReelID}.png");
             NHLogger.LogVerbose($"Caching atlas image to {path}");
             Directory.CreateDirectory(Path.GetDirectoryName(path));
             File.WriteAllBytes(path, texture.EncodeToPNG());

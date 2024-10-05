@@ -37,6 +37,7 @@ namespace NewHorizons.Builder.ShipLog
                     if (shipLogAstroObject._id == "POWER_STATION")
                     {
                         astroObject = GameObject.FindObjectsOfType<AstroObject>().FirstOrDefault(x => x._customName == "Power Station");
+                        if (astroObject == null) continue;
                     }
                     else
                     {
