@@ -31,6 +31,7 @@ namespace NewHorizons.Patches.EchoesOfTheEyePatches
         [HarmonyPatch(nameof(DreamWorldController.EnterDreamWorld))]
         public static void DreamWorldController_EnterDreamWorld(DreamWorldController __instance, DreamCampfire dreamCampfire, DreamArrivalPoint arrivalPoint)
         {
+            // Make the body/sector/volume where the player 'wakes up' in the dream match the body where the arrival point is located if it isn't the vanilla DreamWorld, or reset it if it is
             var dreamWorldAO = Locator.GetAstroObject(AstroObject.Name.DreamWorld);
             if (arrivalPoint.GetAttachedOWRigidbody() == dreamWorldAO.GetOWRigidbody())
             {
@@ -46,8 +47,10 @@ namespace NewHorizons.Patches.EchoesOfTheEyePatches
                 __instance._dreamWorldVolume = arrivalAO._gravityVolume.GetOWTriggerVolume();
             }
 
+            // Make the 'bubble' around the artifact load correctly when the destination body isn't the vanilla DreamWorld
             __instance._primarySimulationRoot.GetComponent<SectorCullGroup>().SetSector(__instance._dreamWorldSector);
 
+            // Make the body where the player 'wakes up' out of the dream match the body where the campfire is located if it isn't the Stranger ("RingWorld"), or reset it if it is
             var ringWorldAO = Locator.GetAstroObject(AstroObject.Name.RingWorld);
             if (dreamCampfire.GetAttachedOWRigidbody() == ringWorldAO.GetOWRigidbody())
             {
