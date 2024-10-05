@@ -17,7 +17,7 @@ public static class HeldItemHandler
     /// Dictionary of system name to item path
     /// If we travel to multiple systems within a single loop, this will hold the items we move between systems
     /// </summary>
-    private static Dictionary<string, string> _pathOfItemTakenFromSystem = new();
+    private static Dictionary<string, List<string>> _pathOfItemTakenFromSystem = new();
 
     private static GameObject _currentlyHeldItem;
 
@@ -86,7 +86,11 @@ public static class HeldItemHandler
             // Track it so that when we return to this system we can delete the original
             if (_trackedPaths.TryGetValue(_currentlyHeldItem, out var path))
             {
-                _pathOfItemTakenFromSystem[Main.Instance.CurrentStarSystem] = path;
+                if (!_pathOfItemTakenFromSystem.ContainsKey(Main.Instance.CurrentStarSystem))
+                {
+                    _pathOfItemTakenFromSystem[Main.Instance.CurrentStarSystem] = new();
+                }
+                _pathOfItemTakenFromSystem[Main.Instance.CurrentStarSystem].Add(path);
             }
 
             NHLogger.Log($"Scene unloaded, preserved inactive held item {_currentlyHeldItem.name}");
@@ -101,16 +105,19 @@ public static class HeldItemHandler
     private static void OnSystemReady(string _)
     {
         // If something was taken from this system during this life, remove it
-        if (_pathOfItemTakenFromSystem.TryGetValue(Main.Instance.CurrentStarSystem, out var path))
+        if (_pathOfItemTakenFromSystem.TryGetValue(Main.Instance.CurrentStarSystem, out var paths))
         {
-            NHLogger.Log($"Removing item that was taken from this system at {path}");
-            var item = SearchUtilities.Find(path)?.GetComponent<OWItem>();
-            // Make sure to update the socket it might be in so that it works
-            if (item.GetComponentInParent<OWItemSocket>() is OWItemSocket socket)
+            foreach (var path in paths)
             {
-                socket.RemoveFromSocket();
+                NHLogger.Log($"Removing item that was taken from this system at {path}");
+                var item = SearchUtilities.Find(path)?.GetComponent<OWItem>();
+                // Make sure to update the socket it might be in so that it works
+                if (item.GetComponentInParent<OWItemSocket>() is OWItemSocket socket)
+                {
+                    socket.RemoveFromSocket();
+                }
+                GameObject.Destroy(item.gameObject);
             }
-            GameObject.Destroy(item.gameObject);
         }
 
         // Give whatever item we were previously holding
