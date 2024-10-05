@@ -11,9 +11,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using UnityEngine;
 
 namespace NewHorizons.External.Configs
 {
@@ -25,9 +23,8 @@ namespace NewHorizons.External.Configs
     {
         #region Fields
         /// <summary>
-        /// Unique name of your planet
+        /// Unique name of your planet. If not specified, the file name (without the extension) is used.
         /// </summary>
-        [Required]
         public string name;
 
         /// <summary>
@@ -281,7 +278,7 @@ namespace NewHorizons.External.Configs
             }
 
             // Stars and focal points shouldnt be destroyed by stars
-            if (Star != null || FocalPoint != null) Base.invulnerableToSun = true;
+            if (Star != null || FocalPoint != null) Base.hasFluidDetector = false;
         }
 
         public void Migrate()
@@ -543,6 +540,22 @@ namespace NewHorizons.External.Configs
                 };
             }
 
+            // Spawn points are now a list
+            if (Spawn != null && Spawn.playerSpawn != null && Spawn.playerSpawnPoints == null)
+            {
+                Spawn.playerSpawnPoints = new SpawnModule.PlayerSpawnPoint[] { Spawn.playerSpawn };
+            }
+            if (Spawn != null && Spawn.shipSpawn != null && Spawn.shipSpawnPoints == null)
+            {
+                Spawn.shipSpawnPoints = new SpawnModule.ShipSpawnPoint[] { Spawn.shipSpawn };
+            }
+
+            // Because these guys put TWO spawn points 
+            if (starSystem == "2walker2.OogaBooga" && name == "The Campground")
+            {
+                Spawn.playerSpawnPoints[0].isDefault = true;
+            }
+
             // Remote dialogue trigger reorganized to use GeneralPointPropInfo
             if (Props?.dialogue != null)
             {
@@ -663,6 +676,11 @@ namespace NewHorizons.External.Configs
                 {
                     if (destructionVolume.onlyAffectsPlayerAndShip) destructionVolume.onlyAffectsPlayerRelatedBodies = true;
                 }
+            }
+
+            if (Base.invulnerableToSun)
+            {
+                Base.hasFluidDetector = false;
             }
         }
         #endregion

@@ -41,11 +41,12 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// The color of the fog inside this dimension. 
             /// Leave blank for the default grayish color: (84, 83, 73)
+            /// The alpha value has no effect of the fog: Use fogDensity instead!
             /// </summary>
             public MColor fogTint;
 
             /// <summary>
-            /// The density of the fog inside this dimension. The default is 6.
+            /// The density of the fog inside this dimension. The default is 6. If you want no fog, set this to 0.
             /// </summary>
             [DefaultValue(6f)] public float fogDensity = 6f;
 

@@ -425,8 +425,8 @@ namespace NewHorizons.Handlers
                     if (defaultPrimaryToSun)
                     {
                         NHLogger.LogError($"Couldn't find {body.Config.Orbit.primaryBody}, defaulting to center of solar system");
-                        // TODO: Make this work in other systems. We tried using Locator.GetCenterOfUniverse before but that doesn't work since its too early now
-                        primaryBody = SearchUtilities.Find("Sun_Body")?.GetComponent<AstroObject>();
+                        // Fix #933 not defaulting primary body
+                        primaryBody = (SearchUtilities.Find("Sun_Body") ?? AstroObjectBuilder.CenterOfUniverse)?.GetComponent<AstroObject>();
                     }
                     else
                     {
@@ -506,13 +506,6 @@ namespace NewHorizons.Handlers
             {
                 NHLogger.LogVerbose($"Making spawn point on {body.Config.name}");
                 var spawnPoint = SpawnPointBuilder.Make(go, body.Config.Spawn, owRigidBody);
-                var isVanillaSystem = body.Config.starSystem == "SolarSystem" || body.Config.starSystem == "EyeOfTheUniverse";
-                var needsSpawnPoint = Main.SystemDict[body.Config.starSystem].SpawnPoint == null || isVanillaSystem;
-                var isDefaultSpawn = body.Config.Spawn.playerSpawn?.isDefault ?? true; // Backwards compat
-                if (needsSpawnPoint || isDefaultSpawn)
-                {
-                    Main.SystemDict[body.Config.starSystem].SpawnPoint = spawnPoint;
-                }
             }
 
             if (body.Config.Orbit.showOrbitLine && !body.Config.Orbit.isStatic)

@@ -18,8 +18,9 @@ namespace NewHorizons.Builder.Props
 {
     public static class ProjectionBuilder
     {
-        public const string INVERTED_SLIDE_CACHE_FOLDER = "SlideReelCache/Inverted";
-        public const string ATLAS_SLIDE_CACHE_FOLDER = "SlideReelCache/Atlas";
+        public static string CurrentSlideReelFolder => "SlideReelCache_" + Main.Instance.CurrentStarSystem;
+        public static string InvertedSlideReelCacheFolder => CurrentSlideReelFolder  + "/Inverted";
+        public static string AtlasSlideReelCacheFolder => CurrentSlideReelFolder + "/Atlas";
 
         public static GameObject SlideReelWholePrefab { get; private set; }
         public static GameObject SlideReelWholePristinePrefab { get; private set; }
@@ -45,7 +46,7 @@ namespace NewHorizons.Builder.Props
 
         private static bool _isInit;
 
-        public static bool CacheExists(IModBehaviour mod) => Directory.Exists(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, ATLAS_SLIDE_CACHE_FOLDER));
+        public static bool CacheExists(IModBehaviour mod) => Directory.Exists(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, AtlasSlideReelCacheFolder));
 
         internal static void InitPrefabs()
         {
@@ -521,7 +522,7 @@ namespace NewHorizons.Builder.Props
             {
                 NHLogger.LogVerbose($"The atlas cache for slide reel containing [{slides.FirstOrDefault(x => !string.IsNullOrEmpty(x.imagePath))?.imagePath}] is {atlasKey}");
                 // Load the atlas texture used to draw onto the physical slide reel object
-                atlasImageLoader.PathsToLoad.Add((0, Path.Combine(mod.ModHelper.Manifest.ModFolderPath, ATLAS_SLIDE_CACHE_FOLDER, $"{atlasKey}.png")));
+                atlasImageLoader.PathsToLoad.Add((0, Path.Combine(mod.ModHelper.Manifest.ModFolderPath, AtlasSlideReelCacheFolder, $"{atlasKey}.png")));
             }
 
             for (int i = 0; i < slides.Length; i++)
@@ -548,7 +549,7 @@ namespace NewHorizons.Builder.Props
                     if (useInvertedCache && cacheExists)
                     {
                         // Load the inverted images used when displaying slide reels to a screen
-                        invertedImageLoader.PathsToLoad.Add((i, Path.Combine(mod.ModHelper.Manifest.ModFolderPath, INVERTED_SLIDE_CACHE_FOLDER, slideInfo.imagePath)));
+                        invertedImageLoader.PathsToLoad.Add((i, Path.Combine(mod.ModHelper.Manifest.ModFolderPath, InvertedSlideReelCacheFolder, slideInfo.imagePath)));
                     }
                     else
                     {

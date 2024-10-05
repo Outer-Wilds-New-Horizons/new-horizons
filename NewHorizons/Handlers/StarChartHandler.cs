@@ -130,7 +130,7 @@ namespace NewHorizons.Handlers
             var canWarpTo = false;
             if (system.Equals("SolarSystem")) canWarpTo = true;
             else if (system.Equals("EyeOfTheUniverse")) canWarpTo = false;
-            else if (config.Spawn?.shipSpawn != null) canWarpTo = true;
+            else if (config.HasShipSpawn) canWarpTo = true;
 
             var canEnterViaWarpDrive = Main.SystemDict[system].Config.canEnterViaWarpDrive || system == "SolarSystem";
 
@@ -156,14 +156,19 @@ namespace NewHorizons.Handlers
                 _canExitViaWarpDrive = true;
                 if (!Main.HasWarpDrive)
                 {
-                    Main.Instance.EnableWarpDrive();
+                    var flagActuallyAddedACard = false;
                     // Add all cards that now work
                     foreach (var starSystem in Main.SystemDict.Keys)
                     {
                         if (CanWarpToSystem(starSystem))
                         {
                             ShipLogStarChartMode.AddSystemCard(starSystem);
+                            flagActuallyAddedACard = true;
                         }
+                    }
+                    if (flagActuallyAddedACard)
+                    {
+                        Main.Instance.EnableWarpDrive();
                     }
                 }
                 else

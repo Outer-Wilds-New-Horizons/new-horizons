@@ -1,3 +1,4 @@
+using NewHorizons.Builder.General;
 using NewHorizons.Builder.Props;
 using NewHorizons.Components;
 using NewHorizons.Components.EyeOfTheUniverse;
@@ -240,7 +241,7 @@ namespace NewHorizons.Handlers
             VesselSpawnPoint spawnPoint = vesselObject.GetComponentInChildren<VesselSpawnPoint>(true);
             if (ShouldSpawnAtVessel())
             {
-                system.SpawnPoint = spawnPoint;
+                SpawnPointBuilder.OverridePlayerSpawn(spawnPoint);
             }
 
             vesselObject.SetActive(true);
