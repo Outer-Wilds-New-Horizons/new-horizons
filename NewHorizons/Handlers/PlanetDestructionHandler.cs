@@ -70,6 +70,7 @@ namespace NewHorizons.Handlers
                     if (Main.HasDLC)
                     {
                         StrangerRemoved();
+                        DreamWorldRemoved();
                     }
 
                     // Put it back at the center of the universe after banishing it else there are weird graphical bugs
@@ -88,6 +89,11 @@ namespace NewHorizons.Handlers
             {
                 Locator._cloakFieldController = null;
             }
+        }
+
+        private static void DreamWorldRemoved()
+        {
+            DreamHandler.MigrateDreamWorldController();
         }
 
         private static void SunRemoved()
@@ -206,6 +212,9 @@ namespace NewHorizons.Handlers
                         break;
                     case AstroObject.Name.RingWorld:
                         StrangerRemoved();
+                        break;
+                    case AstroObject.Name.DreamWorld:
+                        DreamWorldRemoved();
                         break;
                 }
 

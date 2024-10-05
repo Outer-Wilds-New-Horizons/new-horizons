@@ -4,6 +4,7 @@ using NewHorizons.Builder.Body;
 using NewHorizons.Builder.General;
 using NewHorizons.Builder.Props;
 using NewHorizons.Builder.Props.Audio;
+using NewHorizons.Builder.Props.EchoesOfTheEye;
 using NewHorizons.Builder.Props.TranslatorText;
 using NewHorizons.Components.Fixers;
 using NewHorizons.Components.Ship;
@@ -381,6 +382,8 @@ namespace NewHorizons
                         ProjectionBuilder.InitPrefabs();
                         CloakBuilder.InitPrefab();
                         RaftBuilder.InitPrefab();
+                        DreamCampfireBuilder.InitPrefab();
+                        DreamArrivalPointBuilder.InitPrefab();
                     }
 
                     WarpPadBuilder.InitPrefabs();
