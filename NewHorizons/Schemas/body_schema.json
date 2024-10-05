@@ -65,6 +65,10 @@
       "description": "Add a cloaking field to this planet",
       "$ref": "#/definitions/CloakModule"
     },
+    "Dream": {
+      "description": "Make this planet part of the dream world",
+      "$ref": "#/definitions/DreamModule"
+    },
     "FocalPoint": {
       "description": "Make this body into a focal point (barycenter)",
       "$ref": "#/definitions/FocalPointModule"
@@ -796,6 +800,20 @@
         "audio": {
           "type": "string",
           "description": "The audio that will play when entering the cloaking field. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+        }
+      }
+    },
+    "DreamModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "inDreamWorld": {
+          "type": "boolean",
+          "description": "Setting this value will make this body a dream world style dimension where its contents are only activated while entering it from a dream campfire. Disables the body's map marker."
+        },
+        "generateSimulationMeshes": {
+          "type": "boolean",
+          "description": "Whether to generate simulation meshes (the models used in the \"tronworld\" or \"matrix\" view) for most objects on this planet by cloning the existing meshes and applying the simulation materials. Leave this off if you are building your own simulation meshes or using existing objects which have them."
         }
       }
     },
