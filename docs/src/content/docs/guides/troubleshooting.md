@@ -13,3 +13,7 @@ an image you'll need to clear the cache located in the `SlideReelsCache` folder 
 
 Be sure to disable `hasFluidDetector` (previous had to enable `invulnerableToSun`). The anglerfish have fluid volumes in their mouths for killing you 
 which interact poorly with the fluid detector and can mess up the movement of the planet.
+
+## My Nomai text isn't updating
+
+Either clear the .nhcache files or enable Debug mode to always regenerate the text cache.
