@@ -65,8 +65,6 @@ namespace NewHorizons.Builder.General
                 }
             }
 
-            lightGO.AddComponent<AmbientLight>();
-
             return light;
         }
     }
