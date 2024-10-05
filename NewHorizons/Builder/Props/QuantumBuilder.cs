@@ -1,9 +1,6 @@
 using NewHorizons.Components.Quantum;
-using NewHorizons.External.Configs;
 using NewHorizons.External.Modules.Props.Quantum;
 using NewHorizons.Utility.Geometry;
-using NewHorizons.Utility.OWML;
-using OWML.Common;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -12,26 +9,50 @@ namespace NewHorizons.Builder.Props
 {
     public static class QuantumBuilder
     {
-        
-        public static void Make(GameObject go, Sector sector, PlanetConfig config, IModBehaviour mod, QuantumGroupInfo quantumGroup, GameObject[] propsInGroup)
+        public static void Make(GameObject planetGO, Sector sector, QuantumGroupInfo quantumGroup, GameObject[] propsInGroup)
         {
-            switch(quantumGroup.type)
+            switch (quantumGroup.type)
             {
-                case QuantumGroupType.Sockets: MakeSocketGroup (go, sector, config, mod, quantumGroup, propsInGroup); return;
-                case QuantumGroupType.States:  MakeStateGroup  (go, sector, config, mod, quantumGroup, propsInGroup); return;
-                // case PropModule.QuantumGroupType.Shuffle: MakeShuffleGroup(go, sector, config, mod, quantumGroup, propsInGroup); return;
+                case QuantumGroupType.Sockets:
+                    MakeSocketGroup(planetGO, sector, quantumGroup, propsInGroup);
+                    return;
+                case QuantumGroupType.States:
+                    MakeStateGroup(planetGO, sector, quantumGroup, propsInGroup);
+                    return;
+                    /*
+                    case PropModule.QuantumGroupType.Shuffle: 
+                        MakeShuffleGroup(go, sector, quantumGroup, propsInGroup); 
+                        return;
+                    */
             }
         }
+
+        /*
+        public static void MakeQuantumLightning(GameObject planetGO, Sector sector, GameObject[] propsInGroup)
+        {
+            var lightning = DetailBuilder.Make(planetGO, sector, AssetBundleUtilities.EyeLightning.LoadAsset<GameObject>("Prefab_EYE_QuantumLightningObject"), new DetailInfo());
+            lightning.transform.position = prop.transform.position;
+            lightning.transform.rotation = prop.transform.rotation;
+            lightning.transform.parent = prop.transform.parent;
+
+            var lightningStatesParent = lightning.transform.Find("Models");
+            prop.transform.parent = lightningStatesParent;
+
+            var lightningController = lightning.GetComponent<QuantumLightningObject>();
+            lightningController._models = new GameObject[] { prop };
+            lightningController.enabled = true;
+        }
+        */
         
         // TODO: Socket groups that have an equal number of props and sockets
         // Nice to have: socket groups that specify a filledSocketObject and an emptySocketObject (eg the archway in the giant's deep tower)
         public static void MakeSocketGroup(GameObject go, Sector sector, PlanetConfig config, IModBehaviour mod, QuantumGroupInfo quantumGroup, GameObject[] propsInGroup)
         {
             var groupRoot = new GameObject("Quantum Sockets - " + quantumGroup.id);
-            groupRoot.transform.parent = sector?.transform ?? go.transform;
+            groupRoot.transform.parent = sector?.transform ?? planetGO.transform;
             groupRoot.transform.localPosition = Vector3.zero;
             groupRoot.transform.localEulerAngles = Vector3.zero;
-            
+
             var sockets = new QuantumSocket[quantumGroup.sockets.Length];
             for (int i = 0; i < quantumGroup.sockets.Length; i++)
             {
@@ -44,9 +65,10 @@ namespace NewHorizons.Builder.Props
                 socket.SetActive(true);
             }
 
-            foreach(var prop in propsInGroup)
+            foreach (var prop in propsInGroup)
             {
                 prop.SetActive(false);
+
                 var quantumObject = prop.AddComponent<SocketedQuantumObject>();
                 quantumObject._socketRoot = groupRoot;
                 quantumObject._socketList = sockets.ToList();
@@ -54,12 +76,19 @@ namespace NewHorizons.Builder.Props
                 quantumObject._prebuilt = true;
                 quantumObject._childSockets = new List<QuantumSocket>();
                 // TODO: support _alignWithGravity?
-                if (prop.GetComponentInChildren<VisibilityTracker>() == null) AddBoundsVisibility(prop);
-                prop.SetActive(true);        
+
+                if (prop.GetComponentInChildren<VisibilityTracker>() == null)
+                {
+                    BoundsUtilities.AddBoundsVisibility(prop);
+                }
+
+                prop.SetActive(true);
             }
+
+
         }
 
-        public static void MakeStateGroup(GameObject go, Sector sector, PlanetConfig config, IModBehaviour mod, QuantumGroupInfo quantumGroup, GameObject[] propsInGroup)
+        public static void MakeStateGroup(GameObject go, Sector sector, QuantumGroupInfo quantumGroup, GameObject[] propsInGroup)
         {
             // NOTE: States groups need special consideration that socket groups don't
             // this is because the base class QuantumObject (and this is important) IGNORES PICTURES TAKEN FROM OVER 100 METERS AWAY
@@ -72,7 +101,7 @@ namespace NewHorizons.Builder.Props
             groupRoot.transform.localPosition = Vector3.zero;
 
             var states = new List<QuantumState>();
-            foreach(var prop in propsInGroup)
+            foreach (var prop in propsInGroup)
             {
                 prop.transform.parent = groupRoot.transform;
                 var state = prop.AddComponent<QuantumState>();
@@ -81,24 +110,24 @@ namespace NewHorizons.Builder.Props
 
                 if (prop.GetComponentInChildren<ShapeVisibilityTracker>() != null) continue;
 
-                AddBoundsVisibility(prop);
+                BoundsUtilities.AddBoundsVisibility(prop);
             }
 
             if (quantumGroup.hasEmptyState)
             {
                 var template = propsInGroup[0];
-                
+
                 var empty = new GameObject("Empty State");
                 empty.transform.parent = groupRoot.transform;
                 var state = empty.AddComponent<QuantumState>();
                 states.Add(state);
 
-                var boxBounds = GetBoundsOfSelfAndChildMeshes(template);
+                var boxBounds = BoundsUtilities.GetBoundsOfSelfAndChildMeshes(template);
                 var boxShape = empty.AddComponent<BoxShape>();
                 boxShape.center = boxBounds.center;
                 boxShape.extents = boxBounds.size;
                 if (Main.Debug) empty.AddComponent<BoxShapeVisualizer>();
-                
+
                 empty.AddComponent<ShapeVisibilityTracker>();
             }
 
@@ -114,20 +143,20 @@ namespace NewHorizons.Builder.Props
             groupRoot.SetActive(true);
         }
 
-        public static void MakeShuffleGroup(GameObject go, Sector sector, PlanetConfig config, IModBehaviour mod, QuantumGroupInfo quantumGroup, GameObject[] propsInGroup)
+        public static void MakeShuffleGroup(GameObject go, Sector sector, QuantumGroupInfo quantumGroup, GameObject[] propsInGroup)
         {
             //var averagePosition = propsInGroup.Aggregate(Vector3.zero, (avg, prop) => avg + prop.transform.position) / propsInGroup.Count();
             GameObject shuffleParent = new GameObject("Quantum Shuffle - " + quantumGroup.id);
             shuffleParent.SetActive(false);
             shuffleParent.transform.parent = sector?.transform ?? go.transform;
             shuffleParent.transform.localPosition = Vector3.zero;
-            propsInGroup.ToList().ForEach(p => p.transform.parent = shuffleParent.transform);    
+            propsInGroup.ToList().ForEach(p => p.transform.parent = shuffleParent.transform);
 
             var shuffle = shuffleParent.AddComponent<QuantumShuffleObject>();
             shuffle._shuffledObjects = propsInGroup.Select(p => p.transform).ToArray();
             shuffle.Awake(); // this doesn't get called on its own for some reason. what? how?
-            
-            AddBoundsVisibility(shuffleParent);
+
+            BoundsUtilities.AddBoundsVisibility(shuffleParent);
             shuffleParent.SetActive(true);
         }
 
