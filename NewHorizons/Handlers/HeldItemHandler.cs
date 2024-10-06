@@ -5,8 +5,8 @@ using NewHorizons.Utility;
 using NewHorizons.Utility.OWML;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace NewHorizons.Handlers;
 
@@ -33,6 +33,8 @@ public static class HeldItemHandler
     /// We keep our own reference to this because when Unload gets called it might have already been updated
     /// </summary>
     private static string _currentStarSystem;
+
+    private const string ADVANCED_WARP_CORE = "TowerTwin_Body/Sector_TowerTwin/Sector_TimeLoopInterior/Interactables_TimeLoopInterior/WarpCoreSocket/Prefab_NOM_WarpCoreVessel";
 
     [HarmonyPrefix, HarmonyPatch(typeof(ItemTool), nameof(ItemTool.Awake))]
     private static void Init()
@@ -79,6 +81,15 @@ public static class HeldItemHandler
         return newObject;
     }
 
+    private static void TrackPath(string path)
+    {
+        if (!_pathOfItemTakenFromSystem.ContainsKey(Main.Instance.CurrentStarSystem))
+        {
+            _pathOfItemTakenFromSystem[Main.Instance.CurrentStarSystem] = new();
+        }
+        _pathOfItemTakenFromSystem[Main.Instance.CurrentStarSystem].Add(path);
+    }
+
     private static void OnStarSystemChanging()
     {
         if (_currentlyHeldItem != null)
@@ -86,16 +97,23 @@ public static class HeldItemHandler
             // Track it so that when we return to this system we can delete the original
             if (_trackedPaths.TryGetValue(_currentlyHeldItem, out var path))
             {
-                if (!_pathOfItemTakenFromSystem.ContainsKey(Main.Instance.CurrentStarSystem))
-                {
-                    _pathOfItemTakenFromSystem[Main.Instance.CurrentStarSystem] = new();
-                }
-                _pathOfItemTakenFromSystem[Main.Instance.CurrentStarSystem].Add(path);
+                TrackPath(path);
             }
 
             NHLogger.Log($"Scene unloaded, preserved inactive held item {_currentlyHeldItem.name}");
             // For some reason, the original will get destroyed no matter what do we make a copy
             _currentlyHeldItem = MakePerfectCopy(_currentlyHeldItem).DontDestroyOnLoad();
+        }
+
+        // If warping with a vessel, make sure to also track the path to the advanced warp core (assuming the player actually removed it)
+        if (Main.Instance.CurrentStarSystem == "SolarSystem" && Main.Instance.IsWarpingFromVessel)
+        {
+            // Making sure its actually gone
+            var warpCoreSocket = GameObject.FindObjectOfType<TimeLoopCoreController>()._warpCoreSocket;
+            if (!warpCoreSocket.IsSocketOccupied() || warpCoreSocket.GetWarpCoreType() != WarpCoreType.Vessel)
+            {
+                TrackPath(ADVANCED_WARP_CORE);
+            }
         }
 
         _trackedPaths.Clear();
@@ -109,14 +127,32 @@ public static class HeldItemHandler
         {
             foreach (var path in paths)
             {
-                NHLogger.Log($"Removing item that was taken from this system at {path}");
-                var item = SearchUtilities.Find(path)?.GetComponent<OWItem>();
-                // Make sure to update the socket it might be in so that it works
-                if (item.GetComponentInParent<OWItemSocket>() is OWItemSocket socket)
+                Delay.FireInNUpdates(() =>
                 {
-                    socket.RemoveFromSocket();
-                }
-                GameObject.Destroy(item.gameObject);
+                    try
+                    {
+                        NHLogger.Log($"Removing item that was taken from this system at {path}");
+                        var item = SearchUtilities.Find(path)?.GetComponent<OWItem>();
+                        // Make sure to update the socket it might be in so that it works
+                        if (item.GetComponentInParent<OWItemSocket>() is OWItemSocket socket)
+                        {
+                            socket.RemoveFromSocket();
+                            // Time loop core controller doesn't have time to hook up its events yet so we call this manually
+                            if (path == ADVANCED_WARP_CORE)
+                            {
+                                var controller = GameObject.FindObjectOfType<TimeLoopCoreController>();
+                                controller.OpenCore();
+                                controller.OnSocketableRemoved(item);
+                            }
+                            NHLogger.Log($"Unsocketed {item.name}");
+                        }
+                        GameObject.Destroy(item.gameObject);
+                    }
+                    catch (Exception e)
+                    {
+                        NHLogger.LogError($"Failed to remove item at {path}: {e}");
+                    }
+                }, 2);
             }
         }
 
