@@ -133,6 +133,11 @@ namespace NewHorizons.External.Modules
         /// </summary>
         public DreamArrivalPointInfo[] dreamArrivalPoints;
 
+        /// <summary>
+        /// Adds dream world grapple totems to this planet.
+        /// </summary>
+        public GrappleTotemInfo[] grappleTotems;
+
         [Obsolete("reveal is deprecated. Use Volumes->revealVolumes instead.")] public RevealVolumeInfo[] reveal;
 
         [Obsolete("audioVolumes is deprecated. Use Volumes->audioVolumes instead.")] public AudioVolumeInfo[] audioVolumes;
