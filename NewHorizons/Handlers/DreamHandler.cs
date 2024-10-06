@@ -71,6 +71,9 @@ namespace NewHorizons.Handlers
                 dwc._dreamWorldVolume = null;
                 dwc._planetBody = null;
                 dwc._ringWorldController = null;
+
+                // Dreamworld has a giant plane for simulation water, we don't want that in our custom world
+                dwc._primarySimulationRoot.Find("water_simulation").gameObject.SetActive(false);
             });
 
         }
