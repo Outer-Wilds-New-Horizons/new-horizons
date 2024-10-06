@@ -34,15 +34,31 @@ namespace NewHorizons.Components.EOTE
             }
         }
 
+        void Awake()
+        {
+            GlobalMessenger.AddListener("EnterDreamWorld", OnEnterDreamWorld);
+            GlobalMessenger.AddListener("ExitDreamWorld", OnExitDreamWorld);
+        }
+
+        void OnDestroy()
+        {
+            GlobalMessenger.RemoveListener("EnterDreamWorld", OnEnterDreamWorld);
+            GlobalMessenger.RemoveListener("ExitDreamWorld", OnExitDreamWorld);
+        }
+
         void UpdateState()
         {
             foreach (var obj in toggledObjects) obj.SetActive(active);
         }
 
-        public void Update()
+        void OnEnterDreamWorld()
         {
-            if (!initialized) return;
-            SetActive(PlayerState.InDreamWorld());
+            SetActive(true);
+        }
+
+        void OnExitDreamWorld()
+        {
+            SetActive(false);
         }
     }
 }

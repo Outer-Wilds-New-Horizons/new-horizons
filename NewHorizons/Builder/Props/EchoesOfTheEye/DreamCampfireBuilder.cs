@@ -49,6 +49,7 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
             var campfire = campfireObj.GetComponentInChildren<DreamCampfire>();
             campfire._dreamArrivalLocation = DreamHandler.GetDreamArrivalLocation(info.id);
 
+            // The streaming groups on DreamCampfires get set on Start() so we wait until after to change it again
             Delay.FireInNUpdates(() => {
                 var streaming = campfireObj.GetComponentInChildren<DreamCampfireStreaming>();
                 if (streaming != null)
