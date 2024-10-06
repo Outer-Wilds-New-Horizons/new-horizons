@@ -39,8 +39,11 @@ namespace NewHorizons.External
             {
                 var detailPaths = Config?.Props?.details?.Select(x => x.path) ?? Array.Empty<string>();
                 return Config?.Cloak != null
+                    || Config?.Dream != null
                     || Config?.Props?.rafts != null
                     || Config?.Props?.slideShows != null
+                    || Config?.Props?.dreamArrivalPoints != null
+                    || Config?.Props?.dreamCampfires != null
                     || detailPaths.Any(x => x.StartsWith("RingWorld_Body") || x.StartsWith("DreamWorld_Body"));
             }
             catch

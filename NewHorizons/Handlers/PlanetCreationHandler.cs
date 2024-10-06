@@ -1,3 +1,4 @@
+using Epic.OnlineServices;
 using NewHorizons.Builder.Atmosphere;
 using NewHorizons.Builder.Body;
 using NewHorizons.Builder.General;
@@ -727,6 +728,11 @@ namespace NewHorizons.Handlers
                         NHLogger.LogError($"Failed to use custom builder on body {body.Config.name} - {e}");
                     }
                 }
+            }
+
+            if (Main.HasDLC)
+            {
+                DreamDimensionBuilder.Make(go, sector, body);
             }
 
             // Has to go last probably

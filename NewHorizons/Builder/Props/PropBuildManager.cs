@@ -1,5 +1,6 @@
 using NewHorizons.Builder.Body;
 using NewHorizons.Builder.Props.Audio;
+using NewHorizons.Builder.Props.EchoesOfTheEye;
 using NewHorizons.Builder.Props.TranslatorText;
 using NewHorizons.Builder.ShipLog;
 using NewHorizons.External;
@@ -101,6 +102,8 @@ namespace NewHorizons.Builder.Props
             // If a prop has set its parentPath and the parent cannot be found, add it to the next pass and try again later
             nextPass = new List<Action>();
 
+            if (Main.HasDLC) MakeGeneralProps(go, config.Props.dreamCampfires, (campfire) => DreamCampfireBuilder.Make(go, sector, campfire, mod), (campfire) => campfire.id);
+            if (Main.HasDLC) MakeGeneralProps(go, config.Props.dreamArrivalPoints, (point) => DreamArrivalPointBuilder.Make(go, sector, point, mod), (point) => point.id);
             MakeGeneralProps(go, config.Props.gravityCannons, (cannon) => GravityCannonBuilder.Make(go, sector, cannon, mod), (cannon) => cannon.shuttleID);
             MakeGeneralProps(go, config.Props.shuttles, (shuttle) => ShuttleBuilder.Make(go, sector, mod, shuttle), (shuttle) => shuttle.id);
             MakeGeneralProps(go, config.Props.details, (detail) => DetailBuilder.Make(go, sector, mod, detail), (detail) => detail.path);

@@ -123,6 +123,16 @@ namespace NewHorizons.External.Modules
         /// </summary>
         public ShuttleInfo[] shuttles;
 
+        /// <summary>
+        /// Add campfires that allow you to enter the dream world/simulation. Must be paired with a dream arrival point, which can be placed on this planet or elsewhere.
+        /// </summary>
+        public DreamCampfireInfo[] dreamCampfires;
+        
+        /// <summary>
+        /// Add the points you will arrive at when entering the dream world/simulation from a paired dream campfire, which can be placed on this planet or elsewhere. The planet with the arrival point should be statically positioned to avoid issues with the simulation view materials.
+        /// </summary>
+        public DreamArrivalPointInfo[] dreamArrivalPoints;
+
         [Obsolete("reveal is deprecated. Use Volumes->revealVolumes instead.")] public RevealVolumeInfo[] reveal;
 
         [Obsolete("audioVolumes is deprecated. Use Volumes->audioVolumes instead.")] public AudioVolumeInfo[] audioVolumes;

@@ -4,7 +4,9 @@ using NewHorizons.Builder.Body;
 using NewHorizons.Builder.General;
 using NewHorizons.Builder.Props;
 using NewHorizons.Builder.Props.Audio;
+using NewHorizons.Builder.Props.EchoesOfTheEye;
 using NewHorizons.Builder.Props.TranslatorText;
+using NewHorizons.Components.EOTE;
 using NewHorizons.Components.Fixers;
 using NewHorizons.Components.Ship;
 using NewHorizons.Components.SizeControllers;
@@ -381,6 +383,8 @@ namespace NewHorizons
                         ProjectionBuilder.InitPrefabs();
                         CloakBuilder.InitPrefab();
                         RaftBuilder.InitPrefab();
+                        DreamCampfireBuilder.InitPrefab();
+                        DreamArrivalPointBuilder.InitPrefab();
                     }
 
                     WarpPadBuilder.InitPrefabs();
@@ -619,6 +623,7 @@ namespace NewHorizons
                 Locator.GetPlayerBody().gameObject.AddComponent<DebugPropPlacer>();
                 Locator.GetPlayerBody().gameObject.AddComponent<DebugMenu>();
                 Locator.GetPlayerBody().gameObject.AddComponent<PlayerShipAtmosphereDetectorFix>();
+                if (HasDLC) Locator.GetPlayerBody().gameObject.AddComponent<LanternExtinguisher>();
 
                 PlayerSpawnHandler.OnSystemReady(shouldWarpInFromShip, shouldWarpInFromVessel);
 
