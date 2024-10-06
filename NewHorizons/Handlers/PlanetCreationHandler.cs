@@ -1,3 +1,4 @@
+using Epic.OnlineServices;
 using NewHorizons.Builder.Atmosphere;
 using NewHorizons.Builder.Body;
 using NewHorizons.Builder.General;
@@ -87,6 +88,7 @@ namespace NewHorizons.Handlers
             }
 
             // Load all planets
+            _loadedBodies.Clear();
             var toLoad = bodies.ToList();
             var newPlanetGraph = new PlanetGraphHandler(toLoad);
 
@@ -151,8 +153,18 @@ namespace NewHorizons.Handlers
             SingularityBuilder.PairAllSingularities();
         }
 
+        private static List<NewHorizonsBody> _loadedBodies = new();
+
+        /// <summary>
+        /// Returns false if it failed
+        /// </summary>
+        /// <param name="body"></param>
+        /// <param name="defaultPrimaryToSun"></param>
+        /// <returns></returns>
         public static bool LoadBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)
         {
+            if (_loadedBodies.Contains(body)) return true;
+
             body.LoadCache();
 
             // I don't remember doing this why is it exceptions what am I doing
@@ -306,6 +318,7 @@ namespace NewHorizons.Handlers
             }
             
             body.UnloadCache(true);
+            _loadedBodies.Add(body);
             return true;
         }
 
@@ -506,7 +519,7 @@ namespace NewHorizons.Handlers
 
             if (body.Config.Orbit.showOrbitLine && !body.Config.Orbit.isStatic)
             {
-                Delay.FireOnNextUpdate(() => OrbitlineBuilder.Make(body.Object, ao, body.Config.Orbit.isMoon, body.Config));
+                OrbitlineBuilder.Make(body.Object, body.Config.Orbit.isMoon, body.Config);
             }
 
             DetectorBuilder.Make(go, owRigidBody, primaryBody, ao, body.Config);
@@ -673,7 +686,7 @@ namespace NewHorizons.Handlers
                         SunOverrideBuilder.Make(go, sector, body.Config.Atmosphere, body.Config.Water, surfaceSize);
                     }
                 }
-
+                                                                   
                 if (body.Config.Atmosphere.fogSize != 0)
                 {
                     fog = FogBuilder.Make(go, sector, body.Config.Atmosphere, body.Mod);
@@ -715,6 +728,11 @@ namespace NewHorizons.Handlers
                         NHLogger.LogError($"Failed to use custom builder on body {body.Config.name} - {e}");
                     }
                 }
+            }
+
+            if (Main.HasDLC)
+            {
+                DreamDimensionBuilder.Make(go, sector, body);
             }
 
             // Has to go last probably
@@ -813,11 +831,18 @@ namespace NewHorizons.Handlers
                 if (referenceFrame != null) referenceFrame._attachedAstroObject = newAO;
 
                 // QM and stuff don't have orbit lines
-                var orbitLine = go.GetComponentInChildren<OrbitLine>()?.gameObject;
-                if (orbitLine != null) UnityEngine.Object.Destroy(orbitLine);
+                // Using the name as well since NH only creates the OrbitLine components next frame
+                var orbitLine = go.GetComponentInChildren<OrbitLine>()?.gameObject ?? go.transform.Find("Orbit")?.gameObject;
+                if (orbitLine != null)
+                {
+                    UnityEngine.Object.Destroy(orbitLine);
+                }
 
                 var isMoon = newAO.GetAstroObjectType() is AstroObject.Type.Moon or AstroObject.Type.Satellite or AstroObject.Type.SpaceStation;
-                if (body.Config.Orbit.showOrbitLine) OrbitlineBuilder.Make(go, newAO, isMoon, body.Config);
+                if (body.Config.Orbit.showOrbitLine)
+                {
+                    OrbitlineBuilder.Make(go, isMoon, body.Config);
+                }
 
                 DetectorBuilder.SetDetector(primary, newAO, go.GetComponentInChildren<ConstantForceDetector>());
 
