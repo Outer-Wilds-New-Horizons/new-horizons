@@ -11,10 +11,12 @@ namespace NewHorizons.Components.EOTE
     {
         private bool initialized;
         private bool active;
-        private List<GameObject> toggledObjects = [];
+        private List<GameObject> toggledObjects = new();
 
         public void Initialize()
         {
+            if (initialized) return;
+
             foreach (Transform child in transform)
             {
                 if (child.gameObject.name == "FieldDetector") continue;

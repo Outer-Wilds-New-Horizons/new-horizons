@@ -34,7 +34,7 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
                     var dreamArrivalPoint = _prefab.GetComponent<DreamArrivalPoint>();
                     dreamArrivalPoint._location = DreamArrivalPoint.Location.Undefined;
                     dreamArrivalPoint._sector = null;
-                    dreamArrivalPoint._entrywayVolumes = [];
+                    dreamArrivalPoint._entrywayVolumes = new OWTriggerVolume[0];
                     dreamArrivalPoint._raftSpawn = null;
                     dreamArrivalPoint._connectedDreamCampfire = null;
                     dreamArrivalPoint._campfire._sector = null;

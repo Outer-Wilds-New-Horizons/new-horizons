@@ -44,7 +44,7 @@ namespace NewHorizons.Handlers
             var simRootObj = MigrateCopy(oldDWC._primarySimulationRoot.gameObject, managerObj);
 
             dwc._primarySimulationRoot = simRootObj.transform;
-            dwc._simulationRoots = [simRootObj.transform];
+            dwc._simulationRoots = new Transform[] { simRootObj.transform };
             dwc._simulationCamera = simRootObj.FindChild("Camera_Simulation").GetComponent<SimulationCamera>();
             dwc._simulationSphere = simRootObj.FindChild("SimulationSphere").GetComponent<OWRenderer>();
 

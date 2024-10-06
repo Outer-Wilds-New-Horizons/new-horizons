@@ -33,7 +33,7 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
                     var campfire = _prefab.GetComponentInChildren<DreamCampfire>();
                     campfire._dreamArrivalLocation = DreamArrivalPoint.Location.Undefined;
                     campfire._sector = null;
-                    campfire._entrywayVolumes = [];
+                    campfire._entrywayVolumes = new OWTriggerVolume[0];
                 }
             }
         }
