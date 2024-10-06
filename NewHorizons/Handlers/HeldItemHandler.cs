@@ -19,6 +19,8 @@ public static class HeldItemHandler
     /// </summary>
     private static Dictionary<string, List<string>> _pathOfItemTakenFromSystem = new();
 
+    public static bool WasAWCTakenFromATP => _pathOfItemTakenFromSystem.TryGetValue("SolarSystem", out var list) && list.Contains(ADVANCED_WARP_CORE);
+
     private static GameObject _currentlyHeldItem;
 
     /// <summary>
@@ -42,6 +44,12 @@ public static class HeldItemHandler
         _trackedPaths.Clear();
 
         _currentStarSystem = Main.Instance.CurrentStarSystem;
+
+        // If we took the AWC out of the main system make sure to disable time loop
+        if (_currentStarSystem != "SolarSystem" && WasAWCTakenFromATP)
+        {
+            TimeLoop.SetTimeLoopEnabled(false);
+        }
 
         if (!_isInitialized)
         {
@@ -127,6 +135,7 @@ public static class HeldItemHandler
         {
             foreach (var path in paths)
             {
+                // Have to wait two frames for the sockets to Awake and Start
                 Delay.FireInNUpdates(() =>
                 {
                     try
