@@ -58,7 +58,7 @@ namespace NewHorizons
 
         public static float SecondsElapsedInLoop = -1;
 
-        public static bool IsSystemReady { get; private set; }
+        public static bool IsSystemReady { get; private set; }    
 
         public string DefaultStarSystem => SystemDict.ContainsKey(DefaultSystemOverride) ? DefaultSystemOverride : _defaultStarSystem;
         public string CurrentStarSystem
