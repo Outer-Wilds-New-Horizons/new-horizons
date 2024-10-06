@@ -82,5 +82,42 @@ namespace NewHorizons.Patches.EchoesOfTheEyePatches
 
             return true;
         }
+
+        /// <summary>
+        /// Load assets when dying in dreamworld and returning to a custom dream campfire
+        /// Only really relevant for campfires on stock planets
+        /// 
+        /// This only gets us like a 1 second headstart on loading so honestly it's barely worth it,
+        /// could be replaced with keeping the assets loaded the entire time you're in the dreamworld
+        /// but we should only do that if it becomes relevant I think
+        /// </summary>
+        /// <param name="__instance"></param>
+        /// <param name="dreamCampfire"></param>
+        [HarmonyPrefix, HarmonyPatch(nameof(DreamWorldController.EnterDreamWorld))]
+        private static void OnEnterDreamWorld(DreamWorldController __instance, DreamCampfire dreamCampfire)
+        {
+            var planet = dreamCampfire.GetComponentInParent<AstroObject>();
+            if (planet.GetAstroObjectName() != AstroObject.Name.RingWorld)
+            {
+                _dreamEntryLocationStreamingGroup = planet.GetComponentInChildren<StreamingGroup>();
+                GlobalMessenger<DeathType>.AddListener("PlayerDeath", OnPlayerDeath);
+            }
+        }
+
+        private static StreamingGroup _dreamEntryLocationStreamingGroup;
+
+        private static void OnPlayerDeath(DeathType type)
+        {
+            if (PlayerState.InDreamWorld())
+            {
+                if (_dreamEntryLocationStreamingGroup != null)
+                {
+                    _dreamEntryLocationStreamingGroup.RequestRequiredAssets(0);
+                    _dreamEntryLocationStreamingGroup.RequestGeneralAssets(0);
+                }
+                _dreamEntryLocationStreamingGroup = null;
+            }
+            GlobalMessenger<DeathType>.RemoveListener("PlayerDeath", OnPlayerDeath);
+        }
     }
 }
