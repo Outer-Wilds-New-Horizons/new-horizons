@@ -17,7 +17,7 @@ public static class HeldItemHandler
     /// Dictionary of system name to item path
     /// If we travel to multiple systems within a single loop, this will hold the items we move between systems
     /// </summary>
-    private static Dictionary<string, List<string>> _pathOfItemTakenFromSystem = new();
+    private static Dictionary<string, HashSet<string>> _pathOfItemTakenFromSystem = new();
 
     public static bool WasAWCTakenFromATP => _pathOfItemTakenFromSystem.TryGetValue("SolarSystem", out var list) && list.Contains(ADVANCED_WARP_CORE);
 
@@ -45,16 +45,10 @@ public static class HeldItemHandler
 
         _currentStarSystem = Main.Instance.CurrentStarSystem;
 
-        // If we took the AWC out of the main system make sure to disable time loop
-        if (_currentStarSystem != "SolarSystem" && WasAWCTakenFromATP)
-        {
-            TimeLoop.SetTimeLoopEnabled(false);
-        }
-
         if (!_isInitialized)
         {
             _isInitialized = true;
-            Main.Instance.StarSystemChanging += OnStarSystemChanging;
+            Main.Instance.OnChangeStarSystem.AddListener(OnStarSystemChanging);
             Main.Instance.OnStarSystemLoaded.AddListener(OnSystemReady);
             GlobalMessenger<DeathType>.AddListener("PlayerDeath", OnPlayerDeath);
         }
@@ -71,8 +65,6 @@ public static class HeldItemHandler
 
     private static GameObject MakePerfectCopy(GameObject go)
     {
-        //go.SetActive(false);
-
         var owItem = go.GetComponent<OWItem>();
 
         var tempParent = new GameObject();
@@ -98,7 +90,7 @@ public static class HeldItemHandler
         _pathOfItemTakenFromSystem[Main.Instance.CurrentStarSystem].Add(path);
     }
 
-    private static void OnStarSystemChanging()
+    private static void OnStarSystemChanging(string _)
     {
         if (_currentlyHeldItem != null)
         {
@@ -109,7 +101,7 @@ public static class HeldItemHandler
             }
 
             NHLogger.Log($"Scene unloaded, preserved inactive held item {_currentlyHeldItem.name}");
-            // For some reason, the original will get destroyed no matter what do we make a copy
+            // For some reason, the original will get destroyed no matter what we do. To avoid, we make a copy
             _currentlyHeldItem = MakePerfectCopy(_currentlyHeldItem).DontDestroyOnLoad();
         }
 
@@ -155,7 +147,7 @@ public static class HeldItemHandler
                             }
                             NHLogger.Log($"Unsocketed {item.name}");
                         }
-                        GameObject.Destroy(item.gameObject);
+                        item.gameObject.SetActive(false);
                     }
                     catch (Exception e)
                     {
@@ -218,5 +210,20 @@ public static class HeldItemHandler
 
         NHLogger.Log($"Player is now holding {item?.name ?? "nothing"}");
         _currentlyHeldItem = item?.gameObject;
+    }
+
+    [HarmonyPostfix, HarmonyPatch(typeof(ItemTool))]
+    [HarmonyPatch(nameof(ItemTool.SocketItem))]
+    [HarmonyPatch(nameof(ItemTool.DropItem))]
+    [HarmonyPatch(nameof(ItemTool.StartUnsocketItem))]
+    private static void HeldItemChanged2(ItemTool __instance)
+    {
+        if (!_isSystemReady)
+        {
+            return;
+        }
+
+        NHLogger.Log($"Player is now holding nothing");
+        _currentlyHeldItem = null;
     }
 }

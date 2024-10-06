@@ -51,11 +51,21 @@ namespace NewHorizons.Handlers
                 Delay.StartCoroutine(SpawnCoroutine(30));
             }
 
-            var cloak = GetDefaultSpawn()?.GetAttachedOWRigidbody()?.GetComponentInChildren<CloakFieldController>();
-            if (cloak != null)
+
+            // It was NREing in here when it was all ?. so explicit null checks
+            var spawn = GetDefaultSpawn();
+            if (spawn != null)
             {
-                // Ensures it has invoked everything and actually placed the player in the cloaking field #671
-                cloak._firstUpdate = true;
+                var attachedOWRigidBody = spawn.GetAttachedOWRigidbody();
+                if (attachedOWRigidBody != null)
+                {
+                    var cloak = attachedOWRigidBody.GetComponentInChildren<CloakFieldController>();
+                    if (cloak != null)
+                    {
+                        // Ensures it has invoked everything and actually placed the player in the cloaking field #671
+                        cloak._firstUpdate = true;
+                    }
+                }
             }
 
             // Spawn ship
