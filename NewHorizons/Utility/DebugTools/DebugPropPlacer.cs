@@ -156,6 +156,7 @@ namespace NewHorizons.Utility.DebugTools
                 {
                     position = data.pos,
                     rotation = data.rot.eulerAngles,
+                    keepLoaded = true
                 };
                 var prop = DetailBuilder.Make(planetGO, sector, null, prefab, detailInfo);
 

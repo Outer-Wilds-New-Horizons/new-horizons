@@ -8,6 +8,8 @@ namespace NewHorizons.Builder.General
 {
     public static class AstroObjectBuilder
     {
+        public static GameObject CenterOfUniverse { get; private set; }
+
         public static NHAstroObject Make(GameObject body, AstroObject primaryBody, NewHorizonsBody nhBody, bool isVanilla)
         {
             NHAstroObject astroObject = body.AddComponent<NHAstroObject>();
@@ -16,8 +18,8 @@ namespace NewHorizons.Builder.General
             var config = nhBody.Config;
 
             astroObject.isVanilla = isVanilla;
-            astroObject.HideDisplayName = !config.Base.hasMapMarker;
-            astroObject.invulnerableToSun = config.Base.invulnerableToSun;
+            astroObject.HideDisplayName = !config.MapMarker.enabled;
+            astroObject.invulnerableToSun = !config.Base.hasFluidDetector;
 
             if (config.Orbit != null) astroObject.SetOrbitalParametersFromConfig(config.Orbit);
 
@@ -62,6 +64,8 @@ namespace NewHorizons.Builder.General
 
             if (config.Base.centerOfSolarSystem)
             {
+                CenterOfUniverse = body;
+
                 NHLogger.Log($"Setting center of universe to {config.name}");
 
                 Delay.RunWhen(

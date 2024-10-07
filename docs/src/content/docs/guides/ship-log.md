@@ -404,31 +404,28 @@ Of course, having a custom ship log is neat and all, but what use is it if the p
 
 ### Initial Reveal
 
-You can set facts to reveal as soon as the player enters the system by adding the `initialReveal` property
+You can set facts to reveal as soon as the player enters the system by adding the `initialReveal` property to your **star system config**
 
 ```json {4}
 {
-    "ShipLog": {
-        "xmlFile": "planets/example.xml",
-        "initialReveal": ["EXAMPLE_RUMOR_FACT"]
-    }
+    "initialReveal": ["EXAMPLE_RUMOR_FACT"]
 }
 ```
 
 ### Signal Discovery
 
-You can set a fact to reveal as soon as a signal is identified by editing the signal's `Reveals` attribute
+You can set a fact to reveal as soon as a signal is identified by editing the signal's `reveals` attribute
 
 ```json
 {
-    "Signal": {
-        "Signals": [
+    "Props": {
+        "signals": [
             {
-                "Frequency": "Quantum",
-                "Name": "Quantum Planet",
-                "AudioClip": "OW_QuantumSignal",
-                "SourceRadius": 1000,
-                "Reveals": "EXAMPLE_EXPLORE_FACT"
+                "frequency": "Quantum",
+                "name": "Quantum Planet",
+                "audio": "OW_QuantumSignal",
+                "sourceRadius": 1000,
+                "reveals": "EXAMPLE_EXPLORE_FACT"
             }
         ]
     }
@@ -459,7 +456,7 @@ You can set a fact to reveal in dialogue with the `<RevealFacts>` tag
 ### Reveal Volumes
 
 Reveal volumes are triggers/colliders in the world that can unlock facts from a variety of actions.  
-Reveal volumes are specified in the `Props` module, its key is `reveal`.
+Reveal volumes are specified in the `Volumes` module, its key is `revealVolumes`.
 
 #### Position
 
@@ -503,8 +500,8 @@ trigger the reveal
 
 ```json
 {
-    "Props": {
-        "reveal": [
+    "Volumes": {
+        "revealVolumes": [
             {
                 "position": {
                     "x": -55.65454,

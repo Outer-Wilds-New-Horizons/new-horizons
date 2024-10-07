@@ -3,6 +3,7 @@ using NewHorizons.Utility.Files;
 using NewHorizons.Utility.OWML;
 using OWML.Common;
 using System;
+using System.IO;
 using System.Linq;
 using UnityEngine;
 
@@ -15,6 +16,12 @@ namespace NewHorizons.External
             Config = config;
             Mod = mod;
             RelativePath = relativePath;
+
+            // Fall back to file name if name not given
+            if (!string.IsNullOrEmpty(relativePath) && string.IsNullOrEmpty(config.name))
+            {
+                config.name = Path.GetFileNameWithoutExtension(relativePath);
+            }
 
             Migrate();
         }
@@ -32,8 +39,11 @@ namespace NewHorizons.External
             {
                 var detailPaths = Config?.Props?.details?.Select(x => x.path) ?? Array.Empty<string>();
                 return Config?.Cloak != null
+                    || Config?.Dream != null
                     || Config?.Props?.rafts != null
                     || Config?.Props?.slideShows != null
+                    || Config?.Props?.dreamArrivalPoints != null
+                    || Config?.Props?.dreamCampfires != null
                     || detailPaths.Any(x => x.StartsWith("RingWorld_Body") || x.StartsWith("DreamWorld_Body"));
             }
             catch
@@ -98,12 +108,6 @@ namespace NewHorizons.External
                         detail.keepLoaded = true;
                     }
                 }
-            }
-
-            // Because these guys put TWO spawn points 
-            if (Mod.ModHelper.Manifest.UniqueName == "2walker2.Evacuation" && Config.name == "The Campground")
-            {
-                Config.Spawn.playerSpawn.isDefault = true;
             }
         }
 

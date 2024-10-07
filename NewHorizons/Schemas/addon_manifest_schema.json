@@ -36,7 +36,7 @@
     },
     "subtitlePath": {
       "type": "string",
-      "description": "The path to the addons subtitle for the main menu.\nDefaults to \"subtitle.png\"."
+      "description": "The path to the addons subtitle for the main menu.\nDefaults to \"subtitle.png\".\nThe dimensions of the Echoes of the Eye subtitle is 669 x 67, so aim for that size"
     },
     "$schema": {
       "type": "string",

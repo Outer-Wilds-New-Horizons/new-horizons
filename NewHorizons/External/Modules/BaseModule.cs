@@ -37,14 +37,11 @@ namespace NewHorizons.External.Modules
         public float groundSize;
 
         /// <summary>
-        /// If the body should have a marker on the map screen.
+        /// Is this planet able to detect fluid volumes? Disabling this means that entering a star or lava volume will not destroy this planet
+        /// May have adverse effects if anglerfish are added to this planet, disable this if you want those to work (they have fluid volumes in their mouths)
         /// </summary>
-        public bool hasMapMarker;
-
-        /// <summary>
-        /// Can this planet survive entering a star?
-        /// </summary>
-        public bool invulnerableToSun;
+        [DefaultValue(true)]
+        public bool hasFluidDetector = true;
 
         /// <summary>
         /// Do we show the minimap when walking around this planet?
@@ -63,6 +60,8 @@ namespace NewHorizons.External.Modules
 
         /// <summary>
         /// A scale height used for a number of things. Should be the approximate radius of the body.
+        /// 
+        /// Affected settings include: Base sector size, proxy body scaling, surface gravity
         /// </summary>
         public float surfaceSize;
 
@@ -87,6 +86,9 @@ namespace NewHorizons.External.Modules
 
         #region Obsolete
 
+        [Obsolete("invulnerableToSun is deprecated, please use hasFluidDetector instead")]
+        public bool invulnerableToSun;
+
         [Obsolete("IsSatellite is deprecated, please use ShowMinimap instead")]
         public bool isSatellite;
 
@@ -107,6 +109,9 @@ namespace NewHorizons.External.Modules
 
         [Obsolete("AmbientLight is deprecated, please use AmbientLightModule instead")]
         public float ambientLight;
+
+        [Obsolete("HasMapMarker is deprecated, please use MapMarkerModule instead")]
+        public bool hasMapMarker;
 
         [Obsolete("HasReferenceFrame is deprecated, please use ReferenceModule instead")]
         [DefaultValue(true)] public bool hasReferenceFrame = true;

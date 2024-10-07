@@ -1,24 +1,26 @@
+using Epic.OnlineServices;
 using NewHorizons.Builder.Atmosphere;
 using NewHorizons.Builder.Body;
 using NewHorizons.Builder.General;
 using NewHorizons.Builder.Orbital;
 using NewHorizons.Builder.Props;
+using NewHorizons.Builder.ShipLog;
 using NewHorizons.Builder.Volumes;
 using NewHorizons.Components.Orbital;
 using NewHorizons.Components.Quantum;
 using NewHorizons.Components.Stars;
 using NewHorizons.External;
 using NewHorizons.OtherMods.OWRichPresence;
+using NewHorizons.Streaming;
 using NewHorizons.Utility;
-using NewHorizons.Utility.OWML;
 using NewHorizons.Utility.OuterWilds;
+using NewHorizons.Utility.OWML;
+using Newtonsoft.Json;
+using OWML.ModHelper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using NewHorizons.Streaming;
-using Newtonsoft.Json;
-using NewHorizons.External.Modules.VariableSize;
 
 namespace NewHorizons.Handlers
 {
@@ -86,6 +88,7 @@ namespace NewHorizons.Handlers
             }
 
             // Load all planets
+            _loadedBodies.Clear();
             var toLoad = bodies.ToList();
             var newPlanetGraph = new PlanetGraphHandler(toLoad);
 
@@ -150,8 +153,18 @@ namespace NewHorizons.Handlers
             SingularityBuilder.PairAllSingularities();
         }
 
+        private static List<NewHorizonsBody> _loadedBodies = new();
+
+        /// <summary>
+        /// Returns false if it failed
+        /// </summary>
+        /// <param name="body"></param>
+        /// <param name="defaultPrimaryToSun"></param>
+        /// <returns></returns>
         public static bool LoadBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)
         {
+            if (_loadedBodies.Contains(body)) return true;
+
             body.LoadCache();
 
             // I don't remember doing this why is it exceptions what am I doing
@@ -305,6 +318,7 @@ namespace NewHorizons.Handlers
             }
             
             body.UnloadCache(true);
+            _loadedBodies.Add(body);
             return true;
         }
 
@@ -344,6 +358,13 @@ namespace NewHorizons.Handlers
             // Do stuff that's shared between generating new planets and updating old ones
             go = SharedGenerateBody(body, go, sector, rb);
 
+            if (body.Config.ShipLog?.mapMode != null)
+            {
+                MapModeBuilder.TryReplaceExistingMapModeIcon(body, body.Mod as ModBehaviour, body.Config.ShipLog.mapMode);
+            }
+
+            body.Object = go;
+
             return go;
         }
 
@@ -366,7 +387,7 @@ namespace NewHorizons.Handlers
             go.SetActive(false);
 
             body.Config.Base.showMinimap = false;
-            body.Config.Base.hasMapMarker = false;
+            body.Config.MapMarker.enabled = false;
 
             const float sphereOfInfluence = 2000f;
             
@@ -413,8 +434,8 @@ namespace NewHorizons.Handlers
                     if (defaultPrimaryToSun)
                     {
                         NHLogger.LogError($"Couldn't find {body.Config.Orbit.primaryBody}, defaulting to center of solar system");
-                        // TODO: Make this work in other systems. We tried using Locator.GetCenterOfUniverse before but that doesn't work since its too early now
-                        primaryBody = SearchUtilities.Find("Sun_Body")?.GetComponent<AstroObject>();
+                        // Fix #933 not defaulting primary body
+                        primaryBody = (SearchUtilities.Find("Sun_Body") ?? AstroObjectBuilder.CenterOfUniverse)?.GetComponent<AstroObject>();
                     }
                     else
                     {
@@ -459,7 +480,7 @@ namespace NewHorizons.Handlers
 
             RFVolumeBuilder.Make(go, owRigidBody, sphereOfInfluence, body.Config.ReferenceFrame);
 
-            if (body.Config.Base.hasMapMarker)
+            if (body.Config.MapMarker.enabled)
             {
                 MarkerBuilder.Make(go, body.Config.name, body.Config);
             }
@@ -494,18 +515,11 @@ namespace NewHorizons.Handlers
             {
                 NHLogger.LogVerbose($"Making spawn point on {body.Config.name}");
                 var spawnPoint = SpawnPointBuilder.Make(go, body.Config.Spawn, owRigidBody);
-                var isVanillaSystem = body.Config.starSystem == "SolarSystem" || body.Config.starSystem == "EyeOfTheUniverse";
-                var needsSpawnPoint = Main.SystemDict[body.Config.starSystem].SpawnPoint == null || isVanillaSystem;
-                var isDefaultSpawn = body.Config.Spawn.playerSpawn?.isDefault ?? true; // Backwards compat
-                if (needsSpawnPoint || isDefaultSpawn)
-                {
-                    Main.SystemDict[body.Config.starSystem].SpawnPoint = spawnPoint;
-                }
             }
 
             if (body.Config.Orbit.showOrbitLine && !body.Config.Orbit.isStatic)
             {
-                Delay.FireOnNextUpdate(() => OrbitlineBuilder.Make(body.Object, ao, body.Config.Orbit.isMoon, body.Config));
+                OrbitlineBuilder.Make(body.Object, body.Config.Orbit.isMoon, body.Config);
             }
 
             DetectorBuilder.Make(go, owRigidBody, primaryBody, ao, body.Config);
@@ -672,7 +686,7 @@ namespace NewHorizons.Handlers
                         SunOverrideBuilder.Make(go, sector, body.Config.Atmosphere, body.Config.Water, surfaceSize);
                     }
                 }
-
+                                                                   
                 if (body.Config.Atmosphere.fogSize != 0)
                 {
                     fog = FogBuilder.Make(go, sector, body.Config.Atmosphere, body.Mod);
@@ -714,6 +728,11 @@ namespace NewHorizons.Handlers
                         NHLogger.LogError($"Failed to use custom builder on body {body.Config.name} - {e}");
                     }
                 }
+            }
+
+            if (Main.HasDLC)
+            {
+                DreamDimensionBuilder.Make(go, sector, body);
             }
 
             // Has to go last probably
@@ -812,11 +831,18 @@ namespace NewHorizons.Handlers
                 if (referenceFrame != null) referenceFrame._attachedAstroObject = newAO;
 
                 // QM and stuff don't have orbit lines
-                var orbitLine = go.GetComponentInChildren<OrbitLine>()?.gameObject;
-                if (orbitLine != null) UnityEngine.Object.Destroy(orbitLine);
+                // Using the name as well since NH only creates the OrbitLine components next frame
+                var orbitLine = go.GetComponentInChildren<OrbitLine>()?.gameObject ?? go.transform.Find("Orbit")?.gameObject;
+                if (orbitLine != null)
+                {
+                    UnityEngine.Object.Destroy(orbitLine);
+                }
 
                 var isMoon = newAO.GetAstroObjectType() is AstroObject.Type.Moon or AstroObject.Type.Satellite or AstroObject.Type.SpaceStation;
-                if (body.Config.Orbit.showOrbitLine) OrbitlineBuilder.Make(go, newAO, isMoon, body.Config);
+                if (body.Config.Orbit.showOrbitLine)
+                {
+                    OrbitlineBuilder.Make(go, isMoon, body.Config);
+                }
 
                 DetectorBuilder.SetDetector(primary, newAO, go.GetComponentInChildren<ConstantForceDetector>());
 
@@ -928,7 +954,7 @@ namespace NewHorizons.Handlers
             }
 
             // Uses the ratio of the interlopers furthest point to what the base game considers the edge of the solar system
-            var distanceToCenter = go.transform.position.magnitude * (24000 / 30000f);
+            var distanceToCenter = go.transform.position.magnitude / (24000 / 30000f);
             if (distanceToCenter > SolarSystemRadius)
             {
                 SolarSystemRadius = distanceToCenter;

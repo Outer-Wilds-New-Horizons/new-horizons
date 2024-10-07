@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 3537427957
+CRC: 2356174904
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: c4d8f41970054074bb375ac5cbe82855
+    Hash: c9b4a60ca4efa0ba50065dea6e758ce7
   TypeTreeHash:
     serializedVersion: 2
-    Hash: de71b9c55befb829b1640ea21774b932
+    Hash: 65942a71d50cdc9f2387a8fa9383a3f8
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -16,6 +16,8 @@ ClassTypes:
 - Class: 21
   Script: {instanceID: 0}
 - Class: 23
+  Script: {instanceID: 0}
+- Class: 28
   Script: {instanceID: 0}
 - Class: 33
   Script: {instanceID: 0}
@@ -39,6 +41,8 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 114
   Script: {fileID: 11500000, guid: 70edf1000ebf31e4eb3ab4e289a345c0, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 86d5ae109bbc920409997135e88f1755, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 77b727c07614b4041a5fe1fba0cfacff, type: 3}
 - Class: 114
@@ -76,6 +80,8 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 11500000, guid: 327eb94566c9e284dae5d7b1cfe11ccd, type: 3}
 - Class: 114
+  Script: {fileID: 11500000, guid: 8d56b3759dd12424c8425ed62fc02796, type: 3}
+- Class: 114
   Script: {fileID: 11500000, guid: c317f6a5634f15f4c80f89e306616924, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 13ab18a571ddf1b4f8dc92e3fa31b22e, type: 3}
@@ -98,9 +104,11 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 11500000, guid: 64247dd7b0c5ac640a6d9ae5360a0f5a, type: 3}
 - Class: 114
+  Script: {fileID: 11500000, guid: f645b92850d716a4488617b651223700, type: 3}
+- Class: 114
   Script: {fileID: 11500000, guid: 8ef66a28deb09ab4aaba30bb60b9f19a, type: 3}
 - Class: 114
-  Script: {fileID: 11500000, guid: 0863077874402f14dba0ca4ae81752dd, type: 3}
+  Script: {fileID: 11500000, guid: bf998978a8a701b4eb09fcd94048f916, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: a9da74c8b134add4ba1d884336a5e075, type: 3}
 - Class: 114
@@ -171,7 +179,24 @@ ClassTypes:
   Script: {instanceID: 0}
 SerializeReferenceClassIdentifiers: []
 Assets:
+- Assets/SlideReels/Prefab_DW_Reel_Whole.prefab
+- Assets/SlideReels/Prefab_IP_Reel_Rusted_7.prefab
+- Assets/SlideReels/Prefab_IP_Reel_Destroyed_6.prefab
+- Assets/SlideReels/Effects_IP_SIM_SlideReel.prefab
+- Assets/SlideReels/Prefab_DW_Reel_7.prefab
+- Assets/SlideReels/Prefab_IP_Reel_Rusted_6.prefab
+- Assets/SlideReels/Prefab_IP_Reel_Rusted_8.prefab
+- Assets/SlideReels/Prefab_DW_Reel_6.prefab
+- Assets/SlideReels/Prefab_IP_Reel_8.prefab
+- Assets/SlideReels/Prefab_IP_Reel_6.prefab
+- Assets/SlideReels/Prefab_IP_Reel_Destroyed_7.prefab
+- Assets/SlideReels/Prefab_IP_Reel_Destroyed_Whole.prefab
+- Assets/SlideReels/Prefab_IP_Reel_Destroyed_8.prefab
+- Assets/SlideReels/Prefab_IP_Reel_Whole.prefab
+- Assets/SlideReels/Prefab_IP_Reel_Rusted_Whole.prefab
 - Assets/BrambleCollision.prefab
+- Assets/SlideReels/Prefab_DW_Reel_8.prefab
 - Assets/Vessel_Body.prefab
 - Assets/AmbientLight_QM.png
+- Assets/SlideReels/Prefab_IP_Reel_7.prefab
 Dependencies: []

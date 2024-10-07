@@ -49,7 +49,7 @@ Then, use the `QueryBody` method:
 var api = ModHelper.Interactions.TryGetModApi<INewHorizons>("xen.NewHorizons");
 api.GetBodyLoadedEvent().AddListener((name) => {
     ModHelper.Console.WriteLine($"Body: {name} Loaded!");
-    var data = api.QueryBody<MyCoolExtensionData>("$.extras.myCoolExtensionData", name);
+    var data = api.QueryBody<MyCoolExtensionData>(name, "$.extras.myCoolExtensionData");
     // Makes sure the module is not null
     if (data != null) {
         ModHelper.Console.WriteLine($"myCoolExtensionProperty for {name} is {data.myCoolExtensionProperty}!");

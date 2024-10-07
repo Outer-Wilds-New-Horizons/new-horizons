@@ -214,5 +214,12 @@ namespace NewHorizons
         /// <param name="mod"></param>
         /// <param name="filePath"></param>
         void AddSubtitle(IModBehaviour mod, string filePath);
+
+        /// <summary>
+        /// Whatever system the player is warping to next, they will spawn at the spawn point with this ID
+        /// Gets reset after warping. Is also overriden by entering a system-changing black hole or warp volume by their `spawnPointID`
+        /// </summary>
+        /// <param name="id"></param>
+        void SetNextSpawnID(string id);
     }
 }
