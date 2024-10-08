@@ -138,6 +138,11 @@ namespace NewHorizons.External.Modules
         /// </summary>
         public GrappleTotemInfo[] grappleTotems;
 
+        /// <summary>
+        /// Adds dream world alarm totems to this planet.
+        /// </summary>
+        public AlarmTotemInfo[] alarmTotems;
+
         [Obsolete("reveal is deprecated. Use Volumes->revealVolumes instead.")] public RevealVolumeInfo[] reveal;
 
         [Obsolete("audioVolumes is deprecated. Use Volumes->audioVolumes instead.")] public AudioVolumeInfo[] audioVolumes;
