@@ -75,8 +75,7 @@ namespace NewHorizons.Patches.EchoesOfTheEyePatches
             }
             else
             {
-                var departureAO = dreamCampfire.GetComponentInParent<AstroObject>();
-                __instance._planetBody = departureAO.GetAttachedOWRigidbody();
+                __instance._planetBody = dreamCampfire.GetAttachedOWRigidbody();
                 __instance._ringWorldController = null;
             }
 
