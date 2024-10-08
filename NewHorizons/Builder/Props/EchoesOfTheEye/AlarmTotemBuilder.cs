@@ -44,7 +44,7 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
 
             var totemObj = DetailBuilder.Make(planetGO, sector, mod, _prefab, new DetailInfo(info));
 
-            var alarmTotem = _prefab.GetComponent<AlarmTotem>();
+            var alarmTotem = totemObj.GetComponent<AlarmTotem>();
             alarmTotem._sightAngle = info.sightAngle;
             alarmTotem._sightDistance = info.sightDistance;
 
