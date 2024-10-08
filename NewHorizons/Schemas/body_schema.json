@@ -65,6 +65,10 @@
       "description": "Add a cloaking field to this planet",
       "$ref": "#/definitions/CloakModule"
     },
+    "Dream": {
+      "description": "Make this planet part of the dream world",
+      "$ref": "#/definitions/DreamModule"
+    },
     "FocalPoint": {
       "description": "Make this body into a focal point (barycenter)",
       "$ref": "#/definitions/FocalPointModule"
@@ -799,6 +803,20 @@
         }
       }
     },
+    "DreamModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "inDreamWorld": {
+          "type": "boolean",
+          "description": "Setting this value will make this body a dream world style dimension where its contents are only activated while entering it from a dream campfire. Disables the body's map marker."
+        },
+        "generateSimulationMeshes": {
+          "type": "boolean",
+          "description": "Whether to generate simulation meshes (the models used in the \"tronworld\" or \"matrix\" view) for most objects on this planet by cloning the existing meshes and applying the simulation materials. Leave this off if you are building your own simulation meshes or using existing objects which have them."
+        }
+      }
+    },
     "FocalPointModule": {
       "type": "object",
       "additionalProperties": false,
@@ -1293,6 +1311,20 @@
           "description": "Add a Nomai shuttle to this planet. Can be paired to a gravity cannon on this planet or elsewhere.",
           "items": {
             "$ref": "#/definitions/ShuttleInfo"
+          }
+        },
+        "dreamCampfires": {
+          "type": "array",
+          "description": "Add campfires that allow you to enter the dream world/simulation. Must be paired with a dream arrival point, which can be placed on this planet or elsewhere.",
+          "items": {
+            "$ref": "#/definitions/DreamCampfireInfo"
+          }
+        },
+        "dreamArrivalPoints": {
+          "type": "array",
+          "description": "Add the points you will arrive at when entering the dream world/simulation from a paired dream campfire, which can be placed on this planet or elsewhere. The planet with the arrival point should be statically positioned to avoid issues with the simulation view materials.",
+          "items": {
+            "$ref": "#/definitions/DreamArrivalPointInfo"
           }
         }
       }
@@ -3368,6 +3400,84 @@
         "id": {
           "type": "string",
           "description": "Unique ID for this shuttle"
+        }
+      }
+    },
+    "DreamCampfireInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "id": {
+          "type": "string",
+          "description": "Unique ID for this dream-world campfire"
+        }
+      }
+    },
+    "DreamArrivalPointInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "id": {
+          "type": "string",
+          "description": "Unique ID for this dream-world arrival point"
+        },
+        "generateSimulationMeshes": {
+          "type": "boolean",
+          "description": "Whether to generate simulation meshes (the models used in the \"tronworld\" or \"matrix\" view) for most objects on the current planet by cloning the existing meshes and applying the simulation materials. Leave this off if you are building your own simulation meshes or using existing objects which have them."
         }
       }
     },
