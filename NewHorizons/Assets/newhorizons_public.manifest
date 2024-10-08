@@ -1,15 +1,17 @@
 ManifestFileVersion: 0
-CRC: 1613957014
+CRC: 580989691
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 9b2f376d4639a3fa789eadaf132f9889
+    Hash: 5e37dbb3ad2d629728894f8a06768f21
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 10a6a558690295dadb3dd990eda0821a
+    Hash: 22357172b8cea85847937e8f62d0c077
 HashAppended: 0
 ClassTypes:
 - Class: 21
+  Script: {instanceID: 0}
+- Class: 28
   Script: {instanceID: 0}
 - Class: 48
   Script: {instanceID: 0}
@@ -17,9 +19,14 @@ SerializeReferenceClassIdentifiers: []
 Assets:
 - Assets/Shaders/SphereTextureWrapper.shader
 - Assets/Shaders/Ring.shader
+- Assets/Shaders/RingV2UnlitTransparent.shader
 - Assets/Shaders/SphereTextureWrapperTriplanar.shader
+- Assets/Shaders/RingV2.shader
+- Assets/Shaders/RingV2Transparent.shader
 - Assets/Shaders/UnlitRing1Pixel.shader
+- Assets/Resources/BlueNoise470.png
 - Assets/Shaders/UnlitTransparent.shader
+- Assets/Shaders/RingV2Unlit.shader
 - Assets/Resources/TransparentCloud.mat
 - Assets/Shaders/StandardCullOFF.shader
 - Assets/Shaders/Ring1Pixel.shader
