@@ -93,7 +93,13 @@ namespace NewHorizons.Handlers
 
         private static void DreamWorldRemoved()
         {
-            DreamHandler.MigrateDreamWorldController();
+            // No you didn't
+            // Needs to stay alive so that custom Dreamworlds can use its Dreamworld controller
+            // We had a separate dreamworld controller solution before, but that broke Eyes of the Past somehow
+            Locator.GetAstroObject(AstroObject.Name.DreamWorld).gameObject.SetActive(true);
+            // We thought of disabling the children for consistency: However this broke the tronworld for some reason
+            // Basically, leaving the real Dreamworld in is fine since as long as you don't place your own custom dreamworld on top
+            // of it, you'll never have it appear when you dont want it to
         }
 
         private static void SunRemoved()
