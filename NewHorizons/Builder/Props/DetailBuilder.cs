@@ -271,6 +271,15 @@ namespace NewHorizons.Builder.Props
             }
 
             if (!detail.keepLoaded) GroupsBuilder.Make(prop, sector);
+
+            // For DLC related props
+            // Make sure to do this before its set active
+            if (!string.IsNullOrEmpty(detail?.path) && 
+                (detail.path.ToLowerInvariant().StartsWith("ringworld") || detail.path.ToLowerInvariant().StartsWith("dreamworld")))
+            {
+                prop.AddComponent<DestroyOnDLC>()._destroyOnDLCNotOwned = true;
+            }
+
             prop.SetActive(true);
 
             if (detail.hasPhysics)
