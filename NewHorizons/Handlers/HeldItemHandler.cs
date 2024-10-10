@@ -91,6 +91,9 @@ public static class HeldItemHandler
 
     private static void OnStarSystemChanging(string _)
     {
+        // Double check we're still holding it
+        _currentlyHeldItem = Locator.GetToolModeSwapper().GetItemCarryTool().GetHeldItem()?.gameObject;
+
         if (_currentlyHeldItem != null)
         {
             // Track it so that when we return to this system we can delete the original
