@@ -45,6 +45,8 @@ For example, Slate's first dialogue with options is named `Scientist5`. To make 
 </DialogueNode>
 ```
 
+Note: If you're loading dialogue in code, 2 frames must pass before entering the conversation in order for ReuseDialogueOptionsListFrom to take effect.
+
 ## Example XML
 
 Here's an example dialogue XML:
