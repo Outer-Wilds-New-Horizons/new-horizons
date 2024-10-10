@@ -848,6 +848,8 @@ namespace NewHorizons.Handlers
 
                 // Get ready to move all the satellites
                 var relativeMoonPositions = children.Select(x => x.transform.position - go.transform.position).ToArray();
+                var relativeMoonMoonPositions = children.Select(x => AstroObjectLocator.GetChildren(x.GetComponent<AstroObject>())
+                    .Select(childchild => (childchild?.transform?.position ?? Vector3.zero) - go.transform.position)).ToArray();
 
                 // If its tidally locked change the alignment
                 var alignment = go.GetComponent<AlignWithTargetBody>();
@@ -874,11 +876,15 @@ namespace NewHorizons.Handlers
                         }
                         else
                         {
+                            var j = 0;
                             foreach (var childChild in AstroObjectLocator.GetChildren(childAO))
                             {
-                                if (childChild == null) continue;
-                                var dPos = childChild.transform.position - child.transform.position;
-                                childChild.transform.position = go.transform.position + relativeMoonPositions[i] + dPos;
+                                if (childChild != null)
+                                {
+                                    var dPos = relativeMoonMoonPositions[i].ElementAt(j);
+                                    childChild.transform.position = go.transform.position + dPos;
+                                }
+                                j++;
                             }
                             // Make sure the moons get updated to the new AO
                             childAO._primaryBody = newAO;
