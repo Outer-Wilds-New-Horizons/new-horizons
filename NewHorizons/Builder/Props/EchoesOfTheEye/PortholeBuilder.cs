@@ -58,12 +58,16 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
             if (_mainPrefab == null || _simPrefab == null || sector == null) return null;
 
             var portholeObj = DetailBuilder.Make(planetGO, sector, mod, _mainPrefab, new DetailInfo(info));
-
-            var sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            sphere.transform.SetParent(portholeObj.transform, false);
+            portholeObj.name = "Prefab_Porthole";
 
             var simObj = DetailBuilder.Make(planetGO, sector, mod, _simPrefab, new DetailInfo(info));
             simObj.transform.parent = portholeObj.transform;
+
+            var parentObj = GeneralPropBuilder.MakeNew("Porthole", planetGO, sector, info);
+            parentObj.SetActive(true);
+            portholeObj.transform.SetParent(parentObj.transform, true);
+            portholeObj.transform.localPosition = new Vector3(0f, -4f, 8f);
+            portholeObj.transform.localEulerAngles = new Vector3(0f, 315f, 0f);
 
             var peephole = portholeObj.GetComponentInChildren<Peephole>();
             if (info.revealFacts != null)
