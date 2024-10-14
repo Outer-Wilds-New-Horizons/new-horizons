@@ -143,6 +143,11 @@ namespace NewHorizons.External.Modules
         /// </summary>
         public AlarmTotemInfo[] alarmTotems;
 
+        /// <summary>
+        /// Adds portholes (the windows you can peek through in the DLC) to this planet.
+        /// </summary>
+        public PortholeInfo[] portholes;
+
         [Obsolete("reveal is deprecated. Use Volumes->revealVolumes instead.")] public RevealVolumeInfo[] reveal;
 
         [Obsolete("audioVolumes is deprecated. Use Volumes->audioVolumes instead.")] public AudioVolumeInfo[] audioVolumes;

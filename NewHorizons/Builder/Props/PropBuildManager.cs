@@ -102,6 +102,7 @@ namespace NewHorizons.Builder.Props
             // If a prop has set its parentPath and the parent cannot be found, add it to the next pass and try again later
             nextPass = new List<Action>();
 
+            if (Main.HasDLC) MakeGeneralProps(go, config.Props.portholes, (porthole) => PortholeBuilder.Make(go, sector, porthole, mod));
             if (Main.HasDLC) MakeGeneralProps(go, config.Props.alarmTotems, (totem) => AlarmTotemBuilder.Make(go, sector, totem, mod));
             if (Main.HasDLC) MakeGeneralProps(go, config.Props.grappleTotems, (totem) => GrappleTotemBuilder.Make(go, sector, totem, mod));
             if (Main.HasDLC) MakeGeneralProps(go, config.Props.dreamCampfires, (campfire) => DreamCampfireBuilder.Make(go, sector, campfire, mod), (campfire) => campfire.id);
