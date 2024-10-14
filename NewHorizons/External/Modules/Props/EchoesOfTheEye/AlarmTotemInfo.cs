@@ -20,5 +20,10 @@ namespace NewHorizons.External.Modules.Props.EchoesOfTheEye
         /// The width of the alarm's "vision cone" in degrees.
         /// </summary>
         [DefaultValue(60f)] public float sightAngle = 60f;
+
+        /// <summary>
+        /// Scales the visible vision cone in the simulation view (does not affect the actual vision cone detection).
+        /// </summary>
+        public MVector3 stretchVisionCone;
     }
 }

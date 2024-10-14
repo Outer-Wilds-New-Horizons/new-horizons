@@ -48,6 +48,12 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
             alarmTotem._sightAngle = info.sightAngle;
             alarmTotem._sightDistance = info.sightDistance;
 
+            if (info.stretchVisionCone != null)
+            {
+                var visionCone = totemObj.transform.Find("Effects_IP_SIM_AlarmTotem/AlarmTotemVisionCone");
+                visionCone.localScale = Vector3.Scale(visionCone.localScale, info.stretchVisionCone);
+            }
+
             return totemObj;
         }
     }
