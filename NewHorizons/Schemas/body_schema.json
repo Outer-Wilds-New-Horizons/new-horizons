@@ -1326,6 +1326,27 @@
           "items": {
             "$ref": "#/definitions/DreamArrivalPointInfo"
           }
+        },
+        "grappleTotems": {
+          "type": "array",
+          "description": "Adds dream world grapple totems to this planet.",
+          "items": {
+            "$ref": "#/definitions/GrappleTotemInfo"
+          }
+        },
+        "alarmTotems": {
+          "type": "array",
+          "description": "Adds dream world alarm totems to this planet.",
+          "items": {
+            "$ref": "#/definitions/AlarmTotemInfo"
+          }
+        },
+        "portholes": {
+          "type": "array",
+          "description": "Adds portholes (the windows you can peek through in the DLC) to this planet.",
+          "items": {
+            "$ref": "#/definitions/PortholeInfo"
+          }
         }
       }
     },
@@ -3478,6 +3499,195 @@
         "generateSimulationMeshes": {
           "type": "boolean",
           "description": "Whether to generate simulation meshes (the models used in the \"tronworld\" or \"matrix\" view) for most objects on the current planet by cloning the existing meshes and applying the simulation materials. Leave this off if you are building your own simulation meshes or using existing objects which have them."
+        }
+      }
+    },
+    "GrappleTotemInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "minDistance": {
+          "type": "number",
+          "description": "The minimum distance that the player must be from the grapple totem for it to activate.",
+          "format": "float",
+          "default": 10.0
+        },
+        "arrivalDistance": {
+          "type": "number",
+          "description": "The distance from the grapple totem that the player will stop at when it activates.",
+          "format": "float",
+          "default": 4.0
+        },
+        "maxAngle": {
+          "type": "number",
+          "description": "The maximum angle in degrees allowed between the grapple totem's face and the player's lantern in order to activate the totem.",
+          "format": "float",
+          "default": 45.0
+        },
+        "maxDistance": {
+          "type": "number",
+          "description": "The maximum distance allowed between the grapple totem's face and the player's lantern in order to activate the totem.",
+          "format": "float",
+          "default": 29.0
+        }
+      }
+    },
+    "AlarmTotemInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "sightDistance": {
+          "type": "number",
+          "description": "The maximum distance of the alarm's \"vision cone\".",
+          "format": "float",
+          "default": 45.0
+        },
+        "sightAngle": {
+          "type": "number",
+          "description": "The width of the alarm's \"vision cone\" in degrees.",
+          "format": "float",
+          "default": 60.0
+        }
+      }
+    },
+    "PortholeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "revealFacts": {
+          "type": "array",
+          "description": "Fact IDs to reveal when peeking through the porthole.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "fieldOfView": {
+          "type": "number",
+          "description": "The field of view of the porthole camera.",
+          "format": "float",
+          "default": 90.0
+        },
+        "target": {
+          "description": "The location of the camera when the player peeks through the porthole. Can be placed on a different planet.",
+          "$ref": "#/definitions/PortholeTargetInfo"
+        }
+      }
+    },
+    "PortholeTargetInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "parentBody": {
+          "type": "string",
+          "description": "The name of the planet that will be used with `parentPath`. Must be set if `parentPath` is set."
+        },
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
         }
       }
     },
