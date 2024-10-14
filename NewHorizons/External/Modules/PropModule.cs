@@ -54,7 +54,7 @@ namespace NewHorizons.External.Modules
         public DetailInfo[] proxyDetails;
 
         /// <summary>
-        /// Add rafts to this planet
+        /// Add rafts to this planet (requires Echoes of the Eye DLC)
         /// </summary>
         public RaftInfo[] rafts;
 
@@ -64,7 +64,7 @@ namespace NewHorizons.External.Modules
         public ScatterInfo[] scatter;
 
         /// <summary>
-        /// Add slideshows (from the DLC) to the planet
+        /// Add slideshows to the planet (requires Echoes of the Eye DLC)
         /// </summary>
         public ProjectionInfo[] slideShows;
 
@@ -124,29 +124,34 @@ namespace NewHorizons.External.Modules
         public ShuttleInfo[] shuttles;
 
         /// <summary>
-        /// Add campfires that allow you to enter the dream world/simulation. Must be paired with a dream arrival point, which can be placed on this planet or elsewhere.
+        /// Add campfires that allow you to enter the dream world/simulation (requires Echoes of the Eye DLC). Must be paired with a dream arrival point, which can be placed on this planet or elsewhere.
         /// </summary>
         public DreamCampfireInfo[] dreamCampfires;
-        
+
         /// <summary>
-        /// Add the points you will arrive at when entering the dream world/simulation from a paired dream campfire, which can be placed on this planet or elsewhere. The planet with the arrival point should be statically positioned to avoid issues with the simulation view materials.
+        /// Add the points you will arrive at when entering the dream world/simulation from a paired dream campfire (requires Echoes of the Eye DLC). The planet with the arrival point should be statically positioned to avoid issues with the simulation view materials.
         /// </summary>
         public DreamArrivalPointInfo[] dreamArrivalPoints;
 
         /// <summary>
-        /// Adds dream world grapple totems to this planet.
+        /// Adds dream world grapple totems to this planet (requires Echoes of the Eye DLC).
         /// </summary>
         public GrappleTotemInfo[] grappleTotems;
 
         /// <summary>
-        /// Adds dream world alarm totems to this planet.
+        /// Adds dream world alarm totems to this planet (requires Echoes of the Eye DLC).
         /// </summary>
         public AlarmTotemInfo[] alarmTotems;
 
         /// <summary>
-        /// Adds portholes (the windows you can peek through in the DLC) to this planet.
+        /// Adds portholes (the windows you can peek through in the Stranger) to this planet (requires Echoes of the Eye DLC).
         /// </summary>
         public PortholeInfo[] portholes;
+
+        /// <summary>
+        /// Adds dream world candles to this planet (requires Echoes of the Eye DLC).
+        /// </summary>
+        public DreamCandleInfo[] dreamCandles;
 
         [Obsolete("reveal is deprecated. Use Volumes->revealVolumes instead.")] public RevealVolumeInfo[] reveal;
 
