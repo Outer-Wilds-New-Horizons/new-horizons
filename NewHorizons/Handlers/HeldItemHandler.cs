@@ -50,11 +50,11 @@ public static class HeldItemHandler
             _isInitialized = true;
             Main.Instance.OnChangeStarSystem.AddListener(OnStarSystemChanging);
             Main.Instance.OnStarSystemLoaded.AddListener(OnSystemReady);
-            GlobalMessenger<DeathType>.AddListener("PlayerDeath", OnPlayerDeath);
+            GlobalMessenger.AddListener("DeathSequenceComplete", OnDeathSequenceComplete);
         }
     }
 
-    private static void OnPlayerDeath(DeathType _)
+    private static void OnDeathSequenceComplete()
     {
         NHLogger.Log("Player died, resetting held items");
 
