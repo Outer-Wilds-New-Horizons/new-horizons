@@ -153,6 +153,11 @@ namespace NewHorizons.External.Modules
         /// </summary>
         public DreamCandleInfo[] dreamCandles;
 
+        /// <summary>
+        /// Adds dream world projection totems (requires Echoes of the Eye DLC).
+        /// </summary>
+        public ProjectionTotemInfo[] projectionTotems;
+
         [Obsolete("reveal is deprecated. Use Volumes->revealVolumes instead.")] public RevealVolumeInfo[] reveal;
 
         [Obsolete("audioVolumes is deprecated. Use Volumes->audioVolumes instead.")] public AudioVolumeInfo[] audioVolumes;

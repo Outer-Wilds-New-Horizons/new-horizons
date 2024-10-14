@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace NewHorizons.Builder.Props.EchoesOfTheEye
 {
@@ -100,14 +101,27 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
                     {
                         projectionObj.gameObject.AddComponent<DitheringAnimator>();
                         var projection = projectionObj.gameObject.AddComponent<DreamObjectProjection>();
-                        projection._setActive = true;
+                        projection._setActive = info.toggleProjectedObjectsActive;
                         projection.Awake();
+                        projections.Add(projection);
                     }
                 }
                 projector._projections = projections.ToArray();
             }
 
-            projector.SetLit(info.startLit);
+            var sensor = projector._lightSensor as SingleLightSensor;
+            sensor._detectFlashlight = true;
+            sensor._lightSourceMask |= LightSourceType.FLASHLIGHT;
+
+            projector._lit = info.startLit;
+            projector._startLit = info.startLit;
+            projector._extinguishOnly = info.extinguishOnly;
+            /*
+            Delay.FireOnNextUpdate(() =>
+            {
+                projector.Start();
+            });
+            */
 
             return totemObj;
         }

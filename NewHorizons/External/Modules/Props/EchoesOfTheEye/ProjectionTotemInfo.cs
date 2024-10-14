@@ -40,5 +40,10 @@ namespace NewHorizons.External.Modules.Props.EchoesOfTheEye
         /// Relative paths from this planet to objects that will appear or disappear when this totem is lit or extinguished. Some types of objects and effects are not supported and will remain visible and active.
         /// </summary>
         public string[] pathsToProjectedObjects;
+
+        /// <summary>
+        /// If set, projected objects will be set to fully active or fully disabled instantly instead of smoothly fading lights/renderers/colliders. Use this if the normal behavior is insufficient for the objects you're using.
+        /// </summary>
+        public bool toggleProjectedObjectsActive;
     }
 }
