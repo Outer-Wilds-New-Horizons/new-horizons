@@ -30,10 +30,5 @@ namespace NewHorizons.External.Modules.Props.EchoesOfTheEye
         /// The maximum distance allowed between the grapple totem's face and the player's lantern in order to activate the totem.
         /// </summary>
         [DefaultValue(29f)] public float maxDistance = 29f;
-
-        /// <summary>
-        /// Allows the grapple totem to be activated by the player's flashlight (when placed outside of the dream world). The player must still be holding an artifact, but it can be unlit.
-        /// </summary>
-        public bool allowFlashlight;
     }
 }

@@ -54,11 +54,8 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
             sensor._detectionAngle = info.maxAngle;
             sensor._maxDistance = info.maxDistance;
 
-            if (info.allowFlashlight)
-            {
-                sensor._detectFlashlight = true;
-                sensor._lightSourceMask |= LightSourceType.FLASHLIGHT;
-            }
+            sensor._detectFlashlight = true;
+            sensor._lightSourceMask |= LightSourceType.FLASHLIGHT;
 
             return totemObj;
         }
