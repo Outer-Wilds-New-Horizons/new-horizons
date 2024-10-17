@@ -340,6 +340,16 @@ namespace NewHorizons.Builder.Props
             {
                 remoteCameraPlatform._visualSector = sector;
             }
+
+            else if(component is SingleLightSensor singleLightSensor && !existingSectors.Contains(singleLightSensor._sector))
+            {
+                if (singleLightSensor._sector != null)
+                {
+                    singleLightSensor._sector.OnSectorOccupantsUpdated -= singleLightSensor.OnSectorOccupantsUpdated;
+                }
+                singleLightSensor._sector = sector;
+                singleLightSensor._sector.OnSectorOccupantsUpdated += singleLightSensor.OnSectorOccupantsUpdated;
+            }
         }
 
         /// <summary>
