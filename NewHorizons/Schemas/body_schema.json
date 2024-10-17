@@ -1217,7 +1217,7 @@
         },
         "rafts": {
           "type": "array",
-          "description": "Add rafts to this planet",
+          "description": "Add rafts to this planet (requires Echoes of the Eye DLC)",
           "items": {
             "$ref": "#/definitions/RaftInfo"
           }
@@ -1231,7 +1231,7 @@
         },
         "slideShows": {
           "type": "array",
-          "description": "Add slideshows (from the DLC) to the planet",
+          "description": "Add slideshows to the planet (requires Echoes of the Eye DLC)",
           "items": {
             "$ref": "#/definitions/ProjectionInfo"
           }
@@ -1315,16 +1315,51 @@
         },
         "dreamCampfires": {
           "type": "array",
-          "description": "Add campfires that allow you to enter the dream world/simulation. Must be paired with a dream arrival point, which can be placed on this planet or elsewhere.",
+          "description": "Add campfires that allow you to enter the dream world/simulation (requires Echoes of the Eye DLC). Must be paired with a dream arrival point, which can be placed on this planet or elsewhere.",
           "items": {
             "$ref": "#/definitions/DreamCampfireInfo"
           }
         },
         "dreamArrivalPoints": {
           "type": "array",
-          "description": "Add the points you will arrive at when entering the dream world/simulation from a paired dream campfire, which can be placed on this planet or elsewhere. The planet with the arrival point should be statically positioned to avoid issues with the simulation view materials.",
+          "description": "Add the points you will arrive at when entering the dream world/simulation from a paired dream campfire (requires Echoes of the Eye DLC). The planet with the arrival point should be statically positioned to avoid issues with the simulation view materials.",
           "items": {
             "$ref": "#/definitions/DreamArrivalPointInfo"
+          }
+        },
+        "grappleTotems": {
+          "type": "array",
+          "description": "Adds dream world grapple totems to this planet (requires Echoes of the Eye DLC).",
+          "items": {
+            "$ref": "#/definitions/GrappleTotemInfo"
+          }
+        },
+        "alarmTotems": {
+          "type": "array",
+          "description": "Adds dream world alarm totems to this planet (requires Echoes of the Eye DLC).",
+          "items": {
+            "$ref": "#/definitions/AlarmTotemInfo"
+          }
+        },
+        "portholes": {
+          "type": "array",
+          "description": "Adds portholes (the windows you can peek through in the Stranger) to this planet (requires Echoes of the Eye DLC).",
+          "items": {
+            "$ref": "#/definitions/PortholeInfo"
+          }
+        },
+        "dreamCandles": {
+          "type": "array",
+          "description": "Adds dream world candles to this planet (requires Echoes of the Eye DLC).",
+          "items": {
+            "$ref": "#/definitions/DreamCandleInfo"
+          }
+        },
+        "projectionTotems": {
+          "type": "array",
+          "description": "Adds dream world projection totems (requires Echoes of the Eye DLC).",
+          "items": {
+            "$ref": "#/definitions/ProjectionTotemInfo"
           }
         }
       }
@@ -3478,6 +3513,337 @@
         "generateSimulationMeshes": {
           "type": "boolean",
           "description": "Whether to generate simulation meshes (the models used in the \"tronworld\" or \"matrix\" view) for most objects on the current planet by cloning the existing meshes and applying the simulation materials. Leave this off if you are building your own simulation meshes or using existing objects which have them."
+        }
+      }
+    },
+    "GrappleTotemInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "minDistance": {
+          "type": "number",
+          "description": "The minimum distance that the player must be from the grapple totem for it to activate.",
+          "format": "float",
+          "default": 10.0
+        },
+        "arrivalDistance": {
+          "type": "number",
+          "description": "The distance from the grapple totem that the player will stop at when it activates.",
+          "format": "float",
+          "default": 4.0
+        },
+        "maxAngle": {
+          "type": "number",
+          "description": "The maximum angle in degrees allowed between the grapple totem's face and the player's lantern in order to activate the totem.",
+          "format": "float",
+          "default": 45.0
+        },
+        "maxDistance": {
+          "type": "number",
+          "description": "The maximum distance allowed between the grapple totem's face and the player's lantern in order to activate the totem.",
+          "format": "float",
+          "default": 29.0
+        }
+      }
+    },
+    "AlarmTotemInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "sightDistance": {
+          "type": "number",
+          "description": "The maximum distance of the alarm's vision cone.",
+          "format": "float",
+          "default": 45.0
+        },
+        "sightAngle": {
+          "type": "number",
+          "description": "The width of the alarm's vision cone in degrees.",
+          "format": "float",
+          "default": 60.0
+        },
+        "stretchVisionCone": {
+          "description": "Scales the visible vision cone in the simulation view (does not affect the actual vision cone detection).",
+          "$ref": "#/definitions/MVector3"
+        }
+      }
+    },
+    "PortholeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "revealFacts": {
+          "type": "array",
+          "description": "Fact IDs to reveal when peeking through the porthole.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "fieldOfView": {
+          "type": "number",
+          "description": "The field of view of the porthole camera.",
+          "format": "float",
+          "default": 90.0
+        },
+        "target": {
+          "description": "The location of the camera when the player peeks through the porthole. Can be placed on a different planet.",
+          "$ref": "#/definitions/PortholeTargetInfo"
+        }
+      }
+    },
+    "PortholeTargetInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "parentBody": {
+          "type": "string",
+          "description": "The name of the planet that will be used with `parentPath`. Must be set if `parentPath` is set."
+        },
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        }
+      }
+    },
+    "DreamCandleInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "type": {
+          "description": "The type of dream candle this is.",
+          "default": "Ground",
+          "$ref": "#/definitions/DreamCandleType"
+        },
+        "startLit": {
+          "type": "boolean",
+          "description": "Whether the candle should start lit or extinguished."
+        }
+      }
+    },
+    "DreamCandleType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Ground",
+        "GroundSmall",
+        "GroundLarge",
+        "GroundSingle",
+        "Wall",
+        "WallLargeFlame",
+        "WallBigWick",
+        "Standing",
+        "Pile"
+      ],
+      "enum": [
+        "ground",
+        "groundSmall",
+        "groundLarge",
+        "groundSingle",
+        "wall",
+        "wallLargeFlame",
+        "wallBigWick",
+        "standing",
+        "pile"
+      ]
+    },
+    "ProjectionTotemInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "startLit": {
+          "type": "boolean",
+          "description": "Whether the totem should start lit or extinguished."
+        },
+        "extinguishOnly": {
+          "type": "boolean",
+          "description": "Whether the projection totem should be able to extinguished but not be able to be lit again with the artifact. Mainly useful if `startLit` is set to true."
+        },
+        "pathToAlarmTotem": {
+          "type": "string",
+          "description": "A relative path from this planet to an alarm totem that will be activated or deactivated based on whether this totem is lit."
+        },
+        "pathsToDreamCandles": {
+          "type": "array",
+          "description": "Relative paths from this planet to objects containing dream candles that will be activated or deactivated based on whether this totem is lit. All dream candles in the selected objects will be connected to this totem, so they do not need to be specified individually if a parent object is specified.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "pathsToProjectionTotems": {
+          "type": "array",
+          "description": "Relative paths from this planet to projection totems that will be deactivated if this totem is extinguished. All projection totems in the selected objects will be connected to this totem, so they do not need to be specified individually if a parent object is specified.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "pathsToProjectedObjects": {
+          "type": "array",
+          "description": "Relative paths from this planet to objects that will appear or disappear when this totem is lit or extinguished. Some types of objects and effects are not supported and will remain visible and active.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "toggleProjectedObjectsActive": {
+          "type": "boolean",
+          "description": "If set, projected objects will be set to fully active or fully disabled instantly instead of smoothly fading lights/renderers/colliders. Use this if the normal behavior is insufficient for the objects you're using."
         }
       }
     },

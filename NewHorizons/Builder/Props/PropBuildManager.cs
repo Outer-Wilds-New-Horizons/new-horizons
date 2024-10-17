@@ -102,13 +102,20 @@ namespace NewHorizons.Builder.Props
             // If a prop has set its parentPath and the parent cannot be found, add it to the next pass and try again later
             nextPass = new List<Action>();
 
-            if (Main.HasDLC) MakeGeneralProps(go, config.Props.dreamCampfires, (campfire) => DreamCampfireBuilder.Make(go, sector, campfire, mod), (campfire) => campfire.id);
-            if (Main.HasDLC) MakeGeneralProps(go, config.Props.dreamArrivalPoints, (point) => DreamArrivalPointBuilder.Make(go, sector, point, mod), (point) => point.id);
             MakeGeneralProps(go, config.Props.gravityCannons, (cannon) => GravityCannonBuilder.Make(go, sector, cannon, mod), (cannon) => cannon.shuttleID);
             MakeGeneralProps(go, config.Props.shuttles, (shuttle) => ShuttleBuilder.Make(go, sector, mod, shuttle), (shuttle) => shuttle.id);
             MakeGeneralProps(go, config.Props.details, (detail) => DetailBuilder.Make(go, sector, mod, detail), (detail) => detail.path);
             MakeGeneralProps(go, config.Props.geysers, (geyser) => GeyserBuilder.Make(go, sector, geyser));
-            if (Main.HasDLC) MakeGeneralProps(go, config.Props.rafts, (raft) => RaftBuilder.Make(go, sector, raft, planetBody));
+            if (Main.HasDLC)
+            {
+                MakeGeneralProps(go, config.Props.dreamCandles, (candle) => DreamCandleBuilder.Make(go, sector, candle, mod));
+                MakeGeneralProps(go, config.Props.portholes, (porthole) => PortholeBuilder.Make(go, sector, porthole, mod));
+                MakeGeneralProps(go, config.Props.alarmTotems, (totem) => AlarmTotemBuilder.Make(go, sector, totem, mod));
+                MakeGeneralProps(go, config.Props.grappleTotems, (totem) => GrappleTotemBuilder.Make(go, sector, totem, mod));
+                MakeGeneralProps(go, config.Props.dreamCampfires, (campfire) => DreamCampfireBuilder.Make(go, sector, campfire, mod), (campfire) => campfire.id);
+                MakeGeneralProps(go, config.Props.dreamArrivalPoints, (point) => DreamArrivalPointBuilder.Make(go, sector, point, mod), (point) => point.id);
+                MakeGeneralProps(go, config.Props.rafts, (raft) => RaftBuilder.Make(go, sector, raft, planetBody));
+            }
             MakeGeneralProps(go, config.Props.tornados, (tornado) => TornadoBuilder.Make(go, sector, tornado, config.Atmosphere?.clouds != null));
             MakeGeneralProps(go, config.Props.volcanoes, (volcano) => VolcanoBuilder.Make(go, sector, volcano));
             MakeGeneralProps(go, config.Props.dialogue, (dialogueInfo) =>
@@ -132,6 +139,7 @@ namespace NewHorizons.Builder.Props
             MakeGeneralProps(go, config.Props.warpTransmitters, (warpTransmitter) => WarpPadBuilder.Make(go, sector, mod, warpTransmitter), (warpTransmitter) => warpTransmitter.frequency);
             MakeGeneralProps(go, config.Props.audioSources, (audioSource) => AudioSourceBuilder.Make(go, sector, audioSource, mod), (audioSource) => audioSource.audio);
             RemoteBuilder.MakeGeneralProps(go, sector, config.Props.remotes, nhBody);
+            if (Main.HasDLC) MakeGeneralProps(go, config.Props.projectionTotems, (totem) => ProjectionTotemBuilder.Make(go, sector, totem, mod));
 
             RunMultiPass();
 
