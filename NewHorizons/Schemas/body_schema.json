@@ -1642,6 +1642,12 @@
         "removalFact": {
           "type": "string",
           "description": "A ship log fact to reveal when removing an item from this socket, or when the socket is empty."
+        },
+        "colliderRadius": {
+          "type": "number",
+          "description": "Default collider radius when interacting with the socket",
+          "format": "float",
+          "default": 0.0
         }
       }
     },
