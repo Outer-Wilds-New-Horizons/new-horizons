@@ -172,7 +172,7 @@ namespace NewHorizons.Builder.Props.Audio
             audioSignal._identificationDistance = info.identificationRadius;
             audioSignal._canBePickedUpByScope = true;
             // The outsider adds outer fog warp volumes to Bramble which break any signals NH places there
-            if (Main.Instance.ModHelper.Interaction.ModExists("SBtT.TheOutsider") && planetGO.GetComponent<AstroObject>()._name == AstroObject.Name.DarkBramble)
+            if (Main.Instance.ModHelper.Interaction.ModExists("SBtT.TheOutsider") && planetGO?.GetComponent<AstroObject>()?._name == AstroObject.Name.DarkBramble)
             {
                 audioSignal._outerFogWarpVolume = null;
             }
