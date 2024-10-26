@@ -49,6 +49,16 @@ namespace NewHorizons.External.Modules.Props.EchoesOfTheEye
         public string[] reveals;
 
         /// <summary>
+        /// The dialogue conditions to set after finishing this slide reel.
+        /// </summary>
+        public string[] conditionsToSet;
+
+        /// <summary>
+        /// The persistent conditions to set after finishing this slide reel.
+        /// </summary>
+        public string[] persistentConditionsToSet;
+
+        /// <summary>
         /// The ship log facts that make the reel play when they are displayed in the computer (by selecting entries or arrows).
         /// You should probably include facts from `reveals` here.
         /// If you only specify a rumor fact, then it would only play in its ship log entry if this has revealed only
