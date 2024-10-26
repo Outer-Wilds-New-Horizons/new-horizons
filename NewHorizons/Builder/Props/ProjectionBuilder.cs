@@ -138,8 +138,10 @@ namespace NewHorizons.Builder.Props
             slideReel.SetSector(sector);
             slideReel.SetVisible(true);
 
-            Component.DestroyImmediate(slideReelObj.GetComponent<SlideCollectionContainer>());
+            var toDestroy = slideReelObj.GetComponent<SlideCollectionContainer>();
             var slideCollectionContainer = slideReelObj.AddComponent<NHSlideCollectionContainer>();
+            slideReel._slideCollectionContainer = slideCollectionContainer;
+            Component.DestroyImmediate(toDestroy);
 
             foreach (var renderer in slideReelObj.GetComponentsInChildren<Renderer>())
             {
@@ -344,8 +346,10 @@ namespace NewHorizons.Builder.Props
             var autoProjector = projectorObj.GetComponent<AutoSlideProjector>();
             autoProjector._sector = sector;
 
-            Component.DestroyImmediate(autoProjector.GetComponent<SlideCollectionContainer>());
+            var toDestroy = autoProjector.GetComponent<SlideCollectionContainer>();
             var slideCollectionContainer = autoProjector.gameObject.AddComponent<NHSlideCollectionContainer>();
+            autoProjector._slideCollectionItem = slideCollectionContainer;
+            Component.DestroyImmediate(toDestroy);
 
             // Now we replace the slides
             int slidesCount = info.slides.Length;
