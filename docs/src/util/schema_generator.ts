@@ -5,7 +5,9 @@ const addFrontmatter = (
     content: string,
     frontmatter: Record<string, boolean | string | object>
 ) => {
-    const entries = Object.entries(frontmatter).map(([key, value]) => `${key}: ${value}`);
+    const entries = Object.entries(frontmatter).map(
+        ([key, value]) => `${key}: ${JSON.stringify(value)}`
+    );
 
     if (entries.length === 0) {
         return content;
