@@ -1,4 +1,5 @@
 using HarmonyLib;
+using NewHorizons.Components.EOTE;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.Props.EchoesOfTheEye;
 using NewHorizons.Handlers;
@@ -137,7 +138,10 @@ namespace NewHorizons.Builder.Props
             slideReel.SetSector(sector);
             slideReel.SetVisible(true);
 
-            var slideCollectionContainer = slideReelObj.GetRequiredComponent<SlideCollectionContainer>();
+            var toDestroy = slideReelObj.GetComponent<SlideCollectionContainer>();
+            var slideCollectionContainer = slideReelObj.AddComponent<NHSlideCollectionContainer>();
+            slideReel._slideCollectionContainer = slideCollectionContainer;
+            Component.DestroyImmediate(toDestroy);
 
             foreach (var renderer in slideReelObj.GetComponentsInChildren<Renderer>())
             {
@@ -342,7 +346,10 @@ namespace NewHorizons.Builder.Props
             var autoProjector = projectorObj.GetComponent<AutoSlideProjector>();
             autoProjector._sector = sector;
 
-            var slideCollectionContainer = autoProjector.GetRequiredComponent<SlideCollectionContainer>();
+            var toDestroy = autoProjector.GetComponent<SlideCollectionContainer>();
+            var slideCollectionContainer = autoProjector.gameObject.AddComponent<NHSlideCollectionContainer>();
+            autoProjector._slideCollectionItem = slideCollectionContainer;
+            Component.DestroyImmediate(toDestroy);
 
             // Now we replace the slides
             int slidesCount = info.slides.Length;
@@ -419,7 +426,7 @@ namespace NewHorizons.Builder.Props
 
             // attach a component to store all the data for the slides that play when a vision torch scans this target
             var target = g.AddComponent<VisionTorchTarget>();
-            var slideCollectionContainer = g.AddComponent<SlideCollectionContainer>();
+            var slideCollectionContainer = g.AddComponent<NHSlideCollectionContainer>();
             slideCollectionContainer.slideCollection = slideCollection;
             target.slideCollection = g.AddComponent<MindSlideCollection>();
             target.slideCollection._slideCollectionContainer = slideCollectionContainer;
@@ -486,7 +493,7 @@ namespace NewHorizons.Builder.Props
             );
 
             // Set up the containers for the slides
-            var slideCollectionContainer = standingTorch.AddComponent<SlideCollectionContainer>();
+            var slideCollectionContainer = standingTorch.AddComponent<NHSlideCollectionContainer>();
             slideCollectionContainer.slideCollection = slideCollection;
 
             var mindSlideCollection = standingTorch.AddComponent<MindSlideCollection>();
@@ -658,12 +665,15 @@ namespace NewHorizons.Builder.Props
             Slide.WriteModules(modules, ref slide._modulesList, ref slide._modulesData, ref slide.lengths);
         }
 
-        private static void LinkShipLogFacts(ProjectionInfo info, SlideCollectionContainer slideCollectionContainer)
+        private static void LinkShipLogFacts(ProjectionInfo info, NHSlideCollectionContainer slideCollectionContainer)
         {
             // Idk why but it wants reveals to be comma delimited not a list
             if (info.reveals != null) slideCollectionContainer._shipLogOnComplete = string.Join(",", info.reveals);
             // Don't use null value, NRE in SlideCollectionContainer.Initialize
             slideCollectionContainer._playWithShipLogFacts = info.playWithShipLogFacts ?? Array.Empty<string>();
+
+            slideCollectionContainer.conditionsToSet = info.conditionsToSet;
+            slideCollectionContainer.persistentConditionsToSet = info.persistentConditionsToSet;
         }
     }
 

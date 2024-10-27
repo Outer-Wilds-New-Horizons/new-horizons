@@ -287,6 +287,14 @@ namespace NewHorizons.External.Configs
 
             // Disable map marker for dream dimensions
             if (Dream != null && Dream.inDreamWorld) MapMarker.enabled = false;
+
+            // User error #983
+            // This will not catch if they wrote the two names slightly differently but oh well don't be stupid
+            // Ideally we should just check for loops in PlanetGraph
+            if (Orbit.primaryBody == name)
+            {
+                throw new Exception($"You set {name} to orbit itself, that is invalid. The planet will not load.");
+            }
         }
 
         public void Migrate()
