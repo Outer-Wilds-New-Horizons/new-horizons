@@ -922,6 +922,12 @@ namespace NewHorizons
                 BodyDict.Add(config.starSystem, new List<NewHorizonsBody>());
             }
 
+            // Fall back to file name if name not given
+            if (!string.IsNullOrEmpty(relativePath) && string.IsNullOrEmpty(config.name))
+            {
+                config.name = Path.GetFileNameWithoutExtension(relativePath);
+            }
+
             // Has to happen after we make sure theres a system config
             config.Validate();
             config.Migrate();

@@ -16,14 +16,6 @@ namespace NewHorizons.External
             Config = config;
             Mod = mod;
             RelativePath = relativePath;
-
-            // Fall back to file name if name not given
-            if (!string.IsNullOrEmpty(relativePath) && string.IsNullOrEmpty(config.name))
-            {
-                config.name = Path.GetFileNameWithoutExtension(relativePath);
-            }
-
-            Migrate();
         }
 
         public PlanetConfig Config;
