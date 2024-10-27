@@ -2263,6 +2263,20 @@
             "type": "string"
           }
         },
+        "conditionsToSet": {
+          "type": "array",
+          "description": "The dialogue conditions to set after finishing this slide reel.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "persistentConditionsToSet": {
+          "type": "array",
+          "description": "The persistent conditions to set after finishing this slide reel.",
+          "items": {
+            "type": "string"
+          }
+        },
         "playWithShipLogFacts": {
           "type": "array",
           "description": "The ship log facts that make the reel play when they are displayed in the computer (by selecting entries or arrows).\nYou should probably include facts from `reveals` here.\nIf you only specify a rumor fact, then it would only play in its ship log entry if this has revealed only\nrumor facts because an entry with revealed explore facts doesn't display rumor facts.",
