@@ -129,19 +129,14 @@ namespace NewHorizons.Utility.Files
                 // Needs a black border
                 if (x == 0 || y == 0 || x == texture.width - 1 || y == texture.height - 1)
                 {
-                    pixels[i].r = 1;
-                    pixels[i].g = 1;
-                    pixels[i].b = 1;
-                    pixels[i].a = 1;
+                    pixels[i] = Color.white;
                 }
                 else
                 {
                     // convert gamma to linear, then invert
                     // outer wilds will invert, then convert linear to gamma
                     // reversing the process
-                    pixels[i].r = 1f - Mathf.Pow(pixels[i].r, 2.2f);
-                    pixels[i].g = 1f - Mathf.Pow(pixels[i].g, 2.2f);
-                    pixels[i].b = 1f - Mathf.Pow(pixels[i].b, 2.2f);
+                    pixels[i] = Color.white - pixels[i].linear;
                 }
             }
 
