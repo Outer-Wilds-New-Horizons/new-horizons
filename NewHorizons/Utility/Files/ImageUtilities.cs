@@ -134,9 +134,9 @@ namespace NewHorizons.Utility.Files
                 {
                     // convert gamma to linear, then invert
                     // outer wilds will invert, then convert linear to gamma (reversing the process)
-                    pixels[i].r = 1f - Mathf.LinearToGammaSpace(pixels[i].r);
-                    pixels[i].g = 1f - Mathf.LinearToGammaSpace(pixels[i].g);
-                    pixels[i].b = 1f - Mathf.LinearToGammaSpace(pixels[i].b);
+                    pixels[i].r = 1f - Mathf.GammaToLinearSpace(pixels[i].r);
+                    pixels[i].g = 1f - Mathf.GammaToLinearSpace(pixels[i].g);
+                    pixels[i].b = 1f - Mathf.GammaToLinearSpace(pixels[i].b);
                 }
             }
 
