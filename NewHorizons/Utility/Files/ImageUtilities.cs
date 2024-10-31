@@ -140,8 +140,10 @@ namespace NewHorizons.Utility.Files
                 }
             }
 
-            // keep this linear. we do our own gamma to linear conversion
-            var newTexture = new Texture2D(texture.width, texture.height, texture.format, texture.mipmapCount != 1, true);
+            // normally, you would want to keep this linear because we do our own gamma to linear conversion.
+            // however, not doing linear makes it match more closely to the source image, which is more desireable
+            // change this back to true if someone complains
+            var newTexture = new Texture2D(texture.width, texture.height, texture.format, texture.mipmapCount != 1, linear: false);
             newTexture.name = key;
             newTexture.SetPixels(pixels);
             newTexture.Apply();
