@@ -143,9 +143,9 @@ namespace NewHorizons.Utility.Files
             // normally, you would want to keep this linear because we do our own gamma to linear conversion.
             // (it also makes vanilla reel atlas match vanilla reels)
             // however, not doing linear makes it match more closely to the source image, which is more desireable
-            // change this back to true if someone complains
+            // change linear to true if someone complains
             // see https://github.com/Outer-Wilds-New-Horizons/new-horizons/pull/986#issuecomment-2449223761 for comparisons
-            var newTexture = new Texture2D(texture.width, texture.height, texture.format, texture.mipmapCount != 1, linear: false);
+            var newTexture = new Texture2D(texture.width, texture.height, texture.format, texture.mipmapCount != 1);
             newTexture.name = key;
             newTexture.SetPixels(pixels);
             newTexture.Apply();
