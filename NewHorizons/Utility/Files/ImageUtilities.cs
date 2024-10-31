@@ -102,8 +102,8 @@ namespace NewHorizons.Utility.Files
         }
 
         /// <summary>
-        /// used specifically for projected slides.
-        /// also adds a border (to prevent weird visual bug) and makes the texture linear (otherwise the projected image is too bright).
+        /// used to fix projection slides
+        /// adds a border (to prevent weird visual bug) and does some magic with gamma correction and inverting
         /// </summary>
         public static Texture2D InvertSlideReel(IModBehaviour mod, Texture2D texture, string originalPath)
         {
@@ -136,13 +136,20 @@ namespace NewHorizons.Utility.Files
                 }
                 else
                 {
-                    pixels[i].r = 1f - pixels[i].r;
-                    pixels[i].g = 1f - pixels[i].g;
-                    pixels[i].b = 1f - pixels[i].b;
+                    // convert gamma to linear, then invert
+                    // outer wilds will invert, then convert linear to gamma (reversing the process)
+                    pixels[i].r = 1f - Mathf.GammaToLinearSpace(pixels[i].r);
+                    pixels[i].g = 1f - Mathf.GammaToLinearSpace(pixels[i].g);
+                    pixels[i].b = 1f - Mathf.GammaToLinearSpace(pixels[i].b);
                 }
             }
 
-            var newTexture = new Texture2D(texture.width, texture.height, texture.format, texture.mipmapCount != 1, true);
+            // making this linear makes vanilla reel atlas match vanilla reels.
+            // however, it also makes it darker than the source image.
+            // for custom slides this is unintuitive.
+            // people will be like "wtf why is it darker than my image?"
+            // see https://github.com/Outer-Wilds-New-Horizons/new-horizons/pull/986#issuecomment-2449223761 for comparisons
+            var newTexture = new Texture2D(texture.width, texture.height, texture.format, texture.mipmapCount != 1);
             newTexture.name = key;
             newTexture.SetPixels(pixels);
             newTexture.Apply();
