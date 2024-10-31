@@ -510,13 +510,6 @@ namespace NewHorizons.Handlers
             // Have to do this after setting position
             var initialMotion = InitialMotionBuilder.Make(go, primaryBody, ao, owRigidBody, body.Config.Orbit);
 
-            // Spawning on other planets is a bit hacky so we do it last
-            if (body.Config.Spawn != null)
-            {
-                NHLogger.LogVerbose($"Making spawn point on {body.Config.name}");
-                var spawnPoint = SpawnPointBuilder.Make(go, body.Config.Spawn, owRigidBody);
-            }
-
             if (body.Config.Orbit.showOrbitLine && !body.Config.Orbit.isStatic)
             {
                 OrbitlineBuilder.Make(body.Object, body.Config.Orbit.isMoon, body.Config);
@@ -744,6 +737,12 @@ namespace NewHorizons.Handlers
             if (body.Config.ShockEffect?.hasSupernovaShockEffect == true)
             {
                 SupernovaEffectBuilder.Make(go, sector, body.Config, body.Mod, procGen, ambientLight, fog, atmosphere, null, fog?._fogImpostor);
+            }
+
+            if (body.Config.Spawn != null)
+            {
+                NHLogger.LogVerbose($"Making spawn point on {body.Config.name}");
+                SpawnPointBuilder.Make(go, body.Config.Spawn, rb);
             }
 
             // We allow removing children afterwards so you can also take bits off of the modules you used
