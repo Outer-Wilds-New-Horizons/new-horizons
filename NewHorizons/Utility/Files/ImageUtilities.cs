@@ -133,6 +133,7 @@ namespace NewHorizons.Utility.Files
                     // outer wilds will invert, then convert linear to gamma (reversing the process)
                     pixels[i] = Color.white - pixels[i].linear;
                 }
+                pixels[i].a = 1; // dont invert alpha
             }
 
             // keep this linear. we do our own gamma to linear conversion
