@@ -141,6 +141,7 @@ namespace NewHorizons.Utility.Files
             }
 
             // normally, you would want to keep this linear because we do our own gamma to linear conversion.
+            // (it also makes vanilla reel atlas match vanilla reels)
             // however, not doing linear makes it match more closely to the source image, which is more desireable
             // change this back to true if someone complains
             var newTexture = new Texture2D(texture.width, texture.height, texture.format, texture.mipmapCount != 1, linear: false);
