@@ -136,13 +136,16 @@ namespace NewHorizons.Utility.Files
                 }
                 else
                 {
-                    pixels[i].r = 1f - pixels[i].r;
-                    pixels[i].g = 1f - pixels[i].g;
-                    pixels[i].b = 1f - pixels[i].b;
+                    // convert gamma to linear, then invert
+                    // outer wilds will invert, then convert linear to gamma
+                    // reversing the process
+                    pixels[i].r = 1f - Mathf.Pow(pixels[i].r, 2.2f);
+                    pixels[i].g = 1f - Mathf.Pow(pixels[i].g, 2.2f);
+                    pixels[i].b = 1f - Mathf.Pow(pixels[i].b, 2.2f);
                 }
             }
 
-            var newTexture = new Texture2D(texture.width, texture.height, texture.format, texture.mipmapCount != 1, true);
+            var newTexture = new Texture2D(texture.width, texture.height, texture.format, texture.mipmapCount != 1);
             newTexture.name = key;
             newTexture.SetPixels(pixels);
             newTexture.Apply();
