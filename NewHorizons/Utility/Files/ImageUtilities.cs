@@ -101,6 +101,10 @@ namespace NewHorizons.Utility.Files
             _textureCache.Clear();
         }
 
+        /// <summary>
+        /// used to fix projection slides
+        /// add a border (to prevent weird visual bug) and does some magic with gamma correction and inverting
+        /// </summary>
         public static Texture2D InvertSlideReel(IModBehaviour mod, Texture2D texture, string originalPath)
         {
             var key = $"{texture.name} > invert";
@@ -140,10 +144,10 @@ namespace NewHorizons.Utility.Files
                 }
             }
 
-            // normally, you would want to keep this linear because we do our own gamma to linear conversion.
-            // (it also makes vanilla reel atlas match vanilla reels)
-            // however, not doing linear makes it match more closely to the source image, which is more desireable
-            // change linear to true if someone complains
+            // making this linear makes vanilla reel atlas match vanilla reels
+            // however, it also makes it darker than the source image
+            // especially for custom slides this is unintuitive
+            // people will be like "wtf why is it darker than my image"
             // see https://github.com/Outer-Wilds-New-Horizons/new-horizons/pull/986#issuecomment-2449223761 for comparisons
             var newTexture = new Texture2D(texture.width, texture.height, texture.format, texture.mipmapCount != 1);
             newTexture.name = key;
