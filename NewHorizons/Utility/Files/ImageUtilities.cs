@@ -144,6 +144,7 @@ namespace NewHorizons.Utility.Files
             // (it also makes vanilla reel atlas match vanilla reels)
             // however, not doing linear makes it match more closely to the source image, which is more desireable
             // change this back to true if someone complains
+            // see https://github.com/Outer-Wilds-New-Horizons/new-horizons/pull/986#issuecomment-2449223761 for comparisons
             var newTexture = new Texture2D(texture.width, texture.height, texture.format, texture.mipmapCount != 1, linear: false);
             newTexture.name = key;
             newTexture.SetPixels(pixels);
