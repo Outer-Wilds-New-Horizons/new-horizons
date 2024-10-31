@@ -101,10 +101,6 @@ namespace NewHorizons.Utility.Files
             _textureCache.Clear();
         }
 
-        /// <summary>
-        /// used specifically for projected slides.
-        /// also adds a border (to prevent weird visual bug) and makes the texture linear (otherwise the projected image is too bright).
-        /// </summary>
         public static Texture2D InvertSlideReel(IModBehaviour mod, Texture2D texture, string originalPath)
         {
             var key = $"{texture.name} > invert";
@@ -134,8 +130,7 @@ namespace NewHorizons.Utility.Files
                 else
                 {
                     // convert gamma to linear, then invert
-                    // outer wilds will invert, then convert linear to gamma
-                    // reversing the process
+                    // outer wilds will invert, then convert linear to gamma (reversing the process)
                     pixels[i] = Color.white - pixels[i].linear;
                 }
             }
