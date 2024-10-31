@@ -81,7 +81,6 @@ public static class SchemaExporter
             switch (_title)
             {
                 case "Celestial Body Schema":
-                    schema.Definitions["OrbitModule"].Properties["semiMajorAxis"].Default = 5000f;
                     schema.Definitions["NomaiTextType"].Enumeration.Remove("cairn");
                     schema.Definitions["NomaiTextType"].EnumerationNames.Remove("Cairn");
                     schema.Definitions["NomaiTextType"].Enumeration.Remove("cairnVariant");

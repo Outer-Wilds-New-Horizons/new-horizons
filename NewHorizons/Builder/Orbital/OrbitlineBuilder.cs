@@ -10,16 +10,25 @@ namespace NewHorizons.Builder.Orbital
         private static Material _dottedLineMaterial;
         private static Material _lineMaterial;
 
-        public static OrbitLine Make(GameObject planetGO, NHAstroObject astroObject, bool isMoon, PlanetConfig config)
+        public static GameObject Make(GameObject planetGO, bool isMoon, PlanetConfig config)
+        {
+            var orbitGO = new GameObject("Orbit");
+            orbitGO.transform.parent = planetGO.transform;
+            orbitGO.transform.localPosition = Vector3.zero;
+
+            Delay.FireOnNextUpdate(() => PostMake(orbitGO, planetGO, isMoon, config));
+            return orbitGO;
+        }
+
+        private static void PostMake(GameObject orbitGO, GameObject planetGO, bool isMoon, PlanetConfig config)
         {
             if (_dottedLineMaterial == null) _dottedLineMaterial = SearchUtilities.FindResourceOfTypeAndName<Material>("Effects_SPA_OrbitLine_Dotted_mat");
             if (_lineMaterial == null) _lineMaterial = SearchUtilities.FindResourceOfTypeAndName<Material>("Effects_SPA_OrbitLine_mat");
 
-            if (_dottedLineMaterial == null || _lineMaterial == null) return null;
+            // Might've been otherwise destroyed when updating
+            if (orbitGO == null) return;
 
-            var orbitGO = new GameObject("Orbit");
-            orbitGO.transform.parent = planetGO.transform;
-            orbitGO.transform.localPosition = Vector3.zero;
+            var astroObject = planetGO.GetComponent<NHAstroObject>();
 
             var lineRenderer = orbitGO.AddComponent<LineRenderer>();
 
@@ -47,7 +56,6 @@ namespace NewHorizons.Builder.Orbital
             else
             {
                 orbitLine = orbitGO.AddComponent<NHOrbitLine>();
-
                 (orbitLine as NHOrbitLine).SetFromParameters(astroObject);
             }
 
@@ -94,8 +102,6 @@ namespace NewHorizons.Builder.Orbital
                     orbitGO.SetActive(false);
                 };
             }
-
-            return orbitLine;
         }
     }
 }

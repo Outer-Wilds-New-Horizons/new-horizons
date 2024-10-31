@@ -61,6 +61,7 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// Relative filepath to the fog color ramp texture, if you put fog.
         /// x axis is angle to sun (left at midnight, right at noon), y axis is distance to camera (close at bottom, far at top).
+        /// Optional. If you set fogTint, a default fog ramp will be tinted for you.
         /// </summary>
         public string fogRampPath;
 
@@ -106,6 +107,12 @@ namespace NewHorizons.External.Modules
         /// Maximum speed that your ship can go in the atmosphere where flames will appear at their brightest.
         /// </summary>
         [DefaultValue(300f)] public float maxShockSpeed = 300f;
+
+        /// <summary>
+        /// Will the ship automatically try to orient itself to face upwards while in this volume?
+        /// </summary>
+        [DefaultValue(true)]
+        public bool allowShipAutoroll = true;
 
         [JsonObject]
         public class CloudInfo

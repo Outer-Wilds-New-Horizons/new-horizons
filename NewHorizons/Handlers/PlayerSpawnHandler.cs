@@ -9,6 +9,11 @@ namespace NewHorizons.Handlers
 {
     public static class PlayerSpawnHandler
     {
+        /// <summary>
+        /// Set during the previous loop, force the player to spawn here
+        /// </summary>
+        public static string TargetSpawnID { get; set; }
+
         public static void SetUpPlayerSpawn()
         {
             if (UsingCustomSpawn())
@@ -46,11 +51,21 @@ namespace NewHorizons.Handlers
                 Delay.StartCoroutine(SpawnCoroutine(30));
             }
 
-            var cloak = GetDefaultSpawn()?.GetAttachedOWRigidbody()?.GetComponentInChildren<CloakFieldController>();
-            if (cloak != null)
+
+            // It was NREing in here when it was all ?. so explicit null checks
+            var spawn = GetDefaultSpawn();
+            if (spawn != null)
             {
-                // Ensures it has invoked everything and actually placed the player in the cloaking field #671
-                cloak._firstUpdate = true;
+                var attachedOWRigidBody = spawn.GetAttachedOWRigidbody();
+                if (attachedOWRigidBody != null)
+                {
+                    var cloak = attachedOWRigidBody.GetComponentInChildren<CloakFieldController>();
+                    if (cloak != null)
+                    {
+                        // Ensures it has invoked everything and actually placed the player in the cloaking field #671
+                        cloak._firstUpdate = true;
+                    }
+                }
             }
 
             // Spawn ship
@@ -146,6 +161,9 @@ namespace NewHorizons.Handlers
             FixPlayerVelocity();
 
             InvulnerabilityHandler.MakeInvulnerable(false);
+
+            // Done spawning
+            TargetSpawnID = null;
         }
 
         private static void FixPlayerVelocity(bool recenter = true)
@@ -200,8 +218,8 @@ namespace NewHorizons.Handlers
             return vector;
         }
 
-        public static bool UsingCustomSpawn() => Main.SystemDict[Main.Instance.CurrentStarSystem].SpawnPoint != null;
+        public static bool UsingCustomSpawn() => SpawnPointBuilder.PlayerSpawn != null;
         public static PlayerSpawner GetPlayerSpawner() => GameObject.FindObjectOfType<PlayerSpawner>();
-        public static SpawnPoint GetDefaultSpawn() => Main.SystemDict[Main.Instance.CurrentStarSystem].SpawnPoint ?? GetPlayerSpawner().GetSpawnPoint(SpawnLocation.TimberHearth);
+        public static SpawnPoint GetDefaultSpawn() => SpawnPointBuilder.PlayerSpawn ?? GetPlayerSpawner().GetSpawnPoint(SpawnLocation.TimberHearth);
     }
 }

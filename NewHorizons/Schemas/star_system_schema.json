@@ -5,6 +5,10 @@
   "description": "Configuration for a specific star system",
   "additionalProperties": false,
   "properties": {
+    "name": {
+      "type": "string",
+      "description": "Unique name of your system. If not specified, the file name (without the extension) is used."
+    },
     "freeMapAngle": {
       "type": "boolean",
       "description": "In this system should the player be able to rotate their map camera freely or be stuck above the plane of the solar system?"
@@ -20,8 +24,21 @@
     },
     "canEnterViaWarpDrive": {
       "type": "boolean",
-      "description": "Whether this system can be warped to via the warp drive. If you set factRequiredForWarp, this will be true.",
+      "description": "Whether this system can be warped to via the warp drive. If you set `factRequiredForWarp`, this will be true.\nDoes NOT effect the base SolarSystem. For that, see `canExitViaWarpDrive` and `factRequiredToExitViaWarpDrive`",
       "default": true
+    },
+    "factRequiredForWarp": {
+      "type": "string",
+      "description": "The FactID that must be revealed before it can be warped to. Don't set `canEnterViaWarpDrive` to `false` if\nyou're using this, because it will be overwritten."
+    },
+    "canExitViaWarpDrive": {
+      "type": "boolean",
+      "description": "Can you use the warp drive to leave this system? If you set `factRequiredToExitViaWarpDrive`\nthis will be true.",
+      "default": true
+    },
+    "factRequiredToExitViaWarpDrive": {
+      "type": "string",
+      "description": "The FactID that must be revealed for you to warp back to the main solar system from here. Don't set `canWarpHome`\nto `false` if you're using this, because it will be overwritten."
     },
     "destroyStockPlanets": {
       "type": "boolean",
@@ -32,10 +49,6 @@
       "type": "boolean",
       "description": "Should the time loop be enabled in this system?",
       "default": true
-    },
-    "factRequiredForWarp": {
-      "type": "string",
-      "description": "The FactID that must be revealed before it can be warped to. Don't set `canEnterViaWarpDrive` to `false` if\nyou're using this, because it will be overwritten."
     },
     "loopDuration": {
       "type": "number",

@@ -27,6 +27,26 @@ A persistent condition is similar to a condition, except it _persists_ through l
 
 A remote trigger is used to have an NPC talk to you from a distance; ex: Slate stopping you for the umpteenth time to tell you information you already knew.
 
+### ReuseDialogueOptionsListFrom
+
+This is a custom XML node introduced by New Horizons. Use it when adding new dialogue to existing characters, to repeat the dialogue options list from another node.
+
+For example, Slate's first dialogue with options is named `Scientist5`. To make a custom DialogueNode using these dialogue options (meaning new dialogue said by Slate, but reusing the possible player responses) you can write:
+
+```xml
+<DialogueNode>
+    <Name>...</Name>
+    <Dialogue>
+        <Page>NEW DIALOGUE FOR SLATE HERE.</Page>
+    </Dialogue>
+    <DialogueOptionsList>
+        <ReuseDialogueOptionsListFrom>Scientist5</ReuseDialogueOptionsListFrom>
+    </DialogueOptionsList>
+</DialogueNode>
+```
+
+Note: If you're loading dialogue in code, 2 frames must pass before entering the conversation in order for ReuseDialogueOptionsListFrom to take effect.
+
 ## Example XML
 
 Here's an example dialogue XML:

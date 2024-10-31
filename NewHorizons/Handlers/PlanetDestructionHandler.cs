@@ -70,6 +70,7 @@ namespace NewHorizons.Handlers
                     if (Main.HasDLC)
                     {
                         StrangerRemoved();
+                        DreamWorldRemoved();
                     }
 
                     // Put it back at the center of the universe after banishing it else there are weird graphical bugs
@@ -88,6 +89,17 @@ namespace NewHorizons.Handlers
             {
                 Locator._cloakFieldController = null;
             }
+        }
+
+        private static void DreamWorldRemoved()
+        {
+            // No you didn't
+            // Needs to stay alive so that custom Dreamworlds can use its Dreamworld controller
+            // We had a separate dreamworld controller solution before, but that broke Eyes of the Past somehow
+            Locator.GetAstroObject(AstroObject.Name.DreamWorld).gameObject.SetActive(true);
+            // We thought of disabling the children for consistency: However this broke the tronworld for some reason
+            // Basically, leaving the real Dreamworld in is fine since as long as you don't place your own custom dreamworld on top
+            // of it, you'll never have it appear when you dont want it to
         }
 
         private static void SunRemoved()
@@ -206,6 +218,9 @@ namespace NewHorizons.Handlers
                         break;
                     case AstroObject.Name.RingWorld:
                         StrangerRemoved();
+                        break;
+                    case AstroObject.Name.DreamWorld:
+                        DreamWorldRemoved();
                         break;
                 }
 

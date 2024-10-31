@@ -129,7 +129,7 @@ namespace NewHorizons.Builder.Body
             fluidVolume._density = module.density;
             fluidVolume._layer = 5;
             fluidVolume._priority = 3;
-            fluidVolume._allowShipAutoroll = true;
+            fluidVolume._allowShipAutoroll = module.allowShipAutoroll;
             fluidVolume._disableOnStart = false;
 
             var fogGO = Object.Instantiate(_oceanFog, waterGO.transform);

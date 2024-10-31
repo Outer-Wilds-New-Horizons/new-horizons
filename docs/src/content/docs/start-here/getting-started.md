@@ -108,7 +108,7 @@ If you run into issues please make sure:
 
 ### Making a GitHub Repository
 
-To get started, you'll need to fork the [the New Horizons addon template](https://github.com/xen-42/ow-new-horizons-config-template)
+To get started, you'll need to click the green "Use This Template" button on [the New Horizons addon template](https://github.com/xen-42/ow-new-horizons-config-template) GitHub repository.
 
 -   Set the Name to your username followed by a dot (`.`), followed by your mod's name in PascalCase (no spaces, new words have capital letters). So for example if my username was "Test" and my mod's name was "Really Cool Addon", I would name the repo `Test.ReallyCoolAddon`.
 -   The description is what will appear in the mod manager under the mod's name, you can always edit this later

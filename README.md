@@ -41,12 +41,12 @@ New Horizons has optional support for a few other mods:
 ## Features
 
 -   Load planet meshes or details from asset bundles
--   Use our [template Unity project](https://github.com/xen-42/outer-wilds-unity-template) to create assets for use in NH, including all game scripts recovered using UtinyRipper
--   Separate solar system scenes accessible via wormhole OR via the ship's new warp drive feature accessible via the ship's log
--   Remove or edit existing planets, including what they orbit around
--   Create custom planets from heightmaps/texturemaps
+-   Use our [template Unity project](https://github.com/ow-mods/outer-wilds-unity-template) to create assets for use in NH, including all game scripts recovered using UtinyRipper
+-   Separate solar system scenes accessible via wormhole OR via the ship's new warp drive feature found in the ship's log
+-   Remove or edit existing planets, including their orbits
+-   Create custom planets from heightmaps/texturemaps with support for triplanar mapping
 -   Create stars (and supernovae), comets, asteroid belts, satellites, quantum planets/moons, and custom Dark Bramble dimensions.
--   Add stock planet features to custom ones, such as geysers, cloak fields, meteor-launching volcanoes, rafts, tornados, and Dark Bramble seeds/nodes.
+-   Add stock planet features to custom ones, such as geysers, cloaking fields, meteor-launching volcanoes, rafts, tornados, and Dark Bramble seeds/nodes.
 -   Binary orbits
 -   Signalscope signals and custom frequencies
 -   Surface scatter: rocks, trees, etc, using in-game models, or custom ones

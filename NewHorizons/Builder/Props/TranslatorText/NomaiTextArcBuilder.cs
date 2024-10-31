@@ -1,3 +1,4 @@
+using NewHorizons.Utility.OWML;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -37,7 +38,6 @@ namespace NewHorizons.Builder.Props.TranslatorText
                 )
                 .ToArray();
 
-
             return BuildSpiralGameObject(_points, mesh, goName);
         }
 
@@ -67,15 +67,52 @@ namespace NewHorizons.Builder.Props.TranslatorText
         public struct SpiralProfile {
             // all of the Vector2 params here refer to a range of valid values
             public string profileName;
+
+            /// <summary>
+            /// What is this
+            /// </summary>
             public Vector2 a;
+
+            /// <summary>
+            /// What is this
+            /// </summary>
             public Vector2 b;
+
+            /// <summary>
+            /// What is this
+            /// </summary>
             public Vector2 startS;
+
+            /// <summary>
+            /// What is this
+            /// </summary>
             public Vector2 endS;
+
+            /// <summary>
+            /// What is this
+            /// </summary>
             public Vector2 skeletonScale;
+
+            /// <summary>
+            /// What is this
+            /// </summary>
             public int numSkeletonPoints;
+
+            /// <summary>
+            /// What is this
+            /// </summary>
             public float uvScale;
-            public float innerWidth; // width at the tip
-            public float outerWidth; // width at the base
+
+            /// <summary>
+            /// Width at tip
+            /// </summary>
+            public float innerWidth; 
+
+            /// <summary>
+            /// Width at base
+            /// </summary>
+            public float outerWidth;
+
             public Material material;
         }
     
@@ -119,8 +156,6 @@ namespace NewHorizons.Builder.Props.TranslatorText
             innerWidth = 0.75f, 
             outerWidth = 0.75f, 
             uvScale = 1f/1.8505f, 
-
-
         };
         
         
