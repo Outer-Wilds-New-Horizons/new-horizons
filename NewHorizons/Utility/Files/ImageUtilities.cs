@@ -135,7 +135,8 @@ namespace NewHorizons.Utility.Files
                 }
             }
 
-            var newTexture = new Texture2D(texture.width, texture.height, texture.format, texture.mipmapCount != 1);
+            // keep this linear. we do our own gamma to linear conversion
+            var newTexture = new Texture2D(texture.width, texture.height, texture.format, texture.mipmapCount != 1, true);
             newTexture.name = key;
             newTexture.SetPixels(pixels);
             newTexture.Apply();
