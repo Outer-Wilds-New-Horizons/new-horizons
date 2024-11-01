@@ -220,3 +220,9 @@ To use this additional dialogue you need to reference it in a planet config file
     }
 ]
 ```
+
+## Dialogue FAQ
+
+### How do I easily position my dialogue relative to a speaking character
+
+Use `pathToAnimController` to specify the path to the speaking character (if they are a Nomai or Hearthian make sure this goes directly to whatever script controls their animations), then set `isRelativeToParent` to true (this is setting available on all NH props for easier positioning). Now when you set their `position`, it will be relative to the speaker. Since this position is normally where the character is standing, set the `y` position to match how tall the character is. Instead of `pathToAnimController` you can also use `parentPath`.
