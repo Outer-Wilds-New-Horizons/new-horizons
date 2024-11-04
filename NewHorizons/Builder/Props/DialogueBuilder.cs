@@ -343,7 +343,7 @@ namespace NewHorizons.Builder.Props
             {
                 var ptGo = GeneralPropBuilder.MakeNew("AttentionPoint", go, sector, info.attentionPoint, defaultParent: dialogue.transform);
                 dialogue._attentionPoint = ptGo.transform;
-                dialogue._attentionPointOffset = info.attentionPoint.offset;
+                dialogue._attentionPointOffset = info.attentionPoint.offset ?? Vector3.zero;
                 ptGo.SetActive(true);
             }
             if (info.swappedAttentionPoints != null && info.swappedAttentionPoints.Length > 0)
@@ -354,7 +354,7 @@ namespace NewHorizons.Builder.Props
                     var swapper = ptGo.AddComponent<DialogueAttentionPointSwapper>();
                     swapper._dialogueTree = dialogue;
                     swapper._attentionPoint = ptGo.transform;
-                    swapper._attentionPointOffset = pointInfo.offset;
+                    swapper._attentionPointOffset = pointInfo.offset ?? Vector3.zero;
                     swapper._nodeName = pointInfo.dialogueNode;
                     swapper._dialoguePage = pointInfo.dialoguePage;
                     swapper._lookEasing = pointInfo.lookEasing;
