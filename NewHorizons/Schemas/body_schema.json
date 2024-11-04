@@ -1682,7 +1682,7 @@
         },
         "pathToAnimController": {
           "type": "string",
-          "description": "If this dialogue is meant for a character, this is the relative path from the planet to that character's\nCharacterAnimController, TravelerController, TravelerEyeController (eye of the universe), FacePlayerWhenTalking, \nHearthianRecorderEffects or SolanumAnimController.\n\nIf it's a Recorder this will also delete the existing dialogue already attached to that prop.\n\nIf none of those components are present it will add a FacePlayerWhenTalking component."
+          "description": "If this dialogue is meant for a character, this is the relative path from the planet to that character's\nCharacterAnimController, TravelerController, TravelerEyeController (eye of the universe), FacePlayerWhenTalking, \nHearthianRecorderEffects or SolanumAnimController.\n\nIf it's a Recorder this will also delete the existing dialogue already attached to that prop.\n\nIf none of those components are present it will add a FacePlayerWhenTalking component.\n\n`pathToAnimController` also makes the dialogue into a child of the anim controller. This can be used with `isRelativeToParent`\nto position the dialogue on relative to the speaker. If you also provide `parentPath`, that will instead override which object \nis the parent, but the anim controller will otherwise function as expected."
         },
         "pathToExistingDialogue": {
           "type": "string",

@@ -291,7 +291,7 @@ namespace NewHorizons.External.Configs
             // User error #983
             // This will not catch if they wrote the two names slightly differently but oh well don't be stupid
             // Ideally we should just check for loops in PlanetGraph
-            if (Orbit.primaryBody == name)
+            if (Orbit.primaryBody == name && !string.IsNullOrEmpty(Orbit.primaryBody))
             {
                 throw new Exception($"You set {name} to orbit itself, that is invalid. The planet will not load.");
             }
