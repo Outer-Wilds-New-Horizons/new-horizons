@@ -51,7 +51,20 @@ namespace NewHorizons.Builder.General
                     // This was a stupid hack to stop players getting stuck in the ground and now we have to keep it forever
                     spawnGO.transform.position += spawnGO.transform.TransformDirection(point.offset ?? Vector3.up * 4f);
 
-                    if (PlayerSpawn == null || point.GetPriority() > PlayerSpawnInfo.GetPriority())
+                    var flagUseTHSpawn = false;
+                    if (Main.Instance.CurrentStarSystem == "SolarSystem")
+                    {
+                        // When in the base solar system, treat the TH spawn point as being isDefault
+                        // If the priority of any new spawn point is less than that, ignore it
+                        // Do take them if they're equal tho
+                        var minPriority = new SpawnModule.PlayerSpawnPoint() { isDefault = true }.GetPriority();
+                        if (point.GetPriority() < minPriority)
+                        {
+                            //flagUseTHSpawn = true;
+                        }
+                    }
+
+                    if (!flagUseTHSpawn && (PlayerSpawn == null || point.GetPriority() > PlayerSpawnInfo.GetPriority()))
                     {
                         PlayerSpawn = playerSpawn;
                         PlayerSpawnInfo = point;
