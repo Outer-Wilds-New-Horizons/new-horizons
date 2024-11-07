@@ -60,7 +60,7 @@ namespace NewHorizons.Builder.General
                         var minPriority = new SpawnModule.PlayerSpawnPoint() { isDefault = true }.GetPriority();
                         if (point.GetPriority() < minPriority)
                         {
-                            //flagUseTHSpawn = true;
+                            flagUseTHSpawn = true;
                         }
                     }
 
