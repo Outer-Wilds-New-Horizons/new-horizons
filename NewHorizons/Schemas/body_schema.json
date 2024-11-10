@@ -583,6 +583,14 @@
           "format": "int32",
           "default": 0
         },
+        "gravityAlignmentRadiusOverride": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "Optional. Overrides how far the player must be from the planet for their feet to automatically orient towards the ground.",
+          "format": "int32"
+        },
         "pushable": {
           "type": "boolean",
           "description": "Apply physics to this planet when you bump into it. Will have a spherical collider the size of surfaceSize. \nFor custom colliders they have to all be convex and you can leave surface size as 0.\nThis is meant for stuff like satellites which are relatively simple and can be de-orbited.\nIf you are using an orbit line but a tracking line, it will be removed when the planet is bumped in to."
