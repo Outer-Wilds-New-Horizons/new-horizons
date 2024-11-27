@@ -89,10 +89,14 @@ public static class HeldItemHandler
         _pathOfItemTakenFromSystem[Main.Instance.CurrentStarSystem].Add(path);
     }
 
-    private static void OnStarSystemChanging(string _)
+    private static void OnStarSystemChanging(string newSystem)
     {
         // Double check we're still holding it
         _currentlyHeldItem = Locator.GetToolModeSwapper().GetItemCarryTool().GetHeldItem()?.gameObject;
+        if (!Main.SystemDict[newSystem].Config.allowOutsideItems)
+        {
+            _currentlyHeldItem = null;
+        }
 
         if (_currentlyHeldItem != null)
         {
