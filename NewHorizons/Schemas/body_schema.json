@@ -4047,7 +4047,7 @@
         },
         "outlineSprite": {
           "type": "string",
-          "description": "The path to the sprite to show when the planet is unexplored in map mode."
+          "description": "The path to the sprite (.png) to show when the planet is unexplored in map mode."
         },
         "remove": {
           "type": "boolean",
@@ -4055,7 +4055,7 @@
         },
         "revealedSprite": {
           "type": "string",
-          "description": "The path to the sprite to show when the planet is revealed in map mode."
+          "description": "The path to the sprite (.png) to show when the planet is revealed in map mode."
         },
         "scale": {
           "type": "number",
@@ -4075,7 +4075,7 @@
         },
         "outlineSprite": {
           "type": "string",
-          "description": "The sprite to show when the parent AstroBody is rumored/unexplored."
+          "description": "The sprite (.png) to show when the parent AstroBody is rumored/unexplored."
         },
         "position": {
           "description": "The position (relative to the parent) to place the detail.",
@@ -4083,7 +4083,7 @@
         },
         "revealedSprite": {
           "type": "string",
-          "description": "The sprite to show when the parent AstroBody is revealed."
+          "description": "The sprite (.png) to show when the parent AstroBody is revealed."
         },
         "rotation": {
           "type": "number",
