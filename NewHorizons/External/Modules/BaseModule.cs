@@ -71,6 +71,11 @@ namespace NewHorizons.External.Modules
         [DefaultValue(0)] public int gravityVolumePriority = 0;
 
         /// <summary>
+        /// Optional. Overrides how far the player must be from the planet for their feet to automatically orient towards the ground.
+        /// </summary>
+        public int? gravityAlignmentRadiusOverride = null;
+
+        /// <summary>
         /// Apply physics to this planet when you bump into it. Will have a spherical collider the size of surfaceSize. 
         /// For custom colliders they have to all be convex and you can leave surface size as 0.
         /// This is meant for stuff like satellites which are relatively simple and can be de-orbited.

@@ -9,6 +9,11 @@
       "type": "string",
       "description": "Unique name of your system. If not specified, the file name (without the extension) is used."
     },
+    "allowOutsideItems": {
+      "type": "boolean",
+      "description": "When changing star systems are you allowed to bring items into this system?",
+      "default": true
+    },
     "freeMapAngle": {
       "type": "boolean",
       "description": "In this system should the player be able to rotate their map camera freely or be stuck above the plane of the solar system?"

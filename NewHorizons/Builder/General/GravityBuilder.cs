@@ -47,7 +47,7 @@ namespace NewHorizons.Builder.General
             var alignmentRadius = config.Atmosphere?.clouds?.outerCloudRadius ?? 1.5f * config.Base.surfaceSize;
             if (config.Base.surfaceGravity == 0) alignmentRadius = 0;
 
-            gravityVolume._alignmentRadius = alignmentRadius;
+            gravityVolume._alignmentRadius = config.Base.gravityAlignmentRadiusOverride ?? alignmentRadius;
             gravityVolume._upperSurfaceRadius = config.Base.surfaceSize;
             gravityVolume._lowerSurfaceRadius = 0;
             gravityVolume._layer = 3;
