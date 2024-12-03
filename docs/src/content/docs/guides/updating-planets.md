@@ -3,7 +3,7 @@ title: Update Existing Planets
 description: A guide for updating base-game planets in New Horizons
 ---
 
-Similar to above, make a config where "Name" is the name of the planet. The name should be able to just match their in-game english names, however if you encounter any issues with that here are the in-code names for planets that are guaranteed to work:
+Similar to above, make a config where "Name" is the name of the planet. The name should be able to just match their in-game english names, however if you encounter any issues with that here are the in-code names for planets that are guaranteed to work (case sensitive!):
 
 -   `SUN`
 -   `CAVE_TWIN` (Ember Twin)
@@ -14,7 +14,7 @@ Similar to above, make a config where "Name" is the name of the planet. The name
 -   `DARK_BRAMBLE`
 -   `COMET` (Interloper)
 -   `WHITE_HOLE`
--   `WHITE_HOLE_TARGET` (The Whitehole Station)
+-   `WhiteholeStation` (The Whitehole Station)
 -   `QUANTUM_MOON`
 -   `ORBITAL_PROBE_CANNON`
 -   `TIMBER_MOON` (Attlerock)
