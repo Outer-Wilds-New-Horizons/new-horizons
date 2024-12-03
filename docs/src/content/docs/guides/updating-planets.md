@@ -14,7 +14,7 @@ Similar to above, make a config where "Name" is the name of the planet. The name
 -   `DARK_BRAMBLE`
 -   `COMET` (Interloper)
 -   `WHITE_HOLE`
--   `WhiteholeStation` (The Whitehole Station)
+-   `WhiteholeStation` 
 -   `QUANTUM_MOON`
 -   `ORBITAL_PROBE_CANNON`
 -   `TIMBER_MOON` (Attlerock)
