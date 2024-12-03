@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml.Linq;
 using UnityEngine;
-using UnityEngine.InputSystem.HID;
 
 namespace NewHorizons.Builder.ShipLog
 {
