@@ -13,6 +13,8 @@ namespace NewHorizons.Handlers
     {
         public static void FadeOut(float length) => Delay.StartCoroutine(FadeOutCoroutine(length));
 
+        public static void FadeIn(float length) => Delay.StartCoroutine(FadeInCoroutine(length));
+
         private static IEnumerator FadeOutCoroutine(float length)
         {
             LoadManager.s_instance._fadeCanvas.enabled = true;
@@ -29,6 +31,23 @@ namespace NewHorizons.Handlers
 
             LoadManager.s_instance._fadeImage.color = Color.black;
             AudioListener.volume = 0;
+            yield return new WaitForEndOfFrame();
+        }
+
+        private static IEnumerator FadeInCoroutine(float length)
+        {
+            float startTime = Time.unscaledTime;
+            float endTime = Time.unscaledTime + length;
+
+            while (Time.unscaledTime < endTime)
+            {
+                LoadManager.s_instance._fadeImage.color = Color.Lerp(Color.black, Color.clear, (Time.unscaledTime - startTime) / length);
+                yield return new WaitForEndOfFrame();
+            }
+
+            LoadManager.s_instance._fadeCanvas.enabled = false;
+            LoadManager.s_instance._fadeImage.color = Color.clear;
+
             yield return new WaitForEndOfFrame();
         }
 
