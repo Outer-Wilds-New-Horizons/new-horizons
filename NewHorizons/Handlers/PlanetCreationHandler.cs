@@ -504,7 +504,7 @@ namespace NewHorizons.Handlers
             }
             else
             {
-                UpdatePosition(go, body.Config.Orbit, primaryBody, ao);
+                UpdatePosition(go, body.Config.Orbit, primaryBody, ao, body.Config.adjustZoomSpeed);
             }
 
             // Have to do this after setting position
@@ -858,7 +858,7 @@ namespace NewHorizons.Handlers
                 }
 
                 // Move the primary
-                UpdatePosition(go, body.Config.Orbit, primary, newAO);
+                UpdatePosition(go, body.Config.Orbit, primary, newAO, body.Config.adjustZoomSpeed);
 
                 for (int i = 0; i < children.Count(); i++)
                 {
@@ -910,7 +910,7 @@ namespace NewHorizons.Handlers
             return;
         }
 
-        public static void UpdatePosition(GameObject go, IOrbitalParameters orbit, AstroObject primaryBody, AstroObject secondaryBody)
+        public static void UpdatePosition(GameObject go, IOrbitalParameters orbit, AstroObject primaryBody, AstroObject secondaryBody, bool adjustZoomSpeed)
         {
             NHLogger.LogVerbose($"Placing [{secondaryBody?.name}] around [{primaryBody?.name}]");
 
@@ -920,11 +920,11 @@ namespace NewHorizons.Handlers
                 var secondaryGravity = new Gravity(secondaryBody.GetGravityVolume());
 
                 var pos = orbit.GetOrbitalParameters(primaryGravity, secondaryGravity).InitialPosition + primaryBody.transform.position;
-                SetPositionFromVector(go, pos, true);
+                SetPositionFromVector(go, pos, adjustZoomSpeed);
             }
             else
             {
-                SetPositionFromVector(go, Vector3.zero, true);
+                SetPositionFromVector(go, Vector3.zero, adjustZoomSpeed);
             }
         }
 
