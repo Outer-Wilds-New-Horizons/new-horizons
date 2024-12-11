@@ -413,7 +413,7 @@ namespace NewHorizons.Handlers
             AstroObjectLocator.RegisterCustomAstroObject(ao);
 
             // Now that we're done move the planet into place
-            SetPositionFromVector(go, body.Config.Orbit.staticPosition);
+            SetPositionFromVector(go, body.Config.Orbit.staticPosition, body.Config.adjustZoomSpeed);
 
             NHLogger.LogVerbose($"Finished creating Bramble Dimension [{body.Config.name}]");
 
@@ -500,7 +500,7 @@ namespace NewHorizons.Handlers
             // Now that we're done move the planet into place
             if (body.Config.Orbit?.staticPosition != null)
             {
-                SetPositionFromVector(go, body.Config.Orbit.staticPosition);
+                SetPositionFromVector(go, body.Config.Orbit.staticPosition, body.Config.adjustZoomSpeed);
             }
             else
             {
@@ -920,15 +920,15 @@ namespace NewHorizons.Handlers
                 var secondaryGravity = new Gravity(secondaryBody.GetGravityVolume());
 
                 var pos = orbit.GetOrbitalParameters(primaryGravity, secondaryGravity).InitialPosition + primaryBody.transform.position;
-                SetPositionFromVector(go, pos);
+                SetPositionFromVector(go, pos, true);
             }
             else
             {
-                SetPositionFromVector(go, Vector3.zero);
+                SetPositionFromVector(go, Vector3.zero, true);
             }
         }
 
-        public static void SetPositionFromVector(GameObject go, Vector3 position)
+        public static void SetPositionFromVector(GameObject go, Vector3 position, bool adjustZoomSpeed)
         {
             var rb = go.GetAttachedOWRigidbody();
             if (rb)
@@ -960,7 +960,7 @@ namespace NewHorizons.Handlers
 
             // Uses the ratio of the interlopers furthest point to what the base game considers the edge of the solar system
             var distanceToCenter = go.transform.position.magnitude / (24000 / 30000f);
-            if (distanceToCenter > SolarSystemRadius)
+            if (distanceToCenter > SolarSystemRadius && adjustZoomSpeed)
             {
                 SolarSystemRadius = distanceToCenter;
             }
