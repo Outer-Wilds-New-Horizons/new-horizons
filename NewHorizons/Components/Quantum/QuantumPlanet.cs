@@ -157,7 +157,7 @@ namespace NewHorizons.Components.Quantum
 
             astroObject.SetOrbitalParametersFromTrueAnomaly(orbitalParameters.eccentricity, orbitalParameters.semiMajorAxis, orbitalParameters.inclination, orbitalParameters.argumentOfPeriapsis, orbitalParameters.longitudeOfAscendingNode, orbitalParameters.trueAnomaly);
 
-            PlanetCreationHandler.UpdatePosition(gameObject, orbitalParameters, primaryBody, astroObject);
+            PlanetCreationHandler.UpdatePosition(gameObject, orbitalParameters, primaryBody, astroObject, true);
             gameObject.transform.parent = null;
 
             if (!Physics.autoSyncTransforms)
