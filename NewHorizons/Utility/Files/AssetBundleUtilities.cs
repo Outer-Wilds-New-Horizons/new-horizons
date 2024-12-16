@@ -102,6 +102,7 @@ namespace NewHorizons.Utility.Files
             return prefab;
         }
 
+        // Adapted from QSB https://github.com/qsb-dev/quantum-space-buddies/blob/master/QSB/PlayerBodySetup/Remote/ShaderReplacer.cs
         public static void ReplaceShaders(GameObject prefab)
         {
             foreach (var renderer in prefab.GetComponentsInChildren<Renderer>(true))
