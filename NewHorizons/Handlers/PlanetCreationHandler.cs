@@ -1,4 +1,3 @@
-using Epic.OnlineServices;
 using NewHorizons.Builder.Atmosphere;
 using NewHorizons.Builder.Body;
 using NewHorizons.Builder.General;
@@ -413,7 +412,7 @@ namespace NewHorizons.Handlers
             AstroObjectLocator.RegisterCustomAstroObject(ao);
 
             // Now that we're done move the planet into place
-            SetPositionFromVector(go, body.Config.Orbit.staticPosition, body.Config.adjustZoomSpeed);
+            SetPositionFromVector(go, body.Config.Orbit.staticPosition, body.Config.trackForSolarSystemRadius);
 
             NHLogger.LogVerbose($"Finished creating Bramble Dimension [{body.Config.name}]");
 
@@ -500,11 +499,11 @@ namespace NewHorizons.Handlers
             // Now that we're done move the planet into place
             if (body.Config.Orbit?.staticPosition != null)
             {
-                SetPositionFromVector(go, body.Config.Orbit.staticPosition, body.Config.adjustZoomSpeed);
+                SetPositionFromVector(go, body.Config.Orbit.staticPosition, body.Config.trackForSolarSystemRadius);
             }
             else
             {
-                UpdatePosition(go, body.Config.Orbit, primaryBody, ao, body.Config.adjustZoomSpeed);
+                UpdatePosition(go, body.Config.Orbit, primaryBody, ao, body.Config.trackForSolarSystemRadius);
             }
 
             // Have to do this after setting position
@@ -858,7 +857,7 @@ namespace NewHorizons.Handlers
                 }
 
                 // Move the primary
-                UpdatePosition(go, body.Config.Orbit, primary, newAO, body.Config.adjustZoomSpeed);
+                UpdatePosition(go, body.Config.Orbit, primary, newAO, body.Config.trackForSolarSystemRadius);
 
                 for (int i = 0; i < children.Count(); i++)
                 {
@@ -916,7 +915,7 @@ namespace NewHorizons.Handlers
             UpdatePosition(go, orbit, primaryBody, secondaryBody, true);
         }
 
-        public static void UpdatePosition(GameObject go, IOrbitalParameters orbit, AstroObject primaryBody, AstroObject secondaryBody, bool adjustZoomSpeed)
+        public static void UpdatePosition(GameObject go, IOrbitalParameters orbit, AstroObject primaryBody, AstroObject secondaryBody, bool trackForSolarSystemRadius)
         {
             NHLogger.LogVerbose($"Placing [{secondaryBody?.name}] around [{primaryBody?.name}]");
 
@@ -926,15 +925,15 @@ namespace NewHorizons.Handlers
                 var secondaryGravity = new Gravity(secondaryBody.GetGravityVolume());
 
                 var pos = orbit.GetOrbitalParameters(primaryGravity, secondaryGravity).InitialPosition + primaryBody.transform.position;
-                SetPositionFromVector(go, pos, adjustZoomSpeed);
+                SetPositionFromVector(go, pos, trackForSolarSystemRadius);
             }
             else
             {
-                SetPositionFromVector(go, Vector3.zero, adjustZoomSpeed);
+                SetPositionFromVector(go, Vector3.zero, trackForSolarSystemRadius);
             }
         }
 
-        public static void SetPositionFromVector(GameObject go, Vector3 position, bool adjustZoomSpeed)
+        public static void SetPositionFromVector(GameObject go, Vector3 position, bool trackForSolarSystemRadius)
         {
             var rb = go.GetAttachedOWRigidbody();
             if (rb)
@@ -966,7 +965,7 @@ namespace NewHorizons.Handlers
 
             // Uses the ratio of the interlopers furthest point to what the base game considers the edge of the solar system
             var distanceToCenter = go.transform.position.magnitude / (24000 / 30000f);
-            if (distanceToCenter > SolarSystemRadius && adjustZoomSpeed)
+            if (distanceToCenter > SolarSystemRadius && trackForSolarSystemRadius)
             {
                 SolarSystemRadius = distanceToCenter;
             }
