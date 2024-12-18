@@ -129,5 +129,18 @@ namespace NewHorizons.Patches.ShipLogPatches
                 return false;
             }
         }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(ShipLogManager.AddEntry))]
+        public static bool ShipLogManager_AddEntry(ShipLogManager __instance, ShipLogEntry entry)
+        {
+            if (__instance._entryDict.TryGetValue(entry.GetID(), out var existing))
+            {
+                NHLogger.LogVerbose($"Merging duplicate shiplog entry: {entry.GetID()}");
+                RumorModeBuilder.MergeEntries(__instance, entry, existing);
+                return false;
+            }
+            return true;
+        }
     }
 }

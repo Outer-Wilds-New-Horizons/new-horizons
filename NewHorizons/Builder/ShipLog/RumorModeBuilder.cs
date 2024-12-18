@@ -154,6 +154,35 @@ namespace NewHorizons.Builder.ShipLog
             }
         }
 
+        public static void MergeEntries(ShipLogManager manager, ShipLogEntry entry, ShipLogEntry existing)
+        {
+            foreach (var fact in entry.GetRumorFacts())
+            {
+                existing._rumorFacts.Add(fact);
+                fact.OnFactRevealed += existing.OnFactRevealed;
+
+                manager._factRevealCount = Mathf.Max(manager._factRevealCount, fact.GetRevealOrder());
+                manager._factList.Add(fact);
+                manager._factDict.Add(fact.GetID(), fact);
+            }
+            foreach (var fact in entry.GetExploreFacts())
+            {
+                existing._exploreFacts.Add(fact);
+                existing._completionFacts.Add(fact);
+                fact.OnFactRevealed += existing.OnFactRevealed;
+
+                manager._factRevealCount = Mathf.Max(manager._factRevealCount, fact.GetRevealOrder());
+                manager._factList.Add(fact);
+                manager._factDict.Add(fact.GetID(), fact);
+            }
+            foreach (var child in entry.GetChildren())
+            {
+                existing._childEntries.Add(child);
+
+                manager.AddEntry(child);
+            }
+        }
+
         private static void AddTranslation(XElement entry)
         {
             XElement nameElement = entry.Element("Name");
