@@ -910,6 +910,12 @@ namespace NewHorizons.Handlers
             return;
         }
 
+        public static void UpdatePosition(GameObject go, IOrbitalParameters orbit, AstroObject primaryBody, AstroObject secondaryBody)
+        {
+            // Keeping old method signature because its the kind of method I think something somewhere might call
+            UpdatePosition(go, orbit, primaryBody, secondaryBody, true);
+        }
+
         public static void UpdatePosition(GameObject go, IOrbitalParameters orbit, AstroObject primaryBody, AstroObject secondaryBody, bool adjustZoomSpeed)
         {
             NHLogger.LogVerbose($"Placing [{secondaryBody?.name}] around [{primaryBody?.name}]");
