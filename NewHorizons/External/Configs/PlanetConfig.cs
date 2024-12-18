@@ -53,6 +53,13 @@ namespace NewHorizons.External.Configs
         public bool destroy;
 
         /// <summary>
+        /// Do we track the position of this body when calculating the solar system radius?
+        /// `true` if you want the map zoom speed, map panning distance/speed, map camera farclip plane,
+        /// and autopilot-returning-to-solar-system to adjust to this planet's orbit
+        /// </summary>
+        [DefaultValue(true)] public bool trackForSolarSystemRadius = true;
+
+        /// <summary>
         /// A list of paths to child GameObjects to destroy on this planet
         /// </summary>
         public string[] removeChildren;
