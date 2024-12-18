@@ -55,7 +55,7 @@ namespace NewHorizons.External.Configs
         /// <summary>
         /// `true` if you want the map zoom speed to adjust to this planet's orbit
         /// </summary>
-        public bool adjustZoomSpeed = true;
+        [DefaultValue(true)] public bool adjustZoomSpeed = true;
 
         /// <summary>
         /// A list of paths to child GameObjects to destroy on this planet
