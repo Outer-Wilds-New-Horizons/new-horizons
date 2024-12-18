@@ -31,6 +31,11 @@
       "type": "boolean",
       "description": "`true` if you want to delete this planet"
     },
+    "trackForSolarSystemRadius": {
+      "type": "boolean",
+      "description": "Do we track the position of this body when calculating the solar system radius?\n`true` if you want the map zoom speed, map panning distance/speed, map camera farclip plane,\nand autopilot-returning-to-solar-system to adjust to this planet's orbit",
+      "default": true
+    },
     "removeChildren": {
       "type": "array",
       "description": "A list of paths to child GameObjects to destroy on this planet",
@@ -582,6 +587,14 @@
           "description": "Optional. You can force this planet's gravity to be felt over other gravity/zero-gravity sources by increasing this number.",
           "format": "int32",
           "default": 0
+        },
+        "gravityAlignmentRadiusOverride": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "Optional. Overrides how far the player must be from the planet for their feet to automatically orient towards the ground.",
+          "format": "int32"
         },
         "pushable": {
           "type": "boolean",
@@ -4001,7 +4014,7 @@
         },
         "spriteFolder": {
           "type": "string",
-          "description": "A path to the folder where entry sprites are stored."
+          "description": "A path to the folder where entry sprites (.png) are stored."
         },
         "xmlFile": {
           "type": "string",
@@ -4039,7 +4052,7 @@
         },
         "outlineSprite": {
           "type": "string",
-          "description": "The path to the sprite to show when the planet is unexplored in map mode."
+          "description": "The path to the sprite (.png/.jpg/.exr) to show when the planet is unexplored in map mode."
         },
         "remove": {
           "type": "boolean",
@@ -4047,7 +4060,7 @@
         },
         "revealedSprite": {
           "type": "string",
-          "description": "The path to the sprite to show when the planet is revealed in map mode."
+          "description": "The path to the sprite (.png/.jpg/.exr) to show when the planet is revealed in map mode."
         },
         "scale": {
           "type": "number",
@@ -4067,7 +4080,7 @@
         },
         "outlineSprite": {
           "type": "string",
-          "description": "The sprite to show when the parent AstroBody is rumored/unexplored."
+          "description": "The sprite (.png/.jpg/.exr) to show when the parent AstroBody is rumored/unexplored."
         },
         "position": {
           "description": "The position (relative to the parent) to place the detail.",
@@ -4075,7 +4088,7 @@
         },
         "revealedSprite": {
           "type": "string",
-          "description": "The sprite to show when the parent AstroBody is revealed."
+          "description": "The sprite (.png/.jpg/.exr) to show when the parent AstroBody is revealed."
         },
         "rotation": {
           "type": "number",

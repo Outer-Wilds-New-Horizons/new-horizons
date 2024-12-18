@@ -50,7 +50,7 @@ namespace NewHorizons.Builder.ShipLog
 
             Material greyScaleMaterial = SearchUtilities.Find(ShipLogHandler.PAN_ROOT_PATH + "/TimberHearth/Sprite").GetComponent<Image>().material;
             List<NewHorizonsBody> bodies = Main.BodyDict[systemName].Where(
-                b => !(b.Config.ShipLog?.mapMode?.remove ?? false) && !b.Config.isQuantumState
+                b => !(b.Config.ShipLog?.mapMode?.remove ?? false) && !b.Config.isQuantumState && !b.Config.destroy
             ).ToList();
             bool flagManualPositionUsed = systemName == "SolarSystem";
             bool flagAutoPositionUsed = false;
@@ -157,6 +157,12 @@ namespace NewHorizons.Builder.ShipLog
 
         private static ShipLogAstroObject AddShipLogAstroObject(GameObject gameObject, NewHorizonsBody body, Material greyScaleMaterial, int layer)
         {
+            if (body.Object == null)
+            {
+                NHLogger.LogError($"Tried to make ship logs for planet with null Object: [{body?.Config?.name}]");
+                return null;
+            }
+
             const float unviewedIconOffset = 15;
 
             NHLogger.LogVerbose($"Adding ship log astro object for {body.Config.name}");
