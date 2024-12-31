@@ -35,8 +35,7 @@ Once in VSCode, paste this code into the file:
     "Base": {
         "groundSize": 100,
         "surfaceSize": 101,
-        "surfaceGravity": 12,
-        "hasMapMarker": true
+        "surfaceGravity": 12
     },
     "Orbit": {
         "semiMajorAxis": 1300,
@@ -55,6 +54,9 @@ Once in VSCode, paste this code into the file:
         "fogSize": 150,
         "fogDensity": 0.2,
         "hasRain": true
+    },
+    "MapMarker": {
+        "enabled": true
     }
 }
 ```
@@ -71,18 +73,19 @@ Alright so now that we understand how the file is structures, let's look into wh
     -   Base has a `groundSize` of 100, this generates a perfect sphere that is 100 units in radius as the ground of our planet
     -   It also has a `surfaceSize` of 101, surface size is used in many calculations, it's generally good to set it to a bit bigger than ground size.
     -   `surfaceGravity` describes the strength of gravity on this planet, in this case it's 12 which is the same as Timber Hearth
-    -   `hasMapMarker` tells new horizons that we want this planet to have a marker on the map screen
 -   Next it has another object called `Orbit`
     -   `semiMajorAxis` specifies the radius of the orbit (how far away the body is from its parent)
     -   `primaryBody` is set to `TIMBER_HEARTH``, this makes our planet orbit timber hearth
     -   `isMoon` simply tells the game how close you have to be to the planet in map mode before its name appears
     -   `isTidallyLocked` makes sure that one side of our planet is always facing timber hearth (the primary body)
--   Finally, we have `Atmosphere`
+-   Next, we have `Atmosphere`
     -   Its `size` is 150, this simply sets how far away from the planet our atmosphere stretches
     -   Its `fogTint` is set to a color which is an object with r, g, b, and a properties (properties is another word for keys)
     -   `fogSize` determines how far away the fog stretches from the planet
     -   `fogDensity` is simply how dense the fog is
     -   `hasRain` makes rainfall on the planet
+-   Finally, we have `MapMarker`
+    -   `enabled` tells New Horizons that we want this planet to have a marker on the map screen
 
 #### What's a Schema?
 
