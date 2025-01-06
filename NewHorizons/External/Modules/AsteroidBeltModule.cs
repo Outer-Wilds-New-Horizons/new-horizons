@@ -20,7 +20,7 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// Lowest distance from the planet asteroids can spawn
         /// </summary>
-        [Range(0f, float.MaxValue)] public float innerRadius;
+        [Range(0f, double.MaxValue)] public float innerRadius;
 
         /// <summary>
         /// Angle defining the point where the belt rises up from the planet's equatorial plane if inclination is nonzero.
@@ -30,19 +30,19 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// Maximum size of the asteroids.
         /// </summary>
-        [Range(0f, float.MaxValue)] [DefaultValue(50)]
+        [Range(0f, double.MaxValue)] [DefaultValue(50)]
         public float maxSize = 50f;
 
         /// <summary>
         /// Minimum size of the asteroids.
         /// </summary>
-        [Range(0f, float.MaxValue)] [DefaultValue(20)]
+        [Range(0f, double.MaxValue)] [DefaultValue(20)]
         public float minSize = 20;
 
         /// <summary>
         /// Greatest distance from the planet asteroids can spawn
         /// </summary>
-        [Range(0f, float.MaxValue)] public float outerRadius;
+        [Range(0f, double.MaxValue)] public float outerRadius;
 
         /// <summary>
         /// How the asteroids are generated, unless you supply a detail yourself using "assetBundle" and "path"
@@ -69,7 +69,7 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// Surface gravity of the asteroids.
         /// </summary>
-        [Range(0f, float.MaxValue)]
+        [Range(0f, double.MaxValue)]
         [DefaultValue(1)]
         public float gravity = 1f;
 
