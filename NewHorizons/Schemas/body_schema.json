@@ -340,7 +340,7 @@
         },
         "randomOrientation": {
           "type": "boolean",
-          "description": "Should they be randomly oriented, or all pointing towards the center.",
+          "description": "Should the detail of the asteroid be randomly oriented, or should it point towards the center.",
           "default": true
         }
       }
