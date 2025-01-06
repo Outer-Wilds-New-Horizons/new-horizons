@@ -1269,13 +1269,6 @@
             "$ref": "#/definitions/ProjectionInfo"
           }
         },
-        "quantumGroups": {
-          "type": "array",
-          "description": "A list of quantum groups that props can be added to. An example of a group would be a list of possible locations for a QuantumSocketedObject.",
-          "items": {
-            "$ref": "#/definitions/QuantumGroupInfo"
-          }
-        },
         "tornados": {
           "type": "array",
           "description": "Add tornadoes to this planet",
@@ -1344,6 +1337,18 @@
           "description": "Add a Nomai shuttle to this planet. Can be paired to a gravity cannon on this planet or elsewhere.",
           "items": {
             "$ref": "#/definitions/ShuttleInfo"
+          }
+        },
+        "socketQuantumGroups": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SocketQuantumGroupInfo"
+          }
+        },
+        "stateQuantumGroups": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/StateQuantumGroupInfo"
           }
         },
         "dreamCampfires": {
@@ -2457,91 +2462,6 @@
         "rusted"
       ]
     },
-    "QuantumGroupInfo": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "type": {
-          "description": "What type of group this is: does it define a list of states a single quantum object could take or a list of sockets one or more quantum objects could share?",
-          "$ref": "#/definitions/QuantumGroupType"
-        },
-        "id": {
-          "type": "string",
-          "description": "A unique string used by props (that are marked as quantum) use to refer back to this group"
-        },
-        "sockets": {
-          "type": "array",
-          "description": "Only required if type is `sockets`. This lists all the possible locations for any props assigned to this group.",
-          "items": {
-            "$ref": "#/definitions/QuantumSocketInfo"
-          }
-        },
-        "hasEmptyState": {
-          "type": "boolean",
-          "description": "Optional. Only used if type is `states`. If this is true, then the first prop made part of this group will be used to construct a visibility box for an empty game object, which will be considered one of the states."
-        },
-        "sequential": {
-          "type": "boolean",
-          "description": "Optional. Only used if type is `states`. If this is true, then the states will be presented in order, rather than in a random order"
-        },
-        "loop": {
-          "type": "boolean",
-          "description": "Optional. Only used if type is `states` and `sequential` is true. If this is false, then after the last state has appeared, the object will no longer change state",
-          "default": true
-        }
-      }
-    },
-    "QuantumGroupType": {
-      "type": "string",
-      "description": "",
-      "x-enumNames": [
-        "Sockets",
-        "States"
-      ],
-      "enum": [
-        "sockets",
-        "states"
-      ]
-    },
-    "QuantumSocketInfo": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "rotation": {
-          "description": "Rotation of the object",
-          "$ref": "#/definitions/MVector3"
-        },
-        "alignRadial": {
-          "type": [
-            "boolean",
-            "null"
-          ],
-          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
-        },
-        "position": {
-          "description": "Position of the object",
-          "$ref": "#/definitions/MVector3"
-        },
-        "isRelativeToParent": {
-          "type": "boolean",
-          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
-        },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
-        "rename": {
-          "type": "string",
-          "description": "An optional rename of this object"
-        },
-        "probability": {
-          "type": "number",
-          "description": "The probability any props that are part of this group will occupy this socket",
-          "format": "float",
-          "default": 1.0
-        }
-      }
-    },
     "TornadoInfo": {
       "type": "object",
       "additionalProperties": false,
@@ -3488,6 +3408,82 @@
         "id": {
           "type": "string",
           "description": "Unique ID for this shuttle"
+        }
+      }
+    },
+    "SocketQuantumGroupInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "sockets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/QuantumSocketInfo"
+          }
+        }
+      }
+    },
+    "QuantumSocketInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "probability": {
+          "type": "number",
+          "description": "The probability any props that are part of this group will occupy this socket",
+          "format": "float",
+          "default": 1.0
+        }
+      }
+    },
+    "StateQuantumGroupInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "sequential": {
+          "type": "boolean",
+          "description": "Optional. If this is true, then the states will be presented in order, rather than in a random order"
+        },
+        "loop": {
+          "type": "boolean",
+          "description": "Optional. Only used if `sequential` is true. If this is false, then after the last state has appeared, the object will no longer change state",
+          "default": true
+        },
+        "hasEmptyState": {
+          "type": "boolean",
+          "description": "Optional. Only used if type is `states`. If this is true, then the first prop made part of this group will be used to construct a visibility box for an empty game object, which will be considered one of the states."
         }
       }
     },
