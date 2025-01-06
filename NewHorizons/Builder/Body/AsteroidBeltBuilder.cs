@@ -64,7 +64,7 @@ namespace NewHorizons.Builder.Body
                     enabled = false
                 };
 
-                if (belt.assetBundle != null || belt.path != null)
+                if (!string.IsNullOrEmpty(belt.assetBundle) || !string.IsNullOrEmpty(belt.path))
                 {
                     config.Props = new PropModule()
                     {

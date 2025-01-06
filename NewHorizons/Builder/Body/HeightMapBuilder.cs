@@ -92,6 +92,7 @@ namespace NewHorizons.Builder.Body
 
                 LODGroup.RecalculateBounds();
 
+                // do this only for LOD because only the main body uses LOD, while title screen and proxies dont
                 var superGroup = planetGO.GetComponent<ProxyShadowCasterSuperGroup>();
                 if (superGroup != null) level2.gameObject.AddComponent<ProxyShadowCaster>()._superGroup = superGroup;
             }
