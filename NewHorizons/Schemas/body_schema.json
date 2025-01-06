@@ -280,7 +280,7 @@
         },
         "inclination": {
           "type": "number",
-          "description": "Angle between the rings and the equatorial plane of the planet.",
+          "description": "Angle between the belt and the equatorial plane of the planet.",
           "format": "float"
         },
         "innerRadius": {
@@ -291,7 +291,7 @@
         },
         "longitudeOfAscendingNode": {
           "type": "number",
-          "description": "Angle defining the point where the rings rise up from the planet's equatorial plane if inclination is nonzero.",
+          "description": "Angle defining the point where the belt rises up from the planet's equatorial plane if inclination is nonzero.",
           "format": "float"
         },
         "maxSize": {
@@ -315,13 +315,33 @@
           "minimum": 0.0
         },
         "procGen": {
-          "description": "How the asteroids are generated",
+          "description": "How the asteroids are generated, unless you supply a detail yourself using \"assetBundle\" and \"path\"",
           "$ref": "#/definitions/ProcGenModule"
         },
         "randomSeed": {
           "type": "integer",
           "description": "Number used to randomize asteroid positions",
           "format": "int32"
+        },
+        "assetBundle": {
+          "type": "string",
+          "description": "You can use this to load a custom asset or ingame object, instead of using ProcGen. It will be scaled by \"minSize\" and \"maxSize\", so ideally it should be near a 1 meter radius.\nThis is a relative filepath to an asset-bundle to load the prefab defined in `path` from."
+        },
+        "path": {
+          "type": "string",
+          "description": "You can use this to load a custom asset or ingame object, instead of using ProcGen. It will be scaled by \"minSize\" and \"maxSize\", so ideally it should be near a 1 meter radius.\nThis is either the path in the scene hierarchy of the item to copy or the path to the object in the supplied asset bundle. "
+        },
+        "gravity": {
+          "type": "number",
+          "description": "Surface gravity of the asteroids.",
+          "format": "float",
+          "default": 1,
+          "minimum": 0.0
+        },
+        "randomOrientation": {
+          "type": "boolean",
+          "description": "Should the detail of the asteroid be randomly oriented, or should it point towards the center.",
+          "default": true
         }
       }
     },
@@ -4067,6 +4087,11 @@
           "description": "Scale to apply to the planet in map mode.",
           "format": "float",
           "default": 1.0
+        },
+        "selectable": {
+          "type": "boolean",
+          "description": "Can this ship log map mode entry be selected\nEx) Set to false for stars with no entries on them so they are skipped in navigation",
+          "default": true
         }
       }
     },

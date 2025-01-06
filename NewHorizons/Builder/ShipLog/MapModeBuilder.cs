@@ -21,11 +21,25 @@ namespace NewHorizons.Builder.ShipLog
     {
         // Takes the game object because sometimes we change the AO to an NHAO and it breaks
         private static Dictionary<GameObject, ShipLogAstroObject> _astroObjectToShipLog = new();
+        private static Dictionary<ShipLogAstroObject, MapModeInfo> _astroObjectToMapModeInfo = new();
+
+        public static MapModeInfo GetMapModeInfoForAstroObject(ShipLogAstroObject slao)
+        {
+            if (_astroObjectToMapModeInfo.TryGetValue(slao, out var mapModeInfo))
+            {
+                return mapModeInfo;
+            } 
+            else
+            {
+                return null;
+            }
+        }
 
         #region General
         public static ShipLogAstroObject[][] ConstructMapMode(string systemName, GameObject transformParent, ShipLogAstroObject[][] currentNav, int layer)
         {
             _astroObjectToShipLog = new();
+            _astroObjectToMapModeInfo = new();
 
             // Add stock planets
             foreach (var shipLogAstroObject in currentNav.SelectMany(x => x))
@@ -65,7 +79,7 @@ namespace NewHorizons.Builder.ShipLog
                 else
                 {
                     flagManualPositionUsed = true;
-                    if (body.Config.ShipLog?.mapMode?.manualNavigationPosition == null)
+                    if (body.Config.ShipLog?.mapMode != null && body.Config.ShipLog.mapMode.manualNavigationPosition == null && body.Config.ShipLog.mapMode.selectable)
                     {
                         NHLogger.LogError("Navigation position is missing for: " + body.Config.name);
                         return null;
@@ -172,6 +186,7 @@ namespace NewHorizons.Builder.ShipLog
             ShipLogAstroObject astroObject = gameObject.AddComponent<ShipLogAstroObject>();
             astroObject._id = ShipLogHandler.GetAstroObjectId(body);
             _astroObjectToShipLog[body.Object] = astroObject;
+            _astroObjectToMapModeInfo[astroObject] = body.Config.ShipLog?.mapMode;
 
             Texture2D image = null;
             Texture2D outline = null;
@@ -582,7 +597,10 @@ namespace NewHorizons.Builder.ShipLog
                 astroObject._unviewedObj.GetComponent<Image>().enabled = false;
             }
             node.astroObject = astroObject;
-            if (node.lastSibling != null) ConnectNodeToLastSibling(node, greyScaleMaterial);
+            if (NewHorizons.Main.Debug)
+            {
+                if (node.lastSibling != null) ConnectNodeToLastSibling(node, greyScaleMaterial);
+            }
             MakeDetails(node.mainBody, newNodeGO.transform, greyScaleMaterial);
         }
         #endregion

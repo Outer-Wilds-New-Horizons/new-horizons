@@ -31,7 +31,7 @@ namespace NewHorizons.Patches.ShipLogPatches
         {
             // Custom astro objects might have no entries, in this case they will be permanently hidden
             // Just treat it as if it were revealed
-            if (__instance._entries.Count == 0)
+            if (__instance._entries == null || __instance._entries.Count == 0)
             {
                 __instance._state = ShipLogEntry.State.Explored;
                 __instance._imageObj.SetActive(true);
