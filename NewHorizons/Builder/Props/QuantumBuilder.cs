@@ -12,17 +12,17 @@ namespace NewHorizons.Builder.Props
 {
     public static class QuantumBuilder
     {
-        
+
         public static void Make(GameObject go, Sector sector, PlanetConfig config, IModBehaviour mod, QuantumGroupInfo quantumGroup, GameObject[] propsInGroup)
         {
-            switch(quantumGroup.type)
+            switch (quantumGroup.type)
             {
-                case QuantumGroupType.Sockets: MakeSocketGroup (go, sector, config, mod, quantumGroup, propsInGroup); return;
-                case QuantumGroupType.States:  MakeStateGroup  (go, sector, config, mod, quantumGroup, propsInGroup); return;
-                // case PropModule.QuantumGroupType.Shuffle: MakeShuffleGroup(go, sector, config, mod, quantumGroup, propsInGroup); return;
+                case QuantumGroupType.Sockets: MakeSocketGroup(go, sector, config, mod, quantumGroup, propsInGroup); return;
+                case QuantumGroupType.States: MakeStateGroup(go, sector, config, mod, quantumGroup, propsInGroup); return;
+                    // case PropModule.QuantumGroupType.Shuffle: MakeShuffleGroup(go, sector, config, mod, quantumGroup, propsInGroup); return;
             }
         }
-        
+
         // TODO: Socket groups that have an equal number of props and sockets
         // Nice to have: socket groups that specify a filledSocketObject and an emptySocketObject (eg the archway in the giant's deep tower)
         public static void MakeSocketGroup(GameObject go, Sector sector, PlanetConfig config, IModBehaviour mod, QuantumGroupInfo quantumGroup, GameObject[] propsInGroup)
@@ -31,7 +31,7 @@ namespace NewHorizons.Builder.Props
             groupRoot.transform.parent = sector?.transform ?? go.transform;
             groupRoot.transform.localPosition = Vector3.zero;
             groupRoot.transform.localEulerAngles = Vector3.zero;
-            
+
             var sockets = new QuantumSocket[quantumGroup.sockets.Length];
             for (int i = 0; i < quantumGroup.sockets.Length; i++)
             {
@@ -44,7 +44,7 @@ namespace NewHorizons.Builder.Props
                 socket.SetActive(true);
             }
 
-            foreach(var prop in propsInGroup)
+            foreach (var prop in propsInGroup)
             {
                 prop.SetActive(false);
                 var quantumObject = prop.AddComponent<SocketedQuantumObject>();
@@ -55,7 +55,7 @@ namespace NewHorizons.Builder.Props
                 quantumObject._childSockets = new List<QuantumSocket>();
                 // TODO: support _alignWithGravity?
                 if (prop.GetComponentInChildren<VisibilityTracker>() == null) AddBoundsVisibility(prop);
-                prop.SetActive(true);        
+                prop.SetActive(true);
             }
         }
 
@@ -72,7 +72,7 @@ namespace NewHorizons.Builder.Props
             groupRoot.transform.localPosition = Vector3.zero;
 
             var states = new List<QuantumState>();
-            foreach(var prop in propsInGroup)
+            foreach (var prop in propsInGroup)
             {
                 prop.transform.parent = groupRoot.transform;
                 var state = prop.AddComponent<QuantumState>();
@@ -87,7 +87,7 @@ namespace NewHorizons.Builder.Props
             if (quantumGroup.hasEmptyState)
             {
                 var template = propsInGroup[0];
-                
+
                 var empty = new GameObject("Empty State");
                 empty.transform.parent = groupRoot.transform;
                 var state = empty.AddComponent<QuantumState>();
@@ -97,8 +97,8 @@ namespace NewHorizons.Builder.Props
                 var boxShape = empty.AddComponent<BoxShape>();
                 boxShape.center = boxBounds.center;
                 boxShape.extents = boxBounds.size;
-                if (Main.Debug) empty.AddComponent<BoxShapeVisualizer>();
-                
+                empty.AddComponent<BoxShapeVisualizer>();
+
                 empty.AddComponent<ShapeVisibilityTracker>();
             }
 
@@ -121,43 +121,43 @@ namespace NewHorizons.Builder.Props
             shuffleParent.SetActive(false);
             shuffleParent.transform.parent = sector?.transform ?? go.transform;
             shuffleParent.transform.localPosition = Vector3.zero;
-            propsInGroup.ToList().ForEach(p => p.transform.parent = shuffleParent.transform);    
+            propsInGroup.ToList().ForEach(p => p.transform.parent = shuffleParent.transform);
 
             var shuffle = shuffleParent.AddComponent<QuantumShuffleObject>();
             shuffle._shuffledObjects = propsInGroup.Select(p => p.transform).ToArray();
             shuffle.Awake(); // this doesn't get called on its own for some reason. what? how?
-            
+
             AddBoundsVisibility(shuffleParent);
             shuffleParent.SetActive(true);
         }
 
-        
+
         struct BoxShapeReciever
         {
             public MeshFilter f;
             public SkinnedMeshRenderer s;
-            public GameObject g;
+            public GameObject gameObject;
         }
 
         public static void AddBoundsVisibility(GameObject g)
         {
             var meshFilters = g.GetComponentsInChildren<MeshFilter>();
             var skinnedMeshRenderers = g.GetComponentsInChildren<SkinnedMeshRenderer>();
-            
+
             var boxShapeRecievers = meshFilters
-                .Select(f => new BoxShapeReciever() { f=f, g=f.gameObject })
-                .Concat (
-                    skinnedMeshRenderers.Select(s => new BoxShapeReciever() { s=s, g=s.gameObject })
+                .Select(f => new BoxShapeReciever() { f = f, gameObject = f.gameObject })
+                .Concat(
+                    skinnedMeshRenderers.Select(s => new BoxShapeReciever() { s = s, gameObject = s.gameObject })
                 )
                 .ToList();
 
-            foreach(var boxshapeReciever in boxShapeRecievers)
+            foreach (var boxshapeReciever in boxShapeRecievers)
             {
-                var box = boxshapeReciever.g.AddComponent<BoxShape>();
-                boxshapeReciever.g.AddComponent<ShapeVisibilityTracker>();
-                if (Main.Debug) boxshapeReciever.g.AddComponent<BoxShapeVisualizer>();
+                var box = boxshapeReciever.gameObject.AddComponent<BoxShape>();
+                boxshapeReciever.gameObject.AddComponent<ShapeVisibilityTracker>();
+                boxshapeReciever.gameObject.AddComponent<BoxShapeVisualizer>();
 
-                var fixer = boxshapeReciever.g.AddComponent<BoxShapeFixer>();
+                var fixer = boxshapeReciever.gameObject.AddComponent<BoxShapeFixer>();
                 fixer.shape = box;
                 fixer.meshFilter = boxshapeReciever.f;
                 fixer.skinnedMeshRenderer = boxshapeReciever.s;
@@ -169,7 +169,7 @@ namespace NewHorizons.Builder.Props
         {
             var meshFilters = g.GetComponentsInChildren<MeshFilter>();
             var corners = meshFilters.SelectMany(m => GetMeshCorners(m, g)).ToList();
-            
+
             Bounds b = new Bounds(corners[0], Vector3.zero);
             corners.ForEach(corner => b.Encapsulate(corner));
 
@@ -191,9 +191,9 @@ namespace NewHorizons.Builder.Props
                  new Vector3(bounds.max.x, bounds.min.y, bounds.max.z),
                  new Vector3(bounds.max.x, bounds.max.y, bounds.min.z),
             };
-            
+
             var globalCorners = localCorners.Select(localCorner => m.transform.TransformPoint(localCorner)).ToArray();
-            
+
             if (relativeTo == null) return globalCorners;
 
             return globalCorners.Select(globalCorner => relativeTo.transform.InverseTransformPoint(globalCorner)).ToArray();
@@ -213,9 +213,13 @@ namespace NewHorizons.Builder.Props
         public MeshFilter meshFilter;
         public SkinnedMeshRenderer skinnedMeshRenderer;
 
-        void Update()
+        public void Update()
         {
-            if (meshFilter == null && skinnedMeshRenderer == null) { NHLogger.LogVerbose("Useless BoxShapeFixer, destroying"); DestroyImmediate(this); }
+            if (meshFilter == null && skinnedMeshRenderer == null) 
+            { 
+                NHLogger.LogVerbose("Useless BoxShapeFixer, destroying"); 
+                DestroyImmediate(this); 
+            }
 
             Mesh sharedMesh = null;
             if (meshFilter != null) sharedMesh = meshFilter.sharedMesh;
@@ -223,7 +227,7 @@ namespace NewHorizons.Builder.Props
 
             if (sharedMesh == null) return;
             if (sharedMesh.bounds.size == Vector3.zero) return;
-            
+
             shape.size = sharedMesh.bounds.size;
             shape.center = sharedMesh.bounds.center;
 

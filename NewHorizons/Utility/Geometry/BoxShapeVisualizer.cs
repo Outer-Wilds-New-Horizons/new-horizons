@@ -4,16 +4,19 @@ namespace NewHorizons.Utility.Geometry
 {
     public class BoxShapeVisualizer : MonoBehaviour
     {
-        BoxShape box;
+        private BoxShape _box;
 
-        void Awake()
+        public void Awake()
         {
-            box = GetComponent<BoxShape>();
+            _box = GetComponent<BoxShape>();
         }
 
-        void OnRenderObject()
+        public void OnRenderObject()
         {
-            Popcron.Gizmos.Cube(transform.TransformPoint(box.center), transform.rotation, Vector3.Scale(box.size, transform.lossyScale));
+            if (Main.Debug && Main.VisualizeQuantumObjects)
+            {
+                Popcron.Gizmos.Cube(transform.TransformPoint(_box.center), transform.rotation, Vector3.Scale(_box.size, transform.lossyScale));
+            }
         }
     }
 }

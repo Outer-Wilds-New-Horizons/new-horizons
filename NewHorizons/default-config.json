@@ -16,6 +16,12 @@
       "value": false,
       "tooltip": "Enables the debug raycast, visible quantum object colliders, and debug options menu."
     },
+    "VisualizeQuantumObjects": {
+      "title": "Visualize Quantum Objects",
+      "type": "toggle",
+      "value": false,
+      "tooltip": "Draws boundaries around quantum objects when Debug mode is on."
+    },
     "VerboseLogs": {
       "title": "Verbose Logs",
       "type": "toggle",

@@ -47,6 +47,7 @@ namespace NewHorizons
 
         // Settings
         public static bool Debug { get; private set; }
+        public static bool VisualizeQuantumObjects { get; private set; }
         public static bool VerboseLogs { get; private set; }
         public static bool SequentialPreCaching { get; private set; }
         public static bool CustomTitleScreen { get; private set; }
@@ -134,6 +135,7 @@ namespace NewHorizons
             var currentScene = SceneManager.GetActiveScene().name;
 
             Debug = config.GetSettingsValue<bool>(nameof(Debug));
+            VisualizeQuantumObjects = config.GetSettingsValue<bool>(nameof(VisualizeQuantumObjects));
             VerboseLogs = config.GetSettingsValue<bool>(nameof(VerboseLogs));
             SequentialPreCaching = config.GetSettingsValue<bool>(nameof(SequentialPreCaching));
 
