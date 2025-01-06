@@ -20,7 +20,6 @@ using NewHorizons.OtherMods.VoiceActing;
 using NewHorizons.Streaming;
 using NewHorizons.Utility;
 using NewHorizons.Utility.DebugTools;
-using NewHorizons.Utility.DebugTools.Menu;
 using NewHorizons.Utility.Files;
 using NewHorizons.Utility.OuterWilds;
 using NewHorizons.Utility.OWML;
@@ -142,7 +141,6 @@ namespace NewHorizons
             if (currentScene == "SolarSystem")
             {
                 DebugReload.UpdateReloadButton();
-                DebugMenu.UpdatePauseMenuButton();
             }
 
             if (VerboseLogs) NHLogger.UpdateLogLevel(NHLogger.LogType.Verbose);
@@ -291,7 +289,6 @@ namespace NewHorizons
         {
             base.SetupPauseMenu(pauseMenu);
             DebugReload.InitializePauseMenu(pauseMenu);
-            DebugMenu.InitializePauseMenu(pauseMenu);
         }
 
         public void OnDestroy()
@@ -622,7 +619,6 @@ namespace NewHorizons
                 }
 
                 Locator.GetPlayerBody().gameObject.AddComponent<DebugRaycaster>();
-                Locator.GetPlayerBody().gameObject.AddComponent<DebugMenu>();
                 Locator.GetPlayerBody().gameObject.AddComponent<PlayerShipAtmosphereDetectorFix>();
                 if (HasDLC) Locator.GetPlayerBody().gameObject.AddComponent<LanternExtinguisher>();
 
