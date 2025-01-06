@@ -1463,7 +1463,8 @@
         },
         "quantumRandomizeYRotation": {
           "type": "boolean",
-          "description": "If this prop is quantum, and the quantum group is socketed, this field determines whether the prop will randomly choose a Y rotation when moving to a socket."
+          "description": "If this prop is quantum, and the quantum group is socketed, this field determines whether the prop will randomly choose a Y rotation when moving to a socket.",
+          "default": true
         },
         "keepLoaded": {
           "type": "boolean",
