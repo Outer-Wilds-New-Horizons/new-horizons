@@ -1461,6 +1461,10 @@
           "type": "string",
           "description": "If this value is not null, this prop will be quantum. Assign this field to the id of the quantum group it should be a part of. The group it is assigned to determines what kind of quantum object it is"
         },
+        "quantumRandomizeYRotation": {
+          "type": "boolean",
+          "description": "If this prop is quantum, and the quantum group is socketed, this field determines whether the prop will randomly choose a Y rotation when moving to a socket."
+        },
         "keepLoaded": {
           "type": "boolean",
           "description": "Should this detail stay loaded (visible and collideable) even if you're outside the sector (good for very large props)?\nAlso makes this detail visible on the map.\nKeeping many props loaded is bad for performance so use this only when it's actually relevant\nMost logic/behavior scripts will still only work inside the sector, as most of those scripts break if a sector is not provided."
