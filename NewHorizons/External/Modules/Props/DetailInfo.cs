@@ -56,7 +56,7 @@ namespace NewHorizons.External.Modules.Props
         /// <summary>
         /// If this prop is quantum, and the quantum group is socketed, this field determines whether the prop will randomly choose a Y rotation when moving to a socket.
         /// </summary>
-        public bool quantumRandomizeYRotation = true;
+        [DefaultValue(true)] public bool quantumRandomizeYRotation = true;
 
         /// <summary>
         /// Should this detail stay loaded (visible and collideable) even if you're outside the sector (good for very large props)?
