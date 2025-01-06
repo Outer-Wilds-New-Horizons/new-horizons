@@ -707,7 +707,7 @@ namespace NewHorizons.External.Configs
                 }
             }
 
-            if (Props != null)
+            if (Props != null && Props.quantumGroups != null)
             {
                 var socketQuantumGroups = Props.quantumGroups.Where(x => x.type == QuantumGroupType.Sockets).Select(x => new SocketQuantumGroupInfo()
                 {

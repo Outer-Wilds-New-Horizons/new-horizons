@@ -1,9 +1,8 @@
 using NewHorizons.Components.Quantum;
-using NewHorizons.External.Configs;
+using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.Props.Quantum;
 using NewHorizons.Utility.Geometry;
 using NewHorizons.Utility.OWML;
-using OWML.Common;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -27,7 +26,7 @@ namespace NewHorizons.Builder.Props
         /*
         public static void MakeQuantumLightning(GameObject planetGO, Sector sector, GameObject[] propsInGroup)
         {
-            var lightning = DetailBuilder.Make(planetGO, sector, AssetBundleUtilities.EyeLightning.LoadAsset<GameObject>("Prefab_EYE_QuantumLightningObject"), new DetailInfo());
+            var lightning = DetailBuilder.Make(planetGO, sector, Main.Instance, AssetBundleUtilities.EyeLightning.LoadAsset<GameObject>("Prefab_EYE_QuantumLightningObject"), new DetailInfo());
             lightning.transform.position = prop.transform.position;
             lightning.transform.rotation = prop.transform.rotation;
             lightning.transform.parent = prop.transform.parent;
@@ -45,6 +44,16 @@ namespace NewHorizons.Builder.Props
         // Nice to have: socket groups that specify a filledSocketObject and an emptySocketObject (eg the archway in the giant's deep tower)
         public static void MakeSocketGroup(GameObject planetGO, Sector sector, SocketQuantumGroupInfo quantumGroup, GameObject[] propsInGroup)
         {
+            GameObject specialProp = null;
+            if (propsInGroup.Length == quantumGroup.sockets.Length)
+            {
+                // Special case!
+                specialProp = propsInGroup.Last();
+                var propsInGroupList = propsInGroup.ToList();
+                propsInGroupList.RemoveAt(propsInGroup.Length - 1);
+                propsInGroup = propsInGroupList.ToArray();
+            }
+
             var groupRoot = new GameObject("Quantum Sockets - " + quantumGroup.id);
             groupRoot.transform.parent = sector?.transform ?? planetGO.transform;
             groupRoot.transform.localPosition = Vector3.zero;
@@ -77,11 +86,38 @@ namespace NewHorizons.Builder.Props
                 {
                     BoundsUtilities.AddBoundsVisibility(prop);
                 }
-
                 prop.SetActive(true);
             }
 
+            if (specialProp != null)
+            {
+                // Can't have 4 objects in 4 slots
+                // Instead we have a duplicate of the final object for each slot, which appears when that slot is "empty"
+                for (int i = 0; i < sockets.Length; i++)
+                {
+                    var emptySocketObject = DetailBuilder.Make(planetGO, sector, Main.Instance, specialProp, new DetailInfo());
+                    var socket = sockets[i];
+                    socket._emptySocketObject = emptySocketObject;
+                    emptySocketObject.SetActive(socket._quantumObject == null);
+                    emptySocketObject.transform.parent = socket.transform;
+                    emptySocketObject.transform.localPosition = Vector3.zero;
+                    emptySocketObject.transform.localRotation = Quaternion.identity;
 
+                    // Need to add a visibility tracker for this socket else it doesn't stay "empty" when photographed
+                    socket.SetActive(false);
+                    var tracker = new GameObject("VisibilityTracker");
+                    tracker.transform.parent = socket.transform;
+                    tracker.transform.localPosition = Vector3.zero;
+                    tracker.transform.localRotation = Quaternion.identity;
+                    var box = tracker.AddComponent<BoxShape>();
+                    box.size = new Vector3(0.2f, 0.6f, 0.2f);
+                    box.center = new Vector3(0, 0.3f, 0);
+                    tracker.AddComponent<ShapeVisibilityTracker>();
+                    // Using a quantum object bc it can be locked by camera
+                    socket._visibilityObject = socket.gameObject.AddComponent<SnapshotLockableVisibilityObject>();
+                    socket.SetActive(true);
+                }
+            }
         }
 
         public static void MakeStateGroup(GameObject go, Sector sector, StateQuantumGroupInfo quantumGroup, GameObject[] propsInGroup)
@@ -138,7 +174,7 @@ namespace NewHorizons.Builder.Props
             groupRoot.SetActive(true);
         }
 
-        public static void MakeShuffleGroup(GameObject go, Sector sector, QuantumGroupInfo quantumGroup, GameObject[] propsInGroup)
+        public static void MakeShuffleGroup(GameObject go, Sector sector, BaseQuantumGroupInfo quantumGroup, GameObject[] propsInGroup)
         {
             //var averagePosition = propsInGroup.Aggregate(Vector3.zero, (avg, prop) => avg + prop.transform.position) / propsInGroup.Count();
             GameObject shuffleParent = new GameObject("Quantum Shuffle - " + quantumGroup.id);
