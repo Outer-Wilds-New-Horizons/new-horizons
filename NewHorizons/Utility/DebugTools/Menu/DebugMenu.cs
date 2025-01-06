@@ -48,7 +48,6 @@ namespace NewHorizons.Utility.DebugTools.Menu
         {
             submenus = new List<DebugSubmenu>()
             {
-                new DebugMenuPropPlacer(),
                 new DebugMenuShipLogs(),
             };
 
