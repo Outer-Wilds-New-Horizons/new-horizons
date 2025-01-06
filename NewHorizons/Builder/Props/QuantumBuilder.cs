@@ -1,6 +1,9 @@
 using NewHorizons.Components.Quantum;
+using NewHorizons.External.Configs;
 using NewHorizons.External.Modules.Props.Quantum;
 using NewHorizons.Utility.Geometry;
+using NewHorizons.Utility.OWML;
+using OWML.Common;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -9,21 +12,15 @@ namespace NewHorizons.Builder.Props
 {
     public static class QuantumBuilder
     {
-        public static void Make(GameObject planetGO, Sector sector, QuantumGroupInfo quantumGroup, GameObject[] propsInGroup)
+        public static void Make(GameObject planetGO, Sector sector, BaseQuantumGroupInfo quantumGroup, GameObject[] propsInGroup)
         {
-            switch (quantumGroup.type)
+            if (quantumGroup is SocketQuantumGroupInfo socketGroup)
             {
-                case QuantumGroupType.Sockets:
-                    MakeSocketGroup(planetGO, sector, quantumGroup, propsInGroup);
-                    return;
-                case QuantumGroupType.States:
-                    MakeStateGroup(planetGO, sector, quantumGroup, propsInGroup);
-                    return;
-                    /*
-                    case PropModule.QuantumGroupType.Shuffle: 
-                        MakeShuffleGroup(go, sector, quantumGroup, propsInGroup); 
-                        return;
-                    */
+                MakeSocketGroup(planetGO, sector, socketGroup, propsInGroup);
+            }
+            else if (quantumGroup is StateQuantumGroupInfo stateGroup)
+            {
+                MakeStateGroup(planetGO, sector, stateGroup, propsInGroup);
             }
         }
 
@@ -43,10 +40,10 @@ namespace NewHorizons.Builder.Props
             lightningController.enabled = true;
         }
         */
-        
+
         // TODO: Socket groups that have an equal number of props and sockets
         // Nice to have: socket groups that specify a filledSocketObject and an emptySocketObject (eg the archway in the giant's deep tower)
-        public static void MakeSocketGroup(GameObject go, Sector sector, PlanetConfig config, IModBehaviour mod, QuantumGroupInfo quantumGroup, GameObject[] propsInGroup)
+        public static void MakeSocketGroup(GameObject planetGO, Sector sector, SocketQuantumGroupInfo quantumGroup, GameObject[] propsInGroup)
         {
             var groupRoot = new GameObject("Quantum Sockets - " + quantumGroup.id);
             groupRoot.transform.parent = sector?.transform ?? planetGO.transform;
@@ -58,7 +55,7 @@ namespace NewHorizons.Builder.Props
             {
                 var socketInfo = quantumGroup.sockets[i];
 
-                var socket = GeneralPropBuilder.MakeNew("Socket " + i, go, sector, socketInfo, defaultParent: groupRoot.transform);
+                var socket = GeneralPropBuilder.MakeNew("Socket " + i, planetGO, sector, socketInfo, defaultParent: groupRoot.transform);
 
                 sockets[i] = socket.AddComponent<QuantumSocket>();
                 sockets[i]._lightSources = new Light[0]; // TODO: make this customizable?
@@ -87,7 +84,7 @@ namespace NewHorizons.Builder.Props
 
         }
 
-        public static void MakeStateGroup(GameObject go, Sector sector, QuantumGroupInfo quantumGroup, GameObject[] propsInGroup)
+        public static void MakeStateGroup(GameObject go, Sector sector, StateQuantumGroupInfo quantumGroup, GameObject[] propsInGroup)
         {
             // NOTE: States groups need special consideration that socket groups don't
             // this is because the base class QuantumObject (and this is important) IGNORES PICTURES TAKEN FROM OVER 100 METERS AWAY
@@ -242,10 +239,10 @@ namespace NewHorizons.Builder.Props
 
         public void Update()
         {
-            if (meshFilter == null && skinnedMeshRenderer == null) 
-            { 
-                NHLogger.LogVerbose("Useless BoxShapeFixer, destroying"); 
-                DestroyImmediate(this); 
+            if (meshFilter == null && skinnedMeshRenderer == null)
+            {
+                NHLogger.LogVerbose("Useless BoxShapeFixer, destroying");
+                DestroyImmediate(this);
             }
 
             Mesh sharedMesh = null;
