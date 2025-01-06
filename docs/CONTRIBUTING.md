@@ -8,10 +8,10 @@ Thank you for your interest in contributing to NH Docs! We are excited to have y
 
 Pages in the NH docs are all markdown files. The folder with all the pages is in `src/content/docs`.
 
--   `index.mdx` Is a special file that is the home page of the docs. This is a markdown X file that allows us to use Astro components in the markdown.
--   `start-here` is the folder that contains all the pages for the start here section of the docs.
--   `getting-started` is the folder that contains all the pages for the getting started section of the docs.
--   `reference` is the folder that contains all the pages for the api section of the docs.
+- `index.mdx` Is a special file that is the home page of the docs. This is a markdown X file that allows us to use Astro components in the markdown.
+- `start-here` is the folder that contains all the pages for the start here section of the docs.
+- `getting-started` is the folder that contains all the pages for the getting started section of the docs.
+- `reference` is the folder that contains all the pages for the api section of the docs.
 
 Finally, the `schemas` folder contains all the schema pages. You might notice that the schema folder is not present in GitHub. This is because the schema pages are auto-generated from the schema files in `../NewHorizons/Schemas`. In order to edit these you need to edit the C# class they correspond to. More info in the main contributing document found one folder up.
 
@@ -23,10 +23,10 @@ One thing to note is the section fenced with `---` at the top of each page. This
 
 If you open this folder (`docs` not the entire repo), VSCode should prompt you to install the recommended extensions. If it doesn't, you can install them manually. The recommended extensions are:
 
--   astro-build.astro-vscode
--   davidanson.vscode-markdownlint
--   yzhang.markdown-all-in-one
--   esbenp.prettier-vscode
+- astro-build.astro-vscode
+- davidanson.vscode-markdownlint
+- yzhang.markdown-all-in-one
+- esbenp.prettier-vscode
 
 ## How To Add Pages
 
@@ -48,8 +48,8 @@ Your images will be automatically optimized when the site is built.
 
 If you want to get a local copy of the site running, you'll need a few programs
 
--   [Node.js](https://nodejs.org/en/)
--   [PNPM](https://pnpm.io/)
+- [Node.js](https://nodejs.org/en/)
+- [PNPM](https://pnpm.io/)
 
 Once you have these installed, you can run the following commands to get the site running locally:
 
