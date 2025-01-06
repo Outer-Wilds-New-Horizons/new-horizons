@@ -1466,6 +1466,11 @@
           "description": "If this prop is quantum, and the quantum group is socketed, this field determines whether the prop will randomly choose a Y rotation when moving to a socket.",
           "default": true
         },
+        "quantumAlignWithGravity": {
+          "type": "boolean",
+          "description": "If this prop is quantum, and the quantum group is socketed, this field determines whether the prop will align with the GravityVolume (true) or align with the current socket (false).",
+          "default": true
+        },
         "keepLoaded": {
           "type": "boolean",
           "description": "Should this detail stay loaded (visible and collideable) even if you're outside the sector (good for very large props)?\nAlso makes this detail visible on the map.\nKeeping many props loaded is bad for performance so use this only when it's actually relevant\nMost logic/behavior scripts will still only work inside the sector, as most of those scripts break if a sector is not provided."
