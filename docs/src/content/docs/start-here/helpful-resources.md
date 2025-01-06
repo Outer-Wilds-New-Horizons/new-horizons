@@ -51,18 +51,18 @@ rectangular-to-polar coordinate transformation, useful for fixing abnormalities 
 
 These mods are useful when developing your addon
 
--   [Unity Explorer](https://outerwildsmods.com/mods/unityexplorer) - Used to find the paths of game objects for copying and can be used to manually position props, ship log entries, and more.
--   [Collider Visualizer](https://outerwildsmods.com/mods/collidervisualizer) - Useful when creating dialogue triggers or reveal volumes.
--   [Save Editor](https://outerwildsmods.com/mods/saveeditor) - Useful when creating a custom [ship log](/ship-log), can be used to reveal all custom facts so you can see them in the ship's computer.
--   [Time Saver](https://outerwildsmods.com/mods/timesaver/) - Lets you skip some repeated cutscenes and get into the game faster.
--   [The Examples Mod](https://github.com/Outer-Wilds-New-Horizons/nh-examples) - A mod that contains examples of how to use New Horizons features.
+- [Unity Explorer](https://outerwildsmods.com/mods/unityexplorer) - Used to find the paths of game objects for copying and can be used to manually position props, ship log entries, and more.
+- [Collider Visualizer](https://outerwildsmods.com/mods/collidervisualizer) - Useful when creating dialogue triggers or reveal volumes.
+- [Save Editor](https://outerwildsmods.com/mods/saveeditor) - Useful when creating a custom [ship log](/ship-log), can be used to reveal all custom facts so you can see them in the ship's computer.
+- [Time Saver](https://outerwildsmods.com/mods/timesaver/) - Lets you skip some repeated cutscenes and get into the game faster.
+- [The Examples Mod](https://github.com/Outer-Wilds-New-Horizons/nh-examples) - A mod that contains examples of how to use New Horizons features.
 
 ## Helpful Tools
 
 These tools/references are highly recommended
 
--   [VSCode](https://code.visualstudio.com/)
--   [VSCode XML Addon](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-xml)
--   [XML Basics Tutorial](https://www.w3schools.com/xml/xml_whatis.asp)
--   [JSON Basics Tutorial](https://www.tutorialspoint.com/json/index.htm)
--   [OWML Docs](https://owml.outerwildsmods.com/)
+- [VSCode](https://code.visualstudio.com/)
+- [VSCode XML Addon](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-xml)
+- [XML Basics Tutorial](https://www.w3schools.com/xml/xml_whatis.asp)
+- [JSON Basics Tutorial](https://www.tutorialspoint.com/json/index.htm)
+- [OWML Docs](https://owml.outerwildsmods.com/)

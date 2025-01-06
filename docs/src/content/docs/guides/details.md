@@ -5,9 +5,9 @@ description: A guide to adding details to planets in New Horizons
 
 For physical objects there are currently two ways of setting them up: specify an asset bundle and path to load a custom asset you created, or specify the path to the item you want to copy from the game in the scene hierarchy. Use the [Unity Explorer](https://outerwildsmods.com/mods/unityexplorer) mod to find an object you want to copy onto your new body. Some objects work better than others for this. Good luck. Some pointers:
 
--   Use "Object Explorer" to search
--   Generally you can find planets by writing their name with no spaces/punctuation followed by "\_Body".
--   There's also [this community-maintained list of props](https://docs.google.com/spreadsheets/d/1VJaglB1kRL0VqaXhvXepIeymo93zqhWex-j7_QDm6NE/edit?usp=sharing) which you can use to find interesting props and check to see if they have collision.
+- Use "Object Explorer" to search
+- Generally you can find planets by writing their name with no spaces/punctuation followed by "\_Body".
+- There's also [this community-maintained list of props](https://docs.google.com/spreadsheets/d/1VJaglB1kRL0VqaXhvXepIeymo93zqhWex-j7_QDm6NE/edit?usp=sharing) which you can use to find interesting props and check to see if they have collision.
 
 ## Using the Prop Placer
 
