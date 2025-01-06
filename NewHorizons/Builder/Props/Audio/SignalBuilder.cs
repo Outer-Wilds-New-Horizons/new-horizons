@@ -171,7 +171,15 @@ namespace NewHorizons.Builder.Props.Audio
             audioSignal._onlyAudibleToScope = info.onlyAudibleToScope;
             audioSignal._identificationDistance = info.identificationRadius;
             audioSignal._canBePickedUpByScope = true;
-            audioSignal._outerFogWarpVolume = planetGO.GetComponentInChildren<OuterFogWarpVolume>(); // shouldn't break non-bramble signals
+            // The outsider adds outer fog warp volumes to Bramble which break any signals NH places there
+            if (Main.Instance.ModHelper.Interaction.ModExists("SBtT.TheOutsider") && planetGO?.GetComponent<AstroObject>()?._name == AstroObject.Name.DarkBramble)
+            {
+                audioSignal._outerFogWarpVolume = null;
+            }
+            else
+            {
+                audioSignal._outerFogWarpVolume = planetGO.GetComponentInChildren<OuterFogWarpVolume>(); // shouldn't break non-bramble signals
+            }
 
             // If it can be heard regularly then we play it immediately
             owAudioSource.playOnAwake = !info.onlyAudibleToScope;

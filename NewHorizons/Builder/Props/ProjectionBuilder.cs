@@ -1,4 +1,5 @@
 using HarmonyLib;
+using NewHorizons.Components.EOTE;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.Props.EchoesOfTheEye;
 using NewHorizons.Handlers;
@@ -18,8 +19,9 @@ namespace NewHorizons.Builder.Props
 {
     public static class ProjectionBuilder
     {
-        public const string INVERTED_SLIDE_CACHE_FOLDER = "SlideReelCache/Inverted";
-        public const string ATLAS_SLIDE_CACHE_FOLDER = "SlideReelCache/Atlas";
+        public static string CurrentSlideReelFolder => "SlideReelCache_" + Main.Instance.CurrentStarSystem;
+        public static string InvertedSlideReelCacheFolder => CurrentSlideReelFolder  + "/Inverted";
+        public static string AtlasSlideReelCacheFolder => CurrentSlideReelFolder + "/Atlas";
 
         public static GameObject SlideReelWholePrefab { get; private set; }
         public static GameObject SlideReelWholePristinePrefab { get; private set; }
@@ -45,7 +47,7 @@ namespace NewHorizons.Builder.Props
 
         private static bool _isInit;
 
-        public static bool CacheExists(IModBehaviour mod) => Directory.Exists(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, ATLAS_SLIDE_CACHE_FOLDER));
+        public static bool CacheExists(IModBehaviour mod) => Directory.Exists(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, AtlasSlideReelCacheFolder));
 
         internal static void InitPrefabs()
         {
@@ -136,7 +138,10 @@ namespace NewHorizons.Builder.Props
             slideReel.SetSector(sector);
             slideReel.SetVisible(true);
 
-            var slideCollectionContainer = slideReelObj.GetRequiredComponent<SlideCollectionContainer>();
+            var toDestroy = slideReelObj.GetComponent<SlideCollectionContainer>();
+            var slideCollectionContainer = slideReelObj.AddComponent<NHSlideCollectionContainer>();
+            slideReel._slideCollectionContainer = slideCollectionContainer;
+            Component.DestroyImmediate(toDestroy);
 
             foreach (var renderer in slideReelObj.GetComponentsInChildren<Renderer>())
             {
@@ -341,7 +346,10 @@ namespace NewHorizons.Builder.Props
             var autoProjector = projectorObj.GetComponent<AutoSlideProjector>();
             autoProjector._sector = sector;
 
-            var slideCollectionContainer = autoProjector.GetRequiredComponent<SlideCollectionContainer>();
+            var toDestroy = autoProjector.GetComponent<SlideCollectionContainer>();
+            var slideCollectionContainer = autoProjector.gameObject.AddComponent<NHSlideCollectionContainer>();
+            autoProjector._slideCollectionItem = slideCollectionContainer;
+            Component.DestroyImmediate(toDestroy);
 
             // Now we replace the slides
             int slidesCount = info.slides.Length;
@@ -418,7 +426,7 @@ namespace NewHorizons.Builder.Props
 
             // attach a component to store all the data for the slides that play when a vision torch scans this target
             var target = g.AddComponent<VisionTorchTarget>();
-            var slideCollectionContainer = g.AddComponent<SlideCollectionContainer>();
+            var slideCollectionContainer = g.AddComponent<NHSlideCollectionContainer>();
             slideCollectionContainer.slideCollection = slideCollection;
             target.slideCollection = g.AddComponent<MindSlideCollection>();
             target.slideCollection._slideCollectionContainer = slideCollectionContainer;
@@ -485,7 +493,7 @@ namespace NewHorizons.Builder.Props
             );
 
             // Set up the containers for the slides
-            var slideCollectionContainer = standingTorch.AddComponent<SlideCollectionContainer>();
+            var slideCollectionContainer = standingTorch.AddComponent<NHSlideCollectionContainer>();
             slideCollectionContainer.slideCollection = slideCollection;
 
             var mindSlideCollection = standingTorch.AddComponent<MindSlideCollection>();
@@ -521,7 +529,7 @@ namespace NewHorizons.Builder.Props
             {
                 NHLogger.LogVerbose($"The atlas cache for slide reel containing [{slides.FirstOrDefault(x => !string.IsNullOrEmpty(x.imagePath))?.imagePath}] is {atlasKey}");
                 // Load the atlas texture used to draw onto the physical slide reel object
-                atlasImageLoader.PathsToLoad.Add((0, Path.Combine(mod.ModHelper.Manifest.ModFolderPath, ATLAS_SLIDE_CACHE_FOLDER, $"{atlasKey}.png")));
+                atlasImageLoader.PathsToLoad.Add((0, Path.Combine(mod.ModHelper.Manifest.ModFolderPath, AtlasSlideReelCacheFolder, $"{atlasKey}.png")));
             }
 
             for (int i = 0; i < slides.Length; i++)
@@ -548,7 +556,7 @@ namespace NewHorizons.Builder.Props
                     if (useInvertedCache && cacheExists)
                     {
                         // Load the inverted images used when displaying slide reels to a screen
-                        invertedImageLoader.PathsToLoad.Add((i, Path.Combine(mod.ModHelper.Manifest.ModFolderPath, INVERTED_SLIDE_CACHE_FOLDER, slideInfo.imagePath)));
+                        invertedImageLoader.PathsToLoad.Add((i, Path.Combine(mod.ModHelper.Manifest.ModFolderPath, InvertedSlideReelCacheFolder, slideInfo.imagePath)));
                     }
                     else
                     {
@@ -657,12 +665,15 @@ namespace NewHorizons.Builder.Props
             Slide.WriteModules(modules, ref slide._modulesList, ref slide._modulesData, ref slide.lengths);
         }
 
-        private static void LinkShipLogFacts(ProjectionInfo info, SlideCollectionContainer slideCollectionContainer)
+        private static void LinkShipLogFacts(ProjectionInfo info, NHSlideCollectionContainer slideCollectionContainer)
         {
             // Idk why but it wants reveals to be comma delimited not a list
             if (info.reveals != null) slideCollectionContainer._shipLogOnComplete = string.Join(",", info.reveals);
             // Don't use null value, NRE in SlideCollectionContainer.Initialize
             slideCollectionContainer._playWithShipLogFacts = info.playWithShipLogFacts ?? Array.Empty<string>();
+
+            slideCollectionContainer.conditionsToSet = info.conditionsToSet;
+            slideCollectionContainer.persistentConditionsToSet = info.persistentConditionsToSet;
         }
     }
 

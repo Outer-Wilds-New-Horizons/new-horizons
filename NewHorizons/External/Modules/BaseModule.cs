@@ -37,9 +37,11 @@ namespace NewHorizons.External.Modules
         public float groundSize;
 
         /// <summary>
-        /// Can this planet survive entering a star?
+        /// Is this planet able to detect fluid volumes? Disabling this means that entering a star or lava volume will not destroy this planet
+        /// May have adverse effects if anglerfish are added to this planet, disable this if you want those to work (they have fluid volumes in their mouths)
         /// </summary>
-        public bool invulnerableToSun;
+        [DefaultValue(true)]
+        public bool hasFluidDetector = true;
 
         /// <summary>
         /// Do we show the minimap when walking around this planet?
@@ -58,6 +60,8 @@ namespace NewHorizons.External.Modules
 
         /// <summary>
         /// A scale height used for a number of things. Should be the approximate radius of the body.
+        /// 
+        /// Affected settings include: Base sector size, proxy body scaling, surface gravity
         /// </summary>
         public float surfaceSize;
 
@@ -65,6 +69,11 @@ namespace NewHorizons.External.Modules
         /// Optional. You can force this planet's gravity to be felt over other gravity/zero-gravity sources by increasing this number.
         /// </summary>
         [DefaultValue(0)] public int gravityVolumePriority = 0;
+
+        /// <summary>
+        /// Optional. Overrides how far the player must be from the planet for their feet to automatically orient towards the ground.
+        /// </summary>
+        public int? gravityAlignmentRadiusOverride = null;
 
         /// <summary>
         /// Apply physics to this planet when you bump into it. Will have a spherical collider the size of surfaceSize. 
@@ -81,6 +90,9 @@ namespace NewHorizons.External.Modules
         public bool hideProxy;
 
         #region Obsolete
+
+        [Obsolete("invulnerableToSun is deprecated, please use hasFluidDetector instead")]
+        public bool invulnerableToSun;
 
         [Obsolete("IsSatellite is deprecated, please use ShowMinimap instead")]
         public bool isSatellite;

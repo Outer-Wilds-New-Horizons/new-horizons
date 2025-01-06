@@ -1,5 +1,4 @@
 using NewHorizons.External.Configs;
-using NewHorizons.External.Modules;
 using OWML.Common;
 using System.Linq;
 
@@ -9,10 +8,9 @@ namespace NewHorizons.External
     {
         public string UniqueID;
         public string RelativePath;
-        public SpawnModule Spawn = null;
-        public SpawnPoint SpawnPoint = null;
         public StarSystemConfig Config;
         public IModBehaviour Mod;
+        public bool HasShipSpawn;
 
         public NewHorizonsSystem(string uniqueID, StarSystemConfig config, string relativePath, IModBehaviour mod)
         {

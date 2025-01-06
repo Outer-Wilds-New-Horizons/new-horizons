@@ -91,13 +91,14 @@ namespace NewHorizons.Builder.Body
                 level2.name += "1";
 
                 LODGroup.RecalculateBounds();
+
+                // do this only for LOD because only the main body uses LOD, while title screen and proxies dont
+                var superGroup = planetGO.GetComponent<ProxyShadowCasterSuperGroup>();
+                if (superGroup != null) level2.gameObject.AddComponent<ProxyShadowCaster>()._superGroup = superGroup;
             }
 
             var cubeSphereSC = cubeSphere.AddComponent<SphereCollider>();
             cubeSphereSC.radius = Mathf.Min(module.minHeight, module.maxHeight) * Mathf.Min(stretch.x, stretch.y, stretch.z);
-
-            var superGroup = planetGO.GetComponent<ProxyShadowCasterSuperGroup>();
-            if (superGroup != null) cubeSphere.AddComponent<ProxyShadowCaster>()._superGroup = superGroup;
 
             cubeSphere.SetActive(true);
 

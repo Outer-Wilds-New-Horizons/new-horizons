@@ -76,7 +76,6 @@ namespace NewHorizons.Builder.Props
                 quantumObject._prebuilt = true;
                 quantumObject._childSockets = new List<QuantumSocket>();
                 // TODO: support _alignWithGravity?
-
                 if (prop.GetComponentInChildren<VisibilityTracker>() == null)
                 {
                     BoundsUtilities.AddBoundsVisibility(prop);
@@ -126,8 +125,7 @@ namespace NewHorizons.Builder.Props
                 var boxShape = empty.AddComponent<BoxShape>();
                 boxShape.center = boxBounds.center;
                 boxShape.extents = boxBounds.size;
-                if (Main.Debug) empty.AddComponent<BoxShapeVisualizer>();
-
+                empty.AddComponent<BoxShapeVisualizer>();
                 empty.AddComponent<ShapeVisibilityTracker>();
             }
 
@@ -156,37 +154,37 @@ namespace NewHorizons.Builder.Props
             shuffle._shuffledObjects = propsInGroup.Select(p => p.transform).ToArray();
             shuffle.Awake(); // this doesn't get called on its own for some reason. what? how?
 
-            BoundsUtilities.AddBoundsVisibility(shuffleParent);
+            AddBoundsVisibility(shuffleParent);
             shuffleParent.SetActive(true);
         }
 
-        
+
         struct BoxShapeReciever
         {
             public MeshFilter f;
             public SkinnedMeshRenderer s;
-            public GameObject g;
+            public GameObject gameObject;
         }
 
         public static void AddBoundsVisibility(GameObject g)
         {
             var meshFilters = g.GetComponentsInChildren<MeshFilter>();
             var skinnedMeshRenderers = g.GetComponentsInChildren<SkinnedMeshRenderer>();
-            
+
             var boxShapeRecievers = meshFilters
-                .Select(f => new BoxShapeReciever() { f=f, g=f.gameObject })
-                .Concat (
-                    skinnedMeshRenderers.Select(s => new BoxShapeReciever() { s=s, g=s.gameObject })
+                .Select(f => new BoxShapeReciever() { f = f, gameObject = f.gameObject })
+                .Concat(
+                    skinnedMeshRenderers.Select(s => new BoxShapeReciever() { s = s, gameObject = s.gameObject })
                 )
                 .ToList();
 
-            foreach(var boxshapeReciever in boxShapeRecievers)
+            foreach (var boxshapeReciever in boxShapeRecievers)
             {
-                var box = boxshapeReciever.g.AddComponent<BoxShape>();
-                boxshapeReciever.g.AddComponent<ShapeVisibilityTracker>();
-                if (Main.Debug) boxshapeReciever.g.AddComponent<BoxShapeVisualizer>();
+                var box = boxshapeReciever.gameObject.AddComponent<BoxShape>();
+                boxshapeReciever.gameObject.AddComponent<ShapeVisibilityTracker>();
+                boxshapeReciever.gameObject.AddComponent<BoxShapeVisualizer>();
 
-                var fixer = boxshapeReciever.g.AddComponent<BoxShapeFixer>();
+                var fixer = boxshapeReciever.gameObject.AddComponent<BoxShapeFixer>();
                 fixer.shape = box;
                 fixer.meshFilter = boxshapeReciever.f;
                 fixer.skinnedMeshRenderer = boxshapeReciever.s;
@@ -198,7 +196,7 @@ namespace NewHorizons.Builder.Props
         {
             var meshFilters = g.GetComponentsInChildren<MeshFilter>();
             var corners = meshFilters.SelectMany(m => GetMeshCorners(m, g)).ToList();
-            
+
             Bounds b = new Bounds(corners[0], Vector3.zero);
             corners.ForEach(corner => b.Encapsulate(corner));
 
@@ -220,9 +218,9 @@ namespace NewHorizons.Builder.Props
                  new Vector3(bounds.max.x, bounds.min.y, bounds.max.z),
                  new Vector3(bounds.max.x, bounds.max.y, bounds.min.z),
             };
-            
+
             var globalCorners = localCorners.Select(localCorner => m.transform.TransformPoint(localCorner)).ToArray();
-            
+
             if (relativeTo == null) return globalCorners;
 
             return globalCorners.Select(globalCorner => relativeTo.transform.InverseTransformPoint(globalCorner)).ToArray();
@@ -242,9 +240,13 @@ namespace NewHorizons.Builder.Props
         public MeshFilter meshFilter;
         public SkinnedMeshRenderer skinnedMeshRenderer;
 
-        void Update()
+        public void Update()
         {
-            if (meshFilter == null && skinnedMeshRenderer == null) { NHLogger.LogVerbose("Useless BoxShapeFixer, destroying"); DestroyImmediate(this); }
+            if (meshFilter == null && skinnedMeshRenderer == null) 
+            { 
+                NHLogger.LogVerbose("Useless BoxShapeFixer, destroying"); 
+                DestroyImmediate(this); 
+            }
 
             Mesh sharedMesh = null;
             if (meshFilter != null) sharedMesh = meshFilter.sharedMesh;
@@ -252,7 +254,7 @@ namespace NewHorizons.Builder.Props
 
             if (sharedMesh == null) return;
             if (sharedMesh.bounds.size == Vector3.zero) return;
-            
+
             shape.size = sharedMesh.bounds.size;
             shape.center = sharedMesh.bounds.center;
 

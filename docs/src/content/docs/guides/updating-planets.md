@@ -3,31 +3,31 @@ title: Update Existing Planets
 description: A guide for updating base-game planets in New Horizons
 ---
 
-Similar to above, make a config where "Name" is the name of the planet. The name should be able to just match their in-game english names, however if you encounter any issues with that here are the in-code names for planets that are guaranteed to work:
+Similar to above, make a config where "Name" is the name of the planet. The name should be able to just match their in-game english names, however if you encounter any issues with that here are the in-code names for planets that are guaranteed to work (case sensitive!):
 
--   `SUN`
--   `CAVE_TWIN` (Ember Twin)
--   `TOWER_TWIN` (Ash Twin)
--   `TIMBER_HEARTH`
--   `BRITTLE_HOLLOW`
--   `GIANTS_DEEP`
--   `DARK_BRAMBLE`
--   `COMET` (Interloper)
--   `WHITE_HOLE`
--   `WHITE_HOLE_TARGET` (The Whitehole Station)
--   `QUANTUM_MOON`
--   `ORBITAL_PROBE_CANNON`
--   `TIMBER_MOON` (Attlerock)
--   `VOLCANIC_MOON` (Hollow's Lantern)
--   `DREAMWORLD`
--   `MapSatellite`
--   `RINGWORLD` (The Stranger)
+- `SUN`
+- `CAVE_TWIN` (Ember Twin)
+- `TOWER_TWIN` (Ash Twin)
+- `TIMBER_HEARTH`
+- `BRITTLE_HOLLOW`
+- `GIANTS_DEEP`
+- `DARK_BRAMBLE`
+- `COMET` (Interloper)
+- `WHITE_HOLE`
+- `WhiteholeStation`
+- `QUANTUM_MOON`
+- `ORBITAL_PROBE_CANNON`
+- `TIMBER_MOON` (Attlerock)
+- `VOLCANIC_MOON` (Hollow's Lantern)
+- `DREAMWORLD`
+- `MapSatellite`
+- `RINGWORLD` (The Stranger)
 
 Some features will not work if you try to add them to a base planet config. These include:
 
--   FocalPoints (just makes no sense really, a focal point is meant to be a intangible point between two binary bodies).
--   Gravity (including the strength, fall-off, and the size of the gravitational sphere of influence)
--   Reference frames (the volume used for targetting a planet with your ships navigation systems)
+- FocalPoints (just makes no sense really, a focal point is meant to be a intangible point between two binary bodies).
+- Gravity (including the strength, fall-off, and the size of the gravitational sphere of influence)
+- Reference frames (the volume used for targetting a planet with your ships navigation systems)
 
 You can also delete parts of an existing planet. Here's part of an example config which would delete the rising sand from Ember Twin:
 

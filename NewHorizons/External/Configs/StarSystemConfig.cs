@@ -17,6 +17,17 @@ namespace NewHorizons.External.Configs
     public class StarSystemConfig
     {
         /// <summary>
+        /// Unique name of your system. If not specified, the file name (without the extension) is used.
+        /// </summary>
+        public string name;
+
+        /// <summary>
+        /// When changing star systems are you allowed to bring items into this system?
+        /// </summary>
+        [DefaultValue(true)]
+        public bool allowOutsideItems = true;
+
+        /// <summary>
         /// In this system should the player be able to rotate their map camera freely or be stuck above the plane of the solar system?
         /// </summary>
         public bool freeMapAngle;

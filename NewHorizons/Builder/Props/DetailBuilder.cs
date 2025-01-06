@@ -1,5 +1,6 @@
 using NewHorizons.Builder.General;
 using NewHorizons.Components;
+using NewHorizons.Components.Orbital;
 using NewHorizons.Components.Props;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.Handlers;
@@ -50,6 +51,7 @@ namespace NewHorizons.Builder.Props
             _detailInfoToCorrespondingSpawnedGameObject.Clear();
         }
 
+        // i dont like how this is just a random collection in this class but quantum guy uses it :(
         public static GameObject GetSpawnedGameObjectByDetailInfo(DetailInfo detail)
         {
             if (!_detailInfoToCorrespondingSpawnedGameObject.ContainsKey(detail))
@@ -67,6 +69,8 @@ namespace NewHorizons.Builder.Props
         /// </summary>
         public static GameObject Make(GameObject planetGO, Sector sector, IModBehaviour mod, DetailInfo info)
         {
+            if (sector == null) info.keepLoaded = true;
+
             if (info.assetBundle != null)
             {
                 // Shouldn't happen
@@ -97,6 +101,8 @@ namespace NewHorizons.Builder.Props
         public static GameObject Make(GameObject go, Sector sector, IModBehaviour mod, GameObject prefab, DetailInfo detail)
         {
             if (prefab == null) return null;
+
+            if (sector == null) detail.keepLoaded = true;
 
             GameObject prop;
             bool isItem;
@@ -266,6 +272,15 @@ namespace NewHorizons.Builder.Props
             }
 
             if (!detail.keepLoaded) GroupsBuilder.Make(prop, sector);
+
+            // For DLC related props
+            // Make sure to do this before its set active
+            if (!string.IsNullOrEmpty(detail?.path) && 
+                (detail.path.ToLowerInvariant().StartsWith("ringworld") || detail.path.ToLowerInvariant().StartsWith("dreamworld")))
+            {
+                prop.AddComponent<DestroyOnDLC>()._destroyOnDLCNotOwned = true;
+            }
+
             prop.SetActive(true);
 
             if (detail.hasPhysics)
@@ -326,6 +341,16 @@ namespace NewHorizons.Builder.Props
             {
                 remoteCameraPlatform._visualSector = sector;
             }
+
+            else if(component is SingleLightSensor singleLightSensor && !existingSectors.Contains(singleLightSensor._sector))
+            {
+                if (singleLightSensor._sector != null)
+                {
+                    singleLightSensor._sector.OnSectorOccupantsUpdated -= singleLightSensor.OnSectorOccupantsUpdated;
+                }
+                singleLightSensor._sector = sector;
+                singleLightSensor._sector.OnSectorOccupantsUpdated += singleLightSensor.OnSectorOccupantsUpdated;
+            }
         }
 
         /// <summary>
@@ -370,6 +395,12 @@ namespace NewHorizons.Builder.Props
             // Fix anglerfish speed on orbiting planets
             else if (component is AnglerfishController angler)
             {
+                if (planetGO?.GetComponent<NHAstroObject>() is NHAstroObject nhao && !nhao.invulnerableToSun)
+                {
+                    // Has a fluid detector, will go gorp (#830)
+                    NHLogger.LogWarning("Having an anglerfish on a planet that has a fluid detector can lead to things breaking!");
+                }
+
                 try
                 {
                     angler._chaseSpeed += OWPhysics.CalculateOrbitVelocity(planetGO.GetAttachedOWRigidbody(), planetGO.GetComponent<AstroObject>().GetPrimaryBody().GetAttachedOWRigidbody()).magnitude;

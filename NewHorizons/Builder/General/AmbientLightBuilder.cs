@@ -2,6 +2,7 @@ using UnityEngine;
 using NewHorizons.Utility;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility.Files;
+using NewHorizons.Components;
 
 namespace NewHorizons.Builder.General
 {

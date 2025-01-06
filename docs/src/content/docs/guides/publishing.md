@@ -10,10 +10,10 @@ This guide assumes you've created your addon by following [the addon creation gu
 
 Before you release anything, you'll want to make sure:
 
--   Your mod has a descriptive `README.md`. (This will be shown on the website)
--   Your repo has the description field (click the cog in the right column on the "Code" tab) set. (this will be shown in the manager)
--   There's no `config.json` in your addon. (Not super important, but good practice)
--   Your manifest has a valid name, author, and unique name.
+- Your mod has a descriptive `README.md`. (This will be shown on the website)
+- Your repo has the description field (click the cog in the right column on the "Code" tab) set. (this will be shown in the manager)
+- There's no `config.json` in your addon. (Not super important, but good practice)
+- Your manifest has a valid name, author, and unique name.
 
 ## Releasing
 

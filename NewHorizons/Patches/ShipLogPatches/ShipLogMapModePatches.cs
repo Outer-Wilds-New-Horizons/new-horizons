@@ -1,5 +1,6 @@
 using HarmonyLib;
 using NewHorizons.Builder.ShipLog;
+using NewHorizons.Components.Orbital;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OWML;
@@ -19,6 +20,29 @@ namespace NewHorizons.Patches.ShipLogPatches
             GameObject panRoot = SearchUtilities.Find(ShipLogHandler.PAN_ROOT_PATH);
             GameObject sunObject = SearchUtilities.Find(ShipLogHandler.PAN_ROOT_PATH + "/Sun");
             ShipLogAstroObject[][] navMatrix = MapModeBuilder.ConstructMapMode(Main.Instance.CurrentStarSystem, panRoot, __instance._astroObjects, sunObject.layer);
+            // Remove anything that isnt meant to be selectable
+            var flagRemovedUnselectable = false;
+            for (int i = 0; i < navMatrix.Length; i++)
+            {
+                for (int j = 0; j < navMatrix[i].Length; j++)
+                {
+                    if (!(MapModeBuilder.GetMapModeInfoForAstroObject(navMatrix[i][j])?.selectable ?? true))
+                    {
+                        flagRemovedUnselectable = true;
+                        navMatrix[i][j].UpdateState();
+                        navMatrix[i][j] = null;
+                    }
+                }
+            }
+            if (flagRemovedUnselectable)
+            {
+                navMatrix = navMatrix.Where(a => a.Count(c => c != null) > 0).ToArray();
+                for (var index = 0; index < navMatrix.Length; index++)
+                {
+                    navMatrix[index] = navMatrix[index].Where(a => a != null).ToArray();
+                }
+            }
+
             if (navMatrix == null || navMatrix.Length <= 1)
             {
                 NHLogger.LogWarning("Skipping Map Mode Generation.");
