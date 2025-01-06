@@ -12,6 +12,7 @@ using OWML.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using NewHorizons.External.Modules.Props;
 using UnityEngine;
 
 namespace NewHorizons.Builder.Props
@@ -164,13 +165,13 @@ namespace NewHorizons.Builder.Props
 
             if (config.Props.quantumGroups != null)
             {
-                var propsByGroup = new Dictionary<string, List<(GameObject go, bool randomizeYRotation)>>();
+                var propsByGroup = new Dictionary<string, List<(GameObject go, DetailInfo detail)>>();
                 foreach (var detail in config.Props.details)
                 {
                     if (detail.quantumGroupID != null)
                     {
-                        if (!propsByGroup.ContainsKey(detail.quantumGroupID)) propsByGroup[detail.quantumGroupID] = new List<(GameObject go, bool randomizeYRotation)>();
-                        propsByGroup[detail.quantumGroupID].Add((DetailBuilder.GetSpawnedGameObjectByDetailInfo(detail), detail.quantumRandomizeYRotation));
+                        if (!propsByGroup.ContainsKey(detail.quantumGroupID)) propsByGroup[detail.quantumGroupID] = new List<(GameObject go, DetailInfo detail)>();
+                        propsByGroup[detail.quantumGroupID].Add((DetailBuilder.GetSpawnedGameObjectByDetailInfo(detail), detail));
                     }
                 }
 

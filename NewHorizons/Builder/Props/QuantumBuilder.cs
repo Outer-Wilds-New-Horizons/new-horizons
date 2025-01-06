@@ -6,6 +6,7 @@ using NewHorizons.Utility.OWML;
 using OWML.Common;
 using System.Collections.Generic;
 using System.Linq;
+using NewHorizons.External.Modules.Props;
 using UnityEngine;
 
 namespace NewHorizons.Builder.Props
@@ -13,7 +14,7 @@ namespace NewHorizons.Builder.Props
     public static class QuantumBuilder
     {
 
-        public static void Make(GameObject go, Sector sector, PlanetConfig config, IModBehaviour mod, QuantumGroupInfo quantumGroup, (GameObject go, bool randomizeY)[] propsInGroup)
+        public static void Make(GameObject go, Sector sector, PlanetConfig config, IModBehaviour mod, QuantumGroupInfo quantumGroup, (GameObject go, DetailInfo detail)[] propsInGroup)
         {
             switch (quantumGroup.type)
             {
@@ -25,14 +26,12 @@ namespace NewHorizons.Builder.Props
 
         // TODO: Socket groups that have an equal number of props and sockets
         // Nice to have: socket groups that specify a filledSocketObject and an emptySocketObject (eg the archway in the giant's deep tower)
-        public static void MakeSocketGroup(GameObject go, Sector sector, PlanetConfig config, IModBehaviour mod, QuantumGroupInfo quantumGroup, (GameObject go, bool randomizeY)[] propsInGroup)
+        public static void MakeSocketGroup(GameObject go, Sector sector, PlanetConfig config, IModBehaviour mod, QuantumGroupInfo quantumGroup, (GameObject go, DetailInfo detail)[] propsInGroup)
         {
             var groupRoot = new GameObject("Quantum Sockets - " + quantumGroup.id);
             groupRoot.transform.parent = sector?.transform ?? go.transform;
             groupRoot.transform.localPosition = Vector3.zero;
             groupRoot.transform.localEulerAngles = Vector3.zero;
-
-            var useSocketRotation = quantumGroup.sockets.All(x => x.rotation != null);
 
             var sockets = new QuantumSocket[quantumGroup.sockets.Length];
             for (int i = 0; i < quantumGroup.sockets.Length; i++)
@@ -54,9 +53,9 @@ namespace NewHorizons.Builder.Props
                 quantumObject._socketList = sockets.ToList();
                 quantumObject._sockets = sockets;
                 quantumObject._prebuilt = true;
-                quantumObject._alignWithSocket = useSocketRotation;
-                quantumObject._randomYRotation = prop.randomizeY;
-                quantumObject._alignWithGravity = !useSocketRotation;
+                quantumObject._alignWithSocket = !prop.detail.quantumAlignWithGravity;
+                quantumObject._randomYRotation = prop.detail.quantumRandomizeYRotation;
+                quantumObject._alignWithGravity = prop.detail.quantumAlignWithGravity;
                 quantumObject._childSockets = new List<QuantumSocket>();
                 if (prop.go.GetComponentInChildren<VisibilityTracker>() == null) AddBoundsVisibility(prop.go);
                 prop.go.SetActive(true);
