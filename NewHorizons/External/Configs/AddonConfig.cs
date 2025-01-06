@@ -41,6 +41,7 @@ namespace NewHorizons.External.Configs
         /// <summary>
         /// The path to the addons subtitle for the main menu.
         /// Defaults to "subtitle.png".
+        /// The dimensions of the Echoes of the Eye subtitle is 669 x 67, so aim for that size
         /// </summary>
         public string subtitlePath = "subtitle.png";
     }

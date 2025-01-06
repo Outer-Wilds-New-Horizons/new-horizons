@@ -113,6 +113,10 @@ namespace NewHorizons.Builder.Props
                 if (dimension.Bramble.nodes == null) continue;
                 foreach (var node in dimension.Bramble.nodes)
                 {
+                    if (!dimensionNameToIndex.ContainsKey(node.linksTo))
+                    {
+                        NHLogger.LogError($"There is no bramble dimension named {node.linksTo}");
+                    }
                     var destinationDimensionIndex = dimensionNameToIndex[node.linksTo];
                     access[dimensionIndex, destinationDimensionIndex] = true;
                 }

@@ -11,9 +11,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using UnityEngine;
 
 namespace NewHorizons.External.Configs
 {
@@ -25,9 +23,8 @@ namespace NewHorizons.External.Configs
     {
         #region Fields
         /// <summary>
-        /// Unique name of your planet
+        /// Unique name of your planet. If not specified, the file name (without the extension) is used.
         /// </summary>
-        [Required]
         public string name;
 
         /// <summary>
@@ -54,6 +51,13 @@ namespace NewHorizons.External.Configs
         /// `true` if you want to delete this planet
         /// </summary>
         public bool destroy;
+
+        /// <summary>
+        /// Do we track the position of this body when calculating the solar system radius?
+        /// `true` if you want the map zoom speed, map panning distance/speed, map camera farclip plane,
+        /// and autopilot-returning-to-solar-system to adjust to this planet's orbit
+        /// </summary>
+        [DefaultValue(true)] public bool trackForSolarSystemRadius = true;
 
         /// <summary>
         /// A list of paths to child GameObjects to destroy on this planet
@@ -94,6 +98,11 @@ namespace NewHorizons.External.Configs
         public CloakModule Cloak;
 
         /// <summary>
+        /// Make this planet part of the dream world
+        /// </summary>
+        public DreamModule Dream;
+
+        /// <summary>
         /// Make this body into a focal point (barycenter)
         /// </summary>
         public FocalPointModule FocalPoint;
@@ -112,6 +121,11 @@ namespace NewHorizons.External.Configs
         /// Add lava to this planet
         /// </summary>
         public LavaModule Lava;
+
+        /// <summary>
+        /// Map marker properties of this body
+        /// </summary>
+        public MapMarkerModule MapMarker;
 
         /// <summary>
         /// Describes this Body's orbit (or lack there of)
@@ -214,6 +228,7 @@ namespace NewHorizons.External.Configs
             if (Base == null) Base = new BaseModule();
             if (Orbit == null) Orbit = new OrbitModule();
             if (ReferenceFrame == null) ReferenceFrame = new ReferenceFrameModule();
+            if (MapMarker == null) MapMarker = new MapMarkerModule();
         }
 
         public void Validate()
@@ -275,7 +290,18 @@ namespace NewHorizons.External.Configs
             }
 
             // Stars and focal points shouldnt be destroyed by stars
-            if (Star != null || FocalPoint != null) Base.invulnerableToSun = true;
+            if (Star != null || FocalPoint != null) Base.hasFluidDetector = false;
+
+            // Disable map marker for dream dimensions
+            if (Dream != null && Dream.inDreamWorld) MapMarker.enabled = false;
+
+            // User error #983
+            // This will not catch if they wrote the two names slightly differently but oh well don't be stupid
+            // Ideally we should just check for loops in PlanetGraph
+            if (Orbit.primaryBody == name && !string.IsNullOrEmpty(Orbit.primaryBody))
+            {
+                throw new Exception($"You set {name} to orbit itself, that is invalid. The planet will not load.");
+            }
         }
 
         public void Migrate()
@@ -306,6 +332,8 @@ namespace NewHorizons.External.Configs
             if (Base.isSatellite) Base.showMinimap = false;
 
             if (!Base.hasReferenceFrame) ReferenceFrame.enabled = false;
+
+            if (Base.hasMapMarker) MapMarker.enabled = true;
 
             if (childrenToDestroy != null) removeChildren = childrenToDestroy;
 
@@ -535,6 +563,22 @@ namespace NewHorizons.External.Configs
                 };
             }
 
+            // Spawn points are now a list
+            if (Spawn != null && Spawn.playerSpawn != null && Spawn.playerSpawnPoints == null)
+            {
+                Spawn.playerSpawnPoints = new SpawnModule.PlayerSpawnPoint[] { Spawn.playerSpawn };
+            }
+            if (Spawn != null && Spawn.shipSpawn != null && Spawn.shipSpawnPoints == null)
+            {
+                Spawn.shipSpawnPoints = new SpawnModule.ShipSpawnPoint[] { Spawn.shipSpawn };
+            }
+
+            // Because these guys put TWO spawn points 
+            if (starSystem == "2walker2.OogaBooga" && name == "The Campground")
+            {
+                Spawn.playerSpawnPoints[0].isDefault = true;
+            }
+
             // Remote dialogue trigger reorganized to use GeneralPointPropInfo
             if (Props?.dialogue != null)
             {
@@ -655,6 +699,11 @@ namespace NewHorizons.External.Configs
                 {
                     if (destructionVolume.onlyAffectsPlayerAndShip) destructionVolume.onlyAffectsPlayerRelatedBodies = true;
                 }
+            }
+
+            if (Base.invulnerableToSun)
+            {
+                Base.hasFluidDetector = false;
             }
         }
         #endregion

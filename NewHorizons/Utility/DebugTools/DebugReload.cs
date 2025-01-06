@@ -43,10 +43,21 @@ namespace NewHorizons.Utility.DebugTools
                 NHLogger.LogWarning("Error While Reloading");
             }
 
+            Main.Instance.ForceClearCaches = true;
+
+
             SearchUtilities.Find("/PauseMenu/PauseMenuManagers").GetComponent<PauseMenuManager>().OnSkipToNextTimeLoop();
 
-            Main.Instance.ForceClearCaches = true;
-            Main.Instance.ChangeCurrentStarSystem(Main.Instance.CurrentStarSystem);
+            if (Main.Instance.CurrentStarSystem == "EyeOfTheUniverse")
+            {
+                Main.Instance.IsWarpingBackToEye = true;
+                EyeDetailCacher.IsInitialized = false;
+                Main.Instance.ChangeCurrentStarSystem("SolarSystem");
+            }
+            else
+            {
+                Main.Instance.ChangeCurrentStarSystem(Main.Instance.CurrentStarSystem, Main.Instance.DidWarpFromShip, Main.Instance.DidWarpFromVessel);
+            }
 
             Main.SecondsElapsedInLoop = -1f;
         }

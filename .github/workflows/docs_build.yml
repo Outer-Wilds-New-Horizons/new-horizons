@@ -29,10 +29,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Download Schemas
         if: ${{ inputs.schemas_artifact != 'null' }}
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.schemas_artifact }}
           path: NewHorizons/Schemas
@@ -41,7 +41,7 @@ jobs:
           cp docs/package.json .
           cp docs/pnpm-lock.yaml .
       - name: Build Site
-        uses: withastro/action@v1
+        uses: withastro/action@v2
         with:
           path: ./docs
           package-manager: pnpm@latest
@@ -55,4 +55,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v1
+        uses: actions/deploy-pages@v4

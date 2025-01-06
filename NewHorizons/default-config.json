@@ -1,9 +1,44 @@
 {
-	"enabled": true,
-	"settings": {
-		"Debug": false,
-		"Custom title screen": true,
-		"Default System Override": "",
-		"Verbose Logs": false
-	}
+  "enabled": true,
+  "settings": {
+    "CustomTitleScreen": {
+      "title": "Custom Title Screen",
+      "type": "toggle",
+      "value": true,
+      "tooltip": "Displays planets from installed mods on the title screen."
+    },
+    "DebugSeparator": {
+      "type": "separator"
+    },
+    "Debug": {
+      "title": "Debug",
+      "type": "toggle",
+      "value": false,
+      "tooltip": "Enables the debug raycast, visible quantum object colliders, and debug options menu."
+    },
+    "VisualizeQuantumObjects": {
+      "title": "Visualize Quantum Objects",
+      "type": "toggle",
+      "value": false,
+      "tooltip": "Draws boundaries around quantum objects when Debug mode is on."
+    },
+    "VerboseLogs": {
+      "title": "Verbose Logs",
+      "type": "toggle",
+      "value": false,
+      "tooltip": "Makes logs much more detailed. Useful when debugging."
+    },
+    "SequentialPreCaching": {
+      "title": "Sequential Pre-caching",
+      "type": "toggle",
+      "value": false,
+      "tooltip": "This is a debug option intended for mod creators. Prevents running out of memory when computing slide reel caches, but is slower and will cause in-game lag."
+    },
+    "DefaultSystemOverride": {
+      "title": "Default System Override",
+      "type": "text",
+      "value": "",
+      "tooltip": "Forces the player to spawn in this system after death. Must match the unique name of a system, eg, xen.NewHorizonsExamples"
+    }
+  }
 }

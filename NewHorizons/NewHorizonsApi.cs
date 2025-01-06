@@ -143,9 +143,11 @@ namespace NewHorizons
         public object QueryBody(Type outType, string bodyName, string jsonPath)
         {
             var planet = Main.BodyDict[Main.Instance.CurrentStarSystem].Find((b) => b.Config.name == bodyName);
-            return planet == null
-                ? null
-                : QueryJson(outType, Path.Combine(planet.Mod.ModHelper.Manifest.ModFolderPath, planet.RelativePath), jsonPath);
+            if (planet == null){
+                NHLogger.LogError($"Could not find planet with body name {bodyName}.");
+				return null;
+			}
+			return QueryJson(outType, Path.Combine(planet.Mod.ModHelper.Manifest.ModFolderPath, planet.RelativePath), jsonPath);
         }
 
         public T QueryBody<T>(string bodyName, string jsonPath)
@@ -259,7 +261,8 @@ namespace NewHorizons
         public void DefineStarSystem(string name, string config, IModBehaviour mod)
         {
             var starSystemConfig = JsonConvert.DeserializeObject<StarSystemConfig>(config);
-            Main.Instance.LoadStarSystemConfig(name, starSystemConfig, null, mod);
+            starSystemConfig.name = name;
+            Main.Instance.LoadStarSystemConfig(starSystemConfig, null, mod);
         }
 
         public (CharacterDialogueTree, RemoteDialogueTrigger) CreateDialogueFromXML(string textAssetID, string xml, string dialogueInfo, GameObject planetGO)
@@ -310,6 +313,7 @@ namespace NewHorizons
 
             var system = new StarSystemConfig()
             {
+                name = starSystem,
                 entryPositions = entryPositions?
                     .Select((pair) => new EntryPositionInfo() { id = pair.Key, position = pair.Value })
                     .ToArray(),
@@ -318,7 +322,7 @@ namespace NewHorizons
                     .ToArray()
             };
 
-            Main.Instance.LoadStarSystemConfig(starSystem, system, null, mod);
+            Main.Instance.LoadStarSystemConfig(system, null, mod);
 
             RumorModeBuilder.AddShipLogXML(GameObject.FindObjectOfType<ShipLogManager>(), xml, body);
         }
@@ -338,5 +342,7 @@ namespace NewHorizons
         public string GetTranslationForOtherText(string text) => TranslationHandler.GetTranslation(text, TranslationHandler.TextType.OTHER);
 
         public void AddSubtitle(IModBehaviour mod, string filePath) => SubtitlesHandler.RegisterAdditionalSubtitle(mod, filePath);
+
+        public void SetNextSpawnID(string id) => PlayerSpawnHandler.TargetSpawnID = id;
     }
 }

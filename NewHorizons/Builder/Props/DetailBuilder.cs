@@ -1,5 +1,6 @@
 using NewHorizons.Builder.General;
 using NewHorizons.Components;
+using NewHorizons.Components.Orbital;
 using NewHorizons.Components.Props;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.Handlers;
@@ -67,6 +68,8 @@ namespace NewHorizons.Builder.Props
         /// </summary>
         public static GameObject Make(GameObject planetGO, Sector sector, IModBehaviour mod, DetailInfo info)
         {
+            if (sector == null) info.keepLoaded = true;
+
             if (info.assetBundle != null)
             {
                 // Shouldn't happen
@@ -97,6 +100,8 @@ namespace NewHorizons.Builder.Props
         public static GameObject Make(GameObject go, Sector sector, IModBehaviour mod, GameObject prefab, DetailInfo detail)
         {
             if (prefab == null) return null;
+
+            if (sector == null) detail.keepLoaded = true;
 
             GameObject prop;
             bool isItem;
@@ -157,6 +162,12 @@ namespace NewHorizons.Builder.Props
                         if (isFromAssetBundle && component is CharacterDialogueTree dialogue)
                         {
                             DialogueBuilder.HandleUnityCreatedDialogue(dialogue);
+                        }
+
+                        // copied details need their lanterns fixed
+                        if (!isFromAssetBundle && component is DreamLanternController lantern)
+                        {
+                            lantern.gameObject.AddComponent<DreamLanternControllerFixer>();
                         }
 
                         FixComponent(component, go, detail.ignoreSun);
@@ -260,6 +271,15 @@ namespace NewHorizons.Builder.Props
             }
 
             if (!detail.keepLoaded) GroupsBuilder.Make(prop, sector);
+
+            // For DLC related props
+            // Make sure to do this before its set active
+            if (!string.IsNullOrEmpty(detail?.path) && 
+                (detail.path.ToLowerInvariant().StartsWith("ringworld") || detail.path.ToLowerInvariant().StartsWith("dreamworld")))
+            {
+                prop.AddComponent<DestroyOnDLC>()._destroyOnDLCNotOwned = true;
+            }
+
             prop.SetActive(true);
 
             if (detail.hasPhysics)
@@ -320,6 +340,16 @@ namespace NewHorizons.Builder.Props
             {
                 remoteCameraPlatform._visualSector = sector;
             }
+
+            else if(component is SingleLightSensor singleLightSensor && !existingSectors.Contains(singleLightSensor._sector))
+            {
+                if (singleLightSensor._sector != null)
+                {
+                    singleLightSensor._sector.OnSectorOccupantsUpdated -= singleLightSensor.OnSectorOccupantsUpdated;
+                }
+                singleLightSensor._sector = sector;
+                singleLightSensor._sector.OnSectorOccupantsUpdated += singleLightSensor.OnSectorOccupantsUpdated;
+            }
         }
 
         /// <summary>
@@ -364,6 +394,12 @@ namespace NewHorizons.Builder.Props
             // Fix anglerfish speed on orbiting planets
             else if (component is AnglerfishController angler)
             {
+                if (planetGO?.GetComponent<NHAstroObject>() is NHAstroObject nhao && !nhao.invulnerableToSun)
+                {
+                    // Has a fluid detector, will go gorp (#830)
+                    NHLogger.LogWarning("Having an anglerfish on a planet that has a fluid detector can lead to things breaking!");
+                }
+
                 try
                 {
                     angler._chaseSpeed += OWPhysics.CalculateOrbitVelocity(planetGO.GetAttachedOWRigidbody(), planetGO.GetComponent<AstroObject>().GetPrimaryBody().GetAttachedOWRigidbody()).magnitude;
@@ -438,7 +474,7 @@ namespace NewHorizons.Builder.Props
 
                 NHLogger.LogVerbose("Fixing anglerfish animation");
 
-                // Remove any event reference to its angler
+                // Remove any event reference to its angler so that they dont change its state
                 if (angler._anglerfishController)
                 {
                     angler._anglerfishController.OnChangeAnglerState -= angler.OnChangeAnglerState;
@@ -446,7 +482,8 @@ namespace NewHorizons.Builder.Props
                     angler._anglerfishController.OnAnglerSuspended -= angler.OnAnglerSuspended;
                     angler._anglerfishController.OnAnglerUnsuspended -= angler.OnAnglerUnsuspended;
                 }
-                angler.enabled = true;
+                // Disable the angler anim controller because we don't want Update or LateUpdate to run, just need it to set the initial Animator state
+                angler.enabled = false;
                 angler.OnChangeAnglerState(AnglerfishController.AnglerState.Lurking);
                 
                 Destroy(this);
@@ -497,6 +534,54 @@ namespace NewHorizons.Builder.Props
                 var torchItem = GetComponent<VisionTorchItem>();
                 torchItem.mindSlideProjector._mindProjectorImageEffect = Locator.GetPlayerCamera().GetComponent<MindProjectorImageEffect>();
 
+                Destroy(this);
+            }
+        }
+
+        /// <summary>
+        /// need component here to run after DreamLanternController.Awake
+        /// </summary>
+        [RequireComponent(typeof(DreamLanternController))]
+        private class DreamLanternControllerFixer : MonoBehaviour
+        {
+            private void Start()
+            {
+                // based on https://github.com/Bwc9876/OW-Amogus/blob/master/Amogus/LanternCreator.cs
+                // needed to fix petals looking backwards, among other things
+
+                var lantern = GetComponent<DreamLanternController>();
+
+                // this is set in Awake, we wanna override it
+
+                // Manually copied these values from a artifact lantern so that we don't have to find it (works in Eye)
+                lantern._origLensFlareBrightness = 0f;
+                lantern._focuserPetalsBaseEulerAngles = new Vector3[] 
+                { 
+                    new Vector3(0.7f, 270.0f, 357.5f), 
+                    new Vector3(288.7f, 270.1f, 357.4f), 
+                    new Vector3(323.3f, 90.0f, 177.5f),
+                    new Vector3(35.3f, 90.0f, 177.5f), 
+                    new Vector3(72.7f, 270.1f, 357.5f) 
+                };
+                lantern._dirtyFlag_focus = true;
+                lantern._concealerRootsBaseScale = new Vector3[] 
+                {
+                    Vector3.one,
+                    Vector3.one,
+                    Vector3.one
+                };
+                lantern._concealerCoversStartPos = new Vector3[] 
+                {
+                    new Vector3(0.0f, 0.0f, 0.0f),
+                    new Vector3(0.0f, -0.1f, 0.0f),
+                    new Vector3(0.0f, -0.2f, 0.0f),
+                    new Vector3(0.0f, 0.2f, 0.0f),
+                    new Vector3(0.0f, 0.1f, 0.0f),
+                    new Vector3(0.0f, 0.0f, 0.0f)
+                };
+                lantern._dirtyFlag_concealment = true;
+                lantern.UpdateVisuals();
+                
                 Destroy(this);
             }
         }

@@ -1,3 +1,4 @@
+using HarmonyLib;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules.VariableSize;
 using NewHorizons.External.SerializableData;
@@ -146,6 +147,16 @@ namespace NewHorizons.Utility
             StringBuilder strBuilder = new StringBuilder(str.ToLowerInvariant());
             strBuilder[0] = strBuilder[0].ToString().ToUpperInvariant().ToCharArray()[0];
             return strBuilder.ToString();
+        }
+
+        public static string ToLowercaseNamingConvention(this string str, string separation = " ")
+        {
+            var r = new Regex(@"
+                (?<=[A-Z])(?=[A-Z][a-z]) |
+                 (?<=[^A-Z])(?=[A-Z]) |
+                 (?<=[A-Za-z])(?=[^A-Za-z])", RegexOptions.IgnorePatternWhitespace);
+
+            return r.Replace(str, separation).ToLower();
         }
 
         public static void CopyPropertiesFrom(this object destination, object source)
@@ -386,6 +397,67 @@ namespace NewHorizons.Utility
         {
             // return Regex.Replace(text.Trim(), @"[^\S\r\n]+", "GUH");
             return Regex.Replace(text.Trim(), @"\s+", " ").ToLowerInvariant();
+        }
+
+        public static void Stabilize(this SingularityController singularity)
+        {
+            singularity._state = SingularityController.State.Stable;
+            singularity._timer = 0f;
+            singularity._baseRadius = singularity._targetRadius;
+            singularity._currentRadius = singularity._targetRadius;
+            singularity._renderer.SetActivation(active: true);
+            singularity._renderer.SetMaterialProperty(singularity._propID_Radius, singularity._targetRadius);
+            if (singularity._owAmbientSource != null) singularity._owAmbientSource.FadeIn(0.5f);
+            singularity.enabled = true;
+        }
+
+        public static void OpenEyesImmediate(this PlayerCameraEffectController playerCameraEffectController)
+        {
+            playerCameraEffectController._lastOpenness = 1;
+            playerCameraEffectController._wakeCurve = playerCameraEffectController._fastWakeCurve;
+            playerCameraEffectController._isOpeningEyes = false;
+            playerCameraEffectController._isClosingEyes = false;
+            playerCameraEffectController._eyeAnimDuration = 0;
+            playerCameraEffectController._eyeAnimStartTime = Time.time;
+            playerCameraEffectController._owCamera.postProcessingSettings.eyeMask.openness = 1;
+            playerCameraEffectController._owCamera.postProcessingSettings.bloom.threshold = playerCameraEffectController._owCamera.postProcessingSettings.bloomDefault.threshold;
+            playerCameraEffectController._owCamera.postProcessingSettings.eyeMaskEnabled = false;
+        }
+
+        public static void CloseEyesImmediate(this PlayerCameraEffectController playerCameraEffectController)
+        {
+            playerCameraEffectController._lastOpenness = 0f;
+            playerCameraEffectController._wakeCurve = playerCameraEffectController._fastWakeCurve;
+            playerCameraEffectController._isOpeningEyes = false;
+            playerCameraEffectController._isClosingEyes = false;
+            playerCameraEffectController._eyeAnimDuration = 0;
+            playerCameraEffectController._eyeAnimStartTime = Time.time;
+            playerCameraEffectController._owCamera.postProcessingSettings.eyeMask.openness = 0f;
+            playerCameraEffectController._owCamera.postProcessingSettings.bloom.threshold = 0f;
+            playerCameraEffectController._owCamera.postProcessingSettings.eyeMaskEnabled = true;
+        }
+
+        public static float GetSecondsBeforeSupernovaPlayTime(this GlobalMusicController globalMusicController)
+        {
+            var clip = globalMusicController._endTimesSource.audioLibraryClip;
+            if (clip == AudioType.EndOfTime || clip == AudioType.EndOfTime_Dream)
+                return GlobalMusicController.secondsBeforeSupernovaPlayTime;
+            return globalMusicController._endTimesSource.clip.length;
+        }
+
+        public static CodeMatcher LogInstructions(this CodeMatcher matcher, string prefix)
+        {
+            matcher.InstructionEnumeration().LogInstructions(prefix);
+            return matcher;
+        }
+
+        public static IEnumerable<CodeInstruction> LogInstructions(this IEnumerable<CodeInstruction> instructions, string prefix)
+        {
+            var message = prefix;
+            foreach (var instruction in instructions)
+                message += $"\n{instruction}";
+            Debug.LogError(message);
+            return instructions;
         }
     }
 }
