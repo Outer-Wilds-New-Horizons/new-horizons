@@ -62,6 +62,8 @@ namespace NewHorizons.Builder.Orbital
             config.Base.soiOverride = separationRadius * 1.5f;
             config.ReferenceFrame.bracketRadius = separationRadius;
             config.ReferenceFrame.targetColliderRadius = separationRadius;
+
+            config.Base.showMinimap = false;
         }
 
         private static float GetGravitationalMass(PlanetConfig config)
