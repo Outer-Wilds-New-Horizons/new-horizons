@@ -11,7 +11,7 @@ For physical objects there are currently two ways of setting them up: specify an
 
 ## Debug Raycast
 
-If you turn on debug mode (the mod option), you can press P to shoot a ray where you're looking. This will print location info to the console that you can paste into your console, as well as paths that you can explore further in Unity Explorer.
+If you turn on debug mode (the mod option), you can press P to shoot a ray where you're looking. This will print location info to the console that you can paste into your configs, as well as paths that you can explore further in Unity Explorer.
 Of note: the rotation of the raycast will have the up direction facing away from the ground/wall/ceiling and the forward direction facing you.
 
 ## Unity Explorer
