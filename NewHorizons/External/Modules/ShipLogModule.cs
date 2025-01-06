@@ -79,6 +79,12 @@ namespace NewHorizons.External.Modules
             /// Scale to apply to the planet in map mode.
             /// </summary>
             [DefaultValue(1f)] public float scale = 1f;
+
+            /// <summary>
+            /// Can this ship log map mode entry be selected
+            /// Ex) Set to false for stars with no entries on them so they are skipped in navigation
+            /// </summary>
+            [DefaultValue(true)] public bool selectable = true;
         }
 
         [JsonObject]
