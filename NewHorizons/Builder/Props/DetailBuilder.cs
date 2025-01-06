@@ -51,6 +51,7 @@ namespace NewHorizons.Builder.Props
             _detailInfoToCorrespondingSpawnedGameObject.Clear();
         }
 
+        // i dont like how this is just a random collection in this class but quantum guy uses it :(
         public static GameObject GetSpawnedGameObjectByDetailInfo(DetailInfo detail)
         {
             if (!_detailInfoToCorrespondingSpawnedGameObject.ContainsKey(detail))
