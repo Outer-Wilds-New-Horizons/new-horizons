@@ -13,24 +13,26 @@ namespace NewHorizons.Builder.Props
     public static class QuantumBuilder
     {
 
-        public static void Make(GameObject go, Sector sector, PlanetConfig config, IModBehaviour mod, QuantumGroupInfo quantumGroup, GameObject[] propsInGroup)
+        public static void Make(GameObject go, Sector sector, PlanetConfig config, IModBehaviour mod, QuantumGroupInfo quantumGroup, (GameObject go, bool randomizeY)[] propsInGroup)
         {
             switch (quantumGroup.type)
             {
                 case QuantumGroupType.Sockets: MakeSocketGroup(go, sector, config, mod, quantumGroup, propsInGroup); return;
-                case QuantumGroupType.States: MakeStateGroup(go, sector, config, mod, quantumGroup, propsInGroup); return;
+                case QuantumGroupType.States: MakeStateGroup(go, sector, config, mod, quantumGroup, propsInGroup.Select(x => x.go).ToArray()); return;
                     // case PropModule.QuantumGroupType.Shuffle: MakeShuffleGroup(go, sector, config, mod, quantumGroup, propsInGroup); return;
             }
         }
 
         // TODO: Socket groups that have an equal number of props and sockets
         // Nice to have: socket groups that specify a filledSocketObject and an emptySocketObject (eg the archway in the giant's deep tower)
-        public static void MakeSocketGroup(GameObject go, Sector sector, PlanetConfig config, IModBehaviour mod, QuantumGroupInfo quantumGroup, GameObject[] propsInGroup)
+        public static void MakeSocketGroup(GameObject go, Sector sector, PlanetConfig config, IModBehaviour mod, QuantumGroupInfo quantumGroup, (GameObject go, bool randomizeY)[] propsInGroup)
         {
             var groupRoot = new GameObject("Quantum Sockets - " + quantumGroup.id);
             groupRoot.transform.parent = sector?.transform ?? go.transform;
             groupRoot.transform.localPosition = Vector3.zero;
             groupRoot.transform.localEulerAngles = Vector3.zero;
+
+            var useSocketRotation = quantumGroup.sockets.All(x => x.rotation != null);
 
             var sockets = new QuantumSocket[quantumGroup.sockets.Length];
             for (int i = 0; i < quantumGroup.sockets.Length; i++)
@@ -46,16 +48,18 @@ namespace NewHorizons.Builder.Props
 
             foreach (var prop in propsInGroup)
             {
-                prop.SetActive(false);
-                var quantumObject = prop.AddComponent<SocketedQuantumObject>();
+                prop.go.SetActive(false);
+                var quantumObject = prop.go.AddComponent<SocketedQuantumObject>();
                 quantumObject._socketRoot = groupRoot;
                 quantumObject._socketList = sockets.ToList();
                 quantumObject._sockets = sockets;
                 quantumObject._prebuilt = true;
+                quantumObject._alignWithSocket = useSocketRotation;
+                quantumObject._randomYRotation = prop.randomizeY;
+                quantumObject._alignWithGravity = !useSocketRotation;
                 quantumObject._childSockets = new List<QuantumSocket>();
-                // TODO: support _alignWithGravity?
-                if (prop.GetComponentInChildren<VisibilityTracker>() == null) AddBoundsVisibility(prop);
-                prop.SetActive(true);
+                if (prop.go.GetComponentInChildren<VisibilityTracker>() == null) AddBoundsVisibility(prop.go);
+                prop.go.SetActive(true);
             }
         }
 
