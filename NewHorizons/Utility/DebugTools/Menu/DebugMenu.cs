@@ -48,7 +48,6 @@ namespace NewHorizons.Utility.DebugTools.Menu
         {
             submenus = new List<DebugSubmenu>()
             {
-                new DebugMenuShipLogs(),
             };
 
             submenus.ForEach((submenu) => submenu.OnAwake(this));
