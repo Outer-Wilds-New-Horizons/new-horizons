@@ -4067,6 +4067,11 @@
           "description": "Scale to apply to the planet in map mode.",
           "format": "float",
           "default": 1.0
+        },
+        "selectable": {
+          "type": "boolean",
+          "description": "Can this ship log map mode entry be selected\nEx) Set to false for stars with no entries on them so they are skipped in navigation",
+          "default": true
         }
       }
     },
