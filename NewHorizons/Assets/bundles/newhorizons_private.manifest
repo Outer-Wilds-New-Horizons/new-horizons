@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 2356174904
+CRC: 2772415118
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: c9b4a60ca4efa0ba50065dea6e758ce7
+    Hash: a1c50cfbd83ea025ed5ff8a920ceb135
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 65942a71d50cdc9f2387a8fa9383a3f8
+    Hash: 8a96558a3d9470a68866aeaaa30830cf
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -87,6 +87,8 @@ ClassTypes:
   Script: {fileID: 11500000, guid: 13ab18a571ddf1b4f8dc92e3fa31b22e, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 3d5c87c5a00ca19449219c7c54f41ee7, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: db82bd26294f5b848aaa8cb1ad0dc252, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 840ab63696e59254eb425242136805dd, type: 3}
 - Class: 114
@@ -198,5 +200,6 @@ Assets:
 - Assets/SlideReels/Prefab_DW_Reel_8.prefab
 - Assets/Vessel_Body.prefab
 - Assets/AmbientLight_QM.png
+- Assets/QuantumLightning/Prefab_EYE_QuantumLightningObject.prefab
 - Assets/SlideReels/Prefab_IP_Reel_7.prefab
 Dependencies: []

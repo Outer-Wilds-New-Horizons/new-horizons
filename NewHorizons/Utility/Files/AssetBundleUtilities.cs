@@ -17,13 +17,11 @@ namespace NewHorizons.Utility.Files
 
         public static AssetBundle NHAssetBundle { get; private set; }
         public static AssetBundle NHPrivateAssetBundle { get; private set; }
-        public static AssetBundle EyeLightning { get; private set; }
 
         static AssetBundleUtilities()
         {
             NHAssetBundle = LoadRequiredBundle("Assets/bundles/newhorizons_public");
             NHPrivateAssetBundle = LoadRequiredBundle("Assets/bundles/newhorizons_private");
-            EyeLightning = LoadRequiredBundle("Assets/bundles/eyelightning");
         }
 
         private static AssetBundle LoadRequiredBundle(string path)

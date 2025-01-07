@@ -55,7 +55,7 @@ namespace NewHorizons.Builder.Props
 
             var rootGo = root == default ? sector.gameObject : root.go;
 
-            var lightning = DetailBuilder.Make(planetGO, sector, Main.Instance, AssetBundleUtilities.EyeLightning.LoadAsset<GameObject>("Prefab_EYE_QuantumLightningObject"), new DetailInfo());
+            var lightning = DetailBuilder.Make(planetGO, sector, Main.Instance, AssetBundleUtilities.NHPrivateAssetBundle.LoadAsset<GameObject>("Prefab_EYE_QuantumLightningObject"), new DetailInfo());
             lightning.transform.position = rootGo.transform.position;
             lightning.transform.rotation = rootGo.transform.rotation;
             lightning.transform.parent = rootGo.transform.parent;
