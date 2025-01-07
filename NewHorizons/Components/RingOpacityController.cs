@@ -6,7 +6,7 @@ namespace NewHorizons.Components
 {
     public class RingOpacityController : MonoBehaviour
     {
-        private static readonly int Alpha = Shader.PropertyToID("_Alpha");
+        private static readonly int Alpha = Shader.PropertyToID("_AlphaMultiplier");
 
         public AnimationCurve opacityCurve { get; protected set; }
         public float CurrentOpacity { get; protected set; }

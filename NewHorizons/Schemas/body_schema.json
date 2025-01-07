@@ -3943,6 +3943,11 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "transparencyType": {
+          "description": "Should the texture's transparency cause the ring to fade out, or be opaque above 0.5 and invisible below?\nWarning! Fade transparency does not support shadows!",
+          "default": "alphaClip",
+          "$ref": "#/definitions/RingTransparencyType"
+        },
         "fluidType": {
           "description": "Fluid type for sounds/effects when colliding with this ring.",
           "$ref": "#/definitions/NHFluidType"
@@ -3971,16 +3976,59 @@
         },
         "rotationSpeed": {
           "type": "number",
-          "description": "Allows the rings to rotate.",
+          "description": "Rotation speed, in degrees per second.",
           "format": "float"
         },
         "texture": {
           "type": "string",
-          "description": "Relative filepath to the texture used for the rings."
+          "description": "Relative filepath to the main texture. Can be either a full image, or a one pixel slice."
         },
         "unlit": {
           "type": "boolean",
-          "description": "Should this ring be unlit?"
+          "description": "Should this ring be unlit?",
+          "default": false
+        },
+        "useNoise": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Modifies the transparency with noise, giving it a grainy appearance. Works well with alpha clip transparency."
+        },
+        "noiseScale": {
+          "type": "number",
+          "description": "Size in meters of each noise pixel.",
+          "format": "float",
+          "default": 1.0
+        },
+        "noiseRotationSpeed": {
+          "type": "number",
+          "description": "Rotation speed of the noise, in degrees per second. Rotating noise will multiply with still noise, giving it a flowing appearance.",
+          "format": "float",
+          "default": 0.5
+        },
+        "translucency": {
+          "type": "number",
+          "description": "How much light shines through to the underside of the ring.",
+          "format": "float",
+          "default": 0.1
+        },
+        "translucentGlow": {
+          "type": "boolean",
+          "description": "Adds a translucent glow when viewing the sun through the underside of the ring.",
+          "default": true
+        },
+        "smoothnessMap": {
+          "type": "string",
+          "description": "Relative filepath to a texture for smoothness and metallic, using the alpha and red channels respectively. Optional."
+        },
+        "normalMap": {
+          "type": "string",
+          "description": "Relative filepath to a normal (aka bump) texture. Optional. Does not work with a one pixel slice."
+        },
+        "emissionMap": {
+          "type": "string",
+          "description": "Relative filepath to an emissive texture. Optional."
         },
         "scaleCurve": {
           "type": "array",
@@ -4001,6 +4049,18 @@
           "description": "An optional rename of this object"
         }
       }
+    },
+    "RingTransparencyType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Fade",
+        "AlphaClip"
+      ],
+      "enum": [
+        "fade",
+        "alphaClip"
+      ]
     },
     "SandModule": {
       "type": "object",
