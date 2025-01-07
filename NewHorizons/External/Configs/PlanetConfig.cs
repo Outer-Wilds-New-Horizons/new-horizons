@@ -711,8 +711,9 @@ namespace NewHorizons.External.Configs
             {
                 var socketQuantumGroups = Props.quantumGroups.Where(x => x.type == QuantumGroupType.Sockets).Select(x => new SocketQuantumGroupInfo()
                 {
-                    id = x.id,
+                    name = x.id,
                     sockets = x.sockets,
+                    details = Props.details.Where(y => y.quantumGroupID == x.id).Select(x => new QuantumDetailInfo(x)).ToArray()
                 });
                 if (socketQuantumGroups.Any())
                 {
@@ -720,10 +721,11 @@ namespace NewHorizons.External.Configs
                 }
                 var stateQuantumGroups = Props.quantumGroups.Where(x => x.type == QuantumGroupType.States).Select(x => new StateQuantumGroupInfo()
                 {
-                    id = x.id,
+                    name = x.id,
                     hasEmptyState = x.hasEmptyState,
                     loop = x.loop,
-                    sequential = x.sequential
+                    sequential = x.sequential,
+                    details = Props.details.Where(y => y.quantumGroupID == x.id).Select(x => new QuantumDetailInfo(x)).ToArray()
                 });
                 if (stateQuantumGroups.Any())
                 {

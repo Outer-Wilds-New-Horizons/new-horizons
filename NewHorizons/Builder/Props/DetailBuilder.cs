@@ -19,7 +19,6 @@ namespace NewHorizons.Builder.Props
 {
     public static class DetailBuilder
     {
-        private static readonly Dictionary<DetailInfo, GameObject> _detailInfoToCorrespondingSpawnedGameObject = new();
         private static readonly Dictionary<(Sector, string), (GameObject prefab, bool isItem)> _fixedPrefabCache = new();
         private static GameObject _emptyPrefab;
 
@@ -48,20 +47,6 @@ namespace NewHorizons.Builder.Props
                 UnityEngine.Object.Destroy(prefab.prefab);
             }
             _fixedPrefabCache.Clear();
-            _detailInfoToCorrespondingSpawnedGameObject.Clear();
-        }
-
-        // i dont like how this is just a random collection in this class but quantum guy uses it :(
-        public static GameObject GetSpawnedGameObjectByDetailInfo(DetailInfo detail)
-        {
-            if (!_detailInfoToCorrespondingSpawnedGameObject.ContainsKey(detail))
-            {
-                return null;
-            }
-            else
-            {
-                return _detailInfoToCorrespondingSpawnedGameObject[detail];
-            }
         }
 
         /// <summary>
@@ -300,8 +285,6 @@ namespace NewHorizons.Builder.Props
             {
                 ConditionalObjectActivation.SetUp(prop, detail.deactivationCondition, detail.blinkWhenActiveChanged, false);
             }
-
-            _detailInfoToCorrespondingSpawnedGameObject[detail] = prop;
 
             return prop;
         }

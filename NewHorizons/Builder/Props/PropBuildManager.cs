@@ -165,7 +165,9 @@ namespace NewHorizons.Builder.Props
                 }
             }
 
-            QuantumBuilder.TryMake(go, sector, config);
+            if (config.Props.lightningQuantumGroups != null) QuantumBuilder.Make(go, sector, mod, config.Props.lightningQuantumGroups);
+            if (config.Props.socketQuantumGroups != null) QuantumBuilder.Make(go, sector, mod, config.Props.socketQuantumGroups);
+            if (config.Props.stateQuantumGroups != null) QuantumBuilder.Make(go, sector, mod, config.Props.stateQuantumGroups);
         }
 
         private static bool _ignoreParent;

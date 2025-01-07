@@ -118,10 +118,20 @@ namespace NewHorizons.External.Modules
         /// </summary>
         public ShuttleInfo[] shuttles;
 
+        /// <summary>
+        /// Add a socket quantum object to a planet. Define the position of multiple "sockets" and multiple objects that jump between sockets. 
+        /// If the number of sockets equals the number of objects, they will shuffle around.
+        /// </summary>
         public SocketQuantumGroupInfo[] socketQuantumGroups;
 
+        /// <summary>
+        /// Add a state quantum object to a planet. Switches between displaying different objects in a single place.
+        /// </summary>
         public StateQuantumGroupInfo[] stateQuantumGroups;
 
+        /// <summary>
+        /// Add quantum lightning to a planet. When lightning strikes, a different detail object is shown. The lightning will take the first defined position/rotation for all objects.
+        /// </summary>
         public LightningQuantumGroupInfo[] lightningQuantumGroups;
 
         /// <summary>
