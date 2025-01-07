@@ -1341,18 +1341,21 @@
         },
         "socketQuantumGroups": {
           "type": "array",
+          "description": "Add a socket quantum object to a planet. Define the position of multiple \"sockets\" and multiple objects that jump between sockets. \nIf the number of sockets equals the number of objects, they will shuffle around.",
           "items": {
             "$ref": "#/definitions/SocketQuantumGroupInfo"
           }
         },
         "stateQuantumGroups": {
           "type": "array",
+          "description": "Add a state quantum object to a planet. Switches between displaying different objects in a single place.",
           "items": {
             "$ref": "#/definitions/StateQuantumGroupInfo"
           }
         },
         "lightningQuantumGroups": {
           "type": "array",
+          "description": "Add quantum lightning to a planet. When lightning strikes, a different detail object is shown. The lightning will take the first defined position/rotation for all objects.",
           "items": {
             "$ref": "#/definitions/LightningQuantumGroupInfo"
           }
@@ -1467,20 +1470,6 @@
         "stretch": {
           "description": "Scale each axis of the prop. Overrides `scale`.",
           "$ref": "#/definitions/MVector3"
-        },
-        "quantumGroupID": {
-          "type": "string",
-          "description": "If this value is not null, this prop will be quantum. Assign this field to the id of the quantum group it should be a part of. The group it is assigned to determines what kind of quantum object it is"
-        },
-        "quantumRandomizeYRotation": {
-          "type": "boolean",
-          "description": "If this prop is quantum, and the quantum group is socketed, this field determines whether the prop will randomly choose a Y rotation when moving to a socket.",
-          "default": true
-        },
-        "quantumAlignWithGravity": {
-          "type": "boolean",
-          "description": "If this prop is quantum, and the quantum group is socketed, this field determines whether the prop will align with the GravityVolume (true) or align with the current socket (false).",
-          "default": true
         },
         "keepLoaded": {
           "type": "boolean",
@@ -3431,14 +3420,144 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "id": {
-          "type": "string"
+        "name": {
+          "type": "string",
+          "description": "Optional name to help identify this group"
+        },
+        "details": {
+          "type": "array",
+          "description": "List of props which will be used in this quantum group",
+          "items": {
+            "$ref": "#/definitions/QuantumDetailInfo"
+          }
         },
         "sockets": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/QuantumSocketInfo"
           }
+        }
+      }
+    },
+    "QuantumDetailInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "assetBundle": {
+          "type": "string",
+          "description": "Relative filepath to an asset-bundle to load the prefab defined in `path` from"
+        },
+        "path": {
+          "type": "string",
+          "description": "Either the path in the scene hierarchy of the item to copy or the path to the object in the supplied asset bundle. \nIf empty, will make an empty game object. This can be useful for adding other props to it as its children."
+        },
+        "removeChildren": {
+          "type": "array",
+          "description": "A list of children to remove from this detail",
+          "items": {
+            "type": "string"
+          }
+        },
+        "removeComponents": {
+          "type": "boolean",
+          "description": "Do we reset all the components on this object? Useful for certain props that have dialogue components attached to\nthem."
+        },
+        "scale": {
+          "type": "number",
+          "description": "Scale the prop",
+          "format": "float",
+          "default": 1.0
+        },
+        "stretch": {
+          "description": "Scale each axis of the prop. Overrides `scale`.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "keepLoaded": {
+          "type": "boolean",
+          "description": "Should this detail stay loaded (visible and collideable) even if you're outside the sector (good for very large props)?\nAlso makes this detail visible on the map.\nKeeping many props loaded is bad for performance so use this only when it's actually relevant\nMost logic/behavior scripts will still only work inside the sector, as most of those scripts break if a sector is not provided."
+        },
+        "hasPhysics": {
+          "type": "boolean",
+          "description": "Should this object dynamically move around?\nThis tries to make all mesh colliders convex, as well as adding a sphere collider in case the detail has no others."
+        },
+        "physicsMass": {
+          "type": "number",
+          "description": "The mass of the physics object.\nMost pushable props use the default value, which matches the player mass.",
+          "format": "float",
+          "default": 0.001
+        },
+        "physicsRadius": {
+          "type": "number",
+          "description": "The radius that the added sphere collider will use for physics collision.\nIf there's already good colliders on the detail, you can make this 0.",
+          "format": "float",
+          "default": 1.0
+        },
+        "physicsSuspendUntilImpact": {
+          "type": "boolean",
+          "description": "If true, this detail will stay still until it touches something.\nGood for zero-g props.",
+          "default": false
+        },
+        "ignoreSun": {
+          "type": "boolean",
+          "description": "Set to true if this object's lighting should ignore the effects of sunlight"
+        },
+        "activationCondition": {
+          "type": "string",
+          "description": "Activates this game object when the dialogue condition is met"
+        },
+        "deactivationCondition": {
+          "type": "string",
+          "description": "Deactivates this game object when the dialogue condition is met"
+        },
+        "blinkWhenActiveChanged": {
+          "type": "boolean",
+          "description": "Should the player close their eyes while the activation state changes. Only relevant if activationCondition or deactivationCondition are set.",
+          "default": true
+        },
+        "item": {
+          "description": "Should this detail be treated as an interactible item",
+          "$ref": "#/definitions/ItemInfo"
+        },
+        "itemSocket": {
+          "description": "Should this detail be treated as a socket for an interactible item",
+          "$ref": "#/definitions/ItemSocketInfo"
+        },
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "randomizeYRotation": {
+          "type": "boolean",
+          "description": "When used in a quantum socket this object will randomize its rotation around the local Y axis.",
+          "default": true
+        },
+        "alignWithGravity": {
+          "type": "boolean",
+          "description": "When used in a quantum socket this object will align to the nearest gravity volume. Else use the rotation of the quantum socket.",
+          "default": true
         }
       }
     },
@@ -3485,8 +3604,16 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "id": {
-          "type": "string"
+        "name": {
+          "type": "string",
+          "description": "Optional name to help identify this group"
+        },
+        "details": {
+          "type": "array",
+          "description": "List of props which will be used in this quantum group",
+          "items": {
+            "$ref": "#/definitions/QuantumDetailInfo"
+          }
         },
         "sequential": {
           "type": "boolean",
@@ -3507,8 +3634,16 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "id": {
-          "type": "string"
+        "name": {
+          "type": "string",
+          "description": "Optional name to help identify this group"
+        },
+        "details": {
+          "type": "array",
+          "description": "List of props which will be used in this quantum group",
+          "items": {
+            "$ref": "#/definitions/QuantumDetailInfo"
+          }
         }
       }
     },
