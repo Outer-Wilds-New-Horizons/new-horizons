@@ -6,6 +6,7 @@ using NewHorizons.Builder.ShipLog;
 using NewHorizons.External;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
+using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.Props.Quantum;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OWML;
@@ -163,46 +164,7 @@ namespace NewHorizons.Builder.Props
                 }
             }
 
-            var quantumPropsByGroup = new Dictionary<string, List<GameObject>>();
-            foreach (var detail in config.Props?.details)
-            {
-                if (detail.quantumGroupID != null)
-                {
-                    if (!quantumPropsByGroup.ContainsKey(detail.quantumGroupID))
-                    {
-                        quantumPropsByGroup[detail.quantumGroupID] = new List<GameObject>();
-                    }
-                    quantumPropsByGroup[detail.quantumGroupID].Add(DetailBuilder.GetSpawnedGameObjectByDetailInfo(detail));
-                }
-            }
-
-            void MakeQuantumGroup(BaseQuantumGroupInfo[] group)
-            {
-                foreach (var quantumGroup in group)
-                {
-                    if (!quantumPropsByGroup.ContainsKey(quantumGroup.id)) continue;
-                    var propsInGroup = quantumPropsByGroup[quantumGroup.id];
-
-                    try
-                    {
-                        QuantumBuilder.Make(go, sector, quantumGroup, propsInGroup.ToArray());
-                    }
-                    catch (Exception ex)
-                    {
-                        NHLogger.LogError($"Couldn't make quantum group [{quantumGroup.id}] for [{go.name}]:\n{ex}");
-                    }
-                }
-            }
-
-            if (config.Props.socketQuantumGroups != null)
-            {
-                MakeQuantumGroup(config.Props.socketQuantumGroups);
-            }
-
-            if (config.Props.stateQuantumGroups != null)
-            {
-                MakeQuantumGroup(config.Props.stateQuantumGroups);
-            }
+            QuantumBuilder.TryMake(go, sector, config);
         }
 
         private static bool _ignoreParent;

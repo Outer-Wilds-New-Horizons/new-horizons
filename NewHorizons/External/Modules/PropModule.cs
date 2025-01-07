@@ -122,6 +122,8 @@ namespace NewHorizons.External.Modules
 
         public StateQuantumGroupInfo[] stateQuantumGroups;
 
+        public LightningQuantumGroupInfo[] lightningQuantumGroups;
+
         /// <summary>
         /// Add campfires that allow you to enter the dream world/simulation (requires Echoes of the Eye DLC). Must be paired with a dream arrival point, which can be placed on this planet or elsewhere.
         /// </summary>

@@ -1,8 +1,12 @@
+using Epic.OnlineServices;
 using NewHorizons.Components.Quantum;
+using NewHorizons.External.Configs;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.Props.Quantum;
+using NewHorizons.Utility.Files;
 using NewHorizons.Utility.Geometry;
 using NewHorizons.Utility.OWML;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -11,34 +15,101 @@ namespace NewHorizons.Builder.Props
 {
     public static class QuantumBuilder
     {
-        public static void Make(GameObject planetGO, Sector sector, BaseQuantumGroupInfo quantumGroup, GameObject[] propsInGroup)
+        public static void TryMake(GameObject go, Sector sector, PlanetConfig config)
+        {
+            if (config.Props != null && config.Props.details != null)
+            {
+                var quantumPropsByGroup = new Dictionary<string, List<(GameObject go, DetailInfo info)>>();
+                foreach (var detail in config.Props?.details)
+                {
+                    if (detail.quantumGroupID != null)
+                    {
+                        if (!quantumPropsByGroup.ContainsKey(detail.quantumGroupID))
+                        {
+                            quantumPropsByGroup[detail.quantumGroupID] = new();
+                        }
+                        quantumPropsByGroup[detail.quantumGroupID].Add((DetailBuilder.GetSpawnedGameObjectByDetailInfo(detail), detail));
+                    }
+                }
+
+                void MakeQuantumGroup(BaseQuantumGroupInfo[] group)
+                {
+                    foreach (var quantumGroup in group)
+                    {
+                        if (!quantumPropsByGroup.ContainsKey(quantumGroup.id)) continue;
+                        var propsInGroup = quantumPropsByGroup[quantumGroup.id];
+
+                        try
+                        {
+                            QuantumBuilder.Make(go, sector, quantumGroup, propsInGroup.ToArray());
+                        }
+                        catch (Exception ex)
+                        {
+                            NHLogger.LogError($"Couldn't make quantum group [{quantumGroup.id}] for [{go.name}]:\n{ex}");
+                        }
+                    }
+                }
+
+                if (config.Props.socketQuantumGroups != null)
+                {
+                    MakeQuantumGroup(config.Props.socketQuantumGroups);
+                }
+
+                if (config.Props.stateQuantumGroups != null)
+                {
+                    MakeQuantumGroup(config.Props.stateQuantumGroups);
+                }
+
+                if (config.Props.lightningQuantumGroups != null)
+                {
+                    MakeQuantumGroup(config.Props.lightningQuantumGroups);
+                }
+            }
+        }
+
+        public static void Make(GameObject planetGO, Sector sector, BaseQuantumGroupInfo quantumGroup, (GameObject go, DetailInfo detail)[] propsInGroup)
         {
             if (quantumGroup is SocketQuantumGroupInfo socketGroup)
             {
-                MakeSocketGroup(planetGO, sector, socketGroup, propsInGroup);
+                MakeSocketGroup(planetGO, sector, socketGroup, propsInGroup.Select(x => x.go).ToArray());
             }
             else if (quantumGroup is StateQuantumGroupInfo stateGroup)
             {
-                MakeStateGroup(planetGO, sector, stateGroup, propsInGroup);
+                MakeStateGroup(planetGO, sector, stateGroup, propsInGroup.Select(x => x.go).ToArray());
+            }
+            else if (quantumGroup is LightningQuantumGroupInfo lightningGroup)
+            {
+                MakeQuantumLightning(planetGO, sector, lightningGroup, propsInGroup);
             }
         }
 
-        /*
-        public static void MakeQuantumLightning(GameObject planetGO, Sector sector, GameObject[] propsInGroup)
+        public static void MakeQuantumLightning(GameObject planetGO, Sector sector, LightningQuantumGroupInfo quantumGroup, (GameObject go, DetailInfo detail)[] propsInGroup)
         {
+            // Bases its position off the first object with position set
+            var root = propsInGroup.FirstOrDefault(x => x.detail.position != null || x.detail.rotation != null || x.detail.isRelativeToParent);
+
+            var rootGo = root == default ? sector.gameObject : root.go;
+
             var lightning = DetailBuilder.Make(planetGO, sector, Main.Instance, AssetBundleUtilities.EyeLightning.LoadAsset<GameObject>("Prefab_EYE_QuantumLightningObject"), new DetailInfo());
-            lightning.transform.position = prop.transform.position;
-            lightning.transform.rotation = prop.transform.rotation;
-            lightning.transform.parent = prop.transform.parent;
+            lightning.transform.position = rootGo.transform.position;
+            lightning.transform.rotation = rootGo.transform.rotation;
+            lightning.transform.parent = rootGo.transform.parent;
 
             var lightningStatesParent = lightning.transform.Find("Models");
-            prop.transform.parent = lightningStatesParent;
+            foreach (var (go, _) in propsInGroup)
+            {
+                go.transform.parent = lightningStatesParent;
+                go.transform.localPosition = Vector3.zero;
+                go.transform.localRotation = Quaternion.identity;
+            }
 
             var lightningController = lightning.GetComponent<QuantumLightningObject>();
-            lightningController._models = new GameObject[] { prop };
+            lightningController._models = propsInGroup.Select(x => x.go).ToArray();
             lightningController.enabled = true;
+
+            lightning.name = "Quantum Lightning - " + quantumGroup.id;
+            lightning.SetActive(true);
         }
-        */
 
         // TODO: Socket groups that have an equal number of props and sockets
         // Nice to have: socket groups that specify a filledSocketObject and an emptySocketObject (eg the archway in the giant's deep tower)
