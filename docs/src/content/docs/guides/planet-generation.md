@@ -90,6 +90,9 @@ This makes the second planet a quantum state of the first, anything you specify 
 }
 ```
 
+Keep in mind that if you  redefine `Orbit` on all configs (even with the same parameters each time), **the planet will change its position within its orbit when changing states.**
+*If you want your Quantum Planet's position to* ***NOT*** *change,* ***only define `Orbit` on the main state***.
+
 ## Barycenters (Focal Points)
 
 To create a binary system of planets (like ash twin and ember twin), first create a config with `FocalPoint` set
