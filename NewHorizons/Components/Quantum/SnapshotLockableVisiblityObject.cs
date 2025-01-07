@@ -6,6 +6,8 @@ namespace NewHorizons.Components.Quantum;
 
 /// <summary>
 /// A quantum object that does nothing but track if its been photographed
+/// 
+/// Adapted from Escape Room (mod I (xen) worked on for Jam 4)
 /// </summary>
 internal class SnapshotLockableVisibilityObject : SocketedQuantumObject
 {

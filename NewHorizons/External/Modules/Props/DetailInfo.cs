@@ -51,12 +51,6 @@ namespace NewHorizons.External.Modules.Props
         [Obsolete("Use QuantumDetailInfo")]
         public string quantumGroupID;
 
-        [Obsolete("Use QuantumDetailInfo")]
-        [DefaultValue(true)] public bool quantumRandomizeYRotation = true;
-
-        [Obsolete("Use QuantumDetailInfo")]
-        [DefaultValue(true)] public bool quantumAlignWithGravity = true;
-
         /// <summary>
         /// Should this detail stay loaded (visible and collideable) even if you're outside the sector (good for very large props)?
         /// Also makes this detail visible on the map.
