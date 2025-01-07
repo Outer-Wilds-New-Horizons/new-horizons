@@ -71,7 +71,7 @@ namespace NewHorizons.Builder.Props
         {
             if (quantumGroup is SocketQuantumGroupInfo socketGroup)
             {
-                MakeSocketGroup(planetGO, sector, socketGroup, propsInGroup.Select(x => x.go).ToArray());
+                MakeSocketGroup(planetGO, sector, socketGroup, propsInGroup);
             }
             else if (quantumGroup is StateQuantumGroupInfo stateGroup)
             {
@@ -112,13 +112,15 @@ namespace NewHorizons.Builder.Props
         }
 
         // Nice to have: socket groups that specify a filledSocketObject and an emptySocketObject (eg the archway in the giant's deep tower)
-        public static void MakeSocketGroup(GameObject planetGO, Sector sector, SocketQuantumGroupInfo quantumGroup, GameObject[] propsInGroup)
+        public static void MakeSocketGroup(GameObject planetGO, Sector sector, SocketQuantumGroupInfo quantumGroup, (GameObject go, DetailInfo detail)[] propsInGroup)
         {
             GameObject specialProp = null;
+            DetailInfo specialInfo = null;
             if (propsInGroup.Length == quantumGroup.sockets.Length)
             {
                 // Special case!
-                specialProp = propsInGroup.Last();
+                specialProp = propsInGroup.Last().go;
+                specialInfo = propsInGroup.Last().detail;
                 var propsInGroupList = propsInGroup.ToList();
                 propsInGroupList.RemoveAt(propsInGroup.Length - 1);
                 propsInGroup = propsInGroupList.ToArray();
@@ -143,8 +145,8 @@ namespace NewHorizons.Builder.Props
 
             foreach (var prop in propsInGroup)
             {
-                prop.SetActive(false);
-                var quantumObject = prop.AddComponent<SocketedQuantumObject>();
+                prop.go.SetActive(false);
+                var quantumObject = prop.go.AddComponent<SocketedQuantumObject>();
                 quantumObject._socketRoot = groupRoot;
                 quantumObject._socketList = sockets.ToList();
                 quantumObject._sockets = sockets;
@@ -153,12 +155,11 @@ namespace NewHorizons.Builder.Props
                 quantumObject._randomYRotation = prop.detail.quantumRandomizeYRotation;
                 quantumObject._alignWithGravity = prop.detail.quantumAlignWithGravity;
                 quantumObject._childSockets = new List<QuantumSocket>();
-                // TODO: support _alignWithGravity?
-                if (prop.GetComponentInChildren<VisibilityTracker>() == null)
+                if (prop.go.GetComponentInChildren<VisibilityTracker>() == null)
                 {
-                    BoundsUtilities.AddBoundsVisibility(prop);
+                    BoundsUtilities.AddBoundsVisibility(prop.go);
                 }
-                prop.SetActive(true);
+                prop.go.SetActive(true);
             }
 
             if (specialProp != null)
@@ -186,7 +187,13 @@ namespace NewHorizons.Builder.Props
                     box.center = new Vector3(0, 0.3f, 0);
                     tracker.AddComponent<ShapeVisibilityTracker>();
                     // Using a quantum object bc it can be locked by camera
-                    socket._visibilityObject = socket.gameObject.AddComponent<SnapshotLockableVisibilityObject>();
+                    var quantumObject = socket.gameObject.AddComponent<SnapshotLockableVisibilityObject>();
+                    quantumObject._alignWithSocket = !specialInfo.quantumAlignWithGravity;
+                    quantumObject._randomYRotation = specialInfo.quantumRandomizeYRotation;
+                    quantumObject._alignWithGravity = specialInfo.quantumAlignWithGravity;
+                    quantumObject.emptySocketObject = emptySocketObject;
+                    socket._visibilityObject = quantumObject;
+
                     socket.SetActive(true);
                 }
             }

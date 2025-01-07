@@ -1,13 +1,16 @@
 using HarmonyLib;
 using System.Linq;
+using UnityEngine;
 
 namespace NewHorizons.Components.Quantum;
 
 /// <summary>
 /// A quantum object that does nothing but track if its been photographed
 /// </summary>
-internal class SnapshotLockableVisibilityObject : QuantumObject
+internal class SnapshotLockableVisibilityObject : SocketedQuantumObject
 {
+    public GameObject emptySocketObject;
+
     public override bool ChangeQuantumState(bool skipInstantVisibilityCheck) => true;
 }
 
@@ -20,6 +23,22 @@ public static class SocketedQuantumObjectPatches
     [HarmonyPatch(typeof(SocketedQuantumObject), nameof(SocketedQuantumObject.MoveToSocket))]
     private static bool SocketedQuantumObject_MoveToSocket(SocketedQuantumObject __instance, QuantumSocket socket)
     {
+        // Double check this is a normal allowed move, then do rotation stuff
+        if (socket.GetVisibilityObject() is SnapshotLockableVisibilityObject qObj1 && (!qObj1.IsLocked() || _skipPatch))
+        {
+            if (qObj1._gravityVolume != null && qObj1._alignWithGravity)
+            {
+                Vector3 toDirection = qObj1.emptySocketObject.transform.position - qObj1._gravityVolume.GetCenterPosition();
+                Quaternion lhs = Quaternion.FromToRotation(qObj1.emptySocketObject.transform.up, toDirection);
+                qObj1.emptySocketObject.transform.rotation = lhs * qObj1.emptySocketObject.transform.rotation;
+            }
+            if (qObj1._randomYRotation)
+            {
+                float d = Random.Range(0f, 360f);
+                qObj1.emptySocketObject.transform.localRotation *= Quaternion.Euler(Vector3.up * d);
+            }
+        }
+
         if (_skipPatch)
         {
             return true;
