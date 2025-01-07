@@ -3420,7 +3420,7 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "name": {
+        "rename": {
           "type": "string",
           "description": "Optional name to help identify this group"
         },
@@ -3604,7 +3604,7 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "name": {
+        "rename": {
           "type": "string",
           "description": "Optional name to help identify this group"
         },
@@ -3634,7 +3634,7 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "name": {
+        "rename": {
           "type": "string",
           "description": "Optional name to help identify this group"
         },
