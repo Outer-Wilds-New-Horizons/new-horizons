@@ -28,7 +28,7 @@ namespace NewHorizons.Builder.Props
         {
             if (quantumGroup.details == null || !quantumGroup.details.Any())
             {
-                NHLogger.LogError($"Found quantum group with no details - [{planetGO.name}] [{quantumGroup.name}]");
+                NHLogger.LogError($"Found quantum group with no details - [{planetGO.name}] [{quantumGroup.rename}]");
                 return;
             }
 
@@ -72,7 +72,7 @@ namespace NewHorizons.Builder.Props
             lightningController._models = propsInGroup.Select(x => x.go).ToArray();
             lightningController.enabled = true;
 
-            lightning.name = "Quantum Lightning - " + quantumGroup.name;
+            lightning.name = quantumGroup.rename;
             lightning.SetActive(true);
 
             // Not sure why but it isn't enabling itself
@@ -96,7 +96,7 @@ namespace NewHorizons.Builder.Props
                 propsInGroup = propsInGroupList.ToArray();
             }
 
-            var groupRoot = new GameObject("Quantum Sockets - " + quantumGroup.name);
+            var groupRoot = new GameObject(quantumGroup.rename);
             groupRoot.transform.parent = sector?.transform ?? planetGO.transform;
             groupRoot.transform.localPosition = Vector3.zero;
             groupRoot.transform.localEulerAngles = Vector3.zero;
@@ -179,7 +179,7 @@ namespace NewHorizons.Builder.Props
 
             var propsInGroup = quantumGroup.details.Select(x => DetailBuilder.Make(go, sector, mod, x)).ToArray();
 
-            var groupRoot = new GameObject("Quantum States - " + quantumGroup.name);
+            var groupRoot = new GameObject(quantumGroup.rename);
             groupRoot.transform.parent = sector?.transform ?? go.transform;
             groupRoot.transform.localPosition = Vector3.zero;
 
@@ -228,7 +228,7 @@ namespace NewHorizons.Builder.Props
         public static void MakeShuffleGroup(GameObject go, Sector sector, BaseQuantumGroupInfo quantumGroup, GameObject[] propsInGroup)
         {
             //var averagePosition = propsInGroup.Aggregate(Vector3.zero, (avg, prop) => avg + prop.transform.position) / propsInGroup.Count();
-            GameObject shuffleParent = new GameObject("Quantum Shuffle - " + quantumGroup.name);
+            GameObject shuffleParent = new GameObject(quantumGroup.rename);
             shuffleParent.SetActive(false);
             shuffleParent.transform.parent = sector?.transform ?? go.transform;
             shuffleParent.transform.localPosition = Vector3.zero;

@@ -711,7 +711,7 @@ namespace NewHorizons.External.Configs
             {
                 var socketQuantumGroups = Props.quantumGroups.Where(x => x.type == QuantumGroupType.Sockets).Select(x => new SocketQuantumGroupInfo()
                 {
-                    name = x.id,
+                    rename = "Quantum Shuffle - " + x.id,
                     sockets = x.sockets,
                     details = Props.details.Where(y => y.quantumGroupID == x.id).Select(x => new QuantumDetailInfo(x)).ToArray()
                 });
@@ -721,7 +721,7 @@ namespace NewHorizons.External.Configs
                 }
                 var stateQuantumGroups = Props.quantumGroups.Where(x => x.type == QuantumGroupType.States).Select(x => new StateQuantumGroupInfo()
                 {
-                    name = x.id,
+                    rename = "Quantum State - " + x.id,
                     hasEmptyState = x.hasEmptyState,
                     loop = x.loop,
                     sequential = x.sequential,

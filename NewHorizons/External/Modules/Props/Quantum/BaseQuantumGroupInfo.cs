@@ -5,7 +5,7 @@ public class BaseQuantumGroupInfo
     /// <summary>
     /// Optional name to help identify this group
     /// </summary>
-    public string name;
+    public string rename;
 
     /// <summary>
     /// List of props which will be used in this quantum group
