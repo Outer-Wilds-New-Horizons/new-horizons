@@ -1357,7 +1357,7 @@
           "type": "array",
           "description": "Add quantum lightning to a planet. When lightning strikes, a different detail object is shown. The lightning will take the first defined position/rotation for all objects.",
           "items": {
-            "$ref": "#/definitions/LightningQuantumGroupInfo"
+            "$ref": "#/definitions/LightningQuantumInfo"
           }
         },
         "dreamCampfires": {
@@ -3630,19 +3630,42 @@
         }
       }
     },
-    "LightningQuantumGroupInfo": {
+    "LightningQuantumInfo": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
         "rename": {
           "type": "string",
-          "description": "Optional name to help identify this group"
+          "description": "An optional rename of this object"
         },
         "details": {
           "type": "array",
-          "description": "List of props which will be used in this quantum group",
+          "description": "List of props which will be alternated between during flashes of lightning",
           "items": {
-            "$ref": "#/definitions/QuantumDetailInfo"
+            "$ref": "#/definitions/DetailInfo"
           }
         }
       }
