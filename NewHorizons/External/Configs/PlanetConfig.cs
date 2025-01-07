@@ -699,7 +699,7 @@ namespace NewHorizons.External.Configs
 
                 foreach (var quantumGroup in Props.quantumGroups)
                 {
-                    if (quantumGroup.type == QuantumGroupType.Sockets && existingGroupsPropCounts.GetValueOrDefault(quantumGroup.id) >= quantumGroup.sockets?.Length)
+                    if (quantumGroup.type == QuantumGroupType.Sockets && existingGroupsPropCounts.GetValueOrDefault(quantumGroup.id) > quantumGroup.sockets?.Length)
                     {
                         NHLogger.LogError($"quantumGroup {quantumGroup.id} is of type \"sockets\" and has more props than sockets.");
                         quantumGroup.type = QuantumGroupType.FailedValidation;
@@ -731,6 +731,8 @@ namespace NewHorizons.External.Configs
                 {
                     Props.stateQuantumGroups = stateQuantumGroups.ToArray();
                 }
+
+                Props.details = Props.details.Where(x => string.IsNullOrEmpty(x.quantumGroupID)).ToArray();
             }
         }
         #endregion
