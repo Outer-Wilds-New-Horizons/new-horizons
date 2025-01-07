@@ -90,8 +90,8 @@ This makes the second planet a quantum state of the first, anything you specify 
 }
 ```
 
-Keep in mind that if you have `Orbit` on *all* configs (regardless if the `semiMajorAxis` is the same on all of them or not), **the planet will change its `trueAnomaly` every time it's not observed.**
-*If you want your Quantum Planet's `Orbit` or `trueAnomaly` to* ***NOT*** *change,* ***only put `Orbit` on your first Quantum Planet*** (the first "normal" planet you created). 
+Keep in mind that if you  redefine `Orbit` on all configs (even with the same parameters each time), **the planet will change its position within its orbit when changing states.**
+*If you want your Quantum Planet's position to* ***NOT*** *change,* ***only define `Orbit` on the main state***.
 
 ## Barycenters (Focal Points)
 
