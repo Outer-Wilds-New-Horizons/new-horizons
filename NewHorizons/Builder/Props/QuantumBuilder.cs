@@ -60,10 +60,9 @@ namespace NewHorizons.Builder.Props
             lightning.transform.rotation = rootGo.transform.rotation;
             lightning.transform.parent = rootGo.transform.parent;
 
-            var lightningStatesParent = lightning.transform.Find("Models");
             foreach (var (go, _) in propsInGroup)
             {
-                go.transform.parent = lightningStatesParent;
+                go.transform.parent = lightning.transform;
                 go.transform.localPosition = Vector3.zero;
                 go.transform.localRotation = Quaternion.identity;
             }
