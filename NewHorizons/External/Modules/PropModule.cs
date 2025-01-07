@@ -132,7 +132,7 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// Add quantum lightning to a planet. When lightning strikes, a different detail object is shown. The lightning will take the first defined position/rotation for all objects.
         /// </summary>
-        public LightningQuantumGroupInfo[] lightningQuantumGroups;
+        public LightningQuantumInfo[] lightningQuantumGroups;
 
         /// <summary>
         /// Add campfires that allow you to enter the dream world/simulation (requires Echoes of the Eye DLC). Must be paired with a dream arrival point, which can be placed on this planet or elsewhere.

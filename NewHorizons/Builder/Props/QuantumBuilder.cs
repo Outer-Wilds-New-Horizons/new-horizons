@@ -1,16 +1,13 @@
 using NewHorizons.Components.Quantum;
-using NewHorizons.External.Configs;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.Props.Quantum;
 using NewHorizons.Utility.Files;
 using NewHorizons.Utility.Geometry;
 using NewHorizons.Utility.OWML;
-using System;
+using OWML.Common;
 using System.Collections.Generic;
 using System.Linq;
-using NewHorizons.External.Modules.Props;
 using UnityEngine;
-using OWML.Common;
 
 namespace NewHorizons.Builder.Props
 {
@@ -40,26 +37,14 @@ namespace NewHorizons.Builder.Props
             {
                 MakeStateGroup(planetGO, sector, mod, stateGroup);
             }
-            else if (quantumGroup is LightningQuantumGroupInfo lightningGroup)
-            {
-                MakeQuantumLightning(planetGO, sector, mod, lightningGroup);
-            }
         }
 
-        public static void MakeQuantumLightning(GameObject planetGO, Sector sector, IModBehaviour mod, LightningQuantumGroupInfo quantumGroup)
+        public static void MakeQuantumLightning(GameObject planetGO, Sector sector, IModBehaviour mod, LightningQuantumInfo quantumGroup)
         {
-            (GameObject go, QuantumDetailInfo detail)[] propsInGroup = quantumGroup.details.Select(x => (DetailBuilder.Make(planetGO, sector, mod, x), x)).ToArray();
+            (GameObject go, DetailInfo detail)[] propsInGroup = quantumGroup.details.Select(x => (DetailBuilder.Make(planetGO, sector, mod, x), x)).ToArray();
 
-            // Bases its position off the first object with position set
-            var root = propsInGroup.FirstOrDefault(x => x.detail.position != null || x.detail.rotation != null || x.detail.isRelativeToParent);
-
-            var rootGo = root == default ? sector.gameObject : root.go;
-
-            var lightning = DetailBuilder.Make(planetGO, sector, Main.Instance, AssetBundleUtilities.NHPrivateAssetBundle.LoadAsset<GameObject>("Prefab_EYE_QuantumLightningObject"), new DetailInfo());
+            var lightning = DetailBuilder.Make(planetGO, sector, Main.Instance, AssetBundleUtilities.NHPrivateAssetBundle.LoadAsset<GameObject>("Prefab_EYE_QuantumLightningObject"), new DetailInfo(quantumGroup));
             AssetBundleUtilities.ReplaceShaders(lightning);
-            lightning.transform.position = rootGo.transform.position;
-            lightning.transform.rotation = rootGo.transform.rotation;
-            lightning.transform.parent = rootGo.transform.parent;
 
             foreach (var (go, _) in propsInGroup)
             {
@@ -82,7 +67,7 @@ namespace NewHorizons.Builder.Props
         // Nice to have: socket groups that specify a filledSocketObject and an emptySocketObject (eg the archway in the giant's deep tower)
         public static void MakeSocketGroup(GameObject planetGO, Sector sector, IModBehaviour mod, SocketQuantumGroupInfo quantumGroup)
         {
-            (GameObject go, QuantumDetailInfo detail)[] propsInGroup = quantumGroup.details.Select(x => (DetailBuilder.Make(planetGO, sector, mod, x), x)).ToArray();
+            (GameObject go, QuantumDetailInfo detail)[] propsInGroup = quantumGroup.details.Select(x => (DetailBuilder.GetGameObjectFromDetailInfo(x), x)).ToArray();
 
             GameObject specialProp = null;
             QuantumDetailInfo specialInfo = null;
@@ -177,7 +162,7 @@ namespace NewHorizons.Builder.Props
             // while states put the QuantumObject component (NHMultiStateQuantumObject) on the parent, which is located at the center of the planet
             // this means that the distance measured by QuantumObject is not accurate, since it's not measuring from the active prop, but from the center of the planet
 
-            var propsInGroup = quantumGroup.details.Select(x => DetailBuilder.Make(go, sector, mod, x)).ToArray();
+            var propsInGroup = quantumGroup.details.Select(x => DetailBuilder.GetGameObjectFromDetailInfo(x)).ToArray();
 
             var groupRoot = new GameObject(quantumGroup.rename);
             groupRoot.transform.parent = sector?.transform ?? go.transform;

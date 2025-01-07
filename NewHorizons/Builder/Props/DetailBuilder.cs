@@ -22,6 +22,20 @@ namespace NewHorizons.Builder.Props
         private static readonly Dictionary<(Sector, string), (GameObject prefab, bool isItem)> _fixedPrefabCache = new();
         private static GameObject _emptyPrefab;
 
+        private static readonly Dictionary<DetailInfo, GameObject> _detailInfoToGameObject = new();
+
+        public static GameObject GetGameObjectFromDetailInfo(DetailInfo info)
+        {
+            if (_detailInfoToGameObject.ContainsKey(info))
+            {
+                return _detailInfoToGameObject[info];
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         static DetailBuilder()
         {
             SceneManager.sceneUnloaded += SceneManager_sceneUnloaded;
@@ -47,6 +61,7 @@ namespace NewHorizons.Builder.Props
                 UnityEngine.Object.Destroy(prefab.prefab);
             }
             _fixedPrefabCache.Clear();
+            _detailInfoToGameObject.Clear();
         }
 
         /// <summary>
@@ -285,6 +300,8 @@ namespace NewHorizons.Builder.Props
             {
                 ConditionalObjectActivation.SetUp(prop, detail.deactivationCondition, detail.blinkWhenActiveChanged, false);
             }
+
+            _detailInfoToGameObject[detail] = prop;
 
             return prop;
         }

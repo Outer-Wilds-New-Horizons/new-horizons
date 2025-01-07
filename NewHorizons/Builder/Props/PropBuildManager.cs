@@ -6,15 +6,12 @@ using NewHorizons.Builder.ShipLog;
 using NewHorizons.External;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
-using NewHorizons.External.Modules.Props;
-using NewHorizons.External.Modules.Props.Quantum;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OWML;
 using OWML.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using NewHorizons.External.Modules.Props;
 using UnityEngine;
 
 namespace NewHorizons.Builder.Props
@@ -143,6 +140,10 @@ namespace NewHorizons.Builder.Props
             MakeGeneralProps(go, config.Props.audioSources, (audioSource) => AudioSourceBuilder.Make(go, sector, audioSource, mod), (audioSource) => audioSource.audio);
             RemoteBuilder.MakeGeneralProps(go, sector, config.Props.remotes, nhBody);
             if (Main.HasDLC) MakeGeneralProps(go, config.Props.projectionTotems, (totem) => ProjectionTotemBuilder.Make(go, sector, totem, mod));
+            // For quantum groups, make the details in advance
+            if (config.Props.socketQuantumGroups != null) MakeGeneralProps(go, config.Props.socketQuantumGroups.SelectMany(x => x.details), (detail) => DetailBuilder.Make(go, sector, mod, detail), (detail) => detail.path);
+            if (config.Props.stateQuantumGroups != null) MakeGeneralProps(go, config.Props.stateQuantumGroups.SelectMany(x => x.details), (detail) => DetailBuilder.Make(go, sector, mod, detail), (detail) => detail.path);
+            if (config.Props.lightningQuantumGroups != null) MakeGeneralProps(go, config.Props.lightningQuantumGroups, (lightning) => QuantumBuilder.MakeQuantumLightning(go, sector, mod, lightning));
 
             RunMultiPass();
 
@@ -165,7 +166,6 @@ namespace NewHorizons.Builder.Props
                 }
             }
 
-            if (config.Props.lightningQuantumGroups != null) QuantumBuilder.Make(go, sector, mod, config.Props.lightningQuantumGroups);
             if (config.Props.socketQuantumGroups != null) QuantumBuilder.Make(go, sector, mod, config.Props.socketQuantumGroups);
             if (config.Props.stateQuantumGroups != null) QuantumBuilder.Make(go, sector, mod, config.Props.stateQuantumGroups);
         }
