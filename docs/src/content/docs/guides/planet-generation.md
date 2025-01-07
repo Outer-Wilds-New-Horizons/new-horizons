@@ -90,6 +90,9 @@ This makes the second planet a quantum state of the first, anything you specify 
 }
 ```
 
+Keep in mind that if you have `Orbit` on *all* configs (regardless if the `semiMajorAxis` is the same on all of them or not), **the planet will change its `trueAnomaly` every time it's not observed.**
+*If you want your Quantum Planet's `Orbit` or `trueAnomaly` to* ***NOT*** *change,* ***only put `Orbit` on your first Quantum Planet*** (the first "normal" planet you created). 
+
 ## Barycenters (Focal Points)
 
 To create a binary system of planets (like ash twin and ember twin), first create a config with `FocalPoint` set
