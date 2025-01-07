@@ -8,6 +8,7 @@ using NewHorizons.Utility.OWML;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using NewHorizons.External.Modules.Props;
 using UnityEngine;
 
 namespace NewHorizons.Builder.Props
@@ -110,7 +111,6 @@ namespace NewHorizons.Builder.Props
             lightning.SetActive(true);
         }
 
-        // TODO: Socket groups that have an equal number of props and sockets
         // Nice to have: socket groups that specify a filledSocketObject and an emptySocketObject (eg the archway in the giant's deep tower)
         public static void MakeSocketGroup(GameObject planetGO, Sector sector, SocketQuantumGroupInfo quantumGroup, GameObject[] propsInGroup)
         {
@@ -144,12 +144,14 @@ namespace NewHorizons.Builder.Props
             foreach (var prop in propsInGroup)
             {
                 prop.SetActive(false);
-
                 var quantumObject = prop.AddComponent<SocketedQuantumObject>();
                 quantumObject._socketRoot = groupRoot;
                 quantumObject._socketList = sockets.ToList();
                 quantumObject._sockets = sockets;
                 quantumObject._prebuilt = true;
+                quantumObject._alignWithSocket = !prop.detail.quantumAlignWithGravity;
+                quantumObject._randomYRotation = prop.detail.quantumRandomizeYRotation;
+                quantumObject._alignWithGravity = prop.detail.quantumAlignWithGravity;
                 quantumObject._childSockets = new List<QuantumSocket>();
                 // TODO: support _alignWithGravity?
                 if (prop.GetComponentInChildren<VisibilityTracker>() == null)
