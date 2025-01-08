@@ -13,7 +13,7 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using static NewHorizons.Main;
+using static NewHorizons.Utility.Files.AssetBundleUtilities;
 
 namespace NewHorizons.Builder.Props
 {
@@ -543,12 +543,12 @@ namespace NewHorizons.Builder.Props
                     if (useInvertedCache && cacheExists)
                     {
                         // Load the inverted images used when displaying slide reels to a screen
-                        invertedImageLoader.PathsToLoad.Add((i, Path.Combine(Instance.ModHelper.Manifest.ModFolderPath, "Assets/textures/inverted_blank_slide_reel.png")));
+                        invertedImageLoader.PathsToLoad.Add((i, Path.Combine(Main.Instance.ModHelper.Manifest.ModFolderPath, "Assets/textures/inverted_blank_slide_reel.png")));
                     }
                     else
                     {
                         // Used to then make cached stuff
-                        imageLoader.PathsToLoad.Add((i, Path.Combine(Instance.ModHelper.Manifest.ModFolderPath, "Assets/textures/blank_slide_reel.png")));
+                        imageLoader.PathsToLoad.Add((i, Path.Combine(Main.Instance.ModHelper.Manifest.ModFolderPath, "Assets/textures/blank_slide_reel.png")));
                     }
                 }
                 else

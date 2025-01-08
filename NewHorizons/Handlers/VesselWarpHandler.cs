@@ -7,6 +7,7 @@ using NewHorizons.Utility.OuterWilds;
 using NewHorizons.Utility.OWML;
 using UnityEngine;
 using static NewHorizons.Main;
+using static NewHorizons.Utility.Files.AssetBundleUtilities;
 
 namespace NewHorizons.Handlers
 {

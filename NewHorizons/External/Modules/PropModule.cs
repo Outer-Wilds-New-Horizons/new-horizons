@@ -69,11 +69,6 @@ namespace NewHorizons.External.Modules
         public ProjectionInfo[] slideShows;
 
         /// <summary>
-        /// A list of quantum groups that props can be added to. An example of a group would be a list of possible locations for a QuantumSocketedObject.
-        /// </summary>
-        public QuantumGroupInfo[] quantumGroups;
-
-        /// <summary>
         /// Add tornadoes to this planet
         /// </summary>
         public TornadoInfo[] tornados;
@@ -124,6 +119,22 @@ namespace NewHorizons.External.Modules
         public ShuttleInfo[] shuttles;
 
         /// <summary>
+        /// Add a socket quantum object to a planet. Define the position of multiple "sockets" and multiple objects that jump between sockets. 
+        /// If the number of sockets equals the number of objects, they will shuffle around.
+        /// </summary>
+        public SocketQuantumGroupInfo[] socketQuantumGroups;
+
+        /// <summary>
+        /// Add a state quantum object to a planet. Switches between displaying different objects in a single place.
+        /// </summary>
+        public StateQuantumGroupInfo[] stateQuantumGroups;
+
+        /// <summary>
+        /// Add quantum lightning to a planet. When lightning strikes, a different detail object is shown. The lightning will take the first defined position/rotation for all objects.
+        /// </summary>
+        public LightningQuantumInfo[] lightningQuantumGroups;
+
+        /// <summary>
         /// Add campfires that allow you to enter the dream world/simulation (requires Echoes of the Eye DLC). Must be paired with a dream arrival point, which can be placed on this planet or elsewhere.
         /// </summary>
         public DreamCampfireInfo[] dreamCampfires;
@@ -161,5 +172,7 @@ namespace NewHorizons.External.Modules
         [Obsolete("reveal is deprecated. Use Volumes->revealVolumes instead.")] public RevealVolumeInfo[] reveal;
 
         [Obsolete("audioVolumes is deprecated. Use Volumes->audioVolumes instead.")] public AudioVolumeInfo[] audioVolumes;
+
+        [Obsolete("quantumGroups is deprecated. Use stateQuantumGroups or socketQuantumGroups instead.")] public QuantumGroupInfo[] quantumGroups;
     }
 }
