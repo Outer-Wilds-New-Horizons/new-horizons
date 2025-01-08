@@ -143,13 +143,14 @@ namespace NewHorizons.Builder.Props
             if (socket._socketTransform == null)
             {
                 var socketGO = GeneralPropBuilder.MakeNew("Socket", planetGO, sector, info, defaultParent: go.transform);
-                if (info.colliderRadius > 0f)
-                {
-                    go.AddComponent<SphereCollider>().radius = info.colliderRadius;
-                    go.GetAddComponent<OWCollider>();
-                }
+
                 socketGO.SetActive(true);
                 socket._socketTransform = socketGO.transform;
+            }
+            if (info.colliderRadius > 0f)
+            {
+                go.AddComponent<SphereCollider>().radius = info.colliderRadius;
+                go.GetAddComponent<OWCollider>();
             }
 
             socket.ItemType = itemType;
