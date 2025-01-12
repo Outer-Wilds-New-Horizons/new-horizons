@@ -5,7 +5,6 @@ using NewHorizons.Utility;
 using NewHorizons.Utility.OWML;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
 
 namespace NewHorizons.Handlers;
@@ -50,11 +49,11 @@ public static class HeldItemHandler
             _isInitialized = true;
             Main.Instance.OnChangeStarSystem.AddListener(OnStarSystemChanging);
             Main.Instance.OnStarSystemLoaded.AddListener(OnSystemReady);
-            GlobalMessenger<DeathType>.AddListener("PlayerDeath", OnPlayerDeath);
+            GlobalMessenger.AddListener("DeathSequenceComplete", OnDeathSequenceComplete);
         }
     }
 
-    private static void OnPlayerDeath(DeathType _)
+    private static void OnDeathSequenceComplete()
     {
         NHLogger.Log("Player died, resetting held items");
 
@@ -90,8 +89,15 @@ public static class HeldItemHandler
         _pathOfItemTakenFromSystem[Main.Instance.CurrentStarSystem].Add(path);
     }
 
-    private static void OnStarSystemChanging(string _)
+    private static void OnStarSystemChanging(string newSystem)
     {
+        // Double check we're still holding it
+        _currentlyHeldItem = Locator.GetToolModeSwapper().GetItemCarryTool().GetHeldItem()?.gameObject;
+        if (!Main.SystemDict[newSystem].Config.allowOutsideItems)
+        {
+            _currentlyHeldItem = null;
+        }
+
         if (_currentlyHeldItem != null)
         {
             // Track it so that when we return to this system we can delete the original

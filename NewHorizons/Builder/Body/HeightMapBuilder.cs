@@ -62,7 +62,7 @@ namespace NewHorizons.Builder.Body
             cubeSphere.SetActive(false);
             cubeSphere.transform.SetParent(sector?.transform ?? planetGO.transform, false);
 
-            if (PlanetShader == null) PlanetShader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/SphereTextureWrapperTriplanar.shader");
+            if (PlanetShader == null) PlanetShader = AssetBundleUtilities.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/SphereTextureWrapperTriplanar.shader");
 
             var stretch = module.stretch != null ? (Vector3)module.stretch : Vector3.one;
 
@@ -91,13 +91,14 @@ namespace NewHorizons.Builder.Body
                 level2.name += "1";
 
                 LODGroup.RecalculateBounds();
+
+                // do this only for LOD because only the main body uses LOD, while title screen and proxies dont
+                var superGroup = planetGO.GetComponent<ProxyShadowCasterSuperGroup>();
+                if (superGroup != null) level2.gameObject.AddComponent<ProxyShadowCaster>()._superGroup = superGroup;
             }
 
             var cubeSphereSC = cubeSphere.AddComponent<SphereCollider>();
             cubeSphereSC.radius = Mathf.Min(module.minHeight, module.maxHeight) * Mathf.Min(stretch.x, stretch.y, stretch.z);
-
-            var superGroup = planetGO.GetComponent<ProxyShadowCasterSuperGroup>();
-            if (superGroup != null) cubeSphere.AddComponent<ProxyShadowCaster>()._superGroup = superGroup;
 
             cubeSphere.SetActive(true);
 

@@ -1,13 +1,5 @@
-using NewHorizons.External.SerializableData;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NewHorizons.External.Modules.Props.Item
 {
@@ -54,5 +46,10 @@ namespace NewHorizons.External.Modules.Props.Item
         /// A ship log fact to reveal when removing an item from this socket, or when the socket is empty.
         /// </summary>
         public string removalFact;
+        /// <summary>
+        /// Default collider radius when interacting with the socket
+        /// </summary>
+        [DefaultValue(0f)]
+        public float colliderRadius = 0f;
     }
 }

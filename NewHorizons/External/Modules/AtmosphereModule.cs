@@ -61,6 +61,7 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// Relative filepath to the fog color ramp texture, if you put fog.
         /// x axis is angle to sun (left at midnight, right at noon), y axis is distance to camera (close at bottom, far at top).
+        /// Optional. If you set fogTint, a default fog ramp will be tinted for you.
         /// </summary>
         public string fogRampPath;
 

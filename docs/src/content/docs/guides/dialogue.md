@@ -27,6 +27,26 @@ A persistent condition is similar to a condition, except it _persists_ through l
 
 A remote trigger is used to have an NPC talk to you from a distance; ex: Slate stopping you for the umpteenth time to tell you information you already knew.
 
+### ReuseDialogueOptionsListFrom
+
+This is a custom XML node introduced by New Horizons. Use it when adding new dialogue to existing characters, to repeat the dialogue options list from another node.
+
+For example, Slate's first dialogue with options is named `Scientist5`. To make a custom DialogueNode using these dialogue options (meaning new dialogue said by Slate, but reusing the possible player responses) you can write:
+
+```xml
+<DialogueNode>
+    <Name>...</Name>
+    <Dialogue>
+        <Page>NEW DIALOGUE FOR SLATE HERE.</Page>
+    </Dialogue>
+    <DialogueOptionsList>
+        <ReuseDialogueOptionsListFrom>Scientist5</ReuseDialogueOptionsListFrom>
+    </DialogueOptionsList>
+</DialogueNode>
+```
+
+Note: If you're loading dialogue in code, 2 frames must pass before entering the conversation in order for ReuseDialogueOptionsListFrom to take effect.
+
 ## Example XML
 
 Here's an example dialogue XML:
@@ -200,3 +220,9 @@ To use this additional dialogue you need to reference it in a planet config file
     }
 ]
 ```
+
+## Dialogue FAQ
+
+### How do I easily position my dialogue relative to a speaking character
+
+Use `pathToAnimController` to specify the path to the speaking character (if they are a Nomai or Hearthian make sure this goes directly to whatever script controls their animations), then set `isRelativeToParent` to true (this is setting available on all NH props for easier positioning). Now when you set their `position`, it will be relative to the speaker. Since this position is normally where the character is standing, set the `y` position to match how tall the character is. Instead of `pathToAnimController` you can also use `parentPath`.

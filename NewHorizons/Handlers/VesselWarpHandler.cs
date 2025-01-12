@@ -7,6 +7,7 @@ using NewHorizons.Utility.OuterWilds;
 using NewHorizons.Utility.OWML;
 using UnityEngine;
 using static NewHorizons.Main;
+using static NewHorizons.Utility.Files.AssetBundleUtilities;
 
 namespace NewHorizons.Handlers
 {
@@ -248,7 +249,8 @@ namespace NewHorizons.Handlers
 
             var power = vesselWarpController.transform.Find("PowerSwitchInterface");
             var orb = power.GetComponentInChildren<NomaiInterfaceOrb>(true);
-            Delay.FireOnNextUpdate(() => SetupWarpController(vesselWarpController, orb));
+            // Run after Start (when pillar is lowered immediately) and then skip 100 frames so that the weird orb rising thing doesn't happen #958
+            Delay.RunWhenAndInNUpdates(() => SetupWarpController(vesselWarpController, orb), () => !vesselWarpController._coordinateInterface._pillarRaised, 100);
 
             return spawnPoint;
         }
@@ -290,7 +292,8 @@ namespace NewHorizons.Handlers
 
             var power = vesselWarpController.transform.Find("PowerSwitchInterface");
             var orb = power.GetComponentInChildren<NomaiInterfaceOrb>(true);
-            Delay.FireOnNextUpdate(() => SetupWarpController(vesselWarpController, orb, true));
+            // Run after Start (when pillar is lowered immediately) and then skip 100 frames so that the weird orb rising thing doesn't happen #958
+            Delay.RunWhenAndInNUpdates(() => SetupWarpController(vesselWarpController, orb, true), () => !vesselWarpController._coordinateInterface._pillarRaised, 100);
 
             return vesselSpawnPoint;
         }
@@ -355,7 +358,7 @@ namespace NewHorizons.Handlers
             orb.SetOrbPosition(vesselWarpController._coordinatePowerSlot.transform.position);
             orb._occupiedSlot = vesselWarpController._coordinatePowerSlot;
             orb._enterSlotTime = Time.time;
-            Delay.RunWhen(() => !vesselWarpController._coordinateInterface._pillarRaised, () => vesselWarpController.OnSlotActivated(vesselWarpController._coordinatePowerSlot));
+            vesselWarpController.OnSlotActivated(vesselWarpController._coordinatePowerSlot);
             vesselWarpController._coordinateCable.SetPowered(true);
             vesselWarpController._cageClosed = true;
             if (vesselWarpController._cageAnimator != null)

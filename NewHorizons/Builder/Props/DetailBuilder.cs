@@ -19,9 +19,22 @@ namespace NewHorizons.Builder.Props
 {
     public static class DetailBuilder
     {
-        private static readonly Dictionary<DetailInfo, GameObject> _detailInfoToCorrespondingSpawnedGameObject = new();
         private static readonly Dictionary<(Sector, string), (GameObject prefab, bool isItem)> _fixedPrefabCache = new();
         private static GameObject _emptyPrefab;
+
+        private static readonly Dictionary<DetailInfo, GameObject> _detailInfoToGameObject = new();
+
+        public static GameObject GetGameObjectFromDetailInfo(DetailInfo info)
+        {
+            if (_detailInfoToGameObject.ContainsKey(info))
+            {
+                return _detailInfoToGameObject[info];
+            }
+            else
+            {
+                return null;
+            }
+        }
 
         static DetailBuilder()
         {
@@ -48,19 +61,7 @@ namespace NewHorizons.Builder.Props
                 UnityEngine.Object.Destroy(prefab.prefab);
             }
             _fixedPrefabCache.Clear();
-            _detailInfoToCorrespondingSpawnedGameObject.Clear();
-        }
-
-        public static GameObject GetSpawnedGameObjectByDetailInfo(DetailInfo detail)
-        {
-            if (!_detailInfoToCorrespondingSpawnedGameObject.ContainsKey(detail))
-            {
-                return null;
-            }
-            else
-            {
-                return _detailInfoToCorrespondingSpawnedGameObject[detail];
-            }
+            _detailInfoToGameObject.Clear();
         }
 
         /// <summary>
@@ -274,7 +275,8 @@ namespace NewHorizons.Builder.Props
 
             // For DLC related props
             // Make sure to do this before its set active
-            if (detail.path.ToLowerInvariant().StartsWith("ringworld") || detail.path.ToLowerInvariant().StartsWith("dreamworld"))
+            if (!string.IsNullOrEmpty(detail?.path) && 
+                (detail.path.ToLowerInvariant().StartsWith("ringworld") || detail.path.ToLowerInvariant().StartsWith("dreamworld")))
             {
                 prop.AddComponent<DestroyOnDLC>()._destroyOnDLCNotOwned = true;
             }
@@ -299,7 +301,7 @@ namespace NewHorizons.Builder.Props
                 ConditionalObjectActivation.SetUp(prop, detail.deactivationCondition, detail.blinkWhenActiveChanged, false);
             }
 
-            _detailInfoToCorrespondingSpawnedGameObject[detail] = prop;
+            _detailInfoToGameObject[detail] = prop;
 
             return prop;
         }
@@ -338,6 +340,16 @@ namespace NewHorizons.Builder.Props
             else if(component is NomaiRemoteCameraPlatform remoteCameraPlatform && !existingSectors.Contains(remoteCameraPlatform._visualSector))
             {
                 remoteCameraPlatform._visualSector = sector;
+            }
+
+            else if(component is SingleLightSensor singleLightSensor && !existingSectors.Contains(singleLightSensor._sector))
+            {
+                if (singleLightSensor._sector != null)
+                {
+                    singleLightSensor._sector.OnSectorOccupantsUpdated -= singleLightSensor.OnSectorOccupantsUpdated;
+                }
+                singleLightSensor._sector = sector;
+                singleLightSensor._sector.OnSectorOccupantsUpdated += singleLightSensor.OnSectorOccupantsUpdated;
             }
         }
 

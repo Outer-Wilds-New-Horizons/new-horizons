@@ -23,7 +23,10 @@ namespace NewHorizons.Patches.WarpPatches
             if (!Main.Instance.IsWarpingFromVessel)
                 PlayerData.SaveWarpedToTheEye(TimeLoopUtilities.GetVanillaSecondsRemaining());
 
+            // This is totally letting us see the interior of bramble when warping
             Locator.GetPlayerSectorDetector().RemoveFromAllSectors();
+            // This is a very jank workaround to stop us seeing all that #957
+            Locator.GetPlayerCamera().farClipPlane = 0;
             LoadManager.EnableAsyncLoadTransition();
 
             return false;

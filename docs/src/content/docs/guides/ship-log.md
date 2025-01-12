@@ -542,3 +542,28 @@ Adding an entry location is similar to adding a Reveal Volume:
 ```
 
 ![entryLocationExample](@/assets/docs-images/ship_log/entry_position.webp)
+
+## Extending Base Game Entries
+
+You can add new facts and sub-entries to existing ship log entries by adding a dummy entry to your ship log XML file with the same ID as an existing entry. Any facts and sub-entries will be applied to the existing entry. For example, to extend the "Village" entry on Timber Hearth (which has the internal ID "TH_VILLAGE"):
+
+```xml title="ExampleShipLog.xml"
+<AstroObjectEntry xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/Outer-Wilds-New-Horizons/new-horizons/main/NewHorizons/Schemas/shiplog_schema.xsd">
+    <ID>TIMBER_HEARTH</ID>
+    <Entry>
+        <ID>TH_VILLAGE</ID>
+        <ExploreFact>
+            <ID>EXAMPLES_VILLAGE</ID>
+            <Text>A lot of unfamiliar characters are hanging around the village now.</Text>
+        </ExploreFact>
+        <Entry>
+            <ID>EXAMPLES_DREAM</ID>
+            <Name>Wetrock Dream</Name>
+            <ExploreFact>
+                <ID>EXAMPLES_DREAM_EXPLORED</ID>
+                <Text>I dreamed about Wetrock using a green campfire.</Text>
+            </ExploreFact>
+        </Entry>
+    </Entry>
+</AstroObjectEntry>
+```

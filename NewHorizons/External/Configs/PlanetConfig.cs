@@ -53,6 +53,13 @@ namespace NewHorizons.External.Configs
         public bool destroy;
 
         /// <summary>
+        /// Do we track the position of this body when calculating the solar system radius?
+        /// `true` if you want the map zoom speed, map panning distance/speed, map camera farclip plane,
+        /// and autopilot-returning-to-solar-system to adjust to this planet's orbit
+        /// </summary>
+        [DefaultValue(true)] public bool trackForSolarSystemRadius = true;
+
+        /// <summary>
         /// A list of paths to child GameObjects to destroy on this planet
         /// </summary>
         public string[] removeChildren;
@@ -234,59 +241,19 @@ namespace NewHorizons.External.Configs
             if (Bramble?.dimension != null) canShowOnTitle = false;
             if (Orbit?.staticPosition != null) Orbit.isStatic = true;
 
-            // For each quantum group, verify the following:
-            //      this group's id should be unique
-            //      if type == sockets, group.sockets should not be null or empty
-            //      if type == sockets, count every prop that references this group. the number should be < group.sockets.Count
-            //      if type == sockets, for each socket, if rotation == null, rotation = Vector3.zero
-            //      if type == sockets, for each socket, position must not be null
-            // For each detail prop,
-            //      if detail.quantumGroupID != null, there exists a quantum group with that id
-            if (Props?.quantumGroups != null && Props?.details != null)
-            {
-                Dictionary<string, QuantumGroupInfo> existingGroups = new Dictionary<string, QuantumGroupInfo>();
-                foreach (var quantumGroup in Props.quantumGroups)
-                {
-                    if (existingGroups.ContainsKey(quantumGroup.id)) { NHLogger.LogWarning($"Duplicate quantumGroup id found: {quantumGroup.id}"); quantumGroup.type = QuantumGroupType.FailedValidation; }
-
-                    existingGroups[quantumGroup.id] = quantumGroup;
-                    if (quantumGroup.type == QuantumGroupType.Sockets)
-                    {
-                        if (quantumGroup.sockets?.Length == 0) { NHLogger.LogError($"quantumGroup {quantumGroup.id} is of type \"sockets\" but has no defined sockets."); quantumGroup.type = QuantumGroupType.FailedValidation; }
-                        else
-                        {
-                            foreach (var socket in quantumGroup.sockets)
-                            {
-                                if (socket.rotation == null) socket.rotation = UnityEngine.Vector3.zero;
-                                if (socket.position == null) { NHLogger.LogError($"quantumGroup {quantumGroup.id} has a socket without a position."); quantumGroup.type = QuantumGroupType.FailedValidation; }
-                            }
-                        }
-                    }
-                }
-
-                var existingGroupsPropCounts = new Dictionary<string, int>();
-                foreach (var prop in Props?.details)
-                {
-                    if (prop.quantumGroupID == null) continue;
-                    if (!existingGroups.ContainsKey(prop.quantumGroupID)) NHLogger.LogWarning($"A prop wants to be a part of quantum group {prop.quantumGroupID}, but this group does not exist.");
-                    else existingGroupsPropCounts[prop.quantumGroupID] = existingGroupsPropCounts.GetValueOrDefault(prop.quantumGroupID) + 1;
-                }
-
-                foreach (var quantumGroup in Props.quantumGroups)
-                {
-                    if (quantumGroup.type == QuantumGroupType.Sockets && existingGroupsPropCounts.GetValueOrDefault(quantumGroup.id) >= quantumGroup.sockets?.Length)
-                    {
-                        NHLogger.LogError($"quantumGroup {quantumGroup.id} is of type \"sockets\" and has more props than sockets.");
-                        quantumGroup.type = QuantumGroupType.FailedValidation;
-                    }
-                }
-            }
-
             // Stars and focal points shouldnt be destroyed by stars
             if (Star != null || FocalPoint != null) Base.hasFluidDetector = false;
 
             // Disable map marker for dream dimensions
             if (Dream != null && Dream.inDreamWorld) MapMarker.enabled = false;
+
+            // User error #983
+            // This will not catch if they wrote the two names slightly differently but oh well don't be stupid
+            // Ideally we should just check for loops in PlanetGraph
+            if (Orbit.primaryBody == name && !string.IsNullOrEmpty(Orbit.primaryBody))
+            {
+                throw new Exception($"You set {name} to orbit itself, that is invalid. The planet will not load.");
+            }
         }
 
         public void Migrate()
@@ -689,6 +656,83 @@ namespace NewHorizons.External.Configs
             if (Base.invulnerableToSun)
             {
                 Base.hasFluidDetector = false;
+            }
+
+            // OLD QUANTUM VALIDATION
+            // For each quantum group, verify the following:
+            //      this group's id should be unique
+            //      if type == sockets, group.sockets should not be null or empty
+            //      if type == sockets, count every prop that references this group. the number should be < group.sockets.Count
+            //      if type == sockets, for each socket, if rotation == null, rotation = Vector3.zero
+            //      if type == sockets, for each socket, position must not be null
+            // For each detail prop,
+            //      if detail.quantumGroupID != null, there exists a quantum group with that id
+            if (Props?.quantumGroups != null && Props?.details != null)
+            {
+                Dictionary<string, QuantumGroupInfo> existingGroups = new Dictionary<string, QuantumGroupInfo>();
+                foreach (var quantumGroup in Props.quantumGroups)
+                {
+                    if (existingGroups.ContainsKey(quantumGroup.id)) { NHLogger.LogWarning($"Duplicate quantumGroup id found: {quantumGroup.id}"); quantumGroup.type = QuantumGroupType.FailedValidation; }
+
+                    existingGroups[quantumGroup.id] = quantumGroup;
+                    if (quantumGroup.type == QuantumGroupType.Sockets)
+                    {
+                        if (quantumGroup.sockets?.Length == 0) { NHLogger.LogError($"quantumGroup {quantumGroup.id} is of type \"sockets\" but has no defined sockets."); quantumGroup.type = QuantumGroupType.FailedValidation; }
+                        else
+                        {
+                            foreach (var socket in quantumGroup.sockets)
+                            {
+                                if (socket.rotation == null) socket.rotation = UnityEngine.Vector3.zero;
+                                if (socket.position == null) { NHLogger.LogError($"quantumGroup {quantumGroup.id} has a socket without a position."); quantumGroup.type = QuantumGroupType.FailedValidation; }
+                            }
+                        }
+                    }
+                }
+
+                var existingGroupsPropCounts = new Dictionary<string, int>();
+                foreach (var prop in Props?.details)
+                {
+                    if (prop.quantumGroupID == null) continue;
+                    if (!existingGroups.ContainsKey(prop.quantumGroupID)) NHLogger.LogWarning($"A prop wants to be a part of quantum group {prop.quantumGroupID}, but this group does not exist.");
+                    else existingGroupsPropCounts[prop.quantumGroupID] = existingGroupsPropCounts.GetValueOrDefault(prop.quantumGroupID) + 1;
+                }
+
+                foreach (var quantumGroup in Props.quantumGroups)
+                {
+                    if (quantumGroup.type == QuantumGroupType.Sockets && existingGroupsPropCounts.GetValueOrDefault(quantumGroup.id) > quantumGroup.sockets?.Length)
+                    {
+                        NHLogger.LogError($"quantumGroup {quantumGroup.id} is of type \"sockets\" and has more props than sockets.");
+                        quantumGroup.type = QuantumGroupType.FailedValidation;
+                    }
+                }
+            }
+
+            if (Props != null && Props.quantumGroups != null)
+            {
+                var socketQuantumGroups = Props.quantumGroups.Where(x => x.type == QuantumGroupType.Sockets).Select(x => new SocketQuantumGroupInfo()
+                {
+                    rename = "Quantum Sockets - " + x.id,
+                    sockets = x.sockets,
+                    details = Props.details.Where(y => y.quantumGroupID == x.id).Select(x => new QuantumDetailInfo(x)).ToArray()
+                });
+                if (socketQuantumGroups.Any())
+                {
+                    Props.socketQuantumGroups = socketQuantumGroups.ToArray();
+                }
+                var stateQuantumGroups = Props.quantumGroups.Where(x => x.type == QuantumGroupType.States).Select(x => new StateQuantumGroupInfo()
+                {
+                    rename = "Quantum States - " + x.id,
+                    hasEmptyState = x.hasEmptyState,
+                    loop = x.loop,
+                    sequential = x.sequential,
+                    details = Props.details.Where(y => y.quantumGroupID == x.id).Select(x => new QuantumDetailInfo(x)).ToArray()
+                });
+                if (stateQuantumGroups.Any())
+                {
+                    Props.stateQuantumGroups = stateQuantumGroups.ToArray();
+                }
+
+                Props.details = Props.details.Where(x => string.IsNullOrEmpty(x.quantumGroupID)).ToArray();
             }
         }
         #endregion

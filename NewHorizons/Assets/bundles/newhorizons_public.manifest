@@ -1,0 +1,26 @@
+ManifestFileVersion: 0
+CRC: 1613957014
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 9b2f376d4639a3fa789eadaf132f9889
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 10a6a558690295dadb3dd990eda0821a
+HashAppended: 0
+ClassTypes:
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/Shaders/SphereTextureWrapper.shader
+- Assets/Shaders/Ring.shader
+- Assets/Shaders/SphereTextureWrapperTriplanar.shader
+- Assets/Shaders/UnlitRing1Pixel.shader
+- Assets/Shaders/UnlitTransparent.shader
+- Assets/Resources/TransparentCloud.mat
+- Assets/Shaders/StandardCullOFF.shader
+- Assets/Shaders/Ring1Pixel.shader
+Dependencies: []
