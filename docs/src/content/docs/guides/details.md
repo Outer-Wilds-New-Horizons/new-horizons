@@ -3,7 +3,7 @@ title: Detailing
 description: A guide to adding details to planets in New Horizons
 ---
 
-For physical objects there are currently two ways of setting them up: specify an asset bundle and path to load a custom asset you created, or specify the path to the item you want to copy from the game in the scene hierarchy. Use the [Unity Explorer](https://outerwildsmods.com/mods/unityexplorer) mod to find an object you want to copy onto your new body. Some objects work better than others for this. Good luck. Some pointers:
+For physical objects there are currently two ways of setting them up: specify an asset bundle and path to load a custom asset you created, or specify the path to the item you want to copy from the game in the scene hierarchy. Use the Unity Explorer mod to find an object you want to copy onto your new body. Some objects work better than others for this. Good luck. Some pointers:
 
 - Use "Object Explorer" to search
 - Generally you can find planets by writing their name with no spaces/punctuation followed by "\_Body".
@@ -16,7 +16,7 @@ Of note: the rotation of the raycast will have the up direction facing away from
 
 ## Unity Explorer
 
-You can use this to tweak the position, rotation, and scale of your props. These docs will not elaborate too much on this tool. There are other tutorials out there.
+You can use the [Unity Explorer Mod](https://outerwildsmods.com/mods/unityexplorer) to tweak the position, rotation, and scale of your props. These docs will not elaborate too much on this tool. There are other tutorials out there.
 
 ## Asset Bundles
 
