@@ -40,6 +40,7 @@ public static class BoundsUtilities
         }
     }
 
+    // BUG: ignores skinned guys. this coincidentally makes it work without BoxShapeFixer
     public static Bounds GetBoundsOfSelfAndChildMeshes(GameObject gameObject)
     {
         var meshFilters = gameObject.GetComponentsInChildren<MeshFilter>();
@@ -57,14 +58,14 @@ public static class BoundsUtilities
 
         var localCorners = new Vector3[]
         {
-             bounds.min,
-             bounds.max,
-             new Vector3(bounds.min.x, bounds.min.y, bounds.max.z),
-             new Vector3(bounds.min.x, bounds.max.y, bounds.min.z),
-             new Vector3(bounds.max.x, bounds.min.y, bounds.min.z),
-             new Vector3(bounds.min.x, bounds.max.y, bounds.max.z),
-             new Vector3(bounds.max.x, bounds.min.y, bounds.max.z),
-             new Vector3(bounds.max.x, bounds.max.y, bounds.min.z),
+            bounds.min,
+            bounds.max,
+            new Vector3(bounds.min.x, bounds.min.y, bounds.max.z),
+            new Vector3(bounds.min.x, bounds.max.y, bounds.min.z),
+            new Vector3(bounds.max.x, bounds.min.y, bounds.min.z),
+            new Vector3(bounds.min.x, bounds.max.y, bounds.max.z),
+            new Vector3(bounds.max.x, bounds.min.y, bounds.max.z),
+            new Vector3(bounds.max.x, bounds.max.y, bounds.min.z),
         };
 
         var globalCorners = localCorners.Select(meshFilter.transform.TransformPoint).ToArray();
