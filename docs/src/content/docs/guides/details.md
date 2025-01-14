@@ -16,7 +16,7 @@ Of note: the rotation of the raycast will have the up direction facing away from
 
 ## Unity Explorer
 
-You can use the [Unity Explorer Mod](https://outerwildsmods.com/mods/unityexplorer) to tweak the position, rotation, and scale of your props. These docs will not elaborate too much on this tool. There are other tutorials out there.
+You can use [Unity Explorer](https://outerwildsmods.com/mods/unityexplorer) to tweak the position, rotation, and scale of your props. These docs will not elaborate too much on this tool. There are other tutorials out there.
 
 ## Asset Bundles
 
