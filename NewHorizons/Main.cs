@@ -20,7 +20,6 @@ using NewHorizons.OtherMods.VoiceActing;
 using NewHorizons.Streaming;
 using NewHorizons.Utility;
 using NewHorizons.Utility.DebugTools;
-using NewHorizons.Utility.DebugTools.Menu;
 using NewHorizons.Utility.Files;
 using NewHorizons.Utility.OuterWilds;
 using NewHorizons.Utility.OWML;
@@ -41,8 +40,6 @@ namespace NewHorizons
 
     public class Main : ModBehaviour
     {
-        public static AssetBundle NHAssetBundle { get; private set; }
-        public static AssetBundle NHPrivateAssetBundle { get; private set; }
         public static Main Instance { get; private set; }
 
         // Settings
@@ -142,7 +139,6 @@ namespace NewHorizons
             if (currentScene == "SolarSystem")
             {
                 DebugReload.UpdateReloadButton();
-                DebugMenu.UpdatePauseMenuButton();
             }
 
             if (VerboseLogs) NHLogger.UpdateLogLevel(NHLogger.LogType.Verbose);
@@ -246,18 +242,6 @@ namespace NewHorizons
             GlobalMessenger<DeathType>.AddListener("PlayerDeath", OnDeath);
             GlobalMessenger.AddListener("WakeUp", OnWakeUp);
 
-            NHAssetBundle = ModHelper.Assets.LoadBundle("Assets/newhorizons_public");
-            if (NHAssetBundle == null)
-            {
-                NHLogger.LogError("Couldn't find NHAssetBundle: The mod will likely not work.");
-            }
-
-            NHPrivateAssetBundle = ModHelper.Assets.LoadBundle("Assets/newhorizons_private");
-            if (NHPrivateAssetBundle == null)
-            {
-                NHLogger.LogError("Couldn't find NHPrivateAssetBundle: The mod will likely not work.");
-            }
-
             VesselWarpHandler.Initialize();
 
             ResetConfigs(resetTranslation: false);
@@ -291,7 +275,6 @@ namespace NewHorizons
         {
             base.SetupPauseMenu(pauseMenu);
             DebugReload.InitializePauseMenu(pauseMenu);
-            DebugMenu.InitializePauseMenu(pauseMenu);
         }
 
         public void OnDestroy()
@@ -622,8 +605,6 @@ namespace NewHorizons
                 }
 
                 Locator.GetPlayerBody().gameObject.AddComponent<DebugRaycaster>();
-                Locator.GetPlayerBody().gameObject.AddComponent<DebugPropPlacer>();
-                Locator.GetPlayerBody().gameObject.AddComponent<DebugMenu>();
                 Locator.GetPlayerBody().gameObject.AddComponent<PlayerShipAtmosphereDetectorFix>();
                 if (HasDLC) Locator.GetPlayerBody().gameObject.AddComponent<LanternExtinguisher>();
 

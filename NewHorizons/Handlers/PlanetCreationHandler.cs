@@ -235,6 +235,7 @@ namespace NewHorizons.Handlers
                             var rb = existingPlanet.GetComponent<OWRigidbody>();
 
                             var sector = SectorBuilder.Make(existingPlanet, rb, GetSphereOfInfluence(body));
+                            sector._idString = body.Config.name;
                             sector.name = $"Sector-{existingPlanet.GetComponentsInChildren<Sector>().Count()}";
 
                             SharedGenerateBody(body, existingPlanet, sector, rb);
@@ -394,6 +395,7 @@ namespace NewHorizons.Handlers
             var ao = AstroObjectBuilder.Make(go, null, body, false);
 
             var sector = SectorBuilder.Make(go, owRigidBody, sphereOfInfluence);
+            sector._idString = body.Config.name;
             ao._rootSector = sector;
             ao._type = AstroObject.Type.None;
 
@@ -470,6 +472,7 @@ namespace NewHorizons.Handlers
             var ao = AstroObjectBuilder.Make(go, primaryBody, body, false);
 
             var sector = SectorBuilder.Make(go, owRigidBody, sphereOfInfluence * 2f);
+            sector._idString = body.Config.name;
             ao._rootSector = sector;
 
             if (body.Config.Base.surfaceGravity != 0)
@@ -595,6 +598,7 @@ namespace NewHorizons.Handlers
                         var remnant = Main.BodyDict[body.Config.starSystem].Where(x => x.Config.name == body.Config.name && x.Config.isStellarRemnant).FirstOrDefault();
 
                         var remnantSector = SectorBuilder.Make(go, rb, sphereOfInfluence);
+                        remnantSector._idString = body.Config.name;
                         remnantSector.name = "CustomStellarRemnant";
 
                         SharedGenerateBody(remnant, go, remnantSector, rb);

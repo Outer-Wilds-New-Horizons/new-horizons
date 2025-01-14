@@ -48,9 +48,7 @@ namespace NewHorizons.External.Modules.Props
         /// </summary>
         public MVector3 stretch;
 
-        /// <summary>
-        /// If this value is not null, this prop will be quantum. Assign this field to the id of the quantum group it should be a part of. The group it is assigned to determines what kind of quantum object it is
-        /// </summary>
+        [Obsolete("Use QuantumDetailInfo")]
         public string quantumGroupID;
 
         /// <summary>

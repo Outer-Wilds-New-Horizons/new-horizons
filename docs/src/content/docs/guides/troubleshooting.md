@@ -17,3 +17,7 @@ which interact poorly with the fluid detector and can mess up the movement of th
 ## My Nomai text isn't updating
 
 Either clear the .nhcache files or enable Debug mode to always regenerate the text cache.
+
+## Prop placer is gone!
+This is not a bug, actually. We removed prop placer because it was inconsistent and buggy, and no one in years cared enough to fix it.
+Use the debug raycast button and Unity Explorer to place your props, or otherwise work in unity editor.

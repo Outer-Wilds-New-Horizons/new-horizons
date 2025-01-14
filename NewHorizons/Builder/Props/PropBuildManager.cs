@@ -140,6 +140,10 @@ namespace NewHorizons.Builder.Props
             MakeGeneralProps(go, config.Props.audioSources, (audioSource) => AudioSourceBuilder.Make(go, sector, audioSource, mod), (audioSource) => audioSource.audio);
             RemoteBuilder.MakeGeneralProps(go, sector, config.Props.remotes, nhBody);
             if (Main.HasDLC) MakeGeneralProps(go, config.Props.projectionTotems, (totem) => ProjectionTotemBuilder.Make(go, sector, totem, mod));
+            // For quantum groups, make the details in advance
+            if (config.Props.socketQuantumGroups != null) MakeGeneralProps(go, config.Props.socketQuantumGroups.SelectMany(x => x.details), (detail) => DetailBuilder.Make(go, sector, mod, detail), (detail) => detail.path);
+            if (config.Props.stateQuantumGroups != null) MakeGeneralProps(go, config.Props.stateQuantumGroups.SelectMany(x => x.details), (detail) => DetailBuilder.Make(go, sector, mod, detail), (detail) => detail.path);
+            if (config.Props.lightningQuantumGroups != null) MakeGeneralProps(go, config.Props.lightningQuantumGroups, (lightning) => QuantumBuilder.MakeQuantumLightning(go, sector, mod, lightning));
 
             RunMultiPass();
 
@@ -162,33 +166,8 @@ namespace NewHorizons.Builder.Props
                 }
             }
 
-            if (config.Props.quantumGroups != null)
-            {
-                Dictionary<string, List<GameObject>> propsByGroup = new Dictionary<string, List<GameObject>>();
-                foreach (var detail in config.Props.details)
-                {
-                    if (detail.quantumGroupID != null)
-                    {
-                        if (!propsByGroup.ContainsKey(detail.quantumGroupID)) propsByGroup[detail.quantumGroupID] = new List<GameObject>();
-                        propsByGroup[detail.quantumGroupID].Add(DetailBuilder.GetSpawnedGameObjectByDetailInfo(detail));
-                    }
-                }
-
-                foreach (var quantumGroup in config.Props.quantumGroups)
-                {
-                    if (!propsByGroup.ContainsKey(quantumGroup.id)) continue;
-                    var propsInGroup = propsByGroup[quantumGroup.id];
-
-                    try
-                    {
-                        QuantumBuilder.Make(go, sector, config, mod, quantumGroup, propsInGroup.ToArray());
-                    }
-                    catch (Exception ex)
-                    {
-                        NHLogger.LogError($"Couldn't make quantum group \"{quantumGroup.id}\" for [{go.name}]:\n{ex}");
-                    }
-                }
-            }
+            if (config.Props.socketQuantumGroups != null) QuantumBuilder.Make(go, sector, mod, config.Props.socketQuantumGroups);
+            if (config.Props.stateQuantumGroups != null) QuantumBuilder.Make(go, sector, mod, config.Props.stateQuantumGroups);
         }
 
         private static bool _ignoreParent;
