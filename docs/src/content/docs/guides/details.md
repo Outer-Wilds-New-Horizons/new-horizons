@@ -259,7 +259,7 @@ Item sockets will allow any item with a matching `itemType` to be placed into th
 
 > Item sockets are also picky about colliders in the same way items are. The detail object must have a collider on it; colliders on child objects will not work for placing and removing items when the cursor is over them. New Horizons will add a spherical collider for you if you set `colliderRadius` to a non-zero value.
 
-The `position`, `rotation`, and `isRelativeToParent` properties on the `itemSocket` don't describe the location of the detail itself, but rather the point on the detail where items will be inserted. This will likely not be at the exact center of the detail, so you should use this properties to customize the location of the socket. If there is already an child object you want to use as a pivot point, you can put a relative path from the detail to the child object in the `socketPath` property to use instead of the generated socket point.
+The `position`, `rotation`, and `isRelativeToParent` properties on the `itemSocket` don't describe the location of the detail itself, but rather the point on the detail where items will be inserted. This will likely not be at the exact center of the detail, so you should use these properties to customize the location of the socket. If there is already a child object you want to use as a pivot point, you can put a relative path from the detail to the child object in the `socketPath` property to use instead of the generated socket point.
 
 To see the full list of item socket properties and descriptions of what each property does, check [the ItemSocketInfo schema](/schemas/body-schema/defs/itemsocketinfo/).
 
