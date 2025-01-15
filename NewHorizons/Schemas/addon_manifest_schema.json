@@ -38,6 +38,9 @@
       "type": "string",
       "description": "The path to the addons subtitle for the main menu.\nDefaults to \"subtitle.png\".\nThe dimensions of the Echoes of the Eye subtitle is 669 x 67, so aim for that size"
     },
+    "mainMenuConfig": {
+      "$ref": "#/definitions/MainMenuConfig"
+    },
     "$schema": {
       "type": "string",
       "description": "The schema to validate with"
@@ -77,6 +80,51 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "MainMenuConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "menuTextTint": {
+          "description": "Colour of the text on the main menu",
+          "$ref": "#/definitions/MColor"
+        }
+      }
+    },
+    "MColor": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "r": {
+          "type": "integer",
+          "description": "The red component of this colour from 0-255, higher values will make the colour glow if applicable.",
+          "format": "int32",
+          "maximum": 2147483647.0,
+          "minimum": 0.0
+        },
+        "g": {
+          "type": "integer",
+          "description": "The green component of this colour from 0-255, higher values will make the colour glow if applicable.",
+          "format": "int32",
+          "maximum": 2147483647.0,
+          "minimum": 0.0
+        },
+        "b": {
+          "type": "integer",
+          "description": "The blue component of this colour from 0-255, higher values will make the colour glow if applicable.",
+          "format": "int32",
+          "maximum": 2147483647.0,
+          "minimum": 0.0
+        },
+        "a": {
+          "type": "integer",
+          "description": "The alpha (opacity) component of this colour",
+          "format": "int32",
+          "default": 255,
+          "maximum": 255.0,
+          "minimum": 0.0
         }
       }
     }
