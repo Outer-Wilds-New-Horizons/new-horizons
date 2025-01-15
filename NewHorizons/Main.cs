@@ -431,6 +431,8 @@ namespace NewHorizons
                 }
                 TitleSceneHandler.InitSubtitles();
 
+                // FOR TESTING!!!!
+                // Remove once actually loading a json file is implemented
                 TitleSceneHandler.SetUp(new MainMenuConfig() { menuTextTint = new External.SerializableData.MColor(128, 128, 255) });
             }
 
