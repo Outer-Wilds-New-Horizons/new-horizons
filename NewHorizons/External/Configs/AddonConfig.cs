@@ -44,5 +44,10 @@ namespace NewHorizons.External.Configs
         /// The dimensions of the Echoes of the Eye subtitle is 669 x 67, so aim for that size
         /// </summary>
         public string subtitlePath = "subtitle.png";
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public MainMenuConfig mainMenuConfig;
     }
 }

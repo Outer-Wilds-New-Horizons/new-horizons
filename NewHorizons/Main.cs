@@ -430,6 +430,8 @@ namespace NewHorizons
                     NHLogger.LogError($"Failed to make title screen bodies: {e}");
                 }
                 TitleSceneHandler.InitSubtitles();
+
+                TitleSceneHandler.SetUp(new MainMenuConfig() { menuTextTint = new External.SerializableData.MColor(128, 128, 255) });
             }
 
             // EOTU fixes

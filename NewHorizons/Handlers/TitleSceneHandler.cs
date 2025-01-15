@@ -1,11 +1,13 @@
 using NewHorizons.Builder.Body;
 using NewHorizons.External;
+using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OWML;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace NewHorizons.Handlers
 {
@@ -23,6 +25,18 @@ namespace NewHorizons.Handlers
 
             subtitleContainer.SetActive(true);
             subtitleContainer.AddComponent<SubtitlesHandler>();
+        }
+
+        public static void SetUp(MainMenuConfig config)
+        {
+            if (config.menuTextTint != null)
+            {
+                var buttons = GameObject.FindObjectOfType<TitleScreenManager>()._mainMenu.GetComponentsInChildren<Text>();
+                foreach (var button in buttons)
+                {
+                    button.color = config.menuTextTint.ToColor();
+                }
+            }
         }
 
         public static void DisplayBodyOnTitleScreen(List<NewHorizonsBody> bodies)
