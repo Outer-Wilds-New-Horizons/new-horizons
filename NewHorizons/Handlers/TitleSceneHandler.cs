@@ -2,12 +2,13 @@ using NewHorizons.Builder.Body;
 using NewHorizons.External;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
+using NewHorizons.Handlers.TitleScreen;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OWML;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
+using Color = UnityEngine.Color;
 
 namespace NewHorizons.Handlers
 {
@@ -31,11 +32,8 @@ namespace NewHorizons.Handlers
         {
             if (config.menuTextTint != null)
             {
-                var buttons = GameObject.FindObjectOfType<TitleScreenManager>()._mainMenu.GetComponentsInChildren<Text>();
-                foreach (var button in buttons)
-                {
-                    button.color = config.menuTextTint.ToColor();
-                }
+                TitleScreenColourHandler.SetColour((Color)config.menuTextTint.ToColor());
+
             }
         }
 
