@@ -18,6 +18,11 @@ namespace NewHorizons.Builder.Props
         {
             var go = DetailBuilder.Make(planetGO, sector, nhBody.Mod, info);
 
+            if (string.IsNullOrEmpty(info.name))
+            {
+                info.name = go.name;
+            }
+
             var travelerController = go.GetAddComponent<TravelerEyeController>();
             if (!string.IsNullOrEmpty(info.startPlayingCondition))
             {
@@ -34,6 +39,8 @@ namespace NewHorizons.Builder.Props
             if (info.dialogue != null)
             {
                 var (dialogueTree, remoteTrigger) = DialogueBuilder.Make(planetGO, sector, info.dialogue, nhBody.Mod);
+                dialogueTree.transform.SetParent(travelerController.transform, false);
+                dialogueTree.transform.localPosition = Vector3.zero;
                 if (travelerController._dialogueTree != null)
                 {
                     travelerController._dialogueTree.OnStartConversation -= travelerController.OnStartConversation;
@@ -54,17 +61,20 @@ namespace NewHorizons.Builder.Props
             {
                 var signalInfo = new SignalInfo()
                 {
+                    name = info.name,
                     audio = info.loopAudio,
-                    detectionRadius = 0,
+                    detectionRadius = 10f,
                     identificationRadius = 10f,
+                    onlyAudibleToScope = false,
                     frequency = string.IsNullOrEmpty(info.frequency) ? "Traveler" : info.frequency,
-                    parentPath = go.transform.GetPath(),
-                    isRelativeToParent = true,
-                    position = Vector3.up * 0.5f,
                 };
                 var signalGO = SignalBuilder.Make(planetGO, sector, signalInfo, nhBody.Mod);
+                signalGO.transform.SetParent(travelerController.transform, false);
+                signalGO.transform.localPosition = Vector3.zero;
+
                 var signal = signalGO.GetComponent<AudioSignal>();
                 travelerController._signal = signal;
+                signal.SetSignalActivation(false);
                 loopAudioSource = signal.GetOWAudioSource();
             }
             else if (travelerController._signal == null)
@@ -80,11 +90,14 @@ namespace NewHorizons.Builder.Props
                 {
                     audio = info.finaleAudio,
                     track = External.SerializableEnums.NHAudioMixerTrackName.Music,
+                    volume = 1f,
                 };
                 finaleAudioSource = GeneralAudioBuilder.Make(planetGO, sector, finaleAudioInfo, nhBody.Mod);
                 finaleAudioSource.SetTrack(finaleAudioInfo.track.ConvertToOW());
                 finaleAudioSource.loop = false;
                 finaleAudioSource.spatialBlend = 0f;
+                finaleAudioSource.playOnAwake = false;
+                finaleAudioSource.gameObject.SetActive(true);
             }
 
             var travelerData = EyeSceneHandler.GetOrCreateEyeTravelerData(info.id);
@@ -111,6 +124,7 @@ namespace NewHorizons.Builder.Props
             go.GetAddComponent<InteractReceiver>();
             var quantumInstrument = go.GetAddComponent<QuantumInstrument>();
             quantumInstrument._gatherWithScope = info.gatherWithScope;
+            ArrayHelpers.Append(ref quantumInstrument._deactivateObjects, go);
 
             var trigger = go.AddComponent<QuantumInstrumentTrigger>();
             trigger.gatherCondition = info.gatherCondition;
@@ -124,15 +138,15 @@ namespace NewHorizons.Builder.Props
                 {
                     var signalInfo = new SignalInfo()
                     {
+                        name = travelerData.info.name,
                         audio = travelerData.info.loopAudio,
                         detectionRadius = 0,
                         identificationRadius = 0,
                         frequency = string.IsNullOrEmpty(travelerData.info.frequency) ? "Traveler" : travelerData.info.frequency,
-                        parentPath = go.transform.GetPath(),
-                        isRelativeToParent = true,
-                        position = Vector3.zero,
                     };
                     var signalGO = SignalBuilder.Make(planetGO, sector, signalInfo, nhBody.Mod);
+                    signalGO.transform.SetParent(quantumInstrument.transform, false);
+                    signalGO.transform.localPosition = Vector3.zero;
                 }
                 else
                 {

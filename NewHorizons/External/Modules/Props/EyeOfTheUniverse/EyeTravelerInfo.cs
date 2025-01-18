@@ -12,6 +12,11 @@ namespace NewHorizons.External.Modules.Props.EyeOfTheUniverse
         public string id;
 
         /// <summary>
+        /// The name to display for this traveler's signals. Defaults to the name of the detail.
+        /// </summary>
+        public string name;
+
+        /// <summary>
         /// The dialogue condition that will trigger the traveler to start playing their instrument. Must be unique for each traveler.
         /// </summary>
         public string startPlayingCondition;

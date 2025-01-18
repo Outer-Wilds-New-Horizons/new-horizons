@@ -1,3 +1,4 @@
+using NewHorizons.Utility.OWML;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,7 @@ namespace NewHorizons.Components.EyeOfTheUniverse
         {
             src.loop = false;
             src.SetLocalVolume(1f);
+            src.Stop();
             _loopSources.Add(src);
         }
 
@@ -23,6 +25,7 @@ namespace NewHorizons.Components.EyeOfTheUniverse
         {
             src.loop = false;
             src.SetLocalVolume(1f);
+            src.Stop();
             _finaleSources.Add(src);
         }
 
@@ -36,61 +39,85 @@ namespace NewHorizons.Components.EyeOfTheUniverse
         public void TransitionToFinale()
         {
             _transitionToFinale = true;
-        }
 
-        private IEnumerator DoLoop()
-        {
-            // Initial delay to ensure audio system has time to schedule all loops for the same tick
-            double timeBufferWindow = 0.5;
+            var cosmicInflationController = FindObjectOfType<CosmicInflationController>();
 
-            // Track when the next audio (loop or finale) should play, in audio system time
-            double nextAudioEventTime = AudioSettings.dspTime + timeBufferWindow;
+            // Schedule finale for as soon as the current segment loop ends
+            double finaleAudioTime = _segmentEndAudioTime;
+            float finaleGameTime = _segmentEndGameTime;
 
-            // Determine timing using the first loop audio clip (should be Riebeck's banjo loop)
-            var referenceLoopClip = _loopSources.First().clip;
-            double loopDuration = referenceLoopClip.samples / (double)referenceLoopClip.frequency;
-            double segmentDuration = loopDuration / 4.0;
-
-            while (!_transitionToFinale)
+            // Cancel loop audio
+            foreach (var loopSrc in _loopSources)
             {
-                // Play loops in sync
-                var loopStartTime = nextAudioEventTime;
-                foreach (var loopSrc in _loopSources)
-                {
-                    loopSrc._audioSource.PlayScheduled(loopStartTime);
-                }
-
-                nextAudioEventTime += loopDuration;
-
-                // Handle loop segments (the current musical measure will always finish playing before transitioning to the finale)
-                for (int i = 0; i < 4; i++)
-                {
-                    // Interrupting the upcoming segment for the finale
-                    if (_transitionToFinale)
-                    {
-                        // End the loop at the start time of the upcoming segment
-                        var loopStopTime = loopStartTime + segmentDuration * (i + 1);
-
-                        // Cancel scheduled upcoming loop
-                        foreach (var loopSrc in _loopSources)
-                        {
-                            loopSrc._audioSource.SetScheduledEndTime(loopStopTime);
-                        }
-
-                        // Schedule finale for as soon as the loop ends
-                        nextAudioEventTime = loopStopTime;
-                        break;
-                    }
-
-                    // Wait until shortly before the next segment (`nextAudioEventTime` will be ahead of current time by `timeBufferWindow`)
-                    yield return new WaitForSecondsRealtime((float)segmentDuration);
-                }
+                loopSrc._audioSource.SetScheduledEndTime(finaleAudioTime);
             }
+
+            // Set quantum sphere inflation timer
+            var finaleDuration = cosmicInflationController._travelerFinaleSource.clip.length;
+            cosmicInflationController._startFormationTime = Time.time;
+            cosmicInflationController._finishFormationTime = finaleGameTime + finaleDuration - 4f;
 
             // Play finale in sync
             foreach (var finaleSrc in _finaleSources)
             {
-                finaleSrc._audioSource.PlayScheduled(nextAudioEventTime);
+                finaleSrc._audioSource.PlayScheduled(finaleAudioTime);
+            }
+        }
+
+        // Delay between game logic and audio to ensure audio system has time to schedule all loops for the same tick
+        const double TIME_BUFFER_WINDOW = 0.5;
+
+        private double _segmentEndAudioTime;
+        private float _segmentEndGameTime;
+
+        private IEnumerator DoLoop()
+        {
+            // Determine timing using the first loop audio clip (should be Riebeck's banjo loop)
+            var referenceLoopClip = _loopSources.First().clip;
+            double loopDuration = referenceLoopClip.samples / (double)referenceLoopClip.frequency;
+            
+            // Vanilla audio divides the loop into 4 segments, but that actually causes weird key shifting during the crossfade
+            int segmentCount = 2;
+            double segmentDuration = loopDuration / segmentCount;
+
+            // Track when the next loop will play, in both audio system time and game time
+            double nextLoopAudioTime = AudioSettings.dspTime + TIME_BUFFER_WINDOW;
+            float nextLoopGameTime = Time.time + (float)TIME_BUFFER_WINDOW;
+
+            while (!_transitionToFinale)
+            {
+                // Play loops in sync
+                double loopStartAudioTime = nextLoopAudioTime;
+                float loopStartGameTime = nextLoopGameTime;
+
+                foreach (var loopSrc in _loopSources)
+                {
+                    if (!loopSrc.gameObject.activeInHierarchy) continue;
+                    if (loopSrc.loop) continue;
+                    // We only need to schedule once and then Unity will loop it for us
+                    loopSrc._audioSource.PlayScheduled(loopStartAudioTime);
+                    loopSrc.loop = true;
+                }
+
+                // Schedule next loop
+                nextLoopAudioTime += loopDuration;
+                nextLoopGameTime += (float)loopDuration;
+
+                // Track loop segment timing (the current musical verse should always finish playing before the finale)
+                for (int i = 0; i < segmentCount; i++)
+                {
+                    _segmentEndAudioTime = loopStartAudioTime + segmentDuration * (i + 1);
+                    _segmentEndGameTime = loopStartGameTime + (float)(segmentDuration * (i + 1));
+
+                    // Wait until the next segment
+                    while (Time.time < _segmentEndGameTime && !_transitionToFinale)
+                    {
+                        yield return null;
+                    }
+
+                    // Interrupt the remaining segments for the finale
+                    if (_transitionToFinale) break;
+                }
             }
         }
     }

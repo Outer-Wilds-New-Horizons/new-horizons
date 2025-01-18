@@ -180,6 +180,8 @@ namespace NewHorizons.Handlers
 
         public static void SetUpEyeCampfireSequence()
         {
+            if (!GetCustomEyeTravelers().Any()) return;
+
             _eyeMusicController = new GameObject("EyeMusicController").AddComponent<EyeMusicController>();
 
             var quantumCampsiteController = Object.FindObjectOfType<QuantumCampsiteController>();
@@ -196,6 +198,8 @@ namespace NewHorizons.Handlers
             {
                 if (eyeTraveler.controller != null)
                 {
+                    eyeTraveler.controller.gameObject.SetActive(false);
+
                     ArrayHelpers.Append(ref quantumCampsiteController._travelerControllers, eyeTraveler.controller);
                     eyeTraveler.controller.OnStartPlaying += quantumCampsiteController.OnTravelerStartPlaying;
 
@@ -211,6 +215,7 @@ namespace NewHorizons.Handlers
 
                 if (eyeTraveler.loopAudioSource != null)
                 {
+                    eyeTraveler.loopAudioSource.GetComponent<AudioSignal>().SetSignalActivation(false);
                     _eyeMusicController.RegisterLoopSource(eyeTraveler.loopAudioSource);
                 }
                 if (eyeTraveler.finaleAudioSource != null)
@@ -227,6 +232,7 @@ namespace NewHorizons.Handlers
                     if (ancestorInstrumentZone == null)
                     {
                         // Quantum instrument is not a child of an instrument zone, so treat it like its own zone
+                        quantumInstrument.gameObject.SetActive(false);
                         ArrayHelpers.Append(ref quantumCampsiteController._instrumentZones, quantumInstrument.gameObject);
                     }
                 }
@@ -237,11 +243,13 @@ namespace NewHorizons.Handlers
                     ArrayHelpers.Append(ref quantumCampsiteController._instrumentZones, instrumentZone.gameObject);
                 }
             }
+
+            UpdateTravelerPositions();
         }
 
         public static void UpdateTravelerPositions()
         {
-            //if (!GetCustomEyeTravelers().Any()) return;
+            if (!GetCustomEyeTravelers().Any()) return;
 
             var quantumCampsiteController = Object.FindObjectOfType<QuantumCampsiteController>();
 
