@@ -436,7 +436,9 @@ namespace NewHorizons
             if (isEyeOfTheUniverse)
             {
                 _playerAwake = true;
+                EyeSceneHandler.Init();
                 EyeSceneHandler.OnSceneLoad();
+                EyeSceneHandler.SetUpEyeCampfireSequence();
             }
 
             if (isSolarSystem || isEyeOfTheUniverse)

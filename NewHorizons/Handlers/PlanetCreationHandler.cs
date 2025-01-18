@@ -691,6 +691,11 @@ namespace NewHorizons.Handlers
                 atmosphere = AtmosphereBuilder.Make(go, sector, body.Config.Atmosphere, surfaceSize).GetComponentInChildren<LODGroup>();
             }
 
+            if (body.Config.EyeOfTheUniverse != null)
+            {
+                EyeOfTheUniverseBuilder.Make(go, sector, body.Config.EyeOfTheUniverse, body);
+            }
+
             if (body.Config.ParticleFields != null)
             {
                 EffectsBuilder.Make(go, sector, body.Config);
