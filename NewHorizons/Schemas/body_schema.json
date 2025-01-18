@@ -995,6 +995,10 @@
           "type": "string",
           "description": "A unique ID to associate this traveler with their corresponding quantum instruments and instrument zones. Must be unique for each traveler."
         },
+        "name": {
+          "type": "string",
+          "description": "The name to display for this traveler's signals. Defaults to the name of the detail."
+        },
         "startPlayingCondition": {
           "type": "string",
           "description": "The dialogue condition that will trigger the traveler to start playing their instrument. Must be unique for each traveler."
