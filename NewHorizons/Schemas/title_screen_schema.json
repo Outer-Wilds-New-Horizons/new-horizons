@@ -30,7 +30,11 @@
     },
     "music": {
       "type": "string",
-      "description": "Relative path to music to replace the title screen music with."
+      "description": "The music audio that will play on the title screen. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+    },
+    "ambience": {
+      "type": "string",
+      "description": "The ambience audio that will play on the title screen. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
     },
     "rotationSpeed": {
       "type": "number",
