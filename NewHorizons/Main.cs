@@ -433,7 +433,7 @@ namespace NewHorizons
 
                 // FOR TESTING!!!!
                 // Remove once actually loading a json file is implemented
-                TitleSceneHandler.SetUp(new MainMenuConfig() { menuTextTint = new External.SerializableData.MColor(128, 128, 255) });
+                TitleSceneHandler.SetUp(new TitleScreenConfig() { menuTextTint = new External.SerializableData.MColor(128, 128, 255) });
             }
 
             // EOTU fixes

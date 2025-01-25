@@ -28,12 +28,11 @@ namespace NewHorizons.Handlers
             subtitleContainer.AddComponent<SubtitlesHandler>();
         }
 
-        public static void SetUp(MainMenuConfig config)
+        public static void SetUp(TitleScreenConfig config)
         {
             if (config.menuTextTint != null)
             {
-                TitleScreenColourHandler.SetColour((Color)config.menuTextTint.ToColor());
-
+                TitleScreenColourHandler.SetColour(config.menuTextTint.ToColor());
             }
         }
 

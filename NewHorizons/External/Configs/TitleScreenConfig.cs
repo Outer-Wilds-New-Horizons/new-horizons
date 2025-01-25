@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace NewHorizons.External.Configs
 {
     [JsonObject]
-    public class MainMenuConfig
+    public class TitleScreenConfig
     {
         /// <summary>
         /// Colour of the text on the main menu
