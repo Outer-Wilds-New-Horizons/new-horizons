@@ -16,16 +16,21 @@ namespace NewHorizons.Handlers
         private static Dictionary<string, AudioType> _customAudioTypes;
         private static List<AudioLibrary.AudioEntry> _audioEntries;
 
-        public static void Init()
+        public static void Init(bool titleScreen = false)
         {
             _customAudioTypes = new Dictionary<string, AudioType>();
             _audioEntries = new List<AudioLibrary.AudioEntry>();
 
-            Delay.RunWhenAndInNUpdates(
-                PostInit,
-                () => Locator.GetAudioManager()?._libraryAsset != null,
-                1
-            );
+            if (titleScreen)
+                Delay.RunWhenAndInNUpdates(
+                    PostInit,
+                    () => Locator.GetAudioManager()?._libraryAsset != null,
+                    1
+                );
+            else
+                Delay.RunWhen(() => Locator.GetAudioManager()?._libraryAsset != null,
+                    PostInit
+                );
         }
 
         private static void PostInit()

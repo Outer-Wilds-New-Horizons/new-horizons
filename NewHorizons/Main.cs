@@ -422,7 +422,7 @@ namespace NewHorizons
 
             if (isTitleScreen && CustomTitleScreen)
             {
-                AudioTypeHandler.Init();
+                AudioTypeHandler.Init(true);
 
                 try
                 {
