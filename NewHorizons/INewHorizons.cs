@@ -97,6 +97,16 @@ namespace NewHorizons
         T QuerySystem<T>(string path);
 
         /// <summary>
+        /// Uses JSONPath to query a title screen config
+        /// </summary>
+        object QueryTitleScreen(Type outType, IModBehaviour mod, string path);
+
+        ///<summary>
+        /// Uses JSONPath to query a title screen config
+        /// </summary>
+        T QueryTitleScreen<T>(IModBehaviour mod, string path);
+
+        /// <summary>
         /// Register your own builder that will act on the given GameObject by reading the json string of its "extras" module
         /// </summary>
         void RegisterCustomBuilder(Action<GameObject, string> builder); 
@@ -222,5 +232,8 @@ namespace NewHorizons
         /// </summary>
         /// <param name="id"></param>
         void SetNextSpawnID(string id);
+
+
+        void RegisterTitleScreenHandler(Action<GameObject> builder, bool deleteNHPlanets = true, bool shareTitleScreen = false, string conditionRequired = null, string factRequired = null);
     }
 }

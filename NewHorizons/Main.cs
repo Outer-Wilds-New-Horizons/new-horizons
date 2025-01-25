@@ -55,6 +55,7 @@ namespace NewHorizons
         public static Dictionary<string, List<NewHorizonsBody>> BodyDict = new();
         public static List<IModBehaviour> MountedAddons = new();
         public static Dictionary<IModBehaviour, AddonConfig> AddonConfigs = new();
+        public static Dictionary<IModBehaviour, TitleScreenConfig> TitleScreenConfigs = new();
 
         public static float SecondsElapsedInLoop = -1;
 
@@ -269,6 +270,7 @@ namespace NewHorizons
             OnChangeStarSystem.AddListener(RichPresenceHandler.OnChangeStarSystem);
 
             LoadAddonManifest("Assets/addon-manifest.json", this);
+            LoadTitleScreenConfig("Assets/title-screen.json", this);
         }
 
         public override void SetupPauseMenu(IPauseMenuManager pauseMenu)
@@ -431,9 +433,9 @@ namespace NewHorizons
                 }
                 TitleSceneHandler.InitSubtitles();
 
-                // FOR TESTING!!!!
-                // Remove once actually loading a json file is implemented
-                TitleSceneHandler.SetUp(new TitleScreenConfig() { menuTextTint = new External.SerializableData.MColor(128, 128, 255) });
+                // TODO: Select one title screen and if it has shareTitleScreen set to true do all the other ones that have it true too.
+                var (mod, config) = Main.TitleScreenConfigs.FirstOrDefault(kvp => kvp.Value.KnowsFact() && kvp.Value.HasCondition());
+                TitleSceneHandler.SetUp(mod, config);
             }
 
             // EOTU fixes
@@ -792,6 +794,10 @@ namespace NewHorizons
                 {
                     LoadAddonManifest("addon-manifest.json", mod);
                 }
+                if (File.Exists(Path.Combine(folder, "title-screen.json")))
+                {
+                    LoadTitleScreenConfig("title-screen.json", mod);
+                }
                 if (Directory.Exists(Path.Combine(folder, "translations")))
                 {
                     LoadTranslations(folder, mod);
@@ -838,6 +844,21 @@ namespace NewHorizons
             }
 
             AddonConfigs[mod] = addonConfig;
+        }
+
+        private void LoadTitleScreenConfig(string file, IModBehaviour mod)
+        {
+            NHLogger.LogVerbose($"Loading title screen config for {mod.ModHelper.Manifest.Name}");
+
+            var titleScreenConfig = mod.ModHelper.Storage.Load<TitleScreenConfig>(file, false);
+
+            if (titleScreenConfig == null)
+            {
+                NHLogger.LogError($"Title screen config for {mod.ModHelper.Manifest.Name} could not load, check your JSON");
+                return;
+            }
+
+            TitleScreenConfigs[mod] = titleScreenConfig;
         }
 
         private void LoadTranslations(string folder, IModBehaviour mod)

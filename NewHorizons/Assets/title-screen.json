@@ -1,0 +1,11 @@
+{
+  "disableNHPlanets": false,
+  "mergeWithOtherTitles": true,
+  // FOR TESTING!!!!
+  // Remove once actually loading a json file is implemented
+  "menuTextTint": {
+    "r": 128,
+    "g": 128,
+    "b": 255
+  }
+}

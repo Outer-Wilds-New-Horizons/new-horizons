@@ -178,6 +178,24 @@ namespace NewHorizons
             return default;
         }
 
+        public object QueryTitleScreen(Type outType, IModBehaviour mod, string jsonPath)
+        {
+            var titleScreenConfig = Main.TitleScreenConfigs[mod];
+            return titleScreenConfig == null
+                ? null
+                : QueryJson(outType, Path.Combine(mod.ModHelper.Manifest.ModFolderPath, "title-screen.json"), jsonPath);
+        }
+
+        public T QueryTitleScreen<T>(IModBehaviour mod, string jsonPath)
+        {
+            var data = QueryTitleScreen(typeof(T), mod, jsonPath);
+            if (data is T result)
+            {
+                return result;
+            }
+            return default;
+        }
+
         public GameObject SpawnObject(IModBehaviour mod, GameObject planet, Sector sector, string propToCopyPath, Vector3 position, Vector3 eulerAngles,
             float scale, bool alignRadial)
         {
@@ -344,5 +362,11 @@ namespace NewHorizons
         public void AddSubtitle(IModBehaviour mod, string filePath) => SubtitlesHandler.RegisterAdditionalSubtitle(mod, filePath);
 
         public void SetNextSpawnID(string id) => PlayerSpawnHandler.TargetSpawnID = id;
+
+        // TODO: Implement
+        public void RegisterTitleScreenHandler(Action<GameObject> builder, bool deleteNHPlanets = true, bool shareTitleScreen = false, string conditionRequired = null, string factRequired = null)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

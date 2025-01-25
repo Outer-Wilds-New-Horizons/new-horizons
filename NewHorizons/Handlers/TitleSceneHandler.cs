@@ -1,10 +1,13 @@
 using NewHorizons.Builder.Body;
+using NewHorizons.Builder.StarSystem;
 using NewHorizons.External;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
+using NewHorizons.External.Modules.Props;
 using NewHorizons.Handlers.TitleScreen;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OWML;
+using OWML.Common;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -28,11 +31,81 @@ namespace NewHorizons.Handlers
             subtitleContainer.AddComponent<SubtitlesHandler>();
         }
 
-        public static void SetUp(TitleScreenConfig config)
+        public static void SetUp(IModBehaviour mod, TitleScreenConfig config)
         {
             if (config.menuTextTint != null)
             {
                 TitleScreenColourHandler.SetColour(config.menuTextTint.ToColor());
+            }
+
+            if (config.Skybox?.destroyStarField ?? false)
+            {
+                Object.Destroy(SearchUtilities.Find("Skybox/Starfield"));
+            }
+
+            if (config.Skybox?.rightPath != null ||
+                config.Skybox?.leftPath != null ||
+                config.Skybox?.topPath != null ||
+                config.Skybox?.bottomPath != null ||
+                config.Skybox?.frontPath != null ||
+                config.Skybox?.bottomPath != null)
+            {
+                SkyboxBuilder.Make(config.Skybox, mod);
+            }
+
+            if (!string.IsNullOrEmpty(config.music))
+            {
+                //TODO: Implement
+            }
+
+            if (config.MenuPlanet != null)
+            {
+                if (config.MenuPlanet.destroyMenuPlanet)
+                {
+                    //TODO: Implement
+                }
+
+                if (config.MenuPlanet.removeChildren != null)
+                {
+                    //TODO: Implement
+                    //RemoveChildren(null, config.MenuPlanet.removeChildren);
+                }
+
+                if (config.MenuPlanet.details != null)
+                {
+                    foreach (var simplifiedDetail in config.MenuPlanet.details)
+                    {
+                        var detail = new DetailInfo(simplifiedDetail);
+                        //TODO: Implement
+                    }
+                }
+            }
+        }
+
+        private static void RemoveChildren(GameObject go, string[] paths)
+        {
+            var goPath = go.transform.GetPath();
+            var transforms = go.GetComponentsInChildren<Transform>(true);
+            foreach (var childPath in paths)
+            {
+                // Multiple children can have the same path so we delete all that match
+                var path = $"{goPath}/{childPath}";
+
+                var flag = true;
+                foreach (var childObj in transforms.Where(x => x.GetPath() == path))
+                {
+                    flag = false;
+                    // idk why we wait here but we do
+                    Delay.FireInNUpdates(() =>
+                    {
+                        if (childObj != null && childObj.gameObject != null)
+                        {
+                            childObj.gameObject.SetActive(false);
+                        }
+                    }, 2);
+                }
+
+                if (flag) NHLogger.LogWarning($"Couldn't find \"{childPath}\".");
             }
         }
 
