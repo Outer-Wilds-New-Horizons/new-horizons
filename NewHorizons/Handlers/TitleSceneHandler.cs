@@ -55,7 +55,9 @@ namespace NewHorizons.Handlers
 
             if (!string.IsNullOrEmpty(config.music))
             {
-                //TODO: Implement
+                var musicSource = SearchUtilities.Find("Scene/AudioSource_Music").GetComponent<OWAudioSource>();
+                var audioType = AudioTypeHandler.GetAudioType(config.music, mod);
+                Delay.FireOnNextUpdate(() => musicSource.AssignAudioLibraryClip(audioType));
             }
 
             if (config.MenuPlanet != null)

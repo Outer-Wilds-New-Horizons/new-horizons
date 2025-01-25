@@ -422,6 +422,8 @@ namespace NewHorizons
 
             if (isTitleScreen && CustomTitleScreen)
             {
+                AudioTypeHandler.Init();
+
                 try
                 {
                     TitleSceneHandler.DisplayBodyOnTitleScreen(BodyDict.Values.ToList().SelectMany(x => x).ToList());

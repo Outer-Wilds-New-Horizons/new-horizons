@@ -21,9 +21,10 @@ namespace NewHorizons.Handlers
             _customAudioTypes = new Dictionary<string, AudioType>();
             _audioEntries = new List<AudioLibrary.AudioEntry>();
 
-            Delay.RunWhen(
+            Delay.RunWhenAndInNUpdates(
+                PostInit,
                 () => Locator.GetAudioManager()?._libraryAsset != null,
-                PostInit
+                1
             );
         }
 
