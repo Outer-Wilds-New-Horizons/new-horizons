@@ -38,7 +38,7 @@
     },
     "rotationSpeed": {
       "type": "number",
-      "description": "Changes the speed the main menu planet and the skybox rotates.",
+      "description": "Changes the speed the main menu planet and the skybox rotates. This is in degrees per second.",
       "format": "float"
     },
     "MenuPlanet": {
@@ -152,6 +152,11 @@
           "items": {
             "$ref": "#/definitions/SimplifiedDetailInfo"
           }
+        },
+        "rotationSpeed": {
+          "type": "number",
+          "description": "Changes the speed the main menu planet. This is in degrees per second.",
+          "format": "float"
         }
       }
     },
