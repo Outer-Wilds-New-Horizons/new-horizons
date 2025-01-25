@@ -423,20 +423,7 @@ namespace NewHorizons
             if (isTitleScreen && CustomTitleScreen)
             {
                 AudioTypeHandler.Init(true);
-
-                try
-                {
-                    TitleSceneHandler.DisplayBodyOnTitleScreen(BodyDict.Values.ToList().SelectMany(x => x).ToList());
-                }
-                catch (Exception e)
-                {
-                    NHLogger.LogError($"Failed to make title screen bodies: {e}");
-                }
-                TitleSceneHandler.InitSubtitles();
-
-                // TODO: Select one title screen and if it has shareTitleScreen set to true do all the other ones that have it true too.
-                var (mod, config) = Main.TitleScreenConfigs.FirstOrDefault(kvp => kvp.Value.KnowsFact() && kvp.Value.HasCondition());
-                TitleSceneHandler.SetUp(mod, config);
+                TitleSceneHandler.Init();
             }
 
             // EOTU fixes

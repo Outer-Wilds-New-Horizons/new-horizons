@@ -50,9 +50,9 @@ namespace NewHorizons.External.Configs
         public string ambience;
 
         /// <summary>
-        /// Changes the speed the main menu planet and the skybox rotates.
+        /// Changes the speed the main menu planet and the skybox rotates. This is in degrees per second.
         /// </summary>
-        public float rotationSpeed;
+        public float rotationSpeed = 1;
 
         /// <summary>
         /// Edit properties of the main menu planet
@@ -76,6 +76,11 @@ namespace NewHorizons.External.Configs
             /// A list of DetailInfos to populate the main menu planet with.
             /// </summary>
             public SimplifiedDetailInfo[] details;
+
+            /// <summary>
+            /// Changes the speed the main menu planet. This is in degrees per second.
+            /// </summary>
+            public float rotationSpeed = 2;
         }
 
         /// <summary>

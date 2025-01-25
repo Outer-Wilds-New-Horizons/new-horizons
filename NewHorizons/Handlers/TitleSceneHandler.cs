@@ -1,4 +1,6 @@
+using Epic.OnlineServices.Presence;
 using NewHorizons.Builder.Body;
+using NewHorizons.Builder.Props;
 using NewHorizons.Builder.StarSystem;
 using NewHorizons.External;
 using NewHorizons.External.Configs;
@@ -8,6 +10,7 @@ using NewHorizons.Handlers.TitleScreen;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OWML;
 using OWML.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -17,6 +20,21 @@ namespace NewHorizons.Handlers
 {
     public static class TitleSceneHandler
     {
+        public static void Init()
+        {
+            var planetRoot = SearchUtilities.Find("Scene/Background/PlanetPivot/PlanetRoot");
+            var campfire = SearchUtilities.Find("Scene/Background/PlanetPivot/Prefab_HEA_Campfire");
+            campfire.transform.SetParent(planetRoot.transform, true);
+            var ambientLight = SearchUtilities.Find("Scene/Background/PlanetPivot/AmbientLight_CaveTwin");
+            ambientLight.transform.SetParent(planetRoot.transform, true);
+
+            TitleSceneHandler.InitSubtitles();
+
+            // TODO: Select one title screen and if it has shareTitleScreen set to true do all the other ones that have it true too.
+            var (mod, config) = Main.TitleScreenConfigs.FirstOrDefault(kvp => kvp.Value.KnowsFact() && kvp.Value.HasCondition());
+            TitleSceneHandler.SetUp(mod, config);
+        }
+
         public static void InitSubtitles()
         {
             GameObject subtitleContainer = SearchUtilities.Find("TitleMenu/TitleCanvas/TitleLayoutGroup/Logo_EchoesOfTheEye");
@@ -33,6 +51,18 @@ namespace NewHorizons.Handlers
 
         public static void SetUp(IModBehaviour mod, TitleScreenConfig config)
         {
+            if (!config.disableNHPlanets)
+            {
+                try
+                {
+                    TitleSceneHandler.DisplayBodyOnTitleScreen(Main.BodyDict.Values.ToList().SelectMany(x => x).ToList());
+                }
+                catch (Exception e)
+                {
+                    NHLogger.LogError($"Failed to make title screen bodies: {e}");
+                }
+            }
+
             if (config.menuTextTint != null)
             {
                 TitleScreenColourHandler.SetColour(config.menuTextTint.ToColor());
@@ -40,7 +70,7 @@ namespace NewHorizons.Handlers
 
             if (config.Skybox?.destroyStarField ?? false)
             {
-                Object.Destroy(SearchUtilities.Find("Skybox/Starfield"));
+                UnityEngine.Object.Destroy(SearchUtilities.Find("Skybox/Starfield"));
             }
 
             if (config.Skybox?.rightPath != null ||
@@ -67,26 +97,32 @@ namespace NewHorizons.Handlers
                 Delay.FireOnNextUpdate(() => ambienceSource.AssignAudioLibraryClip(audioType));
             }
 
+            SearchUtilities.Find("Scene/Background").GetComponent<RotateTransform>()._degreesPerSecond = config.rotationSpeed;
+
             if (config.MenuPlanet != null)
             {
-                if (config.MenuPlanet.destroyMenuPlanet)
-                {
-                    //TODO: Implement
-                }
+                var menuPlanet = SearchUtilities.Find("Scene/Background/PlanetPivot/PlanetRoot");
 
                 if (config.MenuPlanet.removeChildren != null)
                 {
-                    //TODO: Implement
-                    //RemoveChildren(null, config.MenuPlanet.removeChildren);
+                    RemoveChildren(menuPlanet, config.MenuPlanet.removeChildren);
                 }
 
                 if (config.MenuPlanet.details != null)
                 {
                     foreach (var simplifiedDetail in config.MenuPlanet.details)
                     {
-                        var detail = new DetailInfo(simplifiedDetail);
-                        //TODO: Implement
+                        DetailBuilder.Make(menuPlanet, null, mod, new DetailInfo(simplifiedDetail));
                     }
+                }
+
+                var rotator = SearchUtilities.Find("Scene/Background/PlanetPivot").GetComponent<RotateTransform>();
+                rotator._localAxis = Vector3.up;
+                rotator._degreesPerSecond = config.MenuPlanet.rotationSpeed;
+
+                if (config.MenuPlanet.destroyMenuPlanet)
+                {
+                    menuPlanet.SetActive(false);
                 }
             }
         }
@@ -156,12 +192,7 @@ namespace NewHorizons.Handlers
                 planetSizes.Add(bodyInfo3);
             }
 
-            var planetRoot = SearchUtilities.Find("Scene/Background/PlanetPivot/PlanetRoot");
-            var campfire = SearchUtilities.Find("Scene/Background/PlanetPivot/Prefab_HEA_Campfire");
-            campfire.transform.SetParent(planetRoot.transform, true);
-            var ambientLight = SearchUtilities.Find("Scene/Background/PlanetPivot/AmbientLight_CaveTwin");
-            ambientLight.transform.SetParent(planetRoot.transform, true);
-            planetRoot.SetActive(false);
+            SearchUtilities.Find("Scene/Background/PlanetPivot/PlanetRoot").SetActive(false);
 
             var lightGO = new GameObject("Light");
             lightGO.transform.parent = SearchUtilities.Find("Scene/Background").transform;
@@ -250,11 +281,11 @@ namespace NewHorizons.Handlers
                 }
             }
 
-            var pivot = Object.Instantiate(SearchUtilities.Find("Scene/Background/PlanetPivot"), SearchUtilities.Find("Scene/Background").transform);
+            var pivot = UnityEngine.Object.Instantiate(SearchUtilities.Find("Scene/Background/PlanetPivot"), SearchUtilities.Find("Scene/Background").transform);
             pivot.GetComponent<RotateTransform>()._degreesPerSecond = 10f;
             foreach (Transform child in pivot.transform)
             {
-                Object.Destroy(child.gameObject);
+                UnityEngine.Object.Destroy(child.gameObject);
             }
             pivot.name = "Pivot";
 
