@@ -40,9 +40,14 @@ namespace NewHorizons.External.Configs
         public SkyboxModule Skybox;
 
         /// <summary>
-        /// Relative path to music to replace the title screen music with.
+        /// The music audio that will play on the title screen. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list.
         /// </summary>
         public string music;
+
+        /// <summary>
+        /// The ambience audio that will play on the title screen. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list.
+        /// </summary>
+        public string ambience;
 
         /// <summary>
         /// Changes the speed the main menu planet and the skybox rotates.

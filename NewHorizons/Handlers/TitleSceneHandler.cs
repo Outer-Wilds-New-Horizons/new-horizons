@@ -60,6 +60,13 @@ namespace NewHorizons.Handlers
                 Delay.FireOnNextUpdate(() => musicSource.AssignAudioLibraryClip(audioType));
             }
 
+            if (!string.IsNullOrEmpty(config.ambience))
+            {
+                var ambienceSource = SearchUtilities.Find("Scene/AudioSource_Ambience").GetComponent<OWAudioSource>();
+                var audioType = AudioTypeHandler.GetAudioType(config.ambience, mod);
+                Delay.FireOnNextUpdate(() => ambienceSource.AssignAudioLibraryClip(audioType));
+            }
+
             if (config.MenuPlanet != null)
             {
                 if (config.MenuPlanet.destroyMenuPlanet)
