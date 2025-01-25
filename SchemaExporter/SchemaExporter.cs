@@ -33,6 +33,9 @@ public static class SchemaExporter
         var translationSchema =
             new Schema<TranslationConfig>("Translation Schema", "Schema for a translation file in New Horizons", $"{folderName}/translation_schema", settings);
         translationSchema.Output();
+        var titleScreenSchema = new Schema<TitleScreenConfig>("Title Screen Schema",
+            "Schema for the title screen config in New Horizons", $"{folderName}/title_screen_schema", settings);
+        titleScreenSchema.Output();
         Console.WriteLine("Done!");
     }
 
