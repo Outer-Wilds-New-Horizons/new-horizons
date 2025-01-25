@@ -147,6 +147,12 @@ namespace NewHorizons.Handlers
                 planetSizes.Add(bodyInfo3);
             }
 
+            var planetRoot = SearchUtilities.Find("Scene/Background/PlanetPivot/PlanetRoot");
+            var campfire = SearchUtilities.Find("Scene/Background/PlanetPivot/Prefab_HEA_Campfire");
+            campfire.transform.SetParent(planetRoot.transform, true);
+            var ambientLight = SearchUtilities.Find("Scene/Background/PlanetPivot/AmbientLight_CaveTwin");
+            ambientLight.transform.SetParent(planetRoot.transform, true);
+            planetRoot.SetActive(false);
 
             var lightGO = new GameObject("Light");
             lightGO.transform.parent = SearchUtilities.Find("Scene/Background").transform;
