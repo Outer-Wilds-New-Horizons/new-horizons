@@ -12,6 +12,7 @@ namespace NewHorizons.Handlers.TitleScreen
     {
         public static void SetColour(Color colour)
         {
+            colour.a = 1;
             var buttons = GameObject.FindObjectOfType<TitleScreenManager>()._mainMenu.GetComponentsInChildren<Text>();
             var footer = GameObject.Find("TitleMenu/TitleCanvas/FooterBlock").GetComponentsInChildren<Text>();
             foreach (var button in buttons.Concat(footer))

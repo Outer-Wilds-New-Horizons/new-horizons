@@ -147,8 +147,6 @@ namespace NewHorizons.Handlers
                 planetSizes.Add(bodyInfo3);
             }
 
-            SearchUtilities.Find("Scene/Background/PlanetPivot/Prefab_HEA_Campfire").SetActive(false);
-            SearchUtilities.Find("Scene/Background/PlanetPivot/PlanetRoot").SetActive(false);
 
             var lightGO = new GameObject("Light");
             lightGO.transform.parent = SearchUtilities.Find("Scene/Background").transform;
