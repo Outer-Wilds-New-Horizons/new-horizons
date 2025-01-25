@@ -1,0 +1,239 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Title Screen Schema",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "menuTextTint": {
+      "description": "Colour of the text on the main menu",
+      "$ref": "#/definitions/MColor"
+    },
+    "factRequiredForTitle": {
+      "type": "string",
+      "description": "Ship log fact required for this title screen to appear."
+    },
+    "conditionRequiredForTitle": {
+      "type": "string",
+      "description": "Persistent condition required for this title screen to appear."
+    },
+    "disableNHPlanets": {
+      "type": "boolean",
+      "description": "If set to true, NH generated planets will not show on the title screen. If false, this title screen has the same chance as other NH planet title screens to show."
+    },
+    "shareTitleScreen": {
+      "type": "boolean",
+      "description": "If set to true, this custom title screen will merge with all other custom title screens with shareTitleScreen set to true. If false, NH will randomly select between this and other valid title screens that are loaded."
+    },
+    "Skybox": {
+      "description": "Customize the skybox for this title screen",
+      "$ref": "#/definitions/SkyboxModule"
+    },
+    "music": {
+      "type": "string",
+      "description": "Relative path to music to replace the title screen music with."
+    },
+    "rotationSpeed": {
+      "type": "number",
+      "description": "Changes the speed the main menu planet and the skybox rotates.",
+      "format": "float"
+    },
+    "MenuPlanet": {
+      "description": "Edit properties of the main menu planet",
+      "$ref": "#/definitions/MenuPlanetModule"
+    },
+    "extras": {
+      "type": "object",
+      "description": "Extra data that may be used by extension mods",
+      "additionalProperties": {
+        "type": "object"
+      }
+    },
+    "$schema": {
+      "type": "string",
+      "description": "The schema to validate with"
+    }
+  },
+  "definitions": {
+    "MColor": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "r": {
+          "type": "integer",
+          "description": "The red component of this colour from 0-255, higher values will make the colour glow if applicable.",
+          "format": "int32",
+          "maximum": 2147483647.0,
+          "minimum": 0.0
+        },
+        "g": {
+          "type": "integer",
+          "description": "The green component of this colour from 0-255, higher values will make the colour glow if applicable.",
+          "format": "int32",
+          "maximum": 2147483647.0,
+          "minimum": 0.0
+        },
+        "b": {
+          "type": "integer",
+          "description": "The blue component of this colour from 0-255, higher values will make the colour glow if applicable.",
+          "format": "int32",
+          "maximum": 2147483647.0,
+          "minimum": 0.0
+        },
+        "a": {
+          "type": "integer",
+          "description": "The alpha (opacity) component of this colour",
+          "format": "int32",
+          "default": 255,
+          "maximum": 255.0,
+          "minimum": 0.0
+        }
+      }
+    },
+    "SkyboxModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "destroyStarField": {
+          "type": "boolean",
+          "description": "Whether to destroy the star field around the player"
+        },
+        "useCube": {
+          "type": "boolean",
+          "description": "Whether to use a cube for the skybox instead of a smooth sphere"
+        },
+        "rightPath": {
+          "type": "string",
+          "description": "Relative filepath to the texture to use for the skybox's positive X direction"
+        },
+        "leftPath": {
+          "type": "string",
+          "description": "Relative filepath to the texture to use for the skybox's negative X direction"
+        },
+        "topPath": {
+          "type": "string",
+          "description": "Relative filepath to the texture to use for the skybox's positive Y direction"
+        },
+        "bottomPath": {
+          "type": "string",
+          "description": "Relative filepath to the texture to use for the skybox's negative Y direction"
+        },
+        "frontPath": {
+          "type": "string",
+          "description": "Relative filepath to the texture to use for the skybox's positive Z direction"
+        },
+        "backPath": {
+          "type": "string",
+          "description": "Relative filepath to the texture to use for the skybox's negative Z direction"
+        }
+      }
+    },
+    "MenuPlanetModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "destroyMenuPlanet": {
+          "type": "boolean",
+          "description": "Disables the renderers of the main menu planet and all objects on it (this is to improve compatibility with other mods that don't use the NH title screen json)."
+        },
+        "removeChildren": {
+          "type": "array",
+          "description": "Disables the renderers of objects at the provided paths",
+          "items": {
+            "type": "string"
+          }
+        },
+        "details": {
+          "type": "array",
+          "description": "A list of DetailInfos to populate the main menu planet with.",
+          "items": {
+            "$ref": "#/definitions/SimplifiedDetailInfo"
+          }
+        }
+      }
+    },
+    "SimplifiedDetailInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "assetBundle": {
+          "type": "string",
+          "description": "Relative filepath to an asset-bundle to load the prefab defined in `path` from"
+        },
+        "path": {
+          "type": "string",
+          "description": "Either the path in the scene hierarchy of the item to copy or the path to the object in the supplied asset bundle. \nIf empty, will make an empty game object. This can be useful for adding other props to it as its children."
+        },
+        "removeChildren": {
+          "type": "array",
+          "description": "A list of children to remove from this detail",
+          "items": {
+            "type": "string"
+          }
+        },
+        "removeComponents": {
+          "type": "boolean",
+          "description": "Do we reset all the components on this object? Useful for certain props that have dialogue components attached to\nthem."
+        },
+        "scale": {
+          "type": "number",
+          "description": "Scale the prop",
+          "format": "float",
+          "default": 1.0
+        },
+        "stretch": {
+          "description": "Scale each axis of the prop. Overrides `scale`.",
+          "$ref": "#/definitions/MVector3"
+        }
+      }
+    },
+    "MVector3": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "type": "number",
+          "format": "float"
+        },
+        "y": {
+          "type": "number",
+          "format": "float"
+        },
+        "z": {
+          "type": "number",
+          "format": "float"
+        }
+      }
+    }
+  },
+  "$docs": {
+    "title": "Title Screen Schema",
+    "description": "Schema for the title screen config in New Horizons"
+  }
+}
