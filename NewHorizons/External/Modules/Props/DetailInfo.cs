@@ -7,15 +7,8 @@ using System.ComponentModel;
 namespace NewHorizons.External.Modules.Props
 {
     [JsonObject]
-    public class DetailInfo : GeneralPropInfo
+    public class SimplifiedDetailInfo : GeneralPropInfo
     {
-        public DetailInfo() { }
-
-        public DetailInfo(GeneralPointPropInfo info)
-        {
-            JsonConvert.PopulateObject(JsonConvert.SerializeObject(info), this);
-        }
-
         /// <summary>
         /// Relative filepath to an asset-bundle to load the prefab defined in `path` from
         /// </summary>
@@ -47,6 +40,22 @@ namespace NewHorizons.External.Modules.Props
         /// Scale each axis of the prop. Overrides `scale`.
         /// </summary>
         public MVector3 stretch;
+    }
+
+    [JsonObject]
+    public class DetailInfo : SimplifiedDetailInfo
+    {
+        public DetailInfo() { }
+
+        public DetailInfo(GeneralPointPropInfo info)
+        {
+            JsonConvert.PopulateObject(JsonConvert.SerializeObject(info), this);
+        }
+
+        public DetailInfo(SimplifiedDetailInfo info)
+        {
+            JsonConvert.PopulateObject(JsonConvert.SerializeObject(info), this);
+        }
 
         [Obsolete("Use QuantumDetailInfo")]
         public string quantumGroupID;
