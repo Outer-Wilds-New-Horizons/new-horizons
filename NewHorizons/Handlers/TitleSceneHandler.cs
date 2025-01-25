@@ -101,7 +101,7 @@ namespace NewHorizons.Handlers
 
             if (config.MenuPlanet != null)
             {
-                var menuPlanet = SearchUtilities.Find("Scene/Background/PlanetPivot/PlanetRoot");
+                var menuPlanet = SearchUtilities.Find("Scene/Background/PlanetPivot");
 
                 if (config.MenuPlanet.removeChildren != null)
                 {
@@ -116,7 +116,7 @@ namespace NewHorizons.Handlers
                     }
                 }
 
-                var rotator = SearchUtilities.Find("Scene/Background/PlanetPivot").GetComponent<RotateTransform>();
+                var rotator = menuPlanet.GetComponent<RotateTransform>();
                 rotator._localAxis = Vector3.up;
                 rotator._degreesPerSecond = config.MenuPlanet.rotationSpeed;
 
