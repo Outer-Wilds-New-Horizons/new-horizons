@@ -50,7 +50,7 @@ namespace NewHorizons.External.Configs
         public string ambience;
 
         /// <summary>
-        /// Changes the speed the main menu planet and the skybox rotates. This is in degrees per second.
+        /// Changes the speed the skybox rotates (and by extension the main menu planet). This is in degrees per second.
         /// </summary>
         public float rotationSpeed = 1;
 
