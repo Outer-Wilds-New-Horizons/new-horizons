@@ -270,7 +270,6 @@ namespace NewHorizons
             OnChangeStarSystem.AddListener(RichPresenceHandler.OnChangeStarSystem);
 
             LoadAddonManifest("Assets/addon-manifest.json", this);
-            LoadTitleScreenConfig("Assets/title-screen.json", this);
         }
 
         public override void SetupPauseMenu(IPauseMenuManager pauseMenu)
