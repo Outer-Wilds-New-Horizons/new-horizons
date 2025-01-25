@@ -9,6 +9,13 @@ namespace NewHorizons.External.Modules.Props
     [JsonObject]
     public class SimplifiedDetailInfo : GeneralPropInfo
     {
+        public SimplifiedDetailInfo() { }
+
+        public SimplifiedDetailInfo(GeneralPointPropInfo info)
+        {
+            JsonConvert.PopulateObject(JsonConvert.SerializeObject(info), this);
+        }
+
         /// <summary>
         /// Relative filepath to an asset-bundle to load the prefab defined in `path` from
         /// </summary>
