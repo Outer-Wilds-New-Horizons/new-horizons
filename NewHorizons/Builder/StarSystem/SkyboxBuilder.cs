@@ -1,4 +1,4 @@
-using NewHorizons.External.Configs;
+using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using NewHorizons.Utility.Files;
 using NewHorizons.Utility.OWML;
@@ -13,13 +13,13 @@ namespace NewHorizons.Builder.StarSystem
     {
         private static readonly Shader _unlitShader = Shader.Find("Unlit/Texture");
 
-        public static void Make(StarSystemConfig.SkyboxModule module, IModBehaviour mod)
+        public static void Make(SkyboxModule module, IModBehaviour mod)
         {
             NHLogger.Log("Building Skybox");
             BuildSkySphere(module, mod);
         }
 
-        public static GameObject BuildSkySphere(StarSystemConfig.SkyboxModule module, IModBehaviour mod)
+        public static GameObject BuildSkySphere(SkyboxModule module, IModBehaviour mod)
         {
             var skybox = SearchUtilities.Find("Skybox");
 
