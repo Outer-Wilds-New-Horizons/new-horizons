@@ -1,3 +1,4 @@
+using Epic.OnlineServices;
 using Epic.OnlineServices.Presence;
 using NewHorizons.Builder.Body;
 using NewHorizons.Builder.Props;
@@ -28,11 +29,24 @@ namespace NewHorizons.Handlers
             var ambientLight = SearchUtilities.Find("Scene/Background/PlanetPivot/AmbientLight_CaveTwin");
             ambientLight.transform.SetParent(planetRoot.transform, true);
 
-            TitleSceneHandler.InitSubtitles();
+            InitSubtitles();
+            AudioTypeHandler.Init();
+
+            // Load player data for fact and persistent condition checking
+            var profileManager = StandaloneProfileManager.SharedInstance;
+            profileManager.PreInitialize();
+            profileManager.Initialize();
+            PlayerData.Init(profileManager.currentProfileGameSave,
+                profileManager.currentProfileGameSettings,
+                profileManager.currentProfileGraphicsSettings,
+                profileManager.currentProfileInputJSON);
 
             // TODO: Select one title screen and if it has shareTitleScreen set to true do all the other ones that have it true too.
             var (mod, config) = Main.TitleScreenConfigs.FirstOrDefault(kvp => kvp.Value.KnowsFact() && kvp.Value.HasCondition());
-            TitleSceneHandler.SetUp(mod, config);
+            if (config != null)
+                SetUp(mod, config);
+            else
+                DisplayBodiesOnTitleScreen();
         }
 
         public static void InitSubtitles()
@@ -53,14 +67,7 @@ namespace NewHorizons.Handlers
         {
             if (!config.disableNHPlanets)
             {
-                try
-                {
-                    TitleSceneHandler.DisplayBodyOnTitleScreen(Main.BodyDict.Values.ToList().SelectMany(x => x).ToList());
-                }
-                catch (Exception e)
-                {
-                    NHLogger.LogError($"Failed to make title screen bodies: {e}");
-                }
+                DisplayBodiesOnTitleScreen();
             }
 
             if (config.menuTextTint != null)
@@ -151,6 +158,18 @@ namespace NewHorizons.Handlers
                 }
 
                 if (flag) NHLogger.LogWarning($"Couldn't find \"{childPath}\".");
+            }
+        }
+
+        public static void DisplayBodiesOnTitleScreen()
+        {
+            try
+            {
+                TitleSceneHandler.DisplayBodyOnTitleScreen(Main.BodyDict.Values.ToList().SelectMany(x => x).ToList());
+            }
+            catch (Exception e)
+            {
+                NHLogger.LogError($"Failed to make title screen bodies: {e}");
             }
         }
 

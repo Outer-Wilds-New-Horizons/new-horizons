@@ -15,28 +15,28 @@ namespace NewHorizons.Handlers
     {
         private static Dictionary<string, AudioType> _customAudioTypes;
         private static List<AudioLibrary.AudioEntry> _audioEntries;
+        private static bool _postInitialized = false;
 
-        public static void Init(bool titleScreen = false)
+        public static void Init()
         {
             _customAudioTypes = new Dictionary<string, AudioType>();
             _audioEntries = new List<AudioLibrary.AudioEntry>();
+            _postInitialized = false;
 
-            if (titleScreen)
-                Delay.RunWhenAndInNUpdates(
-                    PostInit,
-                    () => Locator.GetAudioManager()?._libraryAsset != null,
-                    1
-                );
-            else
-                Delay.RunWhen(() => Locator.GetAudioManager()?._libraryAsset != null,
-                    PostInit
-                );
+            Delay.RunWhen(() => Locator.GetAudioManager()?._libraryAsset != null && Locator.GetAudioManager()?._audioLibraryDict != null,
+                PostInit
+            );
         }
 
         private static void PostInit()
         {
             NHLogger.LogVerbose($"Adding all custom AudioTypes to the library");
+            _postInitialized = true;
+            ModifyAudioLibrary();
+        }
 
+        private static void ModifyAudioLibrary()
+        {
             var library = Locator.GetAudioManager()._libraryAsset;
             var audioEntries = library.audioEntries; // store previous array
             library.audioEntries = library.audioEntries.Concat(_audioEntries).ToArray(); // concat custom entries
@@ -93,6 +93,8 @@ namespace NewHorizons.Handlers
 
             _audioEntries.Add(new AudioLibrary.AudioEntry(audioType, audioClips));
             _customAudioTypes.Add(id, audioType);
+
+            if (_postInitialized) ModifyAudioLibrary();
 
             return audioType;
         }
