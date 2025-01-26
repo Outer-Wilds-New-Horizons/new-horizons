@@ -24,10 +24,13 @@ public class NHSlideCollectionContainer : SlideCollectionContainer
             __instance._changeSlidesAllowed = true;
             __instance._initialized = true;
             __instance._slideCollection.isVision = __instance._owningItem == null;
-            foreach (var factID in __instance._playWithShipLogFacts)
+            if (__instance._playWithShipLogFacts != null)
             {
-                var fact = Locator.GetShipLogManager().GetFact(factID);
-                fact?.RegisterSlideCollection(__instance._slideCollection);
+                foreach (var factID in __instance._playWithShipLogFacts)
+                {
+                    var fact = Locator.GetShipLogManager().GetFact(factID);
+                    fact?.RegisterSlideCollection(__instance._slideCollection);
+                }
             }
             return false;
         }
