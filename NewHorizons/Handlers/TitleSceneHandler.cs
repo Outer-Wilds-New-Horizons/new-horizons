@@ -1,5 +1,3 @@
-using Epic.OnlineServices;
-using Epic.OnlineServices.Presence;
 using NewHorizons.Builder.Body;
 using NewHorizons.Builder.Props;
 using NewHorizons.Builder.StarSystem;
