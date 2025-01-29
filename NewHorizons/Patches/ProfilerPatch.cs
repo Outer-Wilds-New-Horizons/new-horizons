@@ -19,13 +19,12 @@ public static class ProfilerPatch
 	{
 		foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
 		{
-			// only allow builders for now
 			if (!type.Name.EndsWith("Builder")) continue;
 
-			foreach (var method in type.GetMethods())
+			foreach (var method in type.GetRuntimeMethods())
 			{
-				// make and init methods
 				if (!(method.Name.StartsWith("Make") || method.Name.StartsWith("Init"))) continue;
+				if (method.IsGenericMethod) continue;
 
 				Main.Instance.ModHelper.Console.WriteLine($"[profiler] profiling method {method.DeclaringType.Name}.{method.Name}");
 				yield return method;
