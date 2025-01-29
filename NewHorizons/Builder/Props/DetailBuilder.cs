@@ -459,6 +459,15 @@ namespace NewHorizons.Builder.Props
             {
                 component.gameObject.AddComponent<NHRaftController>();
             }
+            else if (component is RaftDock dock)
+            {
+                // These flood toggles are to disable flooded docks on the Stranger
+                // Presumably the user isn't making one of those
+                foreach (var toggle in dock.GetComponents<FloodToggle>())
+                {
+                    Component.DestroyImmediate(toggle);
+                }
+            }
         }
 
         /// <summary>
