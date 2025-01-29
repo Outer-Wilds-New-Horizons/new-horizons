@@ -88,8 +88,8 @@ namespace NewHorizons.External.Configs
         /// </summary>
         public object extras;
 
-        public bool KnowsFact() => string.IsNullOrEmpty(factRequiredForTitle) || ShipLogHandler.KnowsFact(factRequiredForTitle);
+        public bool KnowsFact() => string.IsNullOrEmpty(factRequiredForTitle) || StandaloneProfileManager.SharedInstance.currentProfile != null && ShipLogHandler.KnowsFact(factRequiredForTitle);
 
-        public bool HasCondition() => string.IsNullOrEmpty(conditionRequiredForTitle) || PlayerData.GetPersistentCondition(conditionRequiredForTitle);
+        public bool HasCondition() => string.IsNullOrEmpty(conditionRequiredForTitle) || StandaloneProfileManager.SharedInstance.currentProfile != null && PlayerData.GetPersistentCondition(conditionRequiredForTitle);
     }
 }

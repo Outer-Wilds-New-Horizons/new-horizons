@@ -34,10 +34,12 @@ namespace NewHorizons.Handlers
             var profileManager = StandaloneProfileManager.SharedInstance;
             profileManager.PreInitialize();
             profileManager.Initialize();
-            PlayerData.Init(profileManager.currentProfileGameSave,
-                profileManager.currentProfileGameSettings,
-                profileManager.currentProfileGraphicsSettings,
-                profileManager.currentProfileInputJSON);
+            if (profileManager.currentProfile != null)
+                PlayerData.Init(profileManager.currentProfileGameSave,
+                    profileManager.currentProfileGameSettings,
+                    profileManager.currentProfileGraphicsSettings,
+                    profileManager.currentProfileInputJSON);
+
 
             // TODO: Select one title screen and if it has shareTitleScreen set to true do all the other ones that have it true too.
             var (mod, config) = Main.TitleScreenConfigs.FirstOrDefault(kvp => kvp.Value.KnowsFact() && kvp.Value.HasCondition());
