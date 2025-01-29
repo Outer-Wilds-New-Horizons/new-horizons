@@ -1,4 +1,4 @@
-﻿// #define ENABLE_PROFILER
+﻿#define ENABLE_PROFILER
 
 using HarmonyLib;
 using System.Collections.Generic;
@@ -33,20 +33,20 @@ public static class ProfilerPatch
 	}
 
 	[HarmonyPrefix]
-	public static void Prefix(MethodBase __originalMethod, out Stopwatch __state)
+	public static void Prefix(MethodBase __originalMethod/*, out Stopwatch __state*/)
 	{
 		Profiler.BeginSample($"{__originalMethod.DeclaringType.Name}.{__originalMethod.Name}");
 
-		__state = new Stopwatch();
-		__state.Start();
+		// __state = new Stopwatch();
+		// __state.Start();
 	}
 
 	[HarmonyPostfix]
-	public static void Postfix(MethodBase __originalMethod, Stopwatch __state)
+	public static void Postfix(/*MethodBase __originalMethod, Stopwatch __state*/)
 	{
 		Profiler.EndSample();
 
-		__state.Stop();
-		Main.Instance.ModHelper.Console.WriteLine($"[profiler] {__originalMethod.DeclaringType.Name}.{__originalMethod.Name} took {__state.Elapsed.TotalMilliseconds:f1} ms");
+		// __state.Stop();
+		// Main.Instance.ModHelper.Console.WriteLine($"[profiler] {__originalMethod.DeclaringType.Name}.{__originalMethod.Name} took {__state.Elapsed.TotalMilliseconds:f1} ms");
 	}
 }
