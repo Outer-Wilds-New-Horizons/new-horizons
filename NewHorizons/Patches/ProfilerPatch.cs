@@ -1,7 +1,10 @@
-﻿using HarmonyLib;
+﻿// #define ENABLE_PROFILER
+
+using HarmonyLib;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
+using UnityEngine.Profiling;
 
 namespace NewHorizons.Patches;
 
@@ -31,8 +34,10 @@ public static class ProfilerPatch
 	}
 
 	[HarmonyPrefix]
-	public static void Prefix(out Stopwatch __state)
+	public static void Prefix(MethodBase __originalMethod, out Stopwatch __state)
 	{
+		Profiler.BeginSample($"{__originalMethod.DeclaringType.Name}.{__originalMethod.Name}");
+
 		__state = new Stopwatch();
 		__state.Start();
 	}
@@ -40,6 +45,8 @@ public static class ProfilerPatch
 	[HarmonyPostfix]
 	public static void Postfix(MethodBase __originalMethod, Stopwatch __state)
 	{
+		Profiler.EndSample();
+
 		__state.Stop();
 		Main.Instance.ModHelper.Console.WriteLine($"[profiler] method {__originalMethod.DeclaringType.Name}.{__originalMethod.Name} took {__state.Elapsed.TotalMilliseconds} ms");
 	}
