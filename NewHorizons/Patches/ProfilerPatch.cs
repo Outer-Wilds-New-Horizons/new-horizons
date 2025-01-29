@@ -26,7 +26,7 @@ public static class ProfilerPatch
 				if (!(method.Name.StartsWith("Make") || method.Name.StartsWith("Init"))) continue;
 				if (method.IsGenericMethod) continue;
 
-				Main.Instance.ModHelper.Console.WriteLine($"[profiler] profiling method {method.DeclaringType.Name}.{method.Name}");
+				Main.Instance.ModHelper.Console.WriteLine($"[profiler] profiling {method.DeclaringType.Name}.{method.Name}");
 				yield return method;
 			}
 		}
@@ -47,6 +47,6 @@ public static class ProfilerPatch
 		Profiler.EndSample();
 
 		__state.Stop();
-		Main.Instance.ModHelper.Console.WriteLine($"[profiler] method {__originalMethod.DeclaringType.Name}.{__originalMethod.Name} took {__state.Elapsed.TotalMilliseconds} ms");
+		Main.Instance.ModHelper.Console.WriteLine($"[profiler] {__originalMethod.DeclaringType.Name}.{__originalMethod.Name} took {__state.Elapsed.TotalMilliseconds:f1} ms");
 	}
 }
