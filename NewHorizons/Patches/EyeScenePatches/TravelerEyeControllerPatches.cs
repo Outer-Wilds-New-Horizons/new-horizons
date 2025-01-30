@@ -11,7 +11,7 @@ namespace NewHorizons.Patches.EyeScenePatches
         [HarmonyPatch(nameof(TravelerEyeController.OnStartCosmicJamSession))]
         public static bool TravelerEyeController_OnStartCosmicJamSession(TravelerEyeController __instance)
         {
-            if (!EyeSceneHandler.GetCustomEyeTravelers().Any())
+            if (!EyeSceneHandler.GetActiveCustomEyeTravelers().Any())
             {
                 return true;
             }

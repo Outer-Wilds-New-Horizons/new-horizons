@@ -12,7 +12,7 @@ namespace NewHorizons.Patches.EyeScenePatches
         [HarmonyPatch(nameof(CosmicInflationController.UpdateFormation))]
         public static void CosmicInflationController_UpdateFormation(CosmicInflationController __instance)
         {
-            if (__instance._waitForCrossfade && EyeSceneHandler.GetCustomEyeTravelers().Any())
+            if (__instance._waitForCrossfade && EyeSceneHandler.GetActiveCustomEyeTravelers().Any())
             {
                 NHLogger.Log($"Hijacking finale cross-fade, NH will handle it");
                 __instance._waitForCrossfade = false;

@@ -1,3 +1,4 @@
+using NewHorizons.External.Modules.Props.Audio;
 using Newtonsoft.Json;
 using System.ComponentModel;
 
@@ -20,6 +21,11 @@ namespace NewHorizons.External.Modules.Props.EyeOfTheUniverse
         /// Allows gathering this quantum instrument using the zoomed-in signalscope, like Chert's bongos.
         /// </summary>
         public bool gatherWithScope;
+
+        /// <summary>
+        /// The audio signal emitted by this quantum instrument. The fields `name`, `audio`, and `frequency` will be copied from the corresponding Eye Traveler's signal if not specified here.
+        /// </summary>
+        public SignalInfo signal;
 
         /// <summary>
         /// The radius of the added sphere collider that will be used for interaction.

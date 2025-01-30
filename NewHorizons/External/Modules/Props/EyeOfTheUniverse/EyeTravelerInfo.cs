@@ -1,3 +1,4 @@
+using NewHorizons.External.Modules.Props.Audio;
 using NewHorizons.External.Modules.Props.Dialogue;
 using Newtonsoft.Json;
 
@@ -17,6 +18,16 @@ namespace NewHorizons.External.Modules.Props.EyeOfTheUniverse
         public string name;
 
         /// <summary>
+        /// If set, the player must know this ship log fact for this traveler (and their instrument zones and quantum instruments) to appear. The fact does not need to exist in the current star system; the player's save data will be checked directly.
+        /// </summary>
+        public string requiredFact;
+
+        /// <summary>
+        /// If set, the player must have this persistent dialogue condition set for this traveler (and their instrument zones and quantum instruments) to appear.
+        /// </summary>
+        public string requiredPersistentCondition;
+
+        /// <summary>
         /// The dialogue condition that will trigger the traveler to start playing their instrument. Must be unique for each traveler.
         /// </summary>
         public string startPlayingCondition;
@@ -27,9 +38,9 @@ namespace NewHorizons.External.Modules.Props.EyeOfTheUniverse
         public string participatingCondition;
 
         /// <summary>
-        /// The audio to use for the traveler while playing around the campfire (and also for their paired quantum instrument). It should be 16 measures at 92 BPM (approximately 42 seconds long). Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list.
+        /// The audio signal to use for the traveler while playing around the campfire (and also for their paired quantum instrument if another is not specified). The audio clip should be 16 measures at 92 BPM (approximately 42 seconds long).
         /// </summary>
-        public string loopAudio;
+        public SignalInfo signal;
 
         /// <summary>
         /// The audio to use for the traveler during the finale of the campfire song. It should be 8 measures of the main loop at 92 BPM followed by 2 measures of fade-out (approximately 26 seconds long in total). Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list.
@@ -37,13 +48,7 @@ namespace NewHorizons.External.Modules.Props.EyeOfTheUniverse
         public string finaleAudio;
 
         /// <summary>
-        /// The frequency ID of the signal emitted by the traveler. The built-in game values are `Default`, `Traveler`, `Quantum`, `EscapePod`,
-        /// `Statue`, `WarpCore`, `HideAndSeek`, and `Radio`. Defaults to `Traveler`. You can also put a custom value.
-        /// </summary>
-        public string frequency;
-
-        /// <summary>
-        /// The dialogue to use for this traveler. Omit this or set it to null if your traveler already has valid dialogue.
+        /// The dialogue to use for this traveler. If omitted, the first CharacterDialogueTree in the object will be used.
         /// </summary>
         public DialogueInfo dialogue;
     }

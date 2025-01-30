@@ -16,6 +16,25 @@ namespace NewHorizons.Builder.Props
     {
         public static TravelerEyeController MakeEyeTraveler(GameObject planetGO, Sector sector, EyeTravelerInfo info, NewHorizonsBody nhBody)
         {
+            var travelerData = EyeSceneHandler.CreateEyeTravelerData(info.id);
+            travelerData.info = info;
+            travelerData.requirementsMet = true;
+
+            if (!string.IsNullOrEmpty(info.requiredFact) && !ShipLogHandler.KnowsFact(info.requiredFact))
+            {
+                travelerData.requirementsMet = false;
+            }
+
+            if (!string.IsNullOrEmpty(info.requiredPersistentCondition) && DialogueConditionManager.SharedInstance.GetConditionState(info.requiredPersistentCondition))
+            {
+                travelerData.requirementsMet = false;
+            }
+
+            if (!travelerData.requirementsMet)
+            {
+                return null;
+            }
+
             var go = DetailBuilder.Make(planetGO, sector, nhBody.Mod, info);
 
             if (string.IsNullOrEmpty(info.name))
@@ -39,8 +58,12 @@ namespace NewHorizons.Builder.Props
             if (info.dialogue != null)
             {
                 var (dialogueTree, remoteTrigger) = DialogueBuilder.Make(planetGO, sector, info.dialogue, nhBody.Mod);
-                dialogueTree.transform.SetParent(travelerController.transform, false);
-                dialogueTree.transform.localPosition = Vector3.zero;
+                if (info.dialogue.position == null && info.dialogue.parentPath == null)
+                {
+                    info.dialogue.isRelativeToParent = true;
+                }
+                GeneralPropBuilder.MakeFromExisting(dialogueTree.gameObject, planetGO, sector, info.dialogue, defaultParent: go.transform);
+
                 if (travelerController._dialogueTree != null)
                 {
                     travelerController._dialogueTree.OnStartConversation -= travelerController.OnStartConversation;
@@ -52,35 +75,46 @@ namespace NewHorizons.Builder.Props
             }
             else if (travelerController._dialogueTree == null)
             {
-                NHLogger.LogError($"Eye Traveler with ID \"{info.id}\" does not have any dialogue set");
+                travelerController._dialogueTree = go.GetComponentInChildren<CharacterDialogueTree>();
+                if (travelerController._dialogueTree == null)
+                {
+                    NHLogger.LogError($"Eye Traveler with ID \"{info.id}\" does not have any dialogue set");
+                }
             }
+
+            travelerData.controller = travelerController;
 
             OWAudioSource loopAudioSource = null;
 
-            if (!string.IsNullOrEmpty(info.loopAudio))
+            if (info.signal != null)
             {
-                var signalInfo = new SignalInfo()
+                if (string.IsNullOrEmpty(info.signal.name))
                 {
-                    name = info.name,
-                    audio = info.loopAudio,
-                    detectionRadius = 10f,
-                    identificationRadius = 10f,
-                    onlyAudibleToScope = false,
-                    frequency = string.IsNullOrEmpty(info.frequency) ? "Traveler" : info.frequency,
-                };
-                var signalGO = SignalBuilder.Make(planetGO, sector, signalInfo, nhBody.Mod);
-                signalGO.transform.SetParent(travelerController.transform, false);
-                signalGO.transform.localPosition = Vector3.zero;
+                    info.signal.name = info.name;
+                }
+                if (string.IsNullOrEmpty(info.signal.frequency))
+                {
+                    info.signal.frequency = "Traveler";
+                }
+                var signalGO = SignalBuilder.Make(planetGO, sector, info.signal, nhBody.Mod);
+                if (info.signal.position == null && info.signal.parentPath == null)
+                {
+                    info.signal.isRelativeToParent = true;
+                }
+                GeneralPropBuilder.MakeFromExisting(signalGO, planetGO, sector, info.signal, defaultParent: go.transform);
 
                 var signal = signalGO.GetComponent<AudioSignal>();
                 travelerController._signal = signal;
                 signal.SetSignalActivation(false);
                 loopAudioSource = signal.GetOWAudioSource();
+
             }
             else if (travelerController._signal == null)
             {
                 NHLogger.LogError($"Eye Traveler with ID \"{info.id}\" does not have any loop audio set");
             }
+
+            travelerData.loopAudioSource = loopAudioSource;
 
             OWAudioSource finaleAudioSource = null;
 
@@ -100,10 +134,6 @@ namespace NewHorizons.Builder.Props
                 finaleAudioSource.gameObject.SetActive(true);
             }
 
-            var travelerData = EyeSceneHandler.GetOrCreateEyeTravelerData(info.id);
-            travelerData.info = info;
-            travelerData.controller = travelerController;
-            travelerData.loopAudioSource = loopAudioSource;
             travelerData.finaleAudioSource = finaleAudioSource;
 
             return travelerController;
@@ -111,6 +141,13 @@ namespace NewHorizons.Builder.Props
 
         public static QuantumInstrument MakeQuantumInstrument(GameObject planetGO, Sector sector, QuantumInstrumentInfo info, NewHorizonsBody nhBody)
         {
+            var travelerData = EyeSceneHandler.GetEyeTravelerData(info.id);
+
+            if (travelerData != null && !travelerData.requirementsMet)
+            {
+                return null;
+            }
+
             var go = DetailBuilder.Make(planetGO, sector, nhBody.Mod, info);
             go.layer = Layer.Interactible;
             if (info.interactRadius > 0f)
@@ -129,33 +166,45 @@ namespace NewHorizons.Builder.Props
             var trigger = go.AddComponent<QuantumInstrumentTrigger>();
             trigger.gatherCondition = info.gatherCondition;
 
-            var travelerData = EyeSceneHandler.GetOrCreateEyeTravelerData(info.id);
-            travelerData.quantumInstruments.Add(quantumInstrument);
-
-            if (travelerData.info != null)
+            if (travelerData != null)
             {
-                if (!string.IsNullOrEmpty(travelerData.info.loopAudio))
-                {
-                    var signalInfo = new SignalInfo()
-                    {
-                        name = travelerData.info.name,
-                        audio = travelerData.info.loopAudio,
-                        detectionRadius = 0,
-                        identificationRadius = 0,
-                        frequency = string.IsNullOrEmpty(travelerData.info.frequency) ? "Traveler" : travelerData.info.frequency,
-                    };
-                    var signalGO = SignalBuilder.Make(planetGO, sector, signalInfo, nhBody.Mod);
-                    signalGO.transform.SetParent(quantumInstrument.transform, false);
-                    signalGO.transform.localPosition = Vector3.zero;
-                }
-                else
-                {
-                    NHLogger.LogError($"Eye Traveler with ID \"{info.id}\" does not have any loop audio set");
-                }
+                travelerData.quantumInstruments.Add(quantumInstrument);
             }
             else
             {
                 NHLogger.LogError($"Quantum instrument with ID \"{info.id}\" has no matching eye traveler");
+            }
+
+            info.signal ??= new SignalInfo();
+
+            if (travelerData?.info != null && travelerData.info.signal != null)
+            {
+                if (string.IsNullOrEmpty(info.signal.name))
+                {
+                    info.signal.name = travelerData.info.name;
+                }
+                if (string.IsNullOrEmpty(info.signal.audio))
+                {
+                    info.signal.audio = travelerData.info.signal.audio;
+                }
+                if (string.IsNullOrEmpty(info.signal.frequency))
+                {
+                    info.signal.frequency = travelerData.info.signal.frequency;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(info.signal.audio))
+            {
+                var signalGO = SignalBuilder.Make(planetGO, sector, info.signal, nhBody.Mod);
+                if (info.signal.position == null && info.signal.parentPath == null)
+                {
+                    info.signal.isRelativeToParent = true;
+                }
+                GeneralPropBuilder.MakeFromExisting(signalGO, planetGO, sector, info.signal, defaultParent: go.transform);
+            }
+            else
+            {
+                NHLogger.LogError($"Eye Traveler with ID \"{info.id}\" does not have any loop audio set");
             }
 
             return quantumInstrument;
@@ -163,12 +212,25 @@ namespace NewHorizons.Builder.Props
 
         public static InstrumentZone MakeInstrumentZone(GameObject planetGO, Sector sector, InstrumentZoneInfo info, NewHorizonsBody nhBody)
         {
+            var travelerData = EyeSceneHandler.GetEyeTravelerData(info.id);
+
+            if (travelerData != null && !travelerData.requirementsMet)
+            {
+                return null;
+            }
+
             var go = DetailBuilder.Make(planetGO, sector, nhBody.Mod, info);
 
             var instrumentZone = go.AddComponent<InstrumentZone>();
 
-            var travelerData = EyeSceneHandler.GetOrCreateEyeTravelerData(info.id);
-            travelerData.instrumentZones.Add(instrumentZone);
+            if (travelerData != null)
+            {
+                travelerData.instrumentZones.Add(instrumentZone);
+            }
+            else
+            {
+                NHLogger.LogError($"Instrument zone with ID \"{info.id}\" has no matching eye traveler");
+            }
 
             return instrumentZone;
         }

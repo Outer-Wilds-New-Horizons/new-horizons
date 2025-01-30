@@ -30,7 +30,7 @@ namespace NewHorizons.Patches.EyeScenePatches
         [HarmonyPatch(nameof(QuantumCampsiteController.AreAllTravelersGathered))]
         public static bool QuantumCampsiteController_AreAllTravelersGathered(QuantumCampsiteController __instance, ref bool __result)
         {
-            if (!EyeSceneHandler.GetCustomEyeTravelers().Any())
+            if (!EyeSceneHandler.GetActiveCustomEyeTravelers().Any())
             {
                 return true;
             }
@@ -54,7 +54,7 @@ namespace NewHorizons.Patches.EyeScenePatches
                 __result = false;
                 return false;
             }
-            foreach (var traveler in EyeSceneHandler.GetCustomEyeTravelers())
+            foreach (var traveler in EyeSceneHandler.GetActiveCustomEyeTravelers())
             {
                 bool needsTraveler = true;
                 if (!string.IsNullOrEmpty(traveler.info.participatingCondition))
@@ -76,7 +76,7 @@ namespace NewHorizons.Patches.EyeScenePatches
         [HarmonyPatch(nameof(QuantumCampsiteController.OnTravelerStartPlaying))]
         public static void OnTravelerStartPlaying(QuantumCampsiteController __instance)
         {
-            if (!__instance._hasJamSessionStarted && EyeSceneHandler.GetCustomEyeTravelers().Any())
+            if (!__instance._hasJamSessionStarted && EyeSceneHandler.GetActiveCustomEyeTravelers().Any())
             {
                 NHLogger.Log($"NH is handling Eye sequence music");
                 // Jam session is starting, start our custom music handler

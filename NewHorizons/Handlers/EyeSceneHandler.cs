@@ -27,7 +27,16 @@ namespace NewHorizons.Handlers
             return _eyeMusicController;
         }
 
-        public static EyeTravelerData GetOrCreateEyeTravelerData(string id)
+        public static EyeTravelerData GetEyeTravelerData(string id)
+        {
+            if (_eyeTravelers.TryGetValue(id, out EyeTravelerData traveler))
+            {
+                return traveler;
+            }
+            return traveler;
+        }
+
+        public static EyeTravelerData CreateEyeTravelerData(string id)
         {
             if (_eyeTravelers.TryGetValue(id, out EyeTravelerData traveler))
             {
@@ -47,9 +56,9 @@ namespace NewHorizons.Handlers
             return traveler;
         }
 
-        public static List<EyeTravelerData> GetCustomEyeTravelers()
+        public static List<EyeTravelerData> GetActiveCustomEyeTravelers()
         {
-            return _eyeTravelers.Values.ToList();
+            return _eyeTravelers.Values.Where(t => t.requirementsMet).ToList();
         }
 
         public static void OnSceneLoad()
@@ -180,7 +189,7 @@ namespace NewHorizons.Handlers
 
         public static void SetUpEyeCampfireSequence()
         {
-            if (!GetCustomEyeTravelers().Any()) return;
+            if (!GetActiveCustomEyeTravelers().Any()) return;
 
             _eyeMusicController = new GameObject("EyeMusicController").AddComponent<EyeMusicController>();
 
@@ -194,7 +203,7 @@ namespace NewHorizons.Handlers
                 _eyeMusicController.RegisterLoopSource(controller._signal.GetOWAudioSource());
             }
 
-            foreach (var eyeTraveler in _eyeTravelers.Values)
+            foreach (var eyeTraveler in GetActiveCustomEyeTravelers())
             {
                 if (eyeTraveler.controller != null)
                 {
@@ -249,7 +258,7 @@ namespace NewHorizons.Handlers
 
         public static void UpdateTravelerPositions()
         {
-            if (!GetCustomEyeTravelers().Any()) return;
+            if (!GetActiveCustomEyeTravelers().Any()) return;
 
             var quantumCampsiteController = Object.FindObjectOfType<QuantumCampsiteController>();
 
@@ -308,6 +317,7 @@ namespace NewHorizons.Handlers
             public OWAudioSource finaleAudioSource;
             public List<QuantumInstrument> quantumInstruments = new();
             public List<InstrumentZone> instrumentZones = new();
+            public bool requirementsMet;
         }
     }
 }
