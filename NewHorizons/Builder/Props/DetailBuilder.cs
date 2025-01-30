@@ -36,6 +36,11 @@ namespace NewHorizons.Builder.Props
             }
         }
 
+        static DetailBuilder()
+        {
+            SceneManager.sceneUnloaded += SceneManager_sceneUnloaded;
+        }
+
         #region obsolete
         // Never change method signatures, people directly reference the NH dll and it can break backwards compatibility
         // In particular, Outer Wives needs this method signature
@@ -49,8 +54,9 @@ namespace NewHorizons.Builder.Props
             => Make(go, sector, mod: null, detail);
         #endregion
 
-        public static void ClearCache()
+        private static void SceneManager_sceneUnloaded(Scene scene)
         {
+            // would be nice to only clear when system changes, but fixed prefabs rely on stuff in the scene
             foreach (var prefab in _fixedPrefabCache.Values)
             {
                 UnityEngine.Object.Destroy(prefab.prefab);
