@@ -999,6 +999,14 @@
           "type": "string",
           "description": "The name to display for this traveler's signals. Defaults to the name of the detail."
         },
+        "requiredFact": {
+          "type": "string",
+          "description": "If set, the player must know this ship log fact for this traveler (and their instrument zones and quantum instruments) to appear. The fact does not need to exist in the current star system; the player's save data will be checked directly."
+        },
+        "requiredPersistentCondition": {
+          "type": "string",
+          "description": "If set, the player must have this persistent dialogue condition set for this traveler (and their instrument zones and quantum instruments) to appear."
+        },
         "startPlayingCondition": {
           "type": "string",
           "description": "The dialogue condition that will trigger the traveler to start playing their instrument. Must be unique for each traveler."
@@ -1007,20 +1015,16 @@
           "type": "string",
           "description": "If specified, this dialogue condition must be set for the traveler to participate in the campfire song. Otherwise, the song will be able to start without them."
         },
-        "loopAudio": {
-          "type": "string",
-          "description": "The audio to use for the traveler while playing around the campfire (and also for their paired quantum instrument). It should be 16 measures at 92 BPM (approximately 42 seconds long). Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+        "signal": {
+          "description": "The audio signal to use for the traveler while playing around the campfire (and also for their paired quantum instrument if another is not specified). The audio clip should be 16 measures at 92 BPM (approximately 42 seconds long).",
+          "$ref": "#/definitions/SignalInfo"
         },
         "finaleAudio": {
           "type": "string",
           "description": "The audio to use for the traveler during the finale of the campfire song. It should be 8 measures of the main loop at 92 BPM followed by 2 measures of fade-out (approximately 26 seconds long in total). Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
         },
-        "frequency": {
-          "type": "string",
-          "description": "The frequency ID of the signal emitted by the traveler. The built-in game values are `Default`, `Traveler`, `Quantum`, `EscapePod`,\n`Statue`, `WarpCore`, `HideAndSeek`, and `Radio`. Defaults to `Traveler`. You can also put a custom value."
-        },
         "dialogue": {
-          "description": "The dialogue to use for this traveler. Omit this or set it to null if your traveler already has valid dialogue.",
+          "description": "The dialogue to use for this traveler. If omitted, the first CharacterDialogueTree in the object will be used.",
           "$ref": "#/definitions/DialogueInfo"
         }
       }
@@ -1193,6 +1197,90 @@
           "description": "Default collider radius when interacting with the socket",
           "format": "float",
           "default": 0.0
+        }
+      }
+    },
+    "SignalInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "audio": {
+          "type": "string",
+          "description": "The audio to use. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+        },
+        "minDistance": {
+          "type": "number",
+          "description": "At this distance the sound is at its loudest.",
+          "format": "float"
+        },
+        "maxDistance": {
+          "type": "number",
+          "description": "The sound will drop off by this distance (Note: for signals, this only effects when it is heard aloud and not via the signalscope).",
+          "format": "float",
+          "default": 5.0
+        },
+        "volume": {
+          "type": "number",
+          "description": "How loud the sound will play",
+          "format": "float",
+          "default": 0.5
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "detectionRadius": {
+          "type": "number",
+          "description": "How close the player must get to the signal to detect it. This is when you get the \"Unknown Signal Detected\"\nnotification.",
+          "format": "float",
+          "minimum": 0.0
+        },
+        "frequency": {
+          "type": "string",
+          "description": "The frequency ID of the signal. The built-in game values are `Default`, `Traveler`, `Quantum`, `EscapePod`,\n`Statue`, `WarpCore`, `HideAndSeek`, and `Radio`. You can also put a custom value."
+        },
+        "identificationRadius": {
+          "type": "number",
+          "description": "How close the player must get to the signal to identify it. This is when you learn its name.",
+          "format": "float",
+          "default": 10.0,
+          "minimum": 0.0
+        },
+        "insideCloak": {
+          "type": "boolean",
+          "description": "Only set to `true` if you are putting this signal inside a cloaking field."
+        },
+        "name": {
+          "type": "string",
+          "description": "The unique ID of the signal."
+        },
+        "onlyAudibleToScope": {
+          "type": "boolean",
+          "description": "`false` if the player can hear the signal without equipping the signal-scope.",
+          "default": true
+        },
+        "reveals": {
+          "type": "string",
+          "description": "A ship log fact to reveal when the signal is identified.",
+          "default": ""
+        },
+        "sourceRadius": {
+          "type": "number",
+          "description": "Radius of the sphere giving off the signal.",
+          "format": "float",
+          "default": 1.0
         }
       }
     },
@@ -1619,6 +1707,10 @@
         "gatherWithScope": {
           "type": "boolean",
           "description": "Allows gathering this quantum instrument using the zoomed-in signalscope, like Chert's bongos."
+        },
+        "signal": {
+          "description": "The audio signal emitted by this quantum instrument. The fields `name`, `audio`, and `frequency` will be copied from the corresponding Eye Traveler's signal if not specified here.",
+          "$ref": "#/definitions/SignalInfo"
         },
         "interactRadius": {
           "type": "number",
@@ -3226,90 +3318,6 @@
         "blackHole",
         "whiteHole"
       ]
-    },
-    "SignalInfo": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "audio": {
-          "type": "string",
-          "description": "The audio to use. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
-        },
-        "minDistance": {
-          "type": "number",
-          "description": "At this distance the sound is at its loudest.",
-          "format": "float"
-        },
-        "maxDistance": {
-          "type": "number",
-          "description": "The sound will drop off by this distance (Note: for signals, this only effects when it is heard aloud and not via the signalscope).",
-          "format": "float",
-          "default": 5.0
-        },
-        "volume": {
-          "type": "number",
-          "description": "How loud the sound will play",
-          "format": "float",
-          "default": 0.5
-        },
-        "position": {
-          "description": "Position of the object",
-          "$ref": "#/definitions/MVector3"
-        },
-        "isRelativeToParent": {
-          "type": "boolean",
-          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
-        },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
-        "rename": {
-          "type": "string",
-          "description": "An optional rename of this object"
-        },
-        "detectionRadius": {
-          "type": "number",
-          "description": "How close the player must get to the signal to detect it. This is when you get the \"Unknown Signal Detected\"\nnotification.",
-          "format": "float",
-          "minimum": 0.0
-        },
-        "frequency": {
-          "type": "string",
-          "description": "The frequency ID of the signal. The built-in game values are `Default`, `Traveler`, `Quantum`, `EscapePod`,\n`Statue`, `WarpCore`, `HideAndSeek`, and `Radio`. You can also put a custom value."
-        },
-        "identificationRadius": {
-          "type": "number",
-          "description": "How close the player must get to the signal to identify it. This is when you learn its name.",
-          "format": "float",
-          "default": 10.0,
-          "minimum": 0.0
-        },
-        "insideCloak": {
-          "type": "boolean",
-          "description": "Only set to `true` if you are putting this signal inside a cloaking field."
-        },
-        "name": {
-          "type": "string",
-          "description": "The unique ID of the signal."
-        },
-        "onlyAudibleToScope": {
-          "type": "boolean",
-          "description": "`false` if the player can hear the signal without equipping the signal-scope.",
-          "default": true
-        },
-        "reveals": {
-          "type": "string",
-          "description": "A ship log fact to reveal when the signal is identified.",
-          "default": ""
-        },
-        "sourceRadius": {
-          "type": "number",
-          "description": "Radius of the sphere giving off the signal.",
-          "format": "float",
-          "default": 1.0
-        }
-      }
     },
     "RemoteInfo": {
       "type": "object",
