@@ -243,6 +243,8 @@ namespace NewHorizons.Handlers
                         // Quantum instrument is not a child of an instrument zone, so treat it like its own zone
                         quantumInstrument.gameObject.SetActive(false);
                         ArrayHelpers.Append(ref quantumCampsiteController._instrumentZones, quantumInstrument.gameObject);
+
+                        ArrayHelpers.Append(ref cosmicInflationController._inflationObjects, quantumInstrument.transform);
                     }
                 }
 
@@ -250,6 +252,8 @@ namespace NewHorizons.Handlers
                 {
                     instrumentZone.gameObject.SetActive(false);
                     ArrayHelpers.Append(ref quantumCampsiteController._instrumentZones, instrumentZone.gameObject);
+
+                    ArrayHelpers.Append(ref cosmicInflationController._inflationObjects, instrumentZone.transform);
                 }
             }
 
