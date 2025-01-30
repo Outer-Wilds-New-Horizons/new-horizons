@@ -37,11 +37,6 @@ namespace NewHorizons.Builder.Props
 
             var go = DetailBuilder.Make(planetGO, sector, nhBody.Mod, info);
 
-            if (string.IsNullOrEmpty(info.name))
-            {
-                info.name = go.name;
-            }
-
             var travelerController = go.GetAddComponent<TravelerEyeController>();
             if (!string.IsNullOrEmpty(info.startPlayingCondition))
             {
@@ -90,7 +85,7 @@ namespace NewHorizons.Builder.Props
             {
                 if (string.IsNullOrEmpty(info.signal.name))
                 {
-                    info.signal.name = info.name;
+                    info.signal.name = go.name;
                 }
                 if (string.IsNullOrEmpty(info.signal.frequency))
                 {
@@ -181,7 +176,7 @@ namespace NewHorizons.Builder.Props
             {
                 if (string.IsNullOrEmpty(info.signal.name))
                 {
-                    info.signal.name = travelerData.info.name;
+                    info.signal.name = travelerData.info.signal.name;
                 }
                 if (string.IsNullOrEmpty(info.signal.audio))
                 {

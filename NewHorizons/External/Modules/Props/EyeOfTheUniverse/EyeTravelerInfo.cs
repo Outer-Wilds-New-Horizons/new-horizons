@@ -13,11 +13,6 @@ namespace NewHorizons.External.Modules.Props.EyeOfTheUniverse
         public string id;
 
         /// <summary>
-        /// The name to display for this traveler's signals. Defaults to the name of the detail.
-        /// </summary>
-        public string name;
-
-        /// <summary>
         /// If set, the player must know this ship log fact for this traveler (and their instrument zones and quantum instruments) to appear. The fact does not need to exist in the current star system; the player's save data will be checked directly.
         /// </summary>
         public string requiredFact;
