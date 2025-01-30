@@ -1,4 +1,4 @@
-﻿#define ENABLE_PROFILER
+﻿#if ENABLE_PROFILER
 
 using HarmonyLib;
 using System.Collections.Generic;
@@ -59,3 +59,5 @@ public static class ProfilerPatch
 		// Main.Instance.ModHelper.Console.WriteLine($"[profiler] {__originalMethod.MethodName()} took {__state.Elapsed.TotalMilliseconds:f1} ms");
 	}
 }
+
+#endif

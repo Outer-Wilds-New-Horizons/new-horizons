@@ -1,5 +1,3 @@
-#define ENABLE_PROFILER
-
 using NewHorizons.Utility.OWML;
 using System.Collections.Generic;
 using System.Linq;
