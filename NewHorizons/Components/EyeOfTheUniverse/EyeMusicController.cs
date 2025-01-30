@@ -8,16 +8,23 @@ namespace NewHorizons.Components.EyeOfTheUniverse
 {
     public class EyeMusicController : MonoBehaviour
     {
+        // Delay between game logic and audio to ensure audio system has time to schedule all loops for the same tick
+        const double TIME_BUFFER_WINDOW = 0.5;
+
         private List<OWAudioSource> _loopSources = new();
         private List<OWAudioSource> _finaleSources = new();
         private bool _transitionToFinale;
         private bool _isPlaying;
+        private double _segmentEndAudioTime;
+        private float _segmentEndGameTime;
+        private CosmicInflationController _cosmicInflationController;
 
         public void RegisterLoopSource(OWAudioSource src)
         {
             src.loop = false;
             src.SetLocalVolume(1f);
             src.Stop();
+            src.playOnAwake = false;
             _loopSources.Add(src);
         }
 
@@ -26,6 +33,7 @@ namespace NewHorizons.Components.EyeOfTheUniverse
             src.loop = false;
             src.SetLocalVolume(1f);
             src.Stop();
+            src.playOnAwake = false;
             _finaleSources.Add(src);
         }
 
@@ -40,8 +48,6 @@ namespace NewHorizons.Components.EyeOfTheUniverse
         {
             _transitionToFinale = true;
 
-            var cosmicInflationController = FindObjectOfType<CosmicInflationController>();
-
             // Schedule finale for as soon as the current segment loop ends
             double finaleAudioTime = _segmentEndAudioTime;
             float finaleGameTime = _segmentEndGameTime;
@@ -53,9 +59,9 @@ namespace NewHorizons.Components.EyeOfTheUniverse
             }
 
             // Set quantum sphere inflation timer
-            var finaleDuration = cosmicInflationController._travelerFinaleSource.clip.length;
-            cosmicInflationController._startFormationTime = Time.time;
-            cosmicInflationController._finishFormationTime = finaleGameTime + finaleDuration - 4f;
+            var finaleDuration = _cosmicInflationController._travelerFinaleSource.clip.length;
+            _cosmicInflationController._startFormationTime = Time.time;
+            _cosmicInflationController._finishFormationTime = finaleGameTime + finaleDuration - 4f;
 
             // Play finale in sync
             foreach (var finaleSrc in _finaleSources)
@@ -64,18 +70,17 @@ namespace NewHorizons.Components.EyeOfTheUniverse
             }
         }
 
-        // Delay between game logic and audio to ensure audio system has time to schedule all loops for the same tick
-        const double TIME_BUFFER_WINDOW = 0.5;
-
-        private double _segmentEndAudioTime;
-        private float _segmentEndGameTime;
+        private void Awake()
+        {
+            _cosmicInflationController = FindObjectOfType<CosmicInflationController>();
+        }
 
         private IEnumerator DoLoop()
         {
             // Determine timing using the first loop audio clip (should be Riebeck's banjo loop)
             var referenceLoopClip = _loopSources.First().clip;
             double loopDuration = referenceLoopClip.samples / (double)referenceLoopClip.frequency;
-            
+
             // Vanilla audio divides the loop into 4 segments, but that actually causes weird key shifting during the crossfade
             int segmentCount = 2;
             double segmentDuration = loopDuration / segmentCount;
@@ -117,6 +122,22 @@ namespace NewHorizons.Components.EyeOfTheUniverse
 
                     // Interrupt the remaining segments for the finale
                     if (_transitionToFinale) break;
+                }
+            }
+
+            // Wait until the bubble has finished expanding
+            while (Time.time < _cosmicInflationController._finishFormationTime)
+            {
+                yield return null;
+            }
+
+            // Disable audio signals
+            foreach (var loopSrc in _loopSources)
+            {
+                var signal = loopSrc.GetComponent<AudioSignal>();
+                if (signal != null)
+                {
+                    signal.SetSignalActivation(false, 0f);
                 }
             }
         }
