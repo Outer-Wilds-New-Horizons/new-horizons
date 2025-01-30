@@ -51,6 +51,8 @@ namespace NewHorizons.Handlers
         /// </summary>
         public static void SetUpStreaming(GameObject obj, Sector sector)
         {
+            return;
+
             // find the asset bundles to load
             // tries the cache first, then builds
             if (!_objectCache.TryGetValue(obj, out var assetBundles))

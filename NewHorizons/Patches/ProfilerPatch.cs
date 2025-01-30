@@ -26,10 +26,11 @@ public static class ProfilerPatch
 			foreach (var method in type.GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
 			{
 				if (!(
-						method.Name.Contains("Make") ||
-						method.Name.Contains("Init") ||
-						method.Name.Contains("Find") ||
-						method.Name.Contains("OnSceneLoaded")
+						method.Name.StartsWith("Make") ||
+						method.Name.StartsWith("Init") ||
+						method.Name.StartsWith("Find") ||
+						method.Name == "SetUpStreaming" ||
+						method.Name == "OnSceneLoaded"
 					)) continue;
 
 				if (method.ContainsGenericParameters) continue;
