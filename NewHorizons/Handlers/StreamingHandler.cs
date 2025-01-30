@@ -51,7 +51,7 @@ namespace NewHorizons.Handlers
         /// </summary>
         public static void SetUpStreaming(GameObject obj, Sector sector)
         {
-            return;
+            // TODO: used OFTEN by detail builder. 20ms adds up to seconds. speed up!
 
             // find the asset bundles to load
             // tries the cache first, then builds

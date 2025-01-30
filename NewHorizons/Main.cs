@@ -308,6 +308,7 @@ namespace NewHorizons
                 ImageUtilities.ClearCache();
                 AudioUtilities.ClearCache();
                 AssetBundleUtilities.ClearCache();
+                DetailBuilder.ClearCache();
             }
 
             IsSystemReady = false;
