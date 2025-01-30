@@ -1,7 +1,10 @@
+#define ENABLE_PROFILER
+
 using NewHorizons.Utility.OWML;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Profiling;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
@@ -116,13 +119,17 @@ namespace NewHorizons.Utility
             if (CachedGameObjects.TryGetValue(path, out var go)) return go;
 
             // 1: normal find
+            Profiler.BeginSample("1");
             go = GameObject.Find(path);
             if (go)
             {
                 CachedGameObjects.Add(path, go);
+                Profiler.EndSample();
                 return go;
             }
+            Profiler.EndSample();
 
+            Profiler.BeginSample("1");
             // 2: find inactive using root + transform.find
             var names = path.Split('/');
 
@@ -142,9 +149,12 @@ namespace NewHorizons.Utility
             if (go)
             {
                 CachedGameObjects.Add(path, go);
+                Profiler.EndSample();
                 return go;
             }
+            Profiler.EndSample();
 
+            Profiler.BeginSample("3");
             var name = names.Last();
             if (warn) NHLogger.LogWarning($"Couldn't find object in path {path}, will look for potential matches for name {name}");
             // 3: find resource to include inactive objects (but skip prefabs)
@@ -153,10 +163,12 @@ namespace NewHorizons.Utility
             if (go)
             {
                 CachedGameObjects.Add(path, go);
+                Profiler.EndSample();
                 return go;
             }
 
             if (warn) NHLogger.LogWarning($"Couldn't find object with name {name}");
+            Profiler.EndSample();
             return null;
         }
 
