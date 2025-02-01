@@ -16,7 +16,10 @@ namespace NewHorizons.Patches.EyeScenePatches
                 return true;
             }
             // Not starting the loop audio here; EyeMusicController will handle that
-            __instance._signal.GetOWAudioSource().SetLocalVolume(0f);
+            if (__instance._signal != null)
+            {
+                __instance._signal.GetOWAudioSource().SetLocalVolume(0f);
+            }
             return false;
         }
     }
