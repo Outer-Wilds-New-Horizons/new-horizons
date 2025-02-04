@@ -1,6 +1,69 @@
 {
-  "$schema": "https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/main/NewHorizons/Schemas/translation_schema.json",
+  "$schema": "https://raw.githubusercontent.com/outer-wilds-new-horizons/new-horizons/main/NewHorizons/Schemas/translation_schema.json",
+  "DialogueDictionary": {
+    "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_1": "Sua nave agora está equipada com uma unidade de translocação!",
+    "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_2": "Você pode usar a nova aba \"Modo Interestelar\" no diário de bordo de sua nave para ajustar o piloto automático rumo a outro sistema solar.",
+    "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_3": "Então é só acionar o piloto automático e relaxar!"
+  },
   "UIDictionary": {
-    "Vessel": "Hospedeiro"
+    "INTERSTELLAR_MODE": "Modo Interestelar",
+    "FREQ_STATUE": "Estátua Nomai",
+    "FREQ_WARP_CORE": "Fluxo Anti-Gravitacional",
+    "FREQ_UNKNOWN": "???",
+    "ENGAGE_WARP_PROMPT": "Acionar translocação a {0}",
+    "WARP_LOCKED": "PILOTO AUTOMÁTICO AJUSTADO PARA:\n{0}",
+    "LOCK_AUTOPILOT_WARP": "Ajustar Piloto Automático para sistema solar",
+    "RICH_PRESENCE_EXPLORING": "Explorando {0}.",
+    "RICH_PRESENCE_WARPING": "Translocando para {0}.",
+    "OUTDATED_VERSION_WARNING": "AVISO\n\nO mod New Horizons funciona apenas na versão {0} ou superior. Você está usando a versão {1}.\n\nAtualize o Outer Wilds ou desinstale NH.",
+    "JSON_FAILED_TO_LOAD": "Arquivo(s) inválido(s): {0}",
+    "DEBUG_RAYCAST": "Raycast",
+    "DEBUG_PLACE": "Posicionar objeto",
+    "DEBUG_PLACE_TEXT": "Colocar texto Nomai",
+    "DEBUG_UNDO": "Desfazer",
+    "DEBUG_REDO": "Refazer",
+    "Vessel": "Hospedeiro",
+    "DLC_REQUIRED": "AVISO\n\nVocê tem addons (ex. {0}) instalados que requerem a DLC, mas a mesma não está habilitada.\n\nSuas mods podem não funcionar como esperado."
+  },
+  "OtherDictionary": {
+    "NOMAI_SHUTTLE_COMPUTER": "A <![CDATA[<color=orange>exploradora</color>]]> está repousando por hora em: <![CDATA[<color=lightblue>{0}</color>]]>."
+  },
+  "AchievementTranslations": {
+    "NH_EATEN_OUTSIDE_BRAMBLE": {
+      "Name": "Fenda de Contenção",
+      "Description": "Foi devorado fora das premisas de Abrolho Sombrio"
+    },
+    "NH_MULTIPLE_SYSTEM": {
+      "Name": "Viajante",
+      "Description": "Visitou 5 sistemas solares seguidos."
+    },
+    "NH_NEW_FREQ": {
+      "Name": "Frequências Anômalas",
+      "Description": "Descobriu uma nova frequência."
+    },
+    "NH_PROBE_LOST": {
+      "Name": "Conexão Perdida",
+      "Description": "Perdeu seu pequeno batedor."
+    },
+    "NH_WARP_DRIVE": {
+      "Name": "História Mal Contada",
+      "Description": "Usou a unidade de translocação da nave."
+    },
+    "NH_VESSEL_WARP": {
+      "Name": "História Acertada",
+      "Description": "Translocou para um sistema estelar usando o Hospedeiro."
+    },
+    "NH_RAFTING": {
+      "Name": "A Jangada e os Furiosos",
+      "Description": "Deu um rolé de jangada."
+    },
+    "NH_SUCKED_INTO_LAVA_BY_TORNADO": {
+      "Name": "Dieclone",
+      "Description": "Foi sugado na lava por um tornado."
+    },
+    "NH_TALK_TO_FIVE_CHARACTERS": {
+      "Name": "Social",
+      "Description": "Conversou com 5 personagens."
+    }
   }
 }
