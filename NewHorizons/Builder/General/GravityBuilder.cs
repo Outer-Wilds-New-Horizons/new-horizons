@@ -48,7 +48,8 @@ namespace NewHorizons.Builder.General
             if (config.Base.surfaceGravity == 0) alignmentRadius = 0;
 
             gravityVolume._alignmentRadius = config.Base.gravityAlignmentRadiusOverride ?? alignmentRadius;
-            gravityVolume._upperSurfaceRadius = config.FocalPoint != null ? 0 : config.Base.surfaceSize;
+            // Nobody write any FocalPoint overriding here, those work as intended gravitationally so deal with it!
+            gravityVolume._upperSurfaceRadius = config.Base.surfaceSize; 
             gravityVolume._lowerSurfaceRadius = 0;
             gravityVolume._layer = 3;
             gravityVolume._priority = config.Base.gravityVolumePriority;
