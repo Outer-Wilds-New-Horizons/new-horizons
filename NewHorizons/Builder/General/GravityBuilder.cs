@@ -15,11 +15,10 @@ namespace NewHorizons.Builder.General
             var gravityRadius = GM / 0.1f;
             if (exponent == 2f) gravityRadius = Mathf.Sqrt(gravityRadius);
 
-            if (config.FocalPoint != null) gravityRadius = 0; // keep it at the lowest possible
-            else if (config.Base.soiOverride != 0f) gravityRadius = config.Base.soiOverride;
-            else if (config.Star != null) gravityRadius = Mathf.Min(gravityRadius, 15 * config.Base.surfaceSize);
             // To let you actually orbit things the way you would expect we cap this at 4x the diameter if its not a star (this is what giants deep has)
-            else gravityRadius = Mathf.Min(gravityRadius, 4 * config.Base.surfaceSize);
+            if (config.Star == null) gravityRadius = Mathf.Min(gravityRadius, 4 * config.Base.surfaceSize);
+            else gravityRadius = Mathf.Min(gravityRadius, 15 * config.Base.surfaceSize);
+            if (config.Base.soiOverride != 0f) gravityRadius = config.Base.soiOverride;
 
             var gravityGO = new GameObject("GravityWell");
             gravityGO.transform.parent = planetGO.transform;
