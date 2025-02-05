@@ -36,16 +36,6 @@ namespace NewHorizons.Builder.General
 
             var owTriggerVolume = gravityGO.AddComponent<OWTriggerVolume>();
 
-            // If it's a focal point dont add collision stuff
-            if (config.FocalPoint != null)
-            {
-                owCollider.enabled = false;
-                owTriggerVolume.enabled = false;
-                sphereCollider.radius = 0;
-                sphereCollider.enabled = false;
-                sphereCollider.isTrigger = false;
-            }
-
             // copied from th and qm
             var gravityVolume = gravityGO.AddComponent<GravityVolume>();
             gravityVolume._cutoffAcceleration = 0f;
@@ -69,6 +59,21 @@ namespace NewHorizons.Builder.General
             gravityVolume._inheritable = false;
             gravityVolume._isPlanetGravityVolume = true;
             gravityVolume._cutoffRadius = 0f;
+
+            // If it's a focal point dont add collision stuff
+            // This is overkill
+            if (config.FocalPoint != null)
+            {
+                owCollider.enabled = false;
+                owTriggerVolume.enabled = false;
+                sphereCollider.radius = 0;
+                sphereCollider.enabled = false;
+                sphereCollider.isTrigger = false;
+                // This should ensure that even if the player enters the volume, it counts them as being inside the zero-gee cave equivalent
+                gravityVolume._cutoffRadius = gravityVolume._upperSurfaceRadius;
+                gravityVolume._lowerSurfaceRadius = gravityVolume._upperSurfaceRadius;
+                gravityVolume._cutoffAcceleration = 0;
+            }
 
             gravityGO.SetActive(true);
 
