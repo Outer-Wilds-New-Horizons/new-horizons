@@ -27,14 +27,24 @@ namespace NewHorizons.Builder.General
             gravityGO.layer = Layer.BasicEffectVolume;
             gravityGO.SetActive(false);
 
-            var SC = gravityGO.AddComponent<SphereCollider>();
-            SC.isTrigger = true;
-            SC.radius = gravityRadius;
+            var sphereCollider = gravityGO.AddComponent<SphereCollider>();
+            sphereCollider.isTrigger = true;
+            sphereCollider.radius = gravityRadius;
 
             var owCollider = gravityGO.AddComponent<OWCollider>();
             owCollider.SetLODActivationMask(DynamicOccupant.Player);
 
             var owTriggerVolume = gravityGO.AddComponent<OWTriggerVolume>();
+
+            // If it's a focal point dont add collision stuff
+            if (config.FocalPoint != null)
+            {
+                owCollider.enabled = false;
+                owTriggerVolume.enabled = false;
+                sphereCollider.radius = 0;
+                sphereCollider.enabled = false;
+                sphereCollider.isTrigger = false;
+            }
 
             // copied from th and qm
             var gravityVolume = gravityGO.AddComponent<GravityVolume>();
