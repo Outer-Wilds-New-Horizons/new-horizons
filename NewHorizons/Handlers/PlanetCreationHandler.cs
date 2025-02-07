@@ -514,7 +514,10 @@ namespace NewHorizons.Handlers
 
             if (body.Config.Orbit.showOrbitLine && !body.Config.Orbit.isStatic)
             {
-                OrbitlineBuilder.Make(body.Object, body.Config.Orbit.isMoon, body.Config);
+                if (LoadManager.GetCurrentScene() != OWScene.EyeOfTheUniverse)
+                {
+                    OrbitlineBuilder.Make(body.Object, body.Config.Orbit.isMoon, body.Config);
+                }
             }
 
             DetectorBuilder.Make(go, owRigidBody, primaryBody, ao, body.Config);
@@ -843,7 +846,10 @@ namespace NewHorizons.Handlers
                 var isMoon = newAO.GetAstroObjectType() is AstroObject.Type.Moon or AstroObject.Type.Satellite or AstroObject.Type.SpaceStation;
                 if (body.Config.Orbit.showOrbitLine)
                 {
-                    OrbitlineBuilder.Make(go, isMoon, body.Config);
+                    if (LoadManager.GetCurrentScene() != OWScene.EyeOfTheUniverse)
+                    {
+                        OrbitlineBuilder.Make(go, isMoon, body.Config);
+                    }
                 }
 
                 DetectorBuilder.SetDetector(primary, newAO, go.GetComponentInChildren<ConstantForceDetector>());
