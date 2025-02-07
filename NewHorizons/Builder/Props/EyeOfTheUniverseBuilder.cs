@@ -25,7 +25,7 @@ namespace NewHorizons.Builder.Props
                 travelerData.requirementsMet = false;
             }
 
-            if (!string.IsNullOrEmpty(info.requiredPersistentCondition) && DialogueConditionManager.SharedInstance.GetConditionState(info.requiredPersistentCondition))
+            if (!string.IsNullOrEmpty(info.requiredPersistentCondition) && !DialogueConditionManager.SharedInstance.GetConditionState(info.requiredPersistentCondition))
             {
                 travelerData.requirementsMet = false;
             }
