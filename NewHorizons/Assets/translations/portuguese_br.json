@@ -15,7 +15,7 @@
     "LOCK_AUTOPILOT_WARP": "Ajustar Piloto Automático para sistema solar",
     "RICH_PRESENCE_EXPLORING": "Explorando {0}.",
     "RICH_PRESENCE_WARPING": "Translocando para {0}.",
-    "OUTDATED_VERSION_WARNING": "AVISO\n\nO mod New Horizons funciona apenas na versão {0} ou superior. Você está usando a versão {1}.\n\nAtualize Outer Wilds ou desinstale NH.",
+    "OUTDATED_VERSION_WARNING": "AVISO\n\nA mod New Horizons funciona apenas na versão {0} ou superior. Você está usando a versão {1}.\n\nAtualize Outer Wilds ou desinstale NH.",
     "JSON_FAILED_TO_LOAD": "Arquivo(s) inválido(s): {0}",
     "DEBUG_RAYCAST": "Raycast",
     "DEBUG_PLACE": "Posicionar objeto",
