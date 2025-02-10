@@ -56,7 +56,9 @@ namespace NewHorizons.Handlers
             }
 
             if (IsVesselPresentAndActive())
+            {
                 _vesselSpawnPoint = Instance.CurrentStarSystem == "SolarSystem" ? UpdateVessel() : CreateVessel();
+            }
             else
             {
                 var vesselDimension = SearchUtilities.Find("DB_VesselDimension_Body/Sector_VesselDimension");
@@ -84,9 +86,12 @@ namespace NewHorizons.Handlers
             if (_vesselSpawnPoint is VesselSpawnPoint vesselSpawnPoint)
             {
                 NHLogger.LogVerbose("Relative warping into vessel");
-                vesselSpawnPoint.WarpPlayer();//Delay.FireOnNextUpdate(vesselSpawnPoint.WarpPlayer);
-                //Delay.FireInNUpdates(() => InvulnerabilityHandler.MakeInvulnerable(false), 25);
-                Delay.StartCoroutine(RunEveryNFrames(25, vesselSpawnPoint));
+                vesselSpawnPoint.WarpPlayer();
+
+                // #1034 Vessel warp sometimes has the player get flung away into space and die
+                // We do what we do with regular spawns where we keep resetting their position to the right one while invincible until we're relatively certain
+                // that the spawning sequence is done
+                Delay.StartCoroutine(FixPlayerSpawning(25, vesselSpawnPoint));
             }
             else
             {
@@ -98,24 +103,22 @@ namespace NewHorizons.Handlers
             LoadDB();
         }
 
-        private static IEnumerator RunEveryNFrames(int frameInterval, VesselSpawnPoint vesselSpawn)
+        private static IEnumerator FixPlayerSpawning(int frameInterval, VesselSpawnPoint vesselSpawn)
         {
-            int frameCount = 0;
             InvulnerabilityHandler.MakeInvulnerable(true);
 
+            var frameCount = 0;
             while (frameCount <= frameInterval)
             {
                 vesselSpawn.WarpPlayer();
-                if (frameCount == frameInterval)
-                {
-                    InvulnerabilityHandler.MakeInvulnerable(false);
-                    var playerBody = SearchUtilities.Find("Player_Body").GetAttachedOWRigidbody();
-                    var resources = playerBody.GetComponent<PlayerResources>();
-                    resources._currentHealth = 100f;
-                }
                 frameCount++;
                 yield return null; // Wait for the next frame
             }
+
+            InvulnerabilityHandler.MakeInvulnerable(false);
+            var playerBody = SearchUtilities.Find("Player_Body").GetAttachedOWRigidbody();
+            var resources = playerBody.GetComponent<PlayerResources>();
+            resources._currentHealth = 100f;
         }
 
         public static void LoadDB()
