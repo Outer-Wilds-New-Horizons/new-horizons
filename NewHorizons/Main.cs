@@ -436,6 +436,7 @@ namespace NewHorizons
             if (isEyeOfTheUniverse)
             {
                 _playerAwake = true;
+                EyeSceneHandler.Init();
                 EyeSceneHandler.OnSceneLoad();
             }
 
@@ -535,6 +536,8 @@ namespace NewHorizons
                     IsWarpingFromVessel = false;
                     DidWarpFromVessel = false;
                     DidWarpFromShip = false;
+
+                    EyeSceneHandler.SetUpEyeCampfireSequence();
                 }
 
                 //Stop starfield from disappearing when there is no lights

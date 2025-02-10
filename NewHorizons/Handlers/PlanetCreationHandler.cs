@@ -694,6 +694,18 @@ namespace NewHorizons.Handlers
                 atmosphere = AtmosphereBuilder.Make(go, sector, body.Config.Atmosphere, surfaceSize).GetComponentInChildren<LODGroup>();
             }
 
+            if (body.Config.EyeOfTheUniverse != null)
+            {
+                if (Main.Instance.CurrentStarSystem == "EyeOfTheUniverse")
+                {
+                    EyeOfTheUniverseBuilder.Make(go, sector, body.Config.EyeOfTheUniverse, body);
+                }
+                else
+                {
+                    NHLogger.LogWarning($"A mod creator (you?) has defined Eye of the Universe specific settings on a body [{body.Config.name}] that is not in the eye of the universe");
+                }
+            }
+
             if (body.Config.ParticleFields != null)
             {
                 EffectsBuilder.Make(go, sector, body.Config);
