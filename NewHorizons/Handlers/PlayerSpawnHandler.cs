@@ -70,6 +70,24 @@ namespace NewHorizons.Handlers
 
             // Spawn ship
             Delay.FireInNUpdates(SpawnShip, 30);
+
+            // Have had bug reports (#1034, #975) where sometimes after spawning via vessel warp or ship warp you die from impact velocity after being flung
+            // Something weird must be happening with velocity.
+            // Try to correct it here after the ship is done spawning
+            Delay.FireInNUpdates(() => FixVelocity(shouldWarpInFromVessel, shouldWarpInFromShip), 31);
+        }
+
+        private static void FixVelocity(bool shouldWarpInFromVessel, bool shouldWarpInFromShip)
+        {
+            var spawnOWRigidBody = GetDefaultSpawn().GetAttachedOWRigidbody();
+            if (shouldWarpInFromVessel) spawnOWRigidBody = VesselWarpHandler.VesselSpawnPoint.GetAttachedOWRigidbody();
+            if (shouldWarpInFromShip) spawnOWRigidBody = Locator.GetShipBody();
+
+            var spawnVelocity = spawnOWRigidBody.GetVelocity();
+            var spawnAngularVelocity = spawnOWRigidBody.GetPointTangentialVelocity(Locator.GetPlayerBody().GetPosition());
+            var velocity = spawnVelocity + spawnAngularVelocity;
+
+            Locator.GetPlayerBody().SetVelocity(velocity);
         }
 
         public static void SpawnShip()

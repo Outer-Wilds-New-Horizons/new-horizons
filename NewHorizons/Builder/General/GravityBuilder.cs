@@ -27,9 +27,9 @@ namespace NewHorizons.Builder.General
             gravityGO.layer = Layer.BasicEffectVolume;
             gravityGO.SetActive(false);
 
-            var SC = gravityGO.AddComponent<SphereCollider>();
-            SC.isTrigger = true;
-            SC.radius = gravityRadius;
+            var sphereCollider = gravityGO.AddComponent<SphereCollider>();
+            sphereCollider.isTrigger = true;
+            sphereCollider.radius = gravityRadius;
 
             var owCollider = gravityGO.AddComponent<OWCollider>();
             owCollider.SetLODActivationMask(DynamicOccupant.Player);
@@ -49,7 +49,8 @@ namespace NewHorizons.Builder.General
             if (config.Base.surfaceGravity == 0) alignmentRadius = 0;
 
             gravityVolume._alignmentRadius = config.Base.gravityAlignmentRadiusOverride ?? alignmentRadius;
-            gravityVolume._upperSurfaceRadius = config.FocalPoint != null ? 0 : config.Base.surfaceSize;
+            // Nobody write any FocalPoint overriding here, those work as intended gravitationally so deal with it!
+            gravityVolume._upperSurfaceRadius = config.Base.surfaceSize; 
             gravityVolume._lowerSurfaceRadius = 0;
             gravityVolume._layer = 3;
             gravityVolume._priority = config.Base.gravityVolumePriority;
@@ -58,6 +59,21 @@ namespace NewHorizons.Builder.General
             gravityVolume._inheritable = false;
             gravityVolume._isPlanetGravityVolume = true;
             gravityVolume._cutoffRadius = 0f;
+
+            // If it's a focal point dont add collision stuff
+            // This is overkill
+            if (config.FocalPoint != null)
+            {
+                owCollider.enabled = false;
+                owTriggerVolume.enabled = false;
+                sphereCollider.radius = 0;
+                sphereCollider.enabled = false;
+                sphereCollider.isTrigger = false;
+                // This should ensure that even if the player enters the volume, it counts them as being inside the zero-gee cave equivalent
+                gravityVolume._cutoffRadius = gravityVolume._upperSurfaceRadius;
+                gravityVolume._lowerSurfaceRadius = gravityVolume._upperSurfaceRadius;
+                gravityVolume._cutoffAcceleration = 0;
+            }
 
             gravityGO.SetActive(true);
 

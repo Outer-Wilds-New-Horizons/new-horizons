@@ -459,6 +459,15 @@ namespace NewHorizons.Builder.Props
             {
                 component.gameObject.AddComponent<NHRaftController>();
             }
+            else if (component is RaftDock dock)
+            {
+                // These flood toggles are to disable flooded docks on the Stranger
+                // Presumably the user isn't making one of those
+                foreach (var toggle in dock.GetComponents<FloodToggle>())
+                {
+                    Component.DestroyImmediate(toggle);
+                }
+            }
         }
 
         /// <summary>
@@ -486,7 +495,10 @@ namespace NewHorizons.Builder.Props
                 // Disable the angler anim controller because we don't want Update or LateUpdate to run, just need it to set the initial Animator state
                 angler.enabled = false;
                 angler.OnChangeAnglerState(AnglerfishController.AnglerState.Lurking);
-                
+
+                angler._animator.SetFloat("MoveSpeed", angler._moveCurrent);
+                angler._animator.SetFloat("Jaw", angler._jawCurrent);
+
                 Destroy(this);
             }
         }
