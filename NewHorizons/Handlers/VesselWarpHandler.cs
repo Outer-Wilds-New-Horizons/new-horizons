@@ -6,6 +6,7 @@ using NewHorizons.Utility;
 using NewHorizons.Utility.OuterWilds;
 using NewHorizons.Utility.OWML;
 using UnityEngine;
+using System.Collections;
 using static NewHorizons.Main;
 
 namespace NewHorizons.Handlers
@@ -84,6 +85,8 @@ namespace NewHorizons.Handlers
             {
                 NHLogger.LogVerbose("Relative warping into vessel");
                 vesselSpawnPoint.WarpPlayer();//Delay.FireOnNextUpdate(vesselSpawnPoint.WarpPlayer);
+                //Delay.FireInNUpdates(() => InvulnerabilityHandler.MakeInvulnerable(false), 25);
+                Delay.StartCoroutine(RunEveryNFrames(25, vesselSpawnPoint));
             }
             else
             {
@@ -93,6 +96,26 @@ namespace NewHorizons.Handlers
             Builder.General.SpawnPointBuilder.SuitUp();
 
             LoadDB();
+        }
+
+        private static IEnumerator RunEveryNFrames(int frameInterval, VesselSpawnPoint vesselSpawn)
+        {
+            int frameCount = 0;
+            InvulnerabilityHandler.MakeInvulnerable(true);
+
+            while (frameCount <= frameInterval)
+            {
+                vesselSpawn.WarpPlayer();
+                if (frameCount == frameInterval)
+                {
+                    InvulnerabilityHandler.MakeInvulnerable(false);
+                    var playerBody = SearchUtilities.Find("Player_Body").GetAttachedOWRigidbody();
+                    var resources = playerBody.GetComponent<PlayerResources>();
+                    resources._currentHealth = 100f;
+                }
+                frameCount++;
+                yield return null; // Wait for the next frame
+            }
         }
 
         public static void LoadDB()

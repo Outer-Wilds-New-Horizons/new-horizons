@@ -70,6 +70,18 @@ namespace NewHorizons.Handlers
 
             // Spawn ship
             Delay.FireInNUpdates(SpawnShip, 30);
+            Delay.FireInNUpdates(() =>
+            {
+                var spawnOWRigidBody = GetDefaultSpawn().GetAttachedOWRigidbody();
+                if (shouldWarpInFromVessel) spawnOWRigidBody = VesselWarpHandler.VesselSpawnPoint.GetAttachedOWRigidbody();
+                if (shouldWarpInFromShip) spawnOWRigidBody = Locator.GetShipBody();
+
+                var spawnVelocity = spawnOWRigidBody.GetVelocity();
+                var spawnAngularVelocity = spawnOWRigidBody.GetPointTangentialVelocity(Locator.GetPlayerBody().GetPosition());
+                var velocity = spawnVelocity + spawnAngularVelocity;
+
+                Locator.GetPlayerBody().SetVelocity(velocity);
+            }, 31);
         }
 
         public static void SpawnShip()

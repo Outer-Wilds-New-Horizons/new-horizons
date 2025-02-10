@@ -614,7 +614,7 @@ namespace NewHorizons
                 IsSystemReady = true;
 
                 // ShipWarpController will handle the invulnerability otherwise
-                if (!shouldWarpInFromShip)
+                if (!shouldWarpInFromShip && !shouldWarpInFromVessel)
                 {
                     Delay.FireOnNextUpdate(() => InvulnerabilityHandler.MakeInvulnerable(false));
                 }
