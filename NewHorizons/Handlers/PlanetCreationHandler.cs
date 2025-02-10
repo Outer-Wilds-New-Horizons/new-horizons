@@ -693,7 +693,14 @@ namespace NewHorizons.Handlers
 
             if (body.Config.EyeOfTheUniverse != null)
             {
-                EyeOfTheUniverseBuilder.Make(go, sector, body.Config.EyeOfTheUniverse, body);
+                if (Main.Instance.CurrentStarSystem == "EyeOfTheUniverse")
+                {
+                    EyeOfTheUniverseBuilder.Make(go, sector, body.Config.EyeOfTheUniverse, body);
+                }
+                else
+                {
+                    NHLogger.LogWarning($"A mod creator (you?) has defined Eye of the Universe specific settings on a body [{body.Config.name}] that is not in the eye of the universe");
+                }
             }
 
             if (body.Config.ParticleFields != null)
