@@ -103,6 +103,11 @@ namespace NewHorizons.External.Configs
         public DreamModule Dream;
 
         /// <summary>
+        /// Add features exclusive to the Eye of the Universe scene
+        /// </summary>
+        public EyeOfTheUniverseModule EyeOfTheUniverse;
+
+        /// <summary>
         /// Make this body into a focal point (barycenter)
         /// </summary>
         public FocalPointModule FocalPoint;

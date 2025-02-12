@@ -514,7 +514,11 @@ namespace NewHorizons.Handlers
 
             if (body.Config.Orbit.showOrbitLine && !body.Config.Orbit.isStatic)
             {
-                OrbitlineBuilder.Make(body.Object, body.Config.Orbit.isMoon, body.Config);
+                // No map mode at eye
+                if (LoadManager.GetCurrentScene() != OWScene.EyeOfTheUniverse)
+                {
+                    OrbitlineBuilder.Make(body.Object, body.Config.Orbit.isMoon, body.Config);
+                }
             }
 
             DetectorBuilder.Make(go, owRigidBody, primaryBody, ao, body.Config);
@@ -691,6 +695,18 @@ namespace NewHorizons.Handlers
                 atmosphere = AtmosphereBuilder.Make(go, sector, body.Config.Atmosphere, surfaceSize).GetComponentInChildren<LODGroup>();
             }
 
+            if (body.Config.EyeOfTheUniverse != null)
+            {
+                if (Main.Instance.CurrentStarSystem == "EyeOfTheUniverse")
+                {
+                    EyeOfTheUniverseBuilder.Make(go, sector, body.Config.EyeOfTheUniverse, body);
+                }
+                else
+                {
+                    NHLogger.LogWarning($"A mod creator (you?) has defined Eye of the Universe specific settings on a body [{body.Config.name}] that is not in the eye of the universe");
+                }
+            }
+
             if (body.Config.ParticleFields != null)
             {
                 EffectsBuilder.Make(go, sector, body.Config);
@@ -843,7 +859,11 @@ namespace NewHorizons.Handlers
                 var isMoon = newAO.GetAstroObjectType() is AstroObject.Type.Moon or AstroObject.Type.Satellite or AstroObject.Type.SpaceStation;
                 if (body.Config.Orbit.showOrbitLine)
                 {
-                    OrbitlineBuilder.Make(go, isMoon, body.Config);
+                    // No map mode at eye
+                    if (LoadManager.GetCurrentScene() != OWScene.EyeOfTheUniverse)
+                    {
+                        OrbitlineBuilder.Make(go, isMoon, body.Config);
+                    }
                 }
 
                 DetectorBuilder.SetDetector(primary, newAO, go.GetComponentInChildren<ConstantForceDetector>());

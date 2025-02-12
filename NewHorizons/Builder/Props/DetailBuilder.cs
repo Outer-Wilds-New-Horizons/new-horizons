@@ -496,7 +496,10 @@ namespace NewHorizons.Builder.Props
                 // Disable the angler anim controller because we don't want Update or LateUpdate to run, just need it to set the initial Animator state
                 angler.enabled = false;
                 angler.OnChangeAnglerState(AnglerfishController.AnglerState.Lurking);
-                
+
+                angler._animator.SetFloat("MoveSpeed", angler._moveCurrent);
+                angler._animator.SetFloat("Jaw", angler._jawCurrent);
+
                 Destroy(this);
             }
         }
