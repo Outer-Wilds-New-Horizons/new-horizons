@@ -18,9 +18,12 @@ public class NHSlideCollection : SlideCollection
     public string[] slidePaths;
     public IModBehaviour mod;
     private HashSet<string> _pathsBeingLoaded = new();
+    /// <summary>
+    /// map of slide path to collections that have this path loaded. used to only unload slide when nothing else is using it
+    /// </summary>
     public static Dictionary<string, HashSet<NHSlideCollection>> _slidesRequiringPath = new();
 
-    private ShipLogSlideProjector _shipLogSlideProjector;
+    private static ShipLogSlideProjector _shipLogSlideProjector;
 
     static NHSlideCollection()
     {
@@ -113,6 +116,7 @@ public class NHSlideCollection : SlideCollection
                 // Something else has loaded this image i.e., AutoProjector or Vision torch. We want to ensure we do not delete it
                 if (ImageUtilities.IsTextureLoaded(mod, path))
                 {
+                    // null is dummy value to ensure its never empty (so its not deleted)
                     _slidesRequiringPath[key] = new() { null };
                 }
                 else
@@ -124,17 +128,21 @@ public class NHSlideCollection : SlideCollection
 
             if (ImageUtilities.IsTextureLoaded(mod, path))
             {
+                // already loaded
                 var texture = ImageUtilities.GetTexture(mod, path);
                 slides[wrappedIndex]._image = texture;
                 return texture;
             }
             else if (!_pathsBeingLoaded.Contains(path))
             {
+                // not loaded yet, we need to load it
                 var loader = new SlideReelAsyncImageLoader();
                 loader.PathsToLoad.Add((wrappedIndex, path));
                 loader.Start(true, false);
                 loader.imageLoadedEvent.AddListener((Texture2D tex, int index, string originalPath) =>
                 {
+                    // weird: sometimes we set image, sometimes we return from GetStreamingTexture. oh well
+                    // also somehow setting this later works and updates the cookie without having to manually tell it to do that??? idk how
                     slides[wrappedIndex]._image = tex;
                     _pathsBeingLoaded.Remove(path);
                     if (_shipLogSlideProjector == null)
@@ -143,6 +151,7 @@ public class NHSlideCollection : SlideCollection
                     }
                     if (_shipLogSlideProjector != null)
                     {
+                        // gotta tell ship log we updated the image
                         _shipLogSlideProjector._slideDirty = true;
                     }
                     else

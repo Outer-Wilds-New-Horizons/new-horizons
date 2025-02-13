@@ -10,6 +10,7 @@ public class NHSlideCollectionContainer : SlideCollectionContainer
 {
     public string[] conditionsToSet;
     public string[] persistentConditionsToSet;
+    // at some point we'll do streaming on all slides. until then just have an off switch
     public bool doAsyncLoading = true;
 
     [HarmonyPrefix]
