@@ -47,7 +47,7 @@ namespace NewHorizons.Utility.Files
             var key = GetKey(path);
             if (_textureCache.TryGetValue(key, out var existingTexture))
             {
-                NHLogger.LogVerbose($"Already loaded image at path: {path}");
+                //NHLogger.LogVerbose($"Already loaded image at path: {path}");
                 return (Texture2D)existingTexture;
             }
 

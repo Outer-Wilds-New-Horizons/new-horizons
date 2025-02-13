@@ -10,6 +10,7 @@ public class NHSlideCollectionContainer : SlideCollectionContainer
 {
     public string[] conditionsToSet;
     public string[] persistentConditionsToSet;
+    public bool doAsyncLoading = true;
 
     [HarmonyPrefix]
     [HarmonyPatch(typeof(SlideCollectionContainer), nameof(SlideCollectionContainer.Initialize))]
@@ -68,7 +69,7 @@ public class NHSlideCollectionContainer : SlideCollectionContainer
     [HarmonyPatch(typeof(SlideCollectionContainer), nameof(SlideCollectionContainer.NextSlideAvailable))]
     public static bool SlideCollectionContainer_NextSlideAvailable(SlideCollectionContainer __instance, ref bool __result)
     {
-        if (__instance is NHSlideCollectionContainer container)
+        if (__instance is NHSlideCollectionContainer container && container.doAsyncLoading)
         {
             __result = (container.slideCollection as NHSlideCollection).IsSlideLoaded(container.slideIndex + 1);
             return false;
@@ -84,7 +85,7 @@ public class NHSlideCollectionContainer : SlideCollectionContainer
     [HarmonyPatch(typeof(SlideCollectionContainer), nameof(SlideCollectionContainer.PrevSlideAvailable))]
     public static bool SlideCollectionContainer_PrevSlideAvailable(SlideCollectionContainer __instance, ref bool __result)
     {
-        if (__instance is NHSlideCollectionContainer container)
+        if (__instance is NHSlideCollectionContainer container && container.doAsyncLoading)
         {
             __result = (container.slideCollection as NHSlideCollection).IsSlideLoaded(container.slideIndex - 1);
             return false;
@@ -99,7 +100,7 @@ public class NHSlideCollectionContainer : SlideCollectionContainer
     [HarmonyPatch(typeof(SlideCollectionContainer), nameof(SlideCollectionContainer.UnloadStreamingTextures))]
     public static bool SlideCollectionContainer_UnloadStreamingTextures(SlideCollectionContainer __instance)
     {
-        if (__instance is NHSlideCollectionContainer container)
+        if (__instance is NHSlideCollectionContainer container && container.doAsyncLoading)
         {
             for (int i = 0; i < (container.slideCollection as NHSlideCollection).slidePaths.Length; i++)
             {
@@ -117,7 +118,7 @@ public class NHSlideCollectionContainer : SlideCollectionContainer
     [HarmonyPatch(typeof(SlideCollectionContainer), nameof(SlideCollectionContainer.GetStreamingTexture))]
     public static bool SlideCollectionContainer_GetStreamingTexture(SlideCollectionContainer __instance, int id, ref Texture __result)
     {
-        if (__instance is NHSlideCollectionContainer container)
+        if (__instance is NHSlideCollectionContainer container && container.doAsyncLoading)
         {
             __result = (container.slideCollection as NHSlideCollection).LoadSlide(id);
             return false;
@@ -132,7 +133,7 @@ public class NHSlideCollectionContainer : SlideCollectionContainer
     [HarmonyPatch(typeof(SlideCollectionContainer), nameof(SlideCollectionContainer.RequestManualStreamSlides))]
     public static bool SlideCollectionContainer_RequestManualStreamSlides(SlideCollectionContainer __instance)
     {
-        if (__instance is NHSlideCollectionContainer container)
+        if (__instance is NHSlideCollectionContainer container && container.doAsyncLoading)
         {
             (container.slideCollection as NHSlideCollection).LoadSlide(__instance._currentSlideIndex);
             return false;
@@ -147,7 +148,7 @@ public class NHSlideCollectionContainer : SlideCollectionContainer
     [HarmonyPatch(typeof(SlideCollectionContainer), nameof(SlideCollectionContainer.streamingTexturesAvailable), MethodType.Getter)]
     public static bool SlideCollectionContainer_streamingTexturesAvailable(SlideCollectionContainer __instance, ref bool __result)
     {
-        if (__instance is NHSlideCollectionContainer container)
+        if (__instance is NHSlideCollectionContainer container && container.doAsyncLoading)
         {
             __result = (container.slideCollection as NHSlideCollection).slidePaths != null && (container.slideCollection as NHSlideCollection).slidePaths.Any();
             return false;

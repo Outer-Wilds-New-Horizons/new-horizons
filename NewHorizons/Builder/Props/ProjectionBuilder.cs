@@ -156,11 +156,11 @@ namespace NewHorizons.Builder.Props
             // We can fit 16 slides max into an atlas
             var textures = new Texture2D[slidesCount > 16 ? 16 : slidesCount];
 
-            // Don't load inverted images if the cache exists, in this case we only load when actively displaying stuff
-            var (invImageLoader, atlasImageLoader, imageLoader) = StartAsyncLoader(mod, info.slides, ref slideCollection, !CacheExists(mod), true, false);
+            // Slide reels dynamically load the inverted cached images when needed. We only need to load raw images to generate the cache or atlases
+            var (_, atlasImageLoader, imageLoader) = StartAsyncLoader(mod, info.slides, ref slideCollection, false, true, false);
 
             // If the cache doesn't exist it will be created here, slide reels only use the base image loader for cache creation so delete the images after to free memory
-            imageLoader.deleteTexturesWhenDone = !CacheExists(mod);
+            imageLoader.deleteTexturesWhenDone = true;
 
             var key = GetUniqueSlideReelID(mod, info.slides);
 
@@ -397,9 +397,9 @@ namespace NewHorizons.Builder.Props
             if (_visionTorchDetectorPrefab == null) return null;
 
             // spawn a trigger for the vision torch
-            var g = DetailBuilder.Make(planetGO, sector, mod, _visionTorchDetectorPrefab, new DetailInfo(info) { scale = 2, rename = !string.IsNullOrEmpty(info.rename) ? info.rename : "VisionStaffDetector" });
+            var visionTorchTargetGO = DetailBuilder.Make(planetGO, sector, mod, _visionTorchDetectorPrefab, new DetailInfo(info) { scale = 2, rename = !string.IsNullOrEmpty(info.rename) ? info.rename : "VisionStaffDetector" });
 
-            if (g == null)
+            if (visionTorchTargetGO == null)
             {
                 NHLogger.LogWarning($"Tried to make a vision torch target but couldn't. Do you have the DLC installed?");
                 return null;
@@ -420,17 +420,18 @@ namespace NewHorizons.Builder.Props
             });
 
             // attach a component to store all the data for the slides that play when a vision torch scans this target
-            var target = g.AddComponent<VisionTorchTarget>();
-            var slideCollectionContainer = g.AddComponent<NHSlideCollectionContainer>();
+            var target = visionTorchTargetGO.AddComponent<VisionTorchTarget>();
+            var slideCollectionContainer = visionTorchTargetGO.AddComponent<NHSlideCollectionContainer>();
+            slideCollectionContainer.doAsyncLoading = false;
             slideCollectionContainer.slideCollection = slideCollection;
-            target.slideCollection = g.AddComponent<MindSlideCollection>();
+            target.slideCollection = visionTorchTargetGO.AddComponent<MindSlideCollection>();
             target.slideCollection._slideCollectionContainer = slideCollectionContainer;
 
             LinkShipLogFacts(info, slideCollectionContainer);
 
-            g.SetActive(true);
+            visionTorchTargetGO.SetActive(true);
 
-            return g;
+            return visionTorchTargetGO;
         }
 
         public static GameObject MakeStandingVisionTorch(GameObject planetGO, Sector sector, ProjectionInfo info, IModBehaviour mod)
@@ -489,6 +490,7 @@ namespace NewHorizons.Builder.Props
 
             // Set up the containers for the slides
             var slideCollectionContainer = standingTorch.AddComponent<NHSlideCollectionContainer>();
+            slideCollectionContainer.doAsyncLoading = false;
             slideCollectionContainer.slideCollection = slideCollection;
 
             var mindSlideCollection = standingTorch.AddComponent<MindSlideCollection>();
@@ -550,7 +552,7 @@ namespace NewHorizons.Builder.Props
                         // Load the inverted images used when displaying slide reels to a screen
                         invertedImageLoader.PathsToLoad.Add((i, Path.Combine(Main.Instance.ModHelper.Manifest.ModFolderPath, "Assets/textures/inverted_blank_slide_reel.png")));
                     }
-                    else
+                    else if (!cacheExists || loadRawImages)
                     {
                         // Used to then make cached stuff
                         imageLoader.PathsToLoad.Add((i, Path.Combine(Main.Instance.ModHelper.Manifest.ModFolderPath, "Assets/textures/blank_slide_reel.png")));
@@ -587,7 +589,7 @@ namespace NewHorizons.Builder.Props
                 {
                     invertedImageLoader.Start(true, false);
                 }
-                else
+                if (loadRawImages)
                 {
                     imageLoader.Start(true, false);
                 }
