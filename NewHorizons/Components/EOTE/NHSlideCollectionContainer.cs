@@ -1,15 +1,7 @@
 using HarmonyLib;
-using NewHorizons.Builder.Props;
-using NewHorizons.External.Modules.Props.EchoesOfTheEye;
-using NewHorizons.Utility.Files;
-using NewHorizons.Utility.OWML;
-using OWML.Common;
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace NewHorizons.Components.EOTE;
 
@@ -18,16 +10,6 @@ public class NHSlideCollectionContainer : SlideCollectionContainer
 {
     public string[] conditionsToSet;
     public string[] persistentConditionsToSet;
-    public string[] slidePaths;
-    public IModBehaviour mod;
-
-    private HashSet<string> _pathsBeingLoaded = new();
-
-    public static Dictionary<string, HashSet<NHSlideCollectionContainer>> _slidesRequiringPath = new();
-    static NHSlideCollectionContainer()
-    {
-        SceneManager.sceneUnloaded += (_) => _slidesRequiringPath.Clear();
-    }
 
     [HarmonyPrefix]
     [HarmonyPatch(typeof(SlideCollectionContainer), nameof(SlideCollectionContainer.Initialize))]
@@ -87,7 +69,7 @@ public class NHSlideCollectionContainer : SlideCollectionContainer
     {
         if (__instance is NHSlideCollectionContainer container)
         {
-            __result = container.IsSlideLoaded(container.slideIndex + 1);
+            __result = (container.slideCollection as NHSlideCollection).IsSlideLoaded(container.slideIndex + 1);
             return false;
         }
         else
@@ -103,7 +85,7 @@ public class NHSlideCollectionContainer : SlideCollectionContainer
     {
         if (__instance is NHSlideCollectionContainer container)
         {
-            __result = container.IsSlideLoaded(container.slideIndex - 1);
+            __result = (container.slideCollection as NHSlideCollection).IsSlideLoaded(container.slideIndex - 1);
             return false;
         }
         else
@@ -118,9 +100,9 @@ public class NHSlideCollectionContainer : SlideCollectionContainer
     {
         if (__instance is NHSlideCollectionContainer container)
         {
-            for (int i = 0; i < container.slidePaths.Length; i++)
+            for (int i = 0; i < (container.slideCollection as NHSlideCollection).slidePaths.Length; i++)
             {
-                container.UnloadSlide(i);
+                (container.slideCollection as NHSlideCollection).UnloadSlide(i);
             }
             return false;
         }
@@ -136,7 +118,7 @@ public class NHSlideCollectionContainer : SlideCollectionContainer
     {
         if (__instance is NHSlideCollectionContainer container)
         {
-            __result = container.LoadSlide(id);
+            __result = (container.slideCollection as NHSlideCollection).LoadSlide(id);
             return false;
         }
         else
@@ -151,7 +133,7 @@ public class NHSlideCollectionContainer : SlideCollectionContainer
     {
         if (__instance is NHSlideCollectionContainer container)
         {
-            container.LoadSlide(__instance._currentSlideIndex);
+            (container.slideCollection as NHSlideCollection).LoadSlide(__instance._currentSlideIndex);
             return false;
         }
         else
@@ -166,93 +148,12 @@ public class NHSlideCollectionContainer : SlideCollectionContainer
     {
         if (__instance is NHSlideCollectionContainer container)
         {
-            __result = container.slidePaths != null && container.slidePaths.Any();
+            __result = (container.slideCollection as NHSlideCollection).slidePaths != null && (container.slideCollection as NHSlideCollection).slidePaths.Any();
             return false;
         }
         else
         {
             return true;
-        }
-    }
-
-    public Texture LoadSlide(int index)
-    {
-        Texture LoadSlideInt(int index)
-        {
-            var wrappedIndex = (index + this.slideCollection.slides.Length) % this.slideCollection.slides.Length;
-            var path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, ProjectionBuilder.InvertedSlideReelCacheFolder, slidePaths[wrappedIndex]);
-
-            // We are the first slide collection container to try and load this image
-            var key = ImageUtilities.GetKey(mod, path);
-            if (!_slidesRequiringPath.ContainsKey(key))
-            {
-                // Something else has loaded this image i.e., AutoProjector or Vision torch. We want to ensure we do not delete it
-                if (ImageUtilities.IsTextureLoaded(mod, path))
-                {
-                    _slidesRequiringPath[key] = new() { null };
-                }
-                else
-                {
-                    _slidesRequiringPath[key] = new();
-                }
-                _slidesRequiringPath[key].Add(this);
-            }
-
-            if (ImageUtilities.IsTextureLoaded(mod, path))
-            {
-                var texture = ImageUtilities.GetTexture(mod, path);
-                this.slideCollection.slides[wrappedIndex]._image = texture;
-                return texture;
-            }
-            else if (!_pathsBeingLoaded.Contains(path))
-            {
-                var loader = new SlideReelAsyncImageLoader();
-                loader.PathsToLoad.Add((wrappedIndex, path));
-                loader.Start(true, false);
-                loader.imageLoadedEvent.AddListener((Texture2D tex, int index, string originalPath) =>
-                {
-                    slideCollection.slides[wrappedIndex]._image = tex;
-                    _pathsBeingLoaded.Remove(path);
-                });
-                _pathsBeingLoaded.Add(path);
-                return null;
-            }
-            else
-            {
-                // It is being loaded so we just wait
-                return null;
-            }
-        }
-        var texture = LoadSlideInt(index);
-        LoadSlideInt(index - 1);
-        LoadSlideInt(index + 1);
-
-        return texture;
-    }
-
-    public bool IsSlideLoaded(int index)
-    {
-        var wrappedIndex = (index + this.slideCollection.slides.Length) % this.slideCollection.slides.Length;
-        var path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, ProjectionBuilder.InvertedSlideReelCacheFolder, slidePaths[wrappedIndex]);
-        return ImageUtilities.IsTextureLoaded(mod, path);
-    }
-
-    public void UnloadSlide(int index)
-    {
-        var wrappedIndex = (index + this.slideCollection.slides.Length) % this.slideCollection.slides.Length;
-        var path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, ProjectionBuilder.InvertedSlideReelCacheFolder, slidePaths[wrappedIndex]);
-
-        // Only unload textures that we were the ones to load in
-        if (ImageUtilities.IsTextureLoaded(mod, path))
-        {
-            var key = ImageUtilities.GetKey(mod, path);
-            _slidesRequiringPath[key].Remove(this);
-            if (!_slidesRequiringPath[key].Any())
-            {
-                NHLogger.LogVerbose($"Slide reel deleting {key} since nobody is using it anymore");
-                ImageUtilities.DeleteTexture(mod, path, ImageUtilities.GetTexture(mod, path));
-                slideCollection.slides[wrappedIndex]._image = null;
-            }
         }
     }
 }

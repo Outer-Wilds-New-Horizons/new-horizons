@@ -140,8 +140,6 @@ namespace NewHorizons.Builder.Props
 
             var toDestroy = slideReelObj.GetComponent<SlideCollectionContainer>();
             var slideCollectionContainer = slideReelObj.AddComponent<NHSlideCollectionContainer>();
-            slideCollectionContainer.slidePaths = info.slides.Select(x => x.imagePath).ToArray();
-            slideCollectionContainer.mod = mod;
             slideReel._slideCollectionContainer = slideCollectionContainer;
             Component.DestroyImmediate(toDestroy);
 
@@ -152,7 +150,7 @@ namespace NewHorizons.Builder.Props
 
             // Now we replace the slides
             int slidesCount = info.slides.Length;
-            var slideCollection = new SlideCollection(slidesCount);
+            SlideCollection slideCollection = new NHSlideCollection(slidesCount, mod, info.slides.Select(x => x.imagePath).ToArray());
             slideCollection.streamingAssetIdentifier = string.Empty; // NREs if null
 
             // We can fit 16 slides max into an atlas
