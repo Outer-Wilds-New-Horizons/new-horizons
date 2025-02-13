@@ -140,6 +140,8 @@ namespace NewHorizons.Builder.Props
 
             var toDestroy = slideReelObj.GetComponent<SlideCollectionContainer>();
             var slideCollectionContainer = slideReelObj.AddComponent<NHSlideCollectionContainer>();
+            slideCollectionContainer.slidePaths = info.slides.Select(x => x.imagePath).ToArray();
+            slideCollectionContainer.mod = mod;
             slideReel._slideCollectionContainer = slideCollectionContainer;
             Component.DestroyImmediate(toDestroy);
 
@@ -156,22 +158,16 @@ namespace NewHorizons.Builder.Props
             // We can fit 16 slides max into an atlas
             var textures = new Texture2D[slidesCount > 16 ? 16 : slidesCount];
 
-            var (invImageLoader, atlasImageLoader, imageLoader) = StartAsyncLoader(mod, info.slides, ref slideCollection, true, true);
+            // Don't load inverted images if the cache exists, in this case we only load when actively displaying stuff
+            var (invImageLoader, atlasImageLoader, imageLoader) = StartAsyncLoader(mod, info.slides, ref slideCollection, !CacheExists(mod), true);
 
             // If the cache doesn't exist it will be created here, slide reels only use the base image loader for cache creation so delete the images after to free memory
             imageLoader.deleteTexturesWhenDone = !CacheExists(mod);
 
             var key = GetUniqueSlideReelID(mod, info.slides);
 
-            if (invImageLoader != null && atlasImageLoader != null)
+            if (CacheExists(mod) && atlasImageLoader != null)
             {
-                // Loading directly from cache
-                invImageLoader.imageLoadedEvent.AddListener(
-                    (Texture2D tex, int index, string originalPath) =>
-                    {
-                        slideCollection.slides[index]._image = tex;
-                    }
-                );
                 atlasImageLoader.imageLoadedEvent.AddListener(
                     (Texture2D tex, int _, string originalPath) =>
                     {
@@ -353,7 +349,7 @@ namespace NewHorizons.Builder.Props
 
             // Now we replace the slides
             int slidesCount = info.slides.Length;
-            var slideCollection = new SlideCollection(slidesCount);
+            SlideCollection slideCollection = new NHSlideCollection(slidesCount, mod, info.slides.Select(x => x.imagePath).ToArray());
             slideCollection.streamingAssetIdentifier = string.Empty; // NREs if null
 
             var (invImageLoader, _, imageLoader) = StartAsyncLoader(mod, info.slides, ref slideCollection, true, false);
