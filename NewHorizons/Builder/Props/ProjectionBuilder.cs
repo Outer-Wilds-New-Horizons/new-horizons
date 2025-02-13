@@ -375,7 +375,7 @@ namespace NewHorizons.Builder.Props
             }
 
             slideCollectionContainer.slideCollection = slideCollection;
-            slideCollectionContainer._playWithShipLogFacts = Array.Empty<string>();
+            slideCollectionContainer._playWithShipLogFacts = Array.Empty<string>(); // else it NREs in container initialize
 
             StreamingHandler.SetUpStreaming(projectorObj, sector);
 
