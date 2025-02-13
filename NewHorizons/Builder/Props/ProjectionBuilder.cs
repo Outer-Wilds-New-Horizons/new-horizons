@@ -196,6 +196,7 @@ namespace NewHorizons.Builder.Props
                 {
                     var time = DateTime.Now;
 
+                    // inverted slides will be loaded for the whole loop but its fine since this is only when generating cache
                     slideCollection.slides[index]._image = ImageUtilities.InvertSlideReel(mod, tex, originalPath);
                     NHLogger.LogVerbose($"Slide reel make reel invert texture {(DateTime.Now - time).TotalMilliseconds}ms");
                     // Track the first 16 to put on the slide reel object
