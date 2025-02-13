@@ -554,7 +554,7 @@ namespace NewHorizons.Builder.Props
                         // Load the inverted images used when displaying slide reels to a screen
                         invertedImageLoader.PathsToLoad.Add((i, Path.Combine(mod.ModHelper.Manifest.ModFolderPath, InvertedSlideReelCacheFolder, slideInfo.imagePath)));
                     }
-                    if (loadRawImages)
+                    if (!cacheExists || loadRawImages)
                     {
                         imageLoader.PathsToLoad.Add((i, Path.Combine(mod.ModHelper.Manifest.ModFolderPath, slideInfo.imagePath)));
                     }
