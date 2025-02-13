@@ -21,6 +21,8 @@ public class NHSlideCollectionContainer : SlideCollectionContainer
     public string[] slidePaths;
     public IModBehaviour mod;
 
+    private HashSet<string> _pathsBeingLoaded = new();
+
     public static Dictionary<string, HashSet<NHSlideCollectionContainer>> _slidesRequiringPath = new();
     static NHSlideCollectionContainer()
     {
@@ -196,9 +198,30 @@ public class NHSlideCollectionContainer : SlideCollectionContainer
                 _slidesRequiringPath[key].Add(this);
             }
 
-            var texture = ImageUtilities.GetTexture(mod, path);
-            this.slideCollection.slides[wrappedIndex]._image = texture;
-            return texture;
+            if (ImageUtilities.IsTextureLoaded(mod, path))
+            {
+                var texture = ImageUtilities.GetTexture(mod, path);
+                this.slideCollection.slides[wrappedIndex]._image = texture;
+                return texture;
+            }
+            else if (!_pathsBeingLoaded.Contains(path))
+            {
+                var loader = new SlideReelAsyncImageLoader();
+                loader.PathsToLoad.Add((wrappedIndex, path));
+                loader.Start(true, false);
+                loader.imageLoadedEvent.AddListener((Texture2D tex, int index, string originalPath) =>
+                {
+                    slideCollection.slides[wrappedIndex]._image = tex;
+                    _pathsBeingLoaded.Remove(path);
+                });
+                _pathsBeingLoaded.Add(path);
+                return null;
+            }
+            else
+            {
+                // It is being loaded so we just wait
+                return null;
+            }
         }
         var texture = LoadSlideInt(index);
         LoadSlideInt(index - 1);
