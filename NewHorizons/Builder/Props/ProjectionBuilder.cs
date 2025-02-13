@@ -209,8 +209,14 @@ namespace NewHorizons.Builder.Props
                             var slidesBack = slideReelObj.GetComponentInChildren<TransformAnimator>(true).transform.Find("Slides_Back").GetComponent<MeshRenderer>();
                             var slidesFront = slideReelObj.GetComponentInChildren<TransformAnimator>(true).transform.Find("Slides_Front").GetComponent<MeshRenderer>();
 
-                            // Now put together the textures into a 4x4 thing for the materials
-                            var reelTexture = ImageUtilities.MakeReelTexture(mod, textures, key);
+                            // Now put together the textures into a 4x4 thing for the materials #888
+                            var displayTextures = textures;
+                            if (info.displaySlides != null && info.displaySlides.Length > 0)
+                            {
+                                displayTextures = info.displaySlides.Select(x => textures[x]).ToArray();
+                            }
+
+                            var reelTexture = ImageUtilities.MakeReelTexture(mod, displayTextures, key);
                             slidesBack.material.mainTexture = reelTexture;
                             slidesBack.material.SetTexture(EmissionMap, reelTexture);
                             slidesBack.material.name = reelTexture.name;

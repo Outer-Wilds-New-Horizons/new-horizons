@@ -27,7 +27,19 @@ public class NHSlideCollection : SlideCollection
 
     static NHSlideCollection()
     {
-        SceneManager.sceneUnloaded += (_) => _slidesRequiringPath.Clear();
+        SceneManager.sceneUnloaded += (_) =>
+        {
+            foreach (var (slide, collections) in _slidesRequiringPath)
+            {
+                // If it has null, that means some other permanent thing loaded this texture and it will get cleared elsewhere
+                // Otherwise it was loaded by an NHSlideCollection and should be deleted
+                if (collections.Any() && !collections.Contains(null))
+                {
+                    ImageUtilities.DeleteTexture(slide);
+                }
+            }
+            _slidesRequiringPath.Clear();
+        };
     }
 
     public NHSlideCollection(int startArrSize, IModBehaviour mod, string[] slidePaths) : base(startArrSize)

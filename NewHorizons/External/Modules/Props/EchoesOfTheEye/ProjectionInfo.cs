@@ -85,6 +85,12 @@ namespace NewHorizons.External.Modules.Props.EchoesOfTheEye
         /// Exclusive to the slide reel type. Condition/material of the reel. Antique is the Stranger, Pristine is the Dreamworld, Rusted is a burned reel.
         /// </summary>
         [DefaultValue("antique")] public SlideReelCondition reelCondition = SlideReelCondition.Antique;
-    }
 
+        /// <summary>
+        /// Set which slides appear on the slide reel model. Leave empty to default to the first few slides.
+        /// Takes a list of indices, i.e., to show the first 5 slides in reverse you would put [4, 3, 2, 1, 0].
+        /// Index starts at 0.
+        /// </summary>
+        public int[] displaySlides;
+    }
 }

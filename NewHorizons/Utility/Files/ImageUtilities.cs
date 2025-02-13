@@ -71,6 +71,19 @@ namespace NewHorizons.Utility.Files
             }
         }
 
+        /// <summary>
+        /// Not sure why the other method takes in the texture as well
+        /// </summary>
+        /// <param name="key"></param>
+        public static void DeleteTexture(string key)
+        {
+            if (_textureCache.ContainsKey(key))
+            {
+                UnityEngine.Object.Destroy(_textureCache[key]);
+                _textureCache.Remove(key);
+            }
+        }
+
         public static void DeleteTexture(IModBehaviour mod, string filename, Texture2D texture)
         {
             var path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, filename);
@@ -194,9 +207,9 @@ namespace NewHorizons.Utility.Files
                     {
                         for (int j = 0; j < size; j++)
                         {
-                            var colour = Color.black;
+                            var colour = Color.clear;
 
-                            if (srcTexture)
+                            if (srcTexture != null)
                             {
                                 var srcX = i * srcTexture.width / (float)size;
                                 var srcY = j * srcTexture.height / (float)size;
