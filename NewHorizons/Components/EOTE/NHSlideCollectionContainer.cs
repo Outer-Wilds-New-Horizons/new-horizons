@@ -31,6 +31,7 @@ public class NHSlideCollectionContainer : SlideCollectionContainer
             {
                 var fact = Locator.GetShipLogManager().GetFact(factID);
                 fact?.RegisterSlideCollection(__instance._slideCollection);
+                // in original it logs. we dont want that here ig
             }
             return false;
         }
