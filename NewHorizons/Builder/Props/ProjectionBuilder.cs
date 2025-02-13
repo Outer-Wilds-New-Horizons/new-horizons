@@ -507,6 +507,16 @@ namespace NewHorizons.Builder.Props
             return standingTorch;
         }
 
+        /// <summary>
+        /// start loading all the slide stuff we need async.
+        /// </summary>
+        /// <param name="mod">the mod to load slides from</param>
+        /// <param name="slides">slides to load</param>
+        /// <param name="slideCollection">where to assign the slide objects</param>
+        /// <param name="useInvertedCache">should we load cached inverted images?</param>
+        /// <param name="useAtlasCache">should we load cached atlas images?</param>
+        /// <param name="loadRawImages">should we load the original images? happens anyway if cache doesnt exist since atlas or inverted will need it</param>
+        /// <returns>the 3 loaders (inverted, atlas, original). inverted and atlas will be null if cache doesnt exist, so check those to find out if cache exists</returns>
         private static (SlideReelAsyncImageLoader inverted, SlideReelAsyncImageLoader atlas, SlideReelAsyncImageLoader slides)
             StartAsyncLoader(IModBehaviour mod, SlideInfo[] slides, ref SlideCollection slideCollection, bool useInvertedCache, bool useAtlasCache, bool loadRawImages)
         {
