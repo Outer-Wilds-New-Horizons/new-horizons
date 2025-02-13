@@ -1,3 +1,4 @@
+using NewHorizons.Utility;
 using NewHorizons.Utility.OWML;
 using System.Collections;
 using System.Collections.Generic;
@@ -17,7 +18,7 @@ namespace NewHorizons.Components.EyeOfTheUniverse
         private bool _isPlaying;
         private double _segmentEndAudioTime;
         private float _segmentEndGameTime;
-        private CosmicInflationController _cosmicInflationController;
+        public CosmicInflationController CosmicInflationController { get; private set; }
 
         public void RegisterLoopSource(OWAudioSource src)
         {
@@ -59,9 +60,9 @@ namespace NewHorizons.Components.EyeOfTheUniverse
             }
 
             // Set quantum sphere inflation timer
-            var finaleDuration = _cosmicInflationController._travelerFinaleSource.clip.length;
-            _cosmicInflationController._startFormationTime = Time.time;
-            _cosmicInflationController._finishFormationTime = finaleGameTime + finaleDuration - 4f;
+            var finaleDuration = CosmicInflationController._travelerFinaleSource.clip.length;
+            CosmicInflationController._startFormationTime = Time.time;
+            CosmicInflationController._finishFormationTime = finaleGameTime + finaleDuration - 4f;
 
             // Play finale in sync
             foreach (var finaleSrc in _finaleSources)
@@ -70,9 +71,10 @@ namespace NewHorizons.Components.EyeOfTheUniverse
             }
         }
 
-        private void Awake()
+        public void Awake()
         {
-            _cosmicInflationController = FindObjectOfType<CosmicInflationController>();
+            // EOTP makes 2 new CosmicInflationControllers for no reason
+            CosmicInflationController = SearchUtilities.Find("EyeOfTheUniverse_Body/Sector_EyeOfTheUniverse/Sector_Campfire/InflationController").GetComponent<CosmicInflationController>();
         }
 
         private IEnumerator DoLoop()
@@ -126,7 +128,7 @@ namespace NewHorizons.Components.EyeOfTheUniverse
             }
 
             // Wait until the bubble has finished expanding
-            while (Time.time < _cosmicInflationController._finishFormationTime)
+            while (Time.time < CosmicInflationController._finishFormationTime)
             {
                 yield return null;
             }

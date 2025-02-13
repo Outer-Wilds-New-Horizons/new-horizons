@@ -194,7 +194,7 @@ namespace NewHorizons.Handlers
             _eyeMusicController = new GameObject("EyeMusicController").AddComponent<EyeMusicController>();
 
             var quantumCampsiteController = Object.FindObjectOfType<QuantumCampsiteController>();
-            var cosmicInflationController = Object.FindObjectOfType<CosmicInflationController>();
+            var cosmicInflationController = _eyeMusicController.CosmicInflationController;
 
             _eyeMusicController.RegisterFinaleSource(cosmicInflationController._travelerFinaleSource);
 
