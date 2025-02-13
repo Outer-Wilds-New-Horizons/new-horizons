@@ -2863,6 +2863,14 @@
           "description": "Exclusive to the slide reel type. Condition/material of the reel. Antique is the Stranger, Pristine is the Dreamworld, Rusted is a burned reel.",
           "default": "antique",
           "$ref": "#/definitions/SlideReelCondition"
+        },
+        "displaySlides": {
+          "type": "array",
+          "description": "Set which slides appear on the slide reel model. Leave empty to default to the first few slides.\nTakes a list of indices, i.e., to show the first 5 slides in reverse you would put [4, 3, 2, 1, 0].\nIndex starts at 0.",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
         }
       }
     },
