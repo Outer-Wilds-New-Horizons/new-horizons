@@ -164,7 +164,7 @@ namespace NewHorizons.Builder.Props
 
             var key = GetUniqueSlideReelID(mod, info.slides);
 
-            if (CacheExists(mod) && atlasImageLoader != null)
+            if (atlasImageLoader != null)
             {
                 atlasImageLoader.imageLoadedEvent.AddListener(
                     (Texture2D tex, int _, string originalPath) =>
@@ -591,7 +591,6 @@ namespace NewHorizons.Builder.Props
                 {
                     atlasImageLoader.Start(false, false);
                 }
-                // When using the inverted cache we never need the regular images
                 if (useInvertedCache)
                 {
                     invertedImageLoader.Start(true, false);

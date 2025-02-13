@@ -71,7 +71,7 @@ public class NHSlideCollectionContainer : SlideCollectionContainer
     {
         if (__instance is NHSlideCollectionContainer container && container.doAsyncLoading)
         {
-            __result = (container.slideCollection as NHSlideCollection).IsSlideLoaded(container.slideIndex + 1);
+            __result = ((NHSlideCollection)container.slideCollection).IsSlideLoaded(container.slideIndex + 1);
             return false;
         }
         else
@@ -87,7 +87,7 @@ public class NHSlideCollectionContainer : SlideCollectionContainer
     {
         if (__instance is NHSlideCollectionContainer container && container.doAsyncLoading)
         {
-            __result = (container.slideCollection as NHSlideCollection).IsSlideLoaded(container.slideIndex - 1);
+            __result = ((NHSlideCollection)container.slideCollection).IsSlideLoaded(container.slideIndex - 1);
             return false;
         }
         else
@@ -102,9 +102,9 @@ public class NHSlideCollectionContainer : SlideCollectionContainer
     {
         if (__instance is NHSlideCollectionContainer container && container.doAsyncLoading)
         {
-            for (int i = 0; i < (container.slideCollection as NHSlideCollection).slidePaths.Length; i++)
+            for (int i = 0; i < ((NHSlideCollection)container.slideCollection).slidePaths.Length; i++)
             {
-                (container.slideCollection as NHSlideCollection).UnloadSlide(i);
+                ((NHSlideCollection)container.slideCollection).UnloadSlide(i);
             }
             return false;
         }
@@ -120,7 +120,7 @@ public class NHSlideCollectionContainer : SlideCollectionContainer
     {
         if (__instance is NHSlideCollectionContainer container && container.doAsyncLoading)
         {
-            __result = (container.slideCollection as NHSlideCollection).LoadSlide(id);
+            __result = ((NHSlideCollection)container.slideCollection).LoadSlide(id);
             return false;
         }
         else
@@ -135,7 +135,7 @@ public class NHSlideCollectionContainer : SlideCollectionContainer
     {
         if (__instance is NHSlideCollectionContainer container && container.doAsyncLoading)
         {
-            (container.slideCollection as NHSlideCollection).LoadSlide(__instance._currentSlideIndex);
+            ((NHSlideCollection)container.slideCollection).LoadSlide(__instance._currentSlideIndex);
             return false;
         }
         else
@@ -150,7 +150,7 @@ public class NHSlideCollectionContainer : SlideCollectionContainer
     {
         if (__instance is NHSlideCollectionContainer container && container.doAsyncLoading)
         {
-            __result = (container.slideCollection as NHSlideCollection).slidePaths != null && (container.slideCollection as NHSlideCollection).slidePaths.Any();
+            __result = ((NHSlideCollection)container.slideCollection).slidePaths != null && ((NHSlideCollection)container.slideCollection).slidePaths.Any();
             return false;
         }
         else
