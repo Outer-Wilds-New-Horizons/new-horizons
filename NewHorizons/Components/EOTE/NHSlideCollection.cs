@@ -154,7 +154,6 @@ public class NHSlideCollection : SlideCollection
                 loader.imageLoadedEvent.AddListener((Texture2D tex, int index, string originalPath) =>
                 {
                     // weird: sometimes we set image, sometimes we return from GetStreamingTexture. oh well
-                    // also somehow setting this later works and updates the cookie without having to manually tell it to do that??? idk how
                     slides[wrappedIndex]._image = tex;
                     _pathsBeingLoaded.Remove(path);
                     if (_shipLogSlideProjector == null)
