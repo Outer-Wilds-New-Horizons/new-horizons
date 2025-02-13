@@ -342,6 +342,7 @@ namespace NewHorizons.Builder.Props
 
             var toDestroy = autoProjector.GetComponent<SlideCollectionContainer>();
             var slideCollectionContainer = autoProjector.gameObject.AddComponent<NHSlideCollectionContainer>();
+            slideCollectionContainer.doAsyncLoading = false;
             autoProjector._slideCollectionItem = slideCollectionContainer;
             Component.DestroyImmediate(toDestroy);
 
