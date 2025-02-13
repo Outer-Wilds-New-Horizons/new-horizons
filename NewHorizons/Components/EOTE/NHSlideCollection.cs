@@ -158,7 +158,7 @@ public class NHSlideCollection : SlideCollection
                     _pathsBeingLoaded.Remove(path);
                     if (_shipLogSlideProjector == null)
                     {
-                        _shipLogSlideProjector = GameObject.FindObjectOfType<ShipLogSlideProjector>();
+                        _shipLogSlideProjector = Resources.FindObjectsOfTypeAll<ShipLogSlideProjector>().FirstOrDefault();
                     }
                     if (_shipLogSlideProjector != null)
                     {
