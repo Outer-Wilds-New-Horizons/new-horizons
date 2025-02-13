@@ -2,11 +2,14 @@ using HarmonyLib;
 using NewHorizons.Builder.Props;
 using NewHorizons.External.Modules.Props.EchoesOfTheEye;
 using NewHorizons.Utility.Files;
+using NewHorizons.Utility.OWML;
 using OWML.Common;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace NewHorizons.Components.EOTE;
 
@@ -17,6 +20,12 @@ public class NHSlideCollectionContainer : SlideCollectionContainer
     public string[] persistentConditionsToSet;
     public string[] slidePaths;
     public IModBehaviour mod;
+
+    public static Dictionary<string, HashSet<NHSlideCollectionContainer>> _slidesRequiringPath = new();
+    static NHSlideCollectionContainer()
+    {
+        SceneManager.sceneUnloaded += (_) => _slidesRequiringPath.Clear();
+    }
 
     [HarmonyPrefix]
     [HarmonyPatch(typeof(SlideCollectionContainer), nameof(SlideCollectionContainer.Initialize))]
@@ -171,6 +180,22 @@ public class NHSlideCollectionContainer : SlideCollectionContainer
             var wrappedIndex = (index + this.slideCollection.slides.Length) % this.slideCollection.slides.Length;
             var path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, ProjectionBuilder.InvertedSlideReelCacheFolder, slidePaths[wrappedIndex]);
 
+            // We are the first slide collection container to try and load this image
+            var key = ImageUtilities.GetKey(mod, path);
+            if (!_slidesRequiringPath.ContainsKey(key))
+            {
+                // Something else has loaded this image i.e., AutoProjector or Vision torch. We want to ensure we do not delete it
+                if (ImageUtilities.IsTextureLoaded(mod, path))
+                {
+                    _slidesRequiringPath[key] = new() { null };
+                }
+                else
+                {
+                    _slidesRequiringPath[key] = new();
+                }
+                _slidesRequiringPath[key].Add(this);
+            }
+
             var texture = ImageUtilities.GetTexture(mod, path);
             this.slideCollection.slides[wrappedIndex]._image = texture;
             return texture;
@@ -194,10 +219,17 @@ public class NHSlideCollectionContainer : SlideCollectionContainer
         var wrappedIndex = (index + this.slideCollection.slides.Length) % this.slideCollection.slides.Length;
         var path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, ProjectionBuilder.InvertedSlideReelCacheFolder, slidePaths[wrappedIndex]);
 
+        // Only unload textures that we were the ones to load in
         if (ImageUtilities.IsTextureLoaded(mod, path))
         {
-            ImageUtilities.DeleteTexture(mod, path, ImageUtilities.GetTexture(mod, path));
-            slideCollection.slides[wrappedIndex]._image = null;
+            var key = ImageUtilities.GetKey(mod, path);
+            _slidesRequiringPath[key].Remove(this);
+            if (!_slidesRequiringPath[key].Any())
+            {
+                NHLogger.LogVerbose($"Slide reel deleting {key} since nobody is using it anymore");
+                ImageUtilities.DeleteTexture(mod, path, ImageUtilities.GetTexture(mod, path));
+                slideCollection.slides[wrappedIndex]._image = null;
+            }
         }
     }
 }

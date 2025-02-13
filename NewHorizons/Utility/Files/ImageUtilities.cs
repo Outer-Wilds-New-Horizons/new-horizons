@@ -15,6 +15,9 @@ namespace NewHorizons.Utility.Files
         public static bool CheckCachedTexture(string key, out Texture existingTexture) => _textureCache.TryGetValue(key, out existingTexture);
         public static void TrackCachedTexture(string key, Texture texture) => _textureCache.Add(key, texture); // dont reinsert cuz that causes memory leak!
 
+        public static string GetKey(IModBehaviour mod, string filename)
+            => GetKey(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, filename));
+
         public static string GetKey(string path) =>
             path.Substring(Main.Instance.ModHelper.OwmlConfig.ModsPath.Length + 1).Replace('\\', '/');
 
