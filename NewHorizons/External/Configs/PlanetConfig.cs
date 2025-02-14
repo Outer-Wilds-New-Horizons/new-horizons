@@ -65,7 +65,7 @@ namespace NewHorizons.External.Configs
         public string[] removeChildren;
 
         /// <summary>
-        /// optimization. turn this off if you know you're generating a new body and aren't worried about other mods editing it.
+        /// optimization. turn this off if you know you're generating a new body and aren't worried about other addons editing it.
         /// </summary>
         [DefaultValue(true)] public bool checkForExisting = true;
 
