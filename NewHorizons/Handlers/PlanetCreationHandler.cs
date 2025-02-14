@@ -168,26 +168,29 @@ namespace NewHorizons.Handlers
 
             // I don't remember doing this why is it exceptions what am I doing
             GameObject existingPlanet = null;
-            try
+            if (body.Config.checkForExisting)
             {
-                existingPlanet = AstroObjectLocator.GetAstroObject(body.Config.name).gameObject;
-            }
-            catch (Exception)
-            {
-                if (body?.Config?.name == null)
+                try
                 {
-                    NHLogger.LogError($"How is there no name for {body}");
+                    existingPlanet = AstroObjectLocator.GetAstroObject(body.Config.name).gameObject;
                 }
-                else
+                catch (Exception)
                 {
-                    existingPlanet = SearchUtilities.Find(body.Config.name.Replace(" ", "") + "_Body", false);
+                    if (body?.Config?.name == null)
+                    {
+                        NHLogger.LogError($"How is there no name for {body}");
+                    }
+                    else
+                    {
+                        existingPlanet = SearchUtilities.Find(body.Config.name.Replace(" ", "") + "_Body", false);
+                    }
                 }
-            }
 
-            if (existingPlanet == null && body.Config.destroy)
-            {
-                NHLogger.LogError($"{body.Config.name} was meant to be destroyed, but was not found");
-                return false;
+                if (existingPlanet == null && body.Config.destroy)
+                {
+                    NHLogger.LogError($"{body.Config.name} was meant to be destroyed, but was not found");
+                    return false;
+                }
             }
 
             if (existingPlanet != null)
@@ -287,9 +290,9 @@ namespace NewHorizons.Handlers
                     try
                     {
                         NHLogger.Log($"Creating [{body.Config.name}]");
-                        var planetObject = GenerateBody(body, defaultPrimaryToSun) 
+                        var planetObject = GenerateBody(body, defaultPrimaryToSun)
                             ?? throw new NullReferenceException("Something went wrong when generating the body but no errors were logged.");
-                        
+
                         planetObject.SetActive(true);
 
                         var ao = planetObject.GetComponent<NHAstroObject>();
@@ -316,7 +319,7 @@ namespace NewHorizons.Handlers
             {
                 NHLogger.LogError($"Error in event handler for OnPlanetLoaded on body {body.Config.name}: {e}");
             }
-            
+
             body.UnloadCache(true);
             _loadedBodies.Add(body);
             return true;
@@ -390,7 +393,7 @@ namespace NewHorizons.Handlers
             body.Config.MapMarker.enabled = false;
 
             const float sphereOfInfluence = 2000f;
-            
+
             var owRigidBody = RigidBodyBuilder.Make(go, sphereOfInfluence, body.Config);
             var ao = AstroObjectBuilder.Make(go, null, body, false);
 
@@ -402,7 +405,7 @@ namespace NewHorizons.Handlers
             BrambleDimensionBuilder.Make(body, go, ao, sector, body.Mod, owRigidBody);
 
             go = SharedGenerateBody(body, go, sector, owRigidBody);
-            
+
             // Not included in SharedGenerate to not mess up gravity on base game planets
             if (body.Config.Base.surfaceGravity != 0)
             {
@@ -467,7 +470,7 @@ namespace NewHorizons.Handlers
             }
 
             var sphereOfInfluence = GetSphereOfInfluence(body);
-            
+
             var owRigidBody = RigidBodyBuilder.Make(go, sphereOfInfluence, body.Config);
             var ao = AstroObjectBuilder.Make(go, primaryBody, body, false);
 
@@ -686,7 +689,7 @@ namespace NewHorizons.Handlers
                         SunOverrideBuilder.Make(go, sector, body.Config.Atmosphere, body.Config.Water, surfaceSize);
                     }
                 }
-                                                                   
+
                 if (body.Config.Atmosphere.fogSize != 0)
                 {
                     fog = FogBuilder.Make(go, sector, body.Config.Atmosphere, body.Mod);
