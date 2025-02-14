@@ -21,22 +21,18 @@ public static class ProfilerPatch
 	{
 		foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
 		{
-			// if (!type.Name.EndsWith("Builder")) continue;
-			// if (!(type.FullName.Contains("Builder") || type.FullName.Contains("Utility"))) continue;
+			if (!(
+					type.Name == "Main" ||
+					type.Name.EndsWith("Builder") ||
+					type.Name.EndsWith("Handler") ||
+					type.Name.EndsWith("Utilities")
+				)) continue;
 
 			foreach (var method in type.GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
 			{
-				if (!(
-						method.Name.StartsWith("Make") ||
-						method.Name.StartsWith("Init") ||
-						method.Name == "SetUpStreaming" ||
-						method.Name == "OnSceneLoaded" ||
-						method.DeclaringType.Name.EndsWith("Utilities")
-					)) continue;
-
 				if (method.ContainsGenericParameters) continue;
 
-				Main.Instance.ModHelper.Console.WriteLine($"[profiler] profiling {method.FriendlyName()}");
+				// Main.Instance.ModHelper.Console.WriteLine($"[profiler] profiling {method.FriendlyName()}");
 				yield return method;
 			}
 		}
