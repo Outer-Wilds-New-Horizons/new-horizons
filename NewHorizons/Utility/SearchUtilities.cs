@@ -127,13 +127,13 @@ namespace NewHorizons.Utility
             }
             Profiler.EndSample();
 
-            Profiler.BeginSample("1");
+            Profiler.BeginSample("2");
             // 2: find inactive using root + transform.find
             var names = path.Split('/');
 
             // Cache the root objects so we don't loop through all of them each time
             var rootName = names[0];
-            if (!CachedRootGameObjects.TryGetValue(rootName, out var root)) 
+            if (!CachedRootGameObjects.TryGetValue(rootName, out var root))
             {
                 root = SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(x => x.name == rootName);
                 if (root != null)
