@@ -15,37 +15,13 @@ A dialogue tree is an entire conversation, it's made up of dialogue nodes.
 
 A node is a set of pages shown to the player followed by options the player can choose from to change the flow of the conversation.
 
-### Condition
+### Conditions
 
-A condition is a yes/no value stored **for this loop and this loop only**. It can be used to show new dialogue options, stop someone from talking to you (looking at you Slate), and more.
-
-### Persistent Condition
-
-A persistent condition is similar to a condition, except it _persists_ through loops, and is saved on the players save file.
+In dialogue, the available conversation topics can be limited by what the player knows, defined using dialogue conditions, persistent conditions, and ship log facts. Dialogue can also set conditions to true or false, and reveal ship log facts to the player. This is covered in detail later on this page.
 
 ### Remote Trigger
 
 A remote trigger is used to have an NPC talk to you from a distance; ex: Slate stopping you for the umpteenth time to tell you information you already knew.
-
-### ReuseDialogueOptionsListFrom
-
-This is a custom XML node introduced by New Horizons. Use it when adding new dialogue to existing characters, to repeat the dialogue options list from another node.
-
-For example, Slate's first dialogue with options is named `Scientist5`. To make a custom DialogueNode using these dialogue options (meaning new dialogue said by Slate, but reusing the possible player responses) you can write:
-
-```xml
-<DialogueNode>
-    <Name>...</Name>
-    <Dialogue>
-        <Page>NEW DIALOGUE FOR SLATE HERE.</Page>
-    </Dialogue>
-    <DialogueOptionsList>
-        <ReuseDialogueOptionsListFrom>Scientist5</ReuseDialogueOptionsListFrom>
-    </DialogueOptionsList>
-</DialogueNode>
-```
-
-Note: If you're loading dialogue in code, 2 frames must pass before entering the conversation in order for ReuseDialogueOptionsListFrom to take effect.
 
 ## Example XML
 
@@ -176,11 +152,39 @@ In addition to `<DialogueOptions>`, there are other ways to control the flow of 
 
 Defining `<DialogueTarget>` in the `<DialogueNode>` tag instead of a `<DialogueOption>` will make the conversation go directly to that target after the character is done talking.
 
-### DialogueTargetShipLogCondition
+### EntryCondition
 
-Used in tandem with `DialogueTarget`, makes it so you must have a [ship log fact](/guides/ship-log#explore-facts) to go to the next node.
+The first dialogue node that opens when a player starts talking to a character is chosen using this property. To mark a DialogueNode as beginning the dialogue by default, use the condition DEFAULT (a DialogueTree should always have a node with the DEFAULT entry condition to ensure there is a way to start dialogue).
 
-### Adding to existing dialogue
+The entry condition can be either a condition or a persistent condition.
+
+### Condition
+
+A condition is a yes/no value stored **for this loop and this loop only**. It can be used to show new dialogue options, stop someone from talking to you (looking at you Slate), and more.
+
+Conditions can be set in dialogue using `<SetCondition>CONDITION_NAME</SetCondition>`. This can go in a DialogueNode in which case it will set the condition to true when that node is read. There is a similar version of this for DialogueOptions called `<ConditionToSet>CONDITION_NAME</ConditionToSet>` which will set it to true when that option is selected. Conditions can be disabled using `<ConditionToCancel>CONDITION_NAME</<ConditionToCancel>` in a DialogueOption, but cannot be disabled just by entering a DialogueNode. 
+
+You can lock a DialogueOption behind a condition using `<RequiredCondition>CONDITION_NAME</RequiredCondition>`, or remove a DialogueOption after the condition is set to true using `<CancelledCondition>CONDITION_NAME</CancelledCondition>`. 
+
+Dialogue conditions can also be set in code with `DialogueConditionManager.SharedInstance.SetConditionState("CONDITION_NAME", true/false)` or read with `DialogueConditionManager.SharedInstance.GetConditionState("CONDITION_NAME")`. 
+
+Note that `CONDITION_NAME` is a placeholder that you would replace with whatever you want to call your condition. Consider appending conditions with the name of your mod to make for better compatibility between mods, for example a condition name like `SPOKEN_TO` is very generic and might conflict with other mods whereas `NH_EXAMPLES_SPOKEN_TO_ERNESTO` is much less likely to conflict with another mod.
+
+### Persistent Condition
+
+A persistent condition is similar to a condition, except it _persists_ through loops, and is saved on the players save file.
+
+Persistent conditions shared many similar traits with regular dialogue conditions. You can use `<SetPersistentCondition>`, `<DisablePersistentCondition>`. On dialogue options you can use `<RequiredPersistentCondition>`, `<CancelledPersistentCondition>`
+
+Persistent conditions can also be set in code with `PlayerData.SetPersistentCondition("PERSISTENT_CONDITION_NAME", true/false)` and read using `PlayerData.GetPersistentCondition("PERSISTENT_CONDITION_NAME")`.
+
+### Ship Logs
+
+Dialogue can interact with ship logs, either granting them to the player (`<RevealFacts>` on a DialogueNode) or locking dialogue behind ship log completion (`<RequiredLogCondition>` on a DialogueOption). 
+
+You can also use `<DialogueTargetShipLogCondition>` in tandem with `DialogueTarget` to make it so you must have a [ship log fact](/guides/ship-log#explore-facts) to go to the next node.
+
+## Adding to existing dialogue
 
 Here's an example of how to add new dialogue to Slate, without overwriting their existing dialogue. This will also allow multiple mods to all add new dialogue to the same character.
 
@@ -220,6 +224,27 @@ To use this additional dialogue you need to reference it in a planet config file
     }
 ]
 ```
+
+### ReuseDialogueOptionsListFrom
+
+This is a custom XML node introduced by New Horizons. Use it when adding new dialogue to existing characters, to repeat the dialogue options list from another node.
+
+For example, Slate's first dialogue with options is named `Scientist5`. To make a custom DialogueNode using these dialogue options (meaning new dialogue said by Slate, but reusing the possible player responses) you can write:
+
+```xml
+<DialogueNode>
+    <Name>...</Name>
+    <Dialogue>
+        <Page>NEW DIALOGUE FOR SLATE HERE.</Page>
+    </Dialogue>
+    <DialogueOptionsList>
+        <ReuseDialogueOptionsListFrom>Scientist5</ReuseDialogueOptionsListFrom>
+    </DialogueOptionsList>
+</DialogueNode>
+```
+
+Note: If you're loading dialogue in code, 2 frames must pass before entering the conversation in order for ReuseDialogueOptionsListFrom to take effect.
+
 
 ## Dialogue FAQ
 
