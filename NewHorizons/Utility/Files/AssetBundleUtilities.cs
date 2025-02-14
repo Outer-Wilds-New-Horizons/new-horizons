@@ -12,7 +12,6 @@ namespace NewHorizons.Utility.Files
     public static class AssetBundleUtilities
     {
         public static Dictionary<string, (AssetBundle bundle, bool keepLoaded)> AssetBundles = new();
-        private static Dictionary<string, GameObject> _prefabCache = new();
 
         private static readonly List<AssetBundleCreateRequest> _loadingBundles = new();
 
@@ -53,7 +52,6 @@ namespace NewHorizons.Utility.Files
 
             }
             AssetBundles = AssetBundles.Where(x => x.Value.keepLoaded).ToDictionary(x => x.Key, x => x.Value);
-            _prefabCache.Clear();
         }
 
         public static void PreloadBundle(string assetBundleRelativeDir, IModBehaviour mod)
@@ -115,17 +113,11 @@ namespace NewHorizons.Utility.Files
 
         public static GameObject LoadPrefab(string assetBundleRelativeDir, string pathInBundle, IModBehaviour mod)
         {
-            if (_prefabCache.TryGetValue(assetBundleRelativeDir + pathInBundle, out var prefab)) 
-                return prefab;
-            
-            prefab = Load<GameObject>(assetBundleRelativeDir, pathInBundle, mod);
+            var prefab = Load<GameObject>(assetBundleRelativeDir, pathInBundle, mod);
 
             prefab.SetActive(false);
 
             ReplaceShaders(prefab);
-            
-            // replacing shaders is expensive, so cache it
-            _prefabCache.Add(assetBundleRelativeDir + pathInBundle, prefab);
 
             return prefab;
         }
