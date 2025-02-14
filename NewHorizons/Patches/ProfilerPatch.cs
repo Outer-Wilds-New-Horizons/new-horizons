@@ -3,6 +3,7 @@
 using HarmonyLib;
 using System.Collections.Generic;
 using System.Reflection;
+using UnityEngine;
 using UnityEngine.Profiling;
 
 namespace NewHorizons.Patches;
@@ -28,9 +29,9 @@ public static class ProfilerPatch
 				if (!(
 						method.Name.StartsWith("Make") ||
 						method.Name.StartsWith("Init") ||
-						method.Name.StartsWith("Find") ||
 						method.Name == "SetUpStreaming" ||
-						method.Name == "OnSceneLoaded"
+						method.Name == "OnSceneLoaded" ||
+						method.DeclaringType.Name.EndsWith("Utilities")
 					)) continue;
 
 				if (method.ContainsGenericParameters) continue;
@@ -58,6 +59,15 @@ public static class ProfilerPatch
 		// __state.Stop();
 		// Main.Instance.ModHelper.Console.WriteLine($"[profiler] {__originalMethod.MethodName()} took {__state.Elapsed.TotalMilliseconds:f1} ms");
 	}
+}
+
+[HarmonyPatch]
+public static class EvilPatch
+{
+	[HarmonyPrefix]
+	[HarmonyPatch(typeof(StackTraceUtility), "ExtractStackTrace")]
+	[HarmonyPatch(typeof(Application), "CallLogCallback")]
+	private static bool DisableShaderLogSpam() => false;
 }
 
 #endif
