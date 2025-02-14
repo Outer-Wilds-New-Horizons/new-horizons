@@ -5,8 +5,6 @@ namespace NewHorizons.Patches.ToolPatches
     [HarmonyPatch(typeof(ToolModeSwapper))]
     public static class ToolModeSwapperPatches
     {
-        private static ShipCockpitController _shipCockpitController;
-
         // Patches ToolModeSwapper.EquipToolMode(ToolMode mode) to deny swaps if you're holding a vision torch.
         // This is critical for preventing swapping to the scout launcher (causes memory slides to fail) but it
         // just doesn't look right when you switch to other stuff (eg the signalscope), so I'm disabling swapping tools entirely
@@ -23,11 +21,8 @@ namespace NewHorizons.Patches.ToolPatches
                 mode == ToolMode.Probe ||
                 mode == ToolMode.SignalScope ||
                 mode == ToolMode.Translator;
-            if (_shipCockpitController == null)
-                _shipCockpitController = UnityEngine.Object.FindObjectOfType<ShipCockpitController>();
-            var isInShip = _shipCockpitController != null ? _shipCockpitController._playerAtFlightConsole : false;
 
-            if (!isInShip && isHoldingVisionTorch && swappingToRestrictedTool) return false;
+            if (!PlayerState.AtFlightConsole() && isHoldingVisionTorch && swappingToRestrictedTool) return false;
 
             return true;
         }
