@@ -158,6 +158,7 @@ public class NHSlideCollection : SlideCollection
                     _pathsBeingLoaded.Remove(path);
                     if (_shipLogSlideProjector == null)
                     {
+                        // Object.FindObjectOfType doesnt work with inactive
                         _shipLogSlideProjector = Resources.FindObjectsOfTypeAll<ShipLogSlideProjector>().FirstOrDefault();
                     }
                     if (_shipLogSlideProjector != null)
