@@ -42,6 +42,11 @@ public class SlideReelAsyncImageLoader
     private bool _started;
     private bool _clamp;
 
+    /// <summary>
+    /// start loading the images a frame later
+    /// </summary>
+    /// <param name="clamp">sets wrapMode</param>
+    /// <param name="sequential">load all slides one at a time vs at the same time</param>
     public void Start(bool clamp, bool sequential)
     {
         if (_started) return;
