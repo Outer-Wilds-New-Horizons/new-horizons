@@ -150,28 +150,22 @@ namespace NewHorizons.Builder.Props
 
             // Now we replace the slides
             int slidesCount = info.slides.Length;
-            var slideCollection = new SlideCollection(slidesCount);
+            SlideCollection slideCollection = new NHSlideCollection(slidesCount, mod, info.slides.Select(x => x.imagePath).ToArray());
             slideCollection.streamingAssetIdentifier = string.Empty; // NREs if null
 
             // We can fit 16 slides max into an atlas
             var textures = new Texture2D[slidesCount > 16 ? 16 : slidesCount];
 
-            var (invImageLoader, atlasImageLoader, imageLoader) = StartAsyncLoader(mod, info.slides, ref slideCollection, true, true);
+            // Slide reels dynamically load the inverted cached images when needed. We only need to load raw images to generate the cache or atlases
+            var (_, atlasImageLoader, imageLoader) = StartAsyncLoader(mod, info.slides, ref slideCollection, false, true, false);
 
             // If the cache doesn't exist it will be created here, slide reels only use the base image loader for cache creation so delete the images after to free memory
-            imageLoader.deleteTexturesWhenDone = !CacheExists(mod);
+            imageLoader.deleteTexturesWhenDone = true;
 
             var key = GetUniqueSlideReelID(mod, info.slides);
 
-            if (invImageLoader != null && atlasImageLoader != null)
+            if (atlasImageLoader != null)
             {
-                // Loading directly from cache
-                invImageLoader.imageLoadedEvent.AddListener(
-                    (Texture2D tex, int index, string originalPath) =>
-                    {
-                        slideCollection.slides[index]._image = tex;
-                    }
-                );
                 atlasImageLoader.imageLoadedEvent.AddListener(
                     (Texture2D tex, int _, string originalPath) =>
                     {
@@ -202,6 +196,7 @@ namespace NewHorizons.Builder.Props
                 {
                     var time = DateTime.Now;
 
+                    // inverted slides will be loaded for the whole loop but its fine since this is only when generating cache
                     slideCollection.slides[index]._image = ImageUtilities.InvertSlideReel(mod, tex, originalPath);
                     NHLogger.LogVerbose($"Slide reel make reel invert texture {(DateTime.Now - time).TotalMilliseconds}ms");
                     // Track the first 16 to put on the slide reel object
@@ -215,8 +210,14 @@ namespace NewHorizons.Builder.Props
                             var slidesBack = slideReelObj.GetComponentInChildren<TransformAnimator>(true).transform.Find("Slides_Back").GetComponent<MeshRenderer>();
                             var slidesFront = slideReelObj.GetComponentInChildren<TransformAnimator>(true).transform.Find("Slides_Front").GetComponent<MeshRenderer>();
 
-                            // Now put together the textures into a 4x4 thing for the materials
-                            var reelTexture = ImageUtilities.MakeReelTexture(mod, textures, key);
+                            // Now put together the textures into a 4x4 thing for the materials #888
+                            var displayTextures = textures;
+                            if (info.displaySlides != null && info.displaySlides.Length > 0)
+                            {
+                                displayTextures = info.displaySlides.Select(x => textures[x]).ToArray();
+                            }
+
+                            var reelTexture = ImageUtilities.MakeReelTexture(mod, displayTextures, key);
                             slidesBack.material.mainTexture = reelTexture;
                             slidesBack.material.SetTexture(EmissionMap, reelTexture);
                             slidesBack.material.name = reelTexture.name;
@@ -348,15 +349,16 @@ namespace NewHorizons.Builder.Props
 
             var toDestroy = autoProjector.GetComponent<SlideCollectionContainer>();
             var slideCollectionContainer = autoProjector.gameObject.AddComponent<NHSlideCollectionContainer>();
+            slideCollectionContainer.doAsyncLoading = false;
             autoProjector._slideCollectionItem = slideCollectionContainer;
             Component.DestroyImmediate(toDestroy);
 
             // Now we replace the slides
             int slidesCount = info.slides.Length;
-            var slideCollection = new SlideCollection(slidesCount);
+            SlideCollection slideCollection = new NHSlideCollection(slidesCount, mod, info.slides.Select(x => x.imagePath).ToArray());
             slideCollection.streamingAssetIdentifier = string.Empty; // NREs if null
 
-            var (invImageLoader, _, imageLoader) = StartAsyncLoader(mod, info.slides, ref slideCollection, true, false);
+            var (invImageLoader, _, imageLoader) = StartAsyncLoader(mod, info.slides, ref slideCollection, true, false, false);
 
             // Autoprojector only uses the inverted images so the original can be destroyed if they are loaded (when creating the cached inverted images)
             imageLoader.deleteTexturesWhenDone = true;
@@ -381,7 +383,7 @@ namespace NewHorizons.Builder.Props
             }
 
             slideCollectionContainer.slideCollection = slideCollection;
-            slideCollectionContainer._playWithShipLogFacts = Array.Empty<string>();
+            slideCollectionContainer._playWithShipLogFacts = Array.Empty<string>(); // else it NREs in container initialize
 
             StreamingHandler.SetUpStreaming(projectorObj, sector);
 
@@ -403,9 +405,9 @@ namespace NewHorizons.Builder.Props
             if (_visionTorchDetectorPrefab == null) return null;
 
             // spawn a trigger for the vision torch
-            var g = DetailBuilder.Make(planetGO, sector, mod, _visionTorchDetectorPrefab, new DetailInfo(info) { scale = 2, rename = !string.IsNullOrEmpty(info.rename) ? info.rename : "VisionStaffDetector" });
+            var visionTorchTargetGO = DetailBuilder.Make(planetGO, sector, mod, _visionTorchDetectorPrefab, new DetailInfo(info) { scale = 2, rename = !string.IsNullOrEmpty(info.rename) ? info.rename : "VisionStaffDetector" });
 
-            if (g == null)
+            if (visionTorchTargetGO == null)
             {
                 NHLogger.LogWarning($"Tried to make a vision torch target but couldn't. Do you have the DLC installed?");
                 return null;
@@ -417,7 +419,7 @@ namespace NewHorizons.Builder.Props
             var slideCollection = new SlideCollection(slidesCount); // TODO: uh I think that info.slides[i].playTimeDuration is not being read here... note to self for when I implement support for that: 0.7 is what to default to if playTimeDuration turns out to be 0
             slideCollection.streamingAssetIdentifier = string.Empty; // NREs if null
 
-            var (_, _, imageLoader) = StartAsyncLoader(mod, info.slides, ref slideCollection, false, false);
+            var (_, _, imageLoader) = StartAsyncLoader(mod, info.slides, ref slideCollection, false, false, true);
             imageLoader.imageLoadedEvent.AddListener((Texture2D tex, int index, string originalPath) =>
             {
                 var time = DateTime.Now;
@@ -426,17 +428,18 @@ namespace NewHorizons.Builder.Props
             });
 
             // attach a component to store all the data for the slides that play when a vision torch scans this target
-            var target = g.AddComponent<VisionTorchTarget>();
-            var slideCollectionContainer = g.AddComponent<NHSlideCollectionContainer>();
+            var target = visionTorchTargetGO.AddComponent<VisionTorchTarget>();
+            var slideCollectionContainer = visionTorchTargetGO.AddComponent<NHSlideCollectionContainer>();
+            slideCollectionContainer.doAsyncLoading = false;
             slideCollectionContainer.slideCollection = slideCollection;
-            target.slideCollection = g.AddComponent<MindSlideCollection>();
+            target.slideCollection = visionTorchTargetGO.AddComponent<MindSlideCollection>();
             target.slideCollection._slideCollectionContainer = slideCollectionContainer;
 
             LinkShipLogFacts(info, slideCollectionContainer);
 
-            g.SetActive(true);
+            visionTorchTargetGO.SetActive(true);
 
-            return g;
+            return visionTorchTargetGO;
         }
 
         public static GameObject MakeStandingVisionTorch(GameObject planetGO, Sector sector, ProjectionInfo info, IModBehaviour mod)
@@ -470,7 +473,7 @@ namespace NewHorizons.Builder.Props
             var slideCollection = new SlideCollection(slidesCount);
             slideCollection.streamingAssetIdentifier = string.Empty; // NREs if null
 
-            var (_, _, imageLoader) = StartAsyncLoader(mod, slides, ref slideCollection, false, false);
+            var (_, _, imageLoader) = StartAsyncLoader(mod, slides, ref slideCollection, false, false, true);
 
             // This variable just lets us track how many of the slides have been loaded.
             // This way as soon as the last one is loaded (due to async loading, this may be
@@ -495,6 +498,7 @@ namespace NewHorizons.Builder.Props
 
             // Set up the containers for the slides
             var slideCollectionContainer = standingTorch.AddComponent<NHSlideCollectionContainer>();
+            slideCollectionContainer.doAsyncLoading = false;
             slideCollectionContainer.slideCollection = slideCollection;
 
             var mindSlideCollection = standingTorch.AddComponent<MindSlideCollection>();
@@ -513,8 +517,18 @@ namespace NewHorizons.Builder.Props
             return standingTorch;
         }
 
+        /// <summary>
+        /// start loading all the slide stuff we need async.
+        /// </summary>
+        /// <param name="mod">the mod to load slides from</param>
+        /// <param name="slides">slides to load</param>
+        /// <param name="slideCollection">where to assign the slide objects</param>
+        /// <param name="useInvertedCache">should we load cached inverted images?</param>
+        /// <param name="useAtlasCache">should we load cached atlas images?</param>
+        /// <param name="loadRawImages">should we load the original images? happens anyway if cache doesnt exist since atlas or inverted will need it</param>
+        /// <returns>the 3 loaders (inverted, atlas, original). inverted and atlas will be null if cache doesnt exist, so check those to find out if cache exists</returns>
         private static (SlideReelAsyncImageLoader inverted, SlideReelAsyncImageLoader atlas, SlideReelAsyncImageLoader slides)
-            StartAsyncLoader(IModBehaviour mod, SlideInfo[] slides, ref SlideCollection slideCollection, bool useInvertedCache, bool useAtlasCache)
+            StartAsyncLoader(IModBehaviour mod, SlideInfo[] slides, ref SlideCollection slideCollection, bool useInvertedCache, bool useAtlasCache, bool loadRawImages)
         {
             var invertedImageLoader = new SlideReelAsyncImageLoader();
             var atlasImageLoader = new SlideReelAsyncImageLoader();
@@ -546,7 +560,7 @@ namespace NewHorizons.Builder.Props
                         // Load the inverted images used when displaying slide reels to a screen
                         invertedImageLoader.PathsToLoad.Add((i, Path.Combine(Main.Instance.ModHelper.Manifest.ModFolderPath, "Assets/textures/inverted_blank_slide_reel.png")));
                     }
-                    else
+                    else if (!cacheExists || loadRawImages)
                     {
                         // Used to then make cached stuff
                         imageLoader.PathsToLoad.Add((i, Path.Combine(Main.Instance.ModHelper.Manifest.ModFolderPath, "Assets/textures/blank_slide_reel.png")));
@@ -554,12 +568,12 @@ namespace NewHorizons.Builder.Props
                 }
                 else
                 {
-                    if (useInvertedCache && cacheExists)
+                    if (cacheExists && useInvertedCache)
                     {
                         // Load the inverted images used when displaying slide reels to a screen
                         invertedImageLoader.PathsToLoad.Add((i, Path.Combine(mod.ModHelper.Manifest.ModFolderPath, InvertedSlideReelCacheFolder, slideInfo.imagePath)));
                     }
-                    else
+                    if (!cacheExists || loadRawImages)
                     {
                         imageLoader.PathsToLoad.Add((i, Path.Combine(mod.ModHelper.Manifest.ModFolderPath, slideInfo.imagePath)));
                     }
@@ -578,12 +592,11 @@ namespace NewHorizons.Builder.Props
                 {
                     atlasImageLoader.Start(false, false);
                 }
-                // When using the inverted cache we never need the regular images
                 if (useInvertedCache)
                 {
                     invertedImageLoader.Start(true, false);
                 }
-                else
+                if (loadRawImages)
                 {
                     imageLoader.Start(true, false);
                 }

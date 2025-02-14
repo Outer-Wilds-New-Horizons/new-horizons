@@ -19,6 +19,36 @@ public static class EyeDetailCacher
         foreach (var body in Main.BodyDict["EyeOfTheUniverse"])
         {
             NHLogger.LogVerbose($"{nameof(EyeDetailCacher)}: {body.Config.name}");
+            if (body.Config?.EyeOfTheUniverse?.eyeTravelers != null)
+            {
+                foreach (var detail in body.Config.EyeOfTheUniverse.eyeTravelers)
+                {
+                    if (!string.IsNullOrEmpty(detail.assetBundle)) continue;
+
+                    AddPathToCache(detail.path);
+                }
+            }
+
+            if (body.Config?.EyeOfTheUniverse?.instrumentZones != null)
+            {
+                foreach (var detail in body.Config.EyeOfTheUniverse.instrumentZones)
+                {
+                    if (!string.IsNullOrEmpty(detail.assetBundle)) continue;
+
+                    AddPathToCache(detail.path);
+                }
+            }
+
+            if (body.Config?.EyeOfTheUniverse?.quantumInstruments != null)
+            {
+                foreach (var detail in body.Config.EyeOfTheUniverse.quantumInstruments)
+                {
+                    if (!string.IsNullOrEmpty(detail.assetBundle)) continue;
+
+                    AddPathToCache(detail.path);
+                }
+            }
+
             if (body.Config?.Props?.details != null)
             {
                 foreach (var detail in body.Config.Props.details)

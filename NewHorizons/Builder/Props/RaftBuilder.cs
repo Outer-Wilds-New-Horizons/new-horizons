@@ -66,6 +66,9 @@ namespace NewHorizons.Builder.Props
             var waterVolume = planetGO.GetComponentInChildren<RadialFluidVolume>();
             fluidDetector._alignmentFluid = waterVolume;
             fluidDetector._buoyancy.checkAgainstWaves = true;
+            // Rafts were unable to trigger docks because these were disabled for some reason
+            fluidDetector.GetComponent<BoxShape>().enabled = true;
+            fluidDetector.GetComponent<OWCollider>().enabled = true;
 
             // Light sensors
             foreach (var lightSensor in raftObject.GetComponentsInChildren<SingleLightSensor>())
