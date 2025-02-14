@@ -885,35 +885,6 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "assetBundle": {
-          "type": "string",
-          "description": "Relative filepath to an asset-bundle to load the prefab defined in `path` from"
-        },
-        "path": {
-          "type": "string",
-          "description": "Either the path in the scene hierarchy of the item to copy or the path to the object in the supplied asset bundle. \nIf empty, will make an empty game object. This can be useful for adding other props to it as its children."
-        },
-        "removeChildren": {
-          "type": "array",
-          "description": "A list of children to remove from this detail",
-          "items": {
-            "type": "string"
-          }
-        },
-        "removeComponents": {
-          "type": "boolean",
-          "description": "Do we reset all the components on this object? Useful for certain props that have dialogue components attached to\nthem."
-        },
-        "scale": {
-          "type": "number",
-          "description": "Scale the prop",
-          "format": "float",
-          "default": 1.0
-        },
-        "stretch": {
-          "description": "Scale each axis of the prop. Overrides `scale`.",
-          "$ref": "#/definitions/MVector3"
-        },
         "keepLoaded": {
           "type": "boolean",
           "description": "Should this detail stay loaded (visible and collideable) even if you're outside the sector (good for very large props)?\nAlso makes this detail visible on the map.\nKeeping many props loaded is bad for performance so use this only when it's actually relevant\nMost logic/behavior scripts will still only work inside the sector, as most of those scripts break if a sector is not provided."
@@ -963,6 +934,35 @@
         "itemSocket": {
           "description": "Should this detail be treated as a socket for an interactible item",
           "$ref": "#/definitions/ItemSocketInfo"
+        },
+        "assetBundle": {
+          "type": "string",
+          "description": "Relative filepath to an asset-bundle to load the prefab defined in `path` from"
+        },
+        "path": {
+          "type": "string",
+          "description": "Either the path in the scene hierarchy of the item to copy or the path to the object in the supplied asset bundle. \nIf empty, will make an empty game object. This can be useful for adding other props to it as its children."
+        },
+        "removeChildren": {
+          "type": "array",
+          "description": "A list of children to remove from this detail",
+          "items": {
+            "type": "string"
+          }
+        },
+        "removeComponents": {
+          "type": "boolean",
+          "description": "Do we reset all the components on this object? Useful for certain props that have dialogue components attached to\nthem."
+        },
+        "scale": {
+          "type": "number",
+          "description": "Scale the prop",
+          "format": "float",
+          "default": 1.0
+        },
+        "stretch": {
+          "description": "Scale each axis of the prop. Overrides `scale`.",
+          "$ref": "#/definitions/MVector3"
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -1470,35 +1470,6 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "assetBundle": {
-          "type": "string",
-          "description": "Relative filepath to an asset-bundle to load the prefab defined in `path` from"
-        },
-        "path": {
-          "type": "string",
-          "description": "Either the path in the scene hierarchy of the item to copy or the path to the object in the supplied asset bundle. \nIf empty, will make an empty game object. This can be useful for adding other props to it as its children."
-        },
-        "removeChildren": {
-          "type": "array",
-          "description": "A list of children to remove from this detail",
-          "items": {
-            "type": "string"
-          }
-        },
-        "removeComponents": {
-          "type": "boolean",
-          "description": "Do we reset all the components on this object? Useful for certain props that have dialogue components attached to\nthem."
-        },
-        "scale": {
-          "type": "number",
-          "description": "Scale the prop",
-          "format": "float",
-          "default": 1.0
-        },
-        "stretch": {
-          "description": "Scale each axis of the prop. Overrides `scale`.",
-          "$ref": "#/definitions/MVector3"
-        },
         "keepLoaded": {
           "type": "boolean",
           "description": "Should this detail stay loaded (visible and collideable) even if you're outside the sector (good for very large props)?\nAlso makes this detail visible on the map.\nKeeping many props loaded is bad for performance so use this only when it's actually relevant\nMost logic/behavior scripts will still only work inside the sector, as most of those scripts break if a sector is not provided."
@@ -1548,6 +1519,35 @@
         "itemSocket": {
           "description": "Should this detail be treated as a socket for an interactible item",
           "$ref": "#/definitions/ItemSocketInfo"
+        },
+        "assetBundle": {
+          "type": "string",
+          "description": "Relative filepath to an asset-bundle to load the prefab defined in `path` from"
+        },
+        "path": {
+          "type": "string",
+          "description": "Either the path in the scene hierarchy of the item to copy or the path to the object in the supplied asset bundle. \nIf empty, will make an empty game object. This can be useful for adding other props to it as its children."
+        },
+        "removeChildren": {
+          "type": "array",
+          "description": "A list of children to remove from this detail",
+          "items": {
+            "type": "string"
+          }
+        },
+        "removeComponents": {
+          "type": "boolean",
+          "description": "Do we reset all the components on this object? Useful for certain props that have dialogue components attached to\nthem."
+        },
+        "scale": {
+          "type": "number",
+          "description": "Scale the prop",
+          "format": "float",
+          "default": 1.0
+        },
+        "stretch": {
+          "description": "Scale each axis of the prop. Overrides `scale`.",
+          "$ref": "#/definitions/MVector3"
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -1586,35 +1586,6 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "assetBundle": {
-          "type": "string",
-          "description": "Relative filepath to an asset-bundle to load the prefab defined in `path` from"
-        },
-        "path": {
-          "type": "string",
-          "description": "Either the path in the scene hierarchy of the item to copy or the path to the object in the supplied asset bundle. \nIf empty, will make an empty game object. This can be useful for adding other props to it as its children."
-        },
-        "removeChildren": {
-          "type": "array",
-          "description": "A list of children to remove from this detail",
-          "items": {
-            "type": "string"
-          }
-        },
-        "removeComponents": {
-          "type": "boolean",
-          "description": "Do we reset all the components on this object? Useful for certain props that have dialogue components attached to\nthem."
-        },
-        "scale": {
-          "type": "number",
-          "description": "Scale the prop",
-          "format": "float",
-          "default": 1.0
-        },
-        "stretch": {
-          "description": "Scale each axis of the prop. Overrides `scale`.",
-          "$ref": "#/definitions/MVector3"
-        },
         "keepLoaded": {
           "type": "boolean",
           "description": "Should this detail stay loaded (visible and collideable) even if you're outside the sector (good for very large props)?\nAlso makes this detail visible on the map.\nKeeping many props loaded is bad for performance so use this only when it's actually relevant\nMost logic/behavior scripts will still only work inside the sector, as most of those scripts break if a sector is not provided."
@@ -1664,6 +1635,35 @@
         "itemSocket": {
           "description": "Should this detail be treated as a socket for an interactible item",
           "$ref": "#/definitions/ItemSocketInfo"
+        },
+        "assetBundle": {
+          "type": "string",
+          "description": "Relative filepath to an asset-bundle to load the prefab defined in `path` from"
+        },
+        "path": {
+          "type": "string",
+          "description": "Either the path in the scene hierarchy of the item to copy or the path to the object in the supplied asset bundle. \nIf empty, will make an empty game object. This can be useful for adding other props to it as its children."
+        },
+        "removeChildren": {
+          "type": "array",
+          "description": "A list of children to remove from this detail",
+          "items": {
+            "type": "string"
+          }
+        },
+        "removeComponents": {
+          "type": "boolean",
+          "description": "Do we reset all the components on this object? Useful for certain props that have dialogue components attached to\nthem."
+        },
+        "scale": {
+          "type": "number",
+          "description": "Scale the prop",
+          "format": "float",
+          "default": 1.0
+        },
+        "stretch": {
+          "description": "Scale each axis of the prop. Overrides `scale`.",
+          "$ref": "#/definitions/MVector3"
         },
         "rotation": {
           "description": "Rotation of the object",
