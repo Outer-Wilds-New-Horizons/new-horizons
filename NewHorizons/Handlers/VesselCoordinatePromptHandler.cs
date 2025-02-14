@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 using static NewHorizons.External.Configs.StarSystemConfig;
 
 namespace NewHorizons.Handlers
@@ -47,7 +48,7 @@ namespace NewHorizons.Handlers
             if (_textureCache == null) _textureCache = new List<Texture2D>();
             _textureCache.Add(texture);
 
-            var sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(texture.width / 2f, texture.height / 2f));
+            var sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(texture.width / 2f, texture.height / 2f), 100, 0, SpriteMeshType.FullRect, Vector4.zero, false);
 
             var name = ShipLogStarChartMode.UniqueIDToName(systemID);
 

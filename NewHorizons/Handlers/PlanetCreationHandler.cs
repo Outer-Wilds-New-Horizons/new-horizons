@@ -168,7 +168,7 @@ namespace NewHorizons.Handlers
 
             // I don't remember doing this why is it exceptions what am I doing
             GameObject existingPlanet = null;
-            if (body.Config.checkForExisting)
+            if (false && body.Config.checkForExisting)
             {
                 try
                 {
