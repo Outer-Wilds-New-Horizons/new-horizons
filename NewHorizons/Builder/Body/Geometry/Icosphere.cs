@@ -100,6 +100,11 @@ namespace NewHorizons.Builder.Body.Geometry
             mesh.normals = normals;
             mesh.uv = uvs;
 
+            mesh.RecalculateBounds();
+            // Unity recalculate normals does not support smooth normals
+            //mesh.RecalculateNormals();
+            mesh.RecalculateTangents();
+
             return mesh;
         }
 

@@ -353,15 +353,71 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "color": {
-          "$ref": "#/definitions/MColor"
-        },
         "scale": {
           "type": "number",
+          "description": "Scale height of the proc gen.",
           "format": "float",
           "minimum": 0.0
+        },
+        "color": {
+          "description": "Ground color, only applied if no texture or material is chosen.",
+          "$ref": "#/definitions/MColor"
+        },
+        "material": {
+          "description": "Can pick a preset material with a texture from the base game. Does not work with color or any textures.",
+          "$ref": "#/definitions/Material"
+        },
+        "texture": {
+          "type": "string",
+          "description": "Can use a custom texture. Does not work with material or color."
+        },
+        "smoothnessMap": {
+          "type": "string",
+          "description": "Relative filepath to the texture used for the terrain's smoothness and metallic, which are controlled by the texture's alpha and red channels respectively. Optional.\nTypically black with variable transparency, when metallic isn't wanted."
+        },
+        "smoothness": {
+          "type": "number",
+          "description": "How \"glossy\" the surface is, where 0 is diffuse, and 1 is like a mirror.\nMultiplies with the alpha of the smoothness map if using one.",
+          "format": "float",
+          "default": 0.0,
+          "maximum": 1.0,
+          "minimum": 0.0
+        },
+        "metallic": {
+          "type": "number",
+          "description": "How metallic the surface is, from 0 to 1.\nMultiplies with the red of the smoothness map if using one.",
+          "format": "float",
+          "default": 0.0,
+          "maximum": 1.0,
+          "minimum": 0.0
+        },
+        "normalMap": {
+          "type": "string",
+          "description": "Relative filepath to the texture used for the normal (aka bump) map. Optional."
+        },
+        "normalStrength": {
+          "type": "number",
+          "description": "Strength of the normal map. Usually 0-1, but can go above, or negative to invert the map.",
+          "format": "float",
+          "default": 1.0
         }
       }
+    },
+    "Material": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Default",
+        "Ice",
+        "Quantum",
+        "Rock"
+      ],
+      "enum": [
+        "default",
+        "ice",
+        "quantum",
+        "rock"
+      ]
     },
     "AtmosphereModule": {
       "type": "object",

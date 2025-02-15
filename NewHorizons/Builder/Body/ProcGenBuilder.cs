@@ -1,21 +1,50 @@
 using NewHorizons.Builder.Body.Geometry;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
+using NewHorizons.Utility.Files;
+using OWML.Common;
+using System.Collections.Generic;
 using UnityEngine;
+
 namespace NewHorizons.Builder.Body
 {
     public static class ProcGenBuilder
     {
-        private static Material quantumMaterial;
-        private static Material iceMaterial;
+        private static Material _material;
+        private static Shader _planetShader;
 
-        public static GameObject Make(GameObject planetGO, Sector sector, ProcGenModule module)
+        private static Dictionary<ProcGenModule, Material> _materialCache = new();
+
+        public static void ClearCache()
         {
-            if (quantumMaterial == null) quantumMaterial = SearchUtilities.FindResourceOfTypeAndName<Material>("Rock_QM_EyeRock_mat");
-            if (iceMaterial == null) iceMaterial = SearchUtilities.FindResourceOfTypeAndName<Material>("Rock_BH_IceSpike_mat");
+            foreach (var material in _materialCache.Values)
+            {
+                Object.Destroy(material);
+            }
+            _materialCache.Clear();
+        }
 
+        private static Material MakeMaterial()
+        {
+            var material = new Material(_planetShader);
 
-            GameObject icosphere = new GameObject("Icosphere");
+            var keyword = "BASE_TILE";
+            var prefix = "_BaseTile";
+
+            material.SetFloat(prefix, 1);
+            material.EnableKeyword(keyword);
+
+            material.SetTexture("_BlendMap", ImageUtilities.MakeSolidColorTexture(1, 1, Color.white));
+
+            return material;
+        }
+
+        public static GameObject Make(IModBehaviour mod, GameObject planetGO, Sector sector, ProcGenModule module)
+        {
+            if (_planetShader == null) _planetShader = AssetBundleUtilities.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/SphereTextureWrapperTriplanar.shader");
+            if (_material == null) _material = MakeMaterial();
+
+            var icosphere = new GameObject("Icosphere");
             icosphere.SetActive(false);
             icosphere.transform.parent = sector?.transform ?? planetGO.transform;
             icosphere.transform.rotation = Quaternion.Euler(90, 0, 0);
@@ -26,8 +55,61 @@ namespace NewHorizons.Builder.Body
             icosphere.AddComponent<MeshFilter>().mesh = mesh;
 
             var cubeSphereMR = icosphere.AddComponent<MeshRenderer>();
-            cubeSphereMR.material = new Material(Shader.Find("Standard"));
-            cubeSphereMR.material.color = module.color != null ? module.color.ToColor() : Color.white;
+
+            if (!_materialCache.TryGetValue(module, out var material))
+            {
+                material = new Material(_material);
+                material.name = planetGO.name;
+                if (module.material == ProcGenModule.Material.Default)
+                {
+                    if (!string.IsNullOrEmpty(module.texture))
+                    {
+                        material.SetTexture($"_BaseTileAlbedo", ImageUtilities.GetTexture(mod, module.texture, wrap: true));
+                    }
+                    else
+                    {
+                        material.mainTexture = ImageUtilities.MakeSolidColorTexture(1, 1, module.color?.ToColor() ?? Color.white);
+                    }
+                    if (!string.IsNullOrEmpty(module.smoothnessMap))
+                    {
+                        material.SetTexture($"_BaseTileSmoothnessMap", ImageUtilities.GetTexture(mod, module.smoothnessMap, wrap: true));
+                    }
+                    if (!string.IsNullOrEmpty(module.normalMap))
+                    {
+                        material.SetFloat($"_BaseTileBumpStrength", module.normalStrength);
+                        material.SetTexture($"_BaseTileBumpMap", ImageUtilities.GetTexture(mod, module.normalMap, wrap: true));
+                    }
+                }
+                else
+                {
+                    switch (module.material)
+                    {
+                        case ProcGenModule.Material.Ice:
+                            material.SetTexture($"_BaseTileAlbedo", ImageUtilities.GetTexture(Main.Instance, "Assets/textures/Ice.png", wrap: true));
+                            break;
+                        case ProcGenModule.Material.Quantum:
+                            material.SetTexture($"_BaseTileAlbedo", ImageUtilities.GetTexture(Main.Instance, "Assets/textures/Quantum.png", wrap: true));
+                            break;
+                        case ProcGenModule.Material.Rock:
+                            material.SetTexture($"_BaseTileAlbedo", ImageUtilities.GetTexture(Main.Instance, "Assets/textures/Rocks.png", wrap: true));
+                            break;
+                        default:
+                            break;
+                    }
+                    material.SetFloat($"_BaseTileScale", 5 / module.scale);
+                    if (module.color != null)
+                    {
+                        material.color = module.color.ToColor();
+                    }
+                }
+
+                material.SetFloat("_Smoothness", module.smoothness);
+                material.SetFloat("_Metallic", module.metallic);
+
+                _materialCache[module] = material;
+            }
+
+            cubeSphereMR.sharedMaterial = material;
 
             var cubeSphereMC = icosphere.AddComponent<MeshCollider>();
             cubeSphereMC.sharedMesh = mesh;

@@ -581,7 +581,7 @@ namespace NewHorizons.Handlers
             GameObject procGen = null;
             if (body.Config.ProcGen != null)
             {
-                procGen = ProcGenBuilder.Make(go, sector, body.Config.ProcGen);
+                procGen = ProcGenBuilder.Make(body.Mod, go, sector, body.Config.ProcGen);
             }
 
             if (body.Config.Star != null)
