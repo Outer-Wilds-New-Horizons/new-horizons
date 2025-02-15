@@ -87,6 +87,9 @@ namespace NewHorizons.Builder.Atmosphere
             MR.material.SetFloat(Radius, atmo.fogSize);
             MR.material.SetFloat(Density, atmo.fogDensity);
             MR.material.SetFloat(DensityExponent, 1);
+            // We apply fogTint to the material and tint the fog ramp, which means the ramp and tint get multiplied together in the shader, so tint is applied twice
+            // However nobody has visually complained about this, so we don't want to change it until maybe somebody does
+            // Was previously documented by issue #747.
             MR.material.SetTexture(ColorRampTexture, colorRampTexture);
 
             fogGO.transform.position = planetGO.transform.position;
