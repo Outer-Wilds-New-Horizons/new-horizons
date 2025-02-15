@@ -62,13 +62,22 @@ namespace NewHorizons.Builder.Body
                 material.name = planetGO.name;
                 if (module.material == ProcGenModule.Material.Default)
                 {
-                    if (!string.IsNullOrEmpty(module.texturePath))
+                    if (!string.IsNullOrEmpty(module.texture))
                     {
-                        material.SetTexture($"_BaseTileAlbedo", ImageUtilities.GetTexture(mod, module.texturePath, wrap: true));
+                        material.SetTexture($"_BaseTileAlbedo", ImageUtilities.GetTexture(mod, module.texture, wrap: true));
                     }
                     else
                     {
                         material.mainTexture = ImageUtilities.MakeSolidColorTexture(1, 1, module.color?.ToColor() ?? Color.white);
+                    }
+                    if (!string.IsNullOrEmpty(module.smoothnessMap))
+                    {
+                        material.SetTexture($"_BaseTileSmoothnessMap", ImageUtilities.GetTexture(mod, module.smoothnessMap, wrap: true));
+                    }
+                    if (!string.IsNullOrEmpty(module.normalMap))
+                    {
+                        material.SetFloat($"_BaseTileBumpStrength", module.normalStrength);
+                        material.SetTexture($"_BaseTileBumpMap", ImageUtilities.GetTexture(mod, module.normalMap, wrap: true));
                     }
                 }
                 else
@@ -94,8 +103,8 @@ namespace NewHorizons.Builder.Body
                     }
                 }
 
-                material.SetFloat("_Smoothness", 0.1f);
-                material.SetFloat("_Metallic", 0.1f);
+                material.SetFloat("_Smoothness", module.smoothness);
+                material.SetFloat("_Metallic", module.metallic);
 
                 _materialCache[module] = material;
             }
