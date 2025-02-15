@@ -515,8 +515,12 @@ namespace NewHorizons.Handlers
                 _subsectors = new List<Sector>();
                 _occupantMask = DynamicOccupant.Player;
                 SectorManager.RegisterSector(this);
-                _parentSector = GetComponentInParent<Sector>();
-                if (_parentSector != null && _parentSector != this) _parentSector.AddSubsector(this);
+                var parentSector = GetComponentInParent<Sector>();
+                if (parentSector != null && parentSector != this)
+                {
+                    _parentSector = parentSector;
+                    _parentSector.AddSubsector(this);
+                }
             }
 
             public void Start()
