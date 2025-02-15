@@ -155,6 +155,17 @@ namespace NewHorizons.Builder.Props
                                 continue;
                             }
 
+                            /* We used to set SectorCullGroup._controllingProxy to null. Now we do not.
+                             * This may break things on copied details because it prevents SetSector from doing anything,
+                             * so that part of the detail might be culled by wrong sector.
+                             * So if you copy something from e.g. Giants Deep it might turn off the detail if you arent in 
+                             * the sector of the thing you copied from (since it's still pointing to the original proxy, 
+                             * which has the original sector at giants deep there)
+                             * 
+                             * Anyway nobody has complained about this for the year it's been like that so closing issue #831 until
+                             * this affects somebody
+                             */
+
                             FixSectoredComponent(component, sector, existingSectors);
                         }
 
