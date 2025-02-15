@@ -30,6 +30,7 @@ namespace NewHorizons.Handlers
             ambientLight.transform.SetParent(planetRoot.transform, true);
 
             InitSubtitles();
+            TitleScreenColourHandler.ResetColour();
             AudioTypeHandler.Init();
 
             // Load player data for fact and persistent condition checking

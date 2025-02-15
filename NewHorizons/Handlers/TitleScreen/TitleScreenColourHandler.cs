@@ -1,5 +1,6 @@
 using HarmonyLib;
 using NewHorizons.Utility.Files;
+using NewHorizons.Utility.OWML;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -12,6 +13,7 @@ namespace NewHorizons.Handlers.TitleScreen
     {
         public static void SetColour(Color colour)
         {
+            NHLogger.LogVerbose("Setting title screen colour to " + colour.ToString());
             colour.a = 1;
             var buttons = GameObject.FindObjectOfType<TitleScreenManager>()._mainMenu.GetComponentsInChildren<Text>();
             var footer = GameObject.Find("TitleMenu/TitleCanvas/FooterBlock").GetComponentsInChildren<Text>();
@@ -23,6 +25,11 @@ namespace NewHorizons.Handlers.TitleScreen
             var logo = ImageUtilities.TintImage(ImageUtilities.GetTexture(Main.Instance, "Assets\\textures\\MENU_OuterWildsLogo_d.png"), (Color)_mainMenuColour);
             GameObject.FindObjectOfType<TitleAnimRenderer>()._logoMaterial.mainTexture = logo;
             GameObject.FindObjectOfType<TitleAnimRenderer>()._logoMaterialClone.mainTexture = logo;
+        }
+
+        public static void ResetColour()
+        {
+            _mainMenuColour = null;
         }
 
         [HarmonyPrefix]
