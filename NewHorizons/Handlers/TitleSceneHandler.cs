@@ -520,7 +520,7 @@ namespace NewHorizons.Handlers
                 if (parentSector != null && parentSector != this)
                 {
                     _parentSector = parentSector;
-                    _parentSector.AddSubsector(this);
+                    _parentSector._subsectors.SafeAdd(this);
                 }
             }
 
