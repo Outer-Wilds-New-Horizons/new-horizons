@@ -670,6 +670,10 @@ namespace NewHorizons.External.Configs
                         }
                         volume.gameOver.text = volume.gameOverText;
                     }
+                    if (volume.creditsType != null)
+                    {
+                        volume.gameOver.creditsType = (SerializableEnums.NHCreditsType)volume.creditsType;
+                    }
                 }
             }
 

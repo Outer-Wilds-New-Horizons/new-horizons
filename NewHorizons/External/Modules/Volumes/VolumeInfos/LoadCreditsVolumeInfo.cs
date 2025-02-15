@@ -8,9 +8,10 @@ namespace NewHorizons.External.Modules.Volumes.VolumeInfos
     [JsonObject]
     public class LoadCreditsVolumeInfo : VolumeInfo
     {
-        [DefaultValue("none")] public NHCreditsType creditsType = NHCreditsType.None;
+        [Obsolete("Use gameOver.creditsType")]
+        public NHCreditsType? creditsType;
 
-        [Obsolete("Use gameOver")]
+        [Obsolete("Use gameOver.text")]
         public string gameOverText;
 
         /// <summary>
