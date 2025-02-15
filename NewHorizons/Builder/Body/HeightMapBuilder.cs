@@ -11,8 +11,7 @@ namespace NewHorizons.Builder.Body
 {
     public static class HeightMapBuilder
     {
-        private static Shader _planetShader;
-        public static Shader PlanetShader => _planetShader ??= Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/SphereTextureWrapperTriplanar.shader");
+        public static Shader PlanetShader;
 
         // I hate nested functions okay
         private static IModBehaviour _currentMod;

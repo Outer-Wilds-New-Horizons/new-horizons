@@ -12,8 +12,8 @@ namespace NewHorizons.Builder.Body
 
         public static GameObject Make(GameObject planetGO, Sector sector, ProcGenModule module)
         {
-            quantumMaterial ??= SearchUtilities.FindResourceOfTypeAndName<Material>("Rock_QM_EyeRock_mat");
-            iceMaterial ??= SearchUtilities.FindResourceOfTypeAndName<Material>("Rock_BH_IceSpike_mat");
+            if (quantumMaterial == null) quantumMaterial = SearchUtilities.FindResourceOfTypeAndName<Material>("Rock_QM_EyeRock_mat");
+            if (iceMaterial == null) iceMaterial = SearchUtilities.FindResourceOfTypeAndName<Material>("Rock_BH_IceSpike_mat");
 
             var icosphere = new GameObject("Icosphere");
             icosphere.SetActive(false);
