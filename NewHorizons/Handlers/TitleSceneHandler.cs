@@ -26,6 +26,9 @@ namespace NewHorizons.Handlers
 
         public static void Init()
         {
+            var scene = SearchUtilities.Find("Scene");
+            scene.AddComponent<FakeSector>();
+
             var planetRoot = SearchUtilities.Find("Scene/Background/PlanetPivot/PlanetRoot");
             var campfire = SearchUtilities.Find("Scene/Background/PlanetPivot/Prefab_HEA_Campfire");
             campfire.transform.SetParent(planetRoot.transform, true);
@@ -127,10 +130,12 @@ namespace NewHorizons.Handlers
                 Delay.FireOnNextUpdate(() => ambienceSource.AssignAudioLibraryClip(audioType));
             }
 
+            var background = SearchUtilities.Find("Scene/Background");
+            var menuPlanet = SearchUtilities.Find("Scene/Background/PlanetPivot");
+            var sector = background.GetComponentInParent<Sector>();
+
             if (config.Background != null)
             {
-                var background = SearchUtilities.Find("Scene/Background");
-
                 if (config.Background.removeChildren != null)
                 {
                     RemoveChildren(background, config.Background.removeChildren);
@@ -140,7 +145,7 @@ namespace NewHorizons.Handlers
                 {
                     foreach (var simplifiedDetail in config.Background.details)
                     {
-                        DetailBuilder.Make(background, null, mod, new DetailInfo(simplifiedDetail));
+                        DetailBuilder.Make(background, sector, mod, new DetailInfo(simplifiedDetail));
                     }
                 }
 
@@ -150,8 +155,6 @@ namespace NewHorizons.Handlers
 
             if (config.MenuPlanet != null)
             {
-                var menuPlanet = SearchUtilities.Find("Scene/Background/PlanetPivot");
-
                 if (config.MenuPlanet.removeChildren != null)
                 {
                     RemoveChildren(menuPlanet, config.MenuPlanet.removeChildren);
@@ -161,7 +164,7 @@ namespace NewHorizons.Handlers
                 {
                     foreach (var simplifiedDetail in config.MenuPlanet.details)
                     {
-                        DetailBuilder.Make(menuPlanet, null, mod, new DetailInfo(simplifiedDetail));
+                        DetailBuilder.Make(menuPlanet, sector, mod, new DetailInfo(simplifiedDetail));
                     }
                 }
 
@@ -500,6 +503,15 @@ namespace NewHorizons.Handlers
             void Build();
             bool KnowsFact();
             bool HasCondition();
+        }
+
+        private class FakeSector : Sector
+        {
+            public override void Awake()
+            {
+                _occupantMask = DynamicOccupant.Player;
+                SectorManager.RegisterSector(this);
+            }
         }
     }
 }
