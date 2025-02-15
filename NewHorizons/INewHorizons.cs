@@ -73,6 +73,11 @@ namespace NewHorizons
         /// Gives the name of the planet that was just loaded.
         /// </summary>
         UnityEvent<string> GetBodyLoadedEvent();
+
+        /// <summary>
+        /// An event invoked when NH has finished building the title screen.
+        /// </summary>
+        UnityEvent GetTitleScreenLoadedEvent();
         #endregion
 
         #region Querying configs
