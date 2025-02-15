@@ -179,5 +179,31 @@ namespace NewHorizons.Utility
             }
             return children;
         }
+
+        /// <summary>
+        /// transform.find but works for gameobjects with same name
+        /// </summary>
+        public static List<Transform> FindAll(this Transform @this, string path)
+        {
+            var names = path.Split('/');
+            var currentTransforms = new List<Transform> { @this };
+            foreach (var name in names)
+            {
+                var newTransforms = new List<Transform>();
+                foreach (var currentTransform in currentTransforms)
+                {
+                    foreach (Transform child in currentTransform)
+                    {
+                        if (child.name == name)
+                        {
+                            newTransforms.Add(child);
+                        }
+                    }
+                }
+                currentTransforms = newTransforms;
+            }
+
+            return currentTransforms;
+        }
     }
 }
