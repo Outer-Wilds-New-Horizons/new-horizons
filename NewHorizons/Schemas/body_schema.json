@@ -6410,6 +6410,10 @@
               "$ref": "#/definitions/NHDeathType"
             }
           ]
+        },
+        "gameOverTextColour": {
+          "description": "Change the colour of the game over text. Leave empty to use the default orange.",
+          "$ref": "#/definitions/MColor"
         }
       }
     },
