@@ -1,3 +1,4 @@
+using Epic.OnlineServices;
 using NewHorizons.Builder.Body;
 using NewHorizons.Builder.Props;
 using NewHorizons.Builder.StarSystem;
@@ -43,12 +44,38 @@ namespace NewHorizons.Handlers
                     profileManager.currentProfileGraphicsSettings,
                     profileManager.currentProfileInputJSON);
 
+            var validBuilders = Main.TitleScreenConfigs.Select(kvp => (ITitleScreenBuilder)new TitleScreenConfigBuilder(kvp.Key, kvp.Value))
+                .Concat(TitleScreenBuilders.Select(kvp => (ITitleScreenBuilder)kvp.Value))
+                .Where(builder => builder.KnowsFact() && builder.HasCondition()).ToList();
 
-            // TODO: Implement handlers as well
-            // TODO: Select one title screen and if it has shareTitleScreen set to true do all the other ones that have it true too.
-            var (mod, config) = Main.TitleScreenConfigs.FirstOrDefault(kvp => kvp.Value.KnowsFact() && kvp.Value.HasCondition());
-            if (config != null)
-                SetUp(mod, config);
+            foreach (var builder in validBuilders)
+            {
+                NHLogger.LogVerbose("Valid builder: " + builder.Mod.ModHelper.Manifest.UniqueName);
+            }
+
+            var index = UnityEngine.Random.Range(0, validBuilders.Count());
+            var randomBuilder = validBuilders.ElementAtOrDefault(index);
+            if (randomBuilder != null)
+            {
+                validBuilders.RemoveAt(index);
+                NHLogger.LogVerbose("Building main: " + randomBuilder.Mod.ModHelper.Manifest.UniqueName + " | " + (randomBuilder.CanShare ? "Share" : "Unshare") + " " + (randomBuilder.DisableNHPlanets ? "Disable" : "Enable"));
+
+                if (!randomBuilder.DisableNHPlanets)
+                {
+                    DisplayBodiesOnTitleScreen();
+                }
+
+                randomBuilder.Build();
+
+                if (randomBuilder.CanShare)
+                {
+                    foreach (var builder in validBuilders.Where(builder => builder.CanShare && builder.DisableNHPlanets == randomBuilder.DisableNHPlanets))
+                    {
+                        NHLogger.LogVerbose("Building extra: " + randomBuilder.Mod.ModHelper.Manifest.UniqueName);
+                        builder.Build();
+                    }
+                }
+            }
             else
                 DisplayBodiesOnTitleScreen();
         }
@@ -67,13 +94,8 @@ namespace NewHorizons.Handlers
             subtitleContainer.AddComponent<SubtitlesHandler>();
         }
 
-        public static void SetUp(IModBehaviour mod, TitleScreenConfig config)
+        public static void BuildConfig(IModBehaviour mod, TitleScreenConfig config)
         {
-            if (!config.disableNHPlanets)
-            {
-                DisplayBodiesOnTitleScreen();
-            }
-
             if (config.menuTextTint != null)
             {
                 TitleScreenColourHandler.SetColour(config.menuTextTint.ToColor());
@@ -379,7 +401,7 @@ namespace NewHorizons.Handlers
             TitleScreenBuilders.SafeAdd(mod, new TitleScreenBuilder(mod, builder, disableNHPlanets, shareTitleScreen, conditionRequired, factRequired));
         }
 
-        internal class TitleScreenBuilder
+        internal class TitleScreenBuilder : ITitleScreenBuilder
         {
             public IModBehaviour mod;
             public Action<GameObject> builder;
@@ -397,6 +419,77 @@ namespace NewHorizons.Handlers
                 this.conditionRequired = conditionRequired;
                 this.factRequired = factRequired;
             }
+
+            public void Build()
+            {
+                NHLogger.LogVerbose("Building handler: " + mod.ModHelper.Manifest.UniqueName);
+                try
+                {
+                    builder.Invoke(SearchUtilities.Find("Scene"));
+                }
+                catch (Exception e)
+                {
+                    NHLogger.LogError(e);
+                }
+            }
+
+            public IModBehaviour Mod => mod;
+
+            public bool DisableNHPlanets => disableNHPlanets;
+
+            public bool CanShare => shareTitleScreen;
+
+            public bool KnowsFact() => string.IsNullOrEmpty(factRequired) || StandaloneProfileManager.SharedInstance.currentProfile != null && ShipLogHandler.KnowsFact(factRequired);
+
+            public bool HasCondition() => string.IsNullOrEmpty(conditionRequired) || StandaloneProfileManager.SharedInstance.currentProfile != null && PlayerData.GetPersistentCondition(conditionRequired);
+        }
+
+        internal class TitleScreenConfigBuilder : ITitleScreenBuilder
+        {
+            public IModBehaviour mod;
+            public TitleScreenConfig config;
+
+            public TitleScreenConfigBuilder(IModBehaviour mod, TitleScreenConfig config)
+            {
+                this.mod = mod;
+                this.config = config;
+            }
+
+            public void Build()
+            {
+                NHLogger.LogVerbose("Building config: " + mod.ModHelper.Manifest.UniqueName);
+                try
+                {
+                    BuildConfig(mod, config);
+                }
+                catch (Exception e)
+                {
+                    NHLogger.LogError(e);
+                }
+            }
+
+            public IModBehaviour Mod => mod;
+
+            public bool DisableNHPlanets => config.disableNHPlanets;
+
+            public bool CanShare => config.shareTitleScreen;
+
+            public bool KnowsFact() => string.IsNullOrEmpty(config.factRequiredForTitle) || StandaloneProfileManager.SharedInstance.currentProfile != null && ShipLogHandler.KnowsFact(config.factRequiredForTitle);
+
+            public bool HasCondition() => string.IsNullOrEmpty(config.conditionRequiredForTitle) || StandaloneProfileManager.SharedInstance.currentProfile != null && PlayerData.GetPersistentCondition(config.conditionRequiredForTitle);
+        }
+
+        internal interface ITitleScreenBuilder
+        {
+            IModBehaviour Mod { get; }
+
+            bool DisableNHPlanets { get; }
+
+            bool CanShare { get; }
+
+            void Build();
+            bool KnowsFact();
+            bool HasCondition();
         }
     }
 }

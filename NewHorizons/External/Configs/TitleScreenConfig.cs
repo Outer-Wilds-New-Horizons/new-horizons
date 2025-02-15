@@ -87,9 +87,5 @@ namespace NewHorizons.External.Configs
         /// Extra data that may be used by extension mods
         /// </summary>
         public object extras;
-
-        public bool KnowsFact() => string.IsNullOrEmpty(factRequiredForTitle) || StandaloneProfileManager.SharedInstance.currentProfile != null && ShipLogHandler.KnowsFact(factRequiredForTitle);
-
-        public bool HasCondition() => string.IsNullOrEmpty(conditionRequiredForTitle) || StandaloneProfileManager.SharedInstance.currentProfile != null && PlayerData.GetPersistentCondition(conditionRequiredForTitle);
     }
 }
