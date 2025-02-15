@@ -1,16 +1,13 @@
 using NewHorizons.Components.ShipLog;
 using NewHorizons.External;
 using NewHorizons.External.Modules;
-using NewHorizons.External.Modules.VariableSize;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using NewHorizons.Utility.Files;
 using NewHorizons.Utility.OuterWilds;
 using NewHorizons.Utility.OWML;
 using OWML.ModHelper;
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -170,49 +167,6 @@ namespace NewHorizons.Builder.ShipLog
             return newGameObject;
         }
 
-        private static Texture2D GetCachedOutlineOrCreate(NewHorizonsBody body, Texture2D original, string originalPath)
-        {
-            if (string.IsNullOrEmpty(originalPath))
-            {
-                Texture2D defaultTexture = null;
-                if (body.Config.Star != null)
-                {
-                    defaultTexture = ImageUtilities.GetTexture(Main.Instance, "Assets/DefaultMapModeStarOutline.png");
-                }
-                else if (body.Config.Atmosphere != null)
-                {
-                    defaultTexture = ImageUtilities.GetTexture(Main.Instance, "Assets/DefaultMapModNoAtmoOutline.png");
-                }
-                else
-                {
-                    defaultTexture = ImageUtilities.GetTexture(Main.Instance, "Assets/DefaultMapModePlanetOutline.png");
-                }
-
-                return defaultTexture;
-            }
-            else
-            {
-                var cachedPath = Path.Combine(body.Mod.ModHelper.Manifest.ModFolderPath, $"TextureCache_{Main.Instance.CurrentStarSystem}", originalPath);
-                var outlineTexture = ImageUtilities.GetTexture(body.Mod, cachedPath);
-
-                if (outlineTexture == null)
-                {
-                    NHLogger.LogVerbose($"Caching outline to {cachedPath}");
-
-                    var newTexture = ImageUtilities.MakeOutline(original, Color.white, 10);
-
-                    Directory.CreateDirectory(Path.GetDirectoryName(cachedPath));
-                    File.WriteAllBytes(cachedPath, newTexture.EncodeToPNG());
-
-                    return newTexture;
-                }
-                else
-                {
-                    return outlineTexture;
-                }
-            }
-        }
-
         private static ShipLogAstroObject AddShipLogAstroObject(GameObject gameObject, NewHorizonsBody body, Material greyScaleMaterial, int layer)
         {
             if (body.Object == null)
@@ -239,10 +193,10 @@ namespace NewHorizons.Builder.ShipLog
             string outlinePath = body.Config.ShipLog?.mapMode?.outlineSprite;
 
             if (imagePath != null) image = ImageUtilities.GetTexture(body.Mod, imagePath);
-            if (image == null) image = AutoGenerateMapModePicture(body);
+            if (image == null) image = ImageUtilities.AutoGenerateMapModePicture(body);
 
             if (outlinePath != null) outline = ImageUtilities.GetTexture(body.Mod, outlinePath);
-            if (outline == null) outline = GetCachedOutlineOrCreate(body, image, imagePath);
+            if (outline == null) outline = ImageUtilities.GetCachedOutlineOrCreate(body, image, imagePath);
 
             astroObject._imageObj = CreateImage(gameObject, image, body.Config.name + " Revealed", layer);
             astroObject._outlineObj = CreateImage(gameObject, outline, body.Config.name + " Outline", layer);
@@ -290,10 +244,10 @@ namespace NewHorizons.Builder.ShipLog
             string outlinePath = info.outlineSprite;
 
             if (imagePath != null) image = ImageUtilities.GetTexture(body.Mod, imagePath);
-            else image = AutoGenerateMapModePicture(body);
+            else image = ImageUtilities.AutoGenerateMapModePicture(body);
 
             if (outlinePath != null) outline = ImageUtilities.GetTexture(body.Mod, outlinePath);
-            else outline = ImageUtilities.MakeOutline(image, Color.white, 10);
+            else outline = ImageUtilities.GetCachedOutlineOrCreate(body, image, imagePath);
 
             Image revealedImage = CreateImage(detailGameObject, image, "Detail Revealed", parent.gameObject.layer).GetComponent<Image>();
             Image outlineImage = CreateImage(detailGameObject, outline, "Detail Outline", parent.gameObject.layer).GetComponent<Image>();
@@ -648,77 +602,6 @@ namespace NewHorizons.Builder.ShipLog
             MakeDetails(node.mainBody, newNodeGO.transform, greyScaleMaterial);
         }
         #endregion
-
-        private static Texture2D AutoGenerateMapModePicture(NewHorizonsBody body)
-        {
-            Texture2D texture;
-
-            if (body.Config.Star != null)
-            {
-                texture = ImageUtilities.GetTexture(Main.Instance, "Assets/DefaultMapModeStar.png");
-            }
-            else if (body.Config.Atmosphere != null)
-            {
-                texture = ImageUtilities.GetTexture(Main.Instance, "Assets/DefaultMapModNoAtmo.png");
-            }
-            else
-            {
-                texture = ImageUtilities.GetTexture(Main.Instance, "Assets/DefaultMapModePlanet.png");
-            }
-
-            var color = GetDominantPlanetColor(body);
-            var darkColor = new Color(color.r / 3f, color.g / 3f, color.b / 3f);
-
-            texture = ImageUtilities.LerpGreyscaleImage(texture, color, darkColor);
-
-            return texture;
-        }
-
-        private static Color GetDominantPlanetColor(NewHorizonsBody body)
-        {
-            try
-            {
-                var starColor = body.Config?.Star?.tint;
-                if (starColor != null) return starColor.ToColor();
-
-                var atmoColor = body.Config.Atmosphere?.atmosphereTint;
-                if (body.Config.Atmosphere?.clouds != null && atmoColor != null) return atmoColor.ToColor();
-
-                if (body.Config?.HeightMap?.textureMap != null)
-                {
-                    try
-                    {
-                        var texture = ImageUtilities.GetTexture(body.Mod, body.Config.HeightMap.textureMap);
-                        var landColor = ImageUtilities.GetAverageColor(texture);
-                        if (landColor != null) return landColor;
-                    }
-                    catch (Exception) { }
-                }
-
-                var waterColor = body.Config.Water?.tint;
-                if (waterColor != null) return waterColor.ToColor();
-
-                var lavaColor = body.Config.Lava?.tint;
-                if (lavaColor != null) return lavaColor.ToColor();
-
-                var sandColor = body.Config.Sand?.tint;
-                if (sandColor != null) return sandColor.ToColor();
-
-                switch (body.Config?.Props?.singularities?.FirstOrDefault()?.type)
-                {
-                    case SingularityModule.SingularityType.BlackHole:
-                        return Color.black;
-                    case SingularityModule.SingularityType.WhiteHole:
-                        return Color.white;
-                }
-            }
-            catch (Exception)
-            {
-                NHLogger.LogWarning($"Something went wrong trying to pick the colour for {body.Config.name} but I'm too lazy to fix it.");
-            }
-
-            return Color.white;
-        }
 
         #region Replacement
         private static List<(NewHorizonsBody, ModBehaviour, MapModeInfo)> _mapModIconsToUpdate = new();
