@@ -1,6 +1,6 @@
-using NewHorizons.External.SerializableData;
 using NewHorizons.External.SerializableEnums;
 using Newtonsoft.Json;
+using System;
 using System.ComponentModel;
 
 namespace NewHorizons.External.Modules.Volumes.VolumeInfos
@@ -10,9 +10,7 @@ namespace NewHorizons.External.Modules.Volumes.VolumeInfos
     {
         [DefaultValue("none")] public NHCreditsType creditsType = NHCreditsType.None;
 
-        /// <summary>
-        /// Text displayed in orange on game over. For localization, put translations under UI.
-        /// </summary>
+        [Obsolete("Use gameOver")]
         public string gameOverText;
 
         /// <summary>
@@ -21,8 +19,8 @@ namespace NewHorizons.External.Modules.Volumes.VolumeInfos
         [DefaultValue("default")] public NHDeathType? deathType = null;
 
         /// <summary>
-        /// Change the colour of the game over text. Leave empty to use the default orange.
+        /// The game over message to display. Leave empty to go straight to credits.
         /// </summary>
-        public MColor gameOverTextColour;
+        public GameOverModule gameOver;
     }
 }

@@ -658,6 +658,21 @@ namespace NewHorizons.External.Configs
                 }
             }
 
+            if (Volumes?.creditsVolume != null)
+            {
+                foreach (var volume in Volumes.creditsVolume)
+                {
+                    if (!string.IsNullOrEmpty(volume.gameOverText))
+                    {
+                        if (volume.gameOver == null)
+                        {
+                            volume.gameOver = new();
+                        }
+                        volume.gameOver.text = volume.gameOverText;
+                    }
+                }
+            }
+
             if (Base.invulnerableToSun)
             {
                 Base.hasFluidDetector = false;

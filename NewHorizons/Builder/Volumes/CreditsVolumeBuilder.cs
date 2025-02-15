@@ -12,9 +12,10 @@ namespace NewHorizons.Builder.Volumes
             var volume = VolumeBuilder.Make<LoadCreditsVolume>(planetGO, sector, info);
 
             volume.creditsType = info.creditsType;
-            volume.gameOverText = info.gameOverText;
+            volume.gameOverText = info.gameOver?.text;
             volume.deathType = info.deathType == null ? null : EnumUtils.Parse(info.deathType.ToString(), DeathType.Default);
-            volume.colour = info.gameOverTextColour?.ToColor();
+            volume.colour = info.gameOver?.colour?.ToColor();
+            volume.condition = info.gameOver?.condition;
 
             return volume;
         }

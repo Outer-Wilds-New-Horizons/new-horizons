@@ -16,6 +16,7 @@ namespace NewHorizons.Components.Volumes
         public DeathType? deathType = DeathType.Default;
 
         public Color? colour;
+        public string condition;
 
         private GameOverController _gameOverController;
         private PlayerCameraEffectController _playerCameraEffectController;
@@ -28,7 +29,7 @@ namespace NewHorizons.Components.Volumes
 
         public override void OnTriggerVolumeEntry(GameObject hitObj)
         {
-            if (hitObj.CompareTag("PlayerDetector") && enabled)
+            if (hitObj.CompareTag("PlayerDetector") && enabled && (string.IsNullOrEmpty(condition) || DialogueConditionManager.SharedInstance.GetConditionState(condition)))
             {
                 // Have to run it off the mod behaviour since the game over controller disables everything
                 Delay.StartCoroutine(GameOver());
@@ -106,6 +107,8 @@ namespace NewHorizons.Components.Volumes
                 default:
                     // GameOverController disables post processing
                     _gameOverController._flashbackCamera.postProcessing.enabled = true;
+                    // For some reason this isn't getting set sometimes
+                    AudioListener.volume = 1;
                     GlobalMessenger.FireEvent("TriggerFlashback");
                     break;
             }
