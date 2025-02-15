@@ -353,16 +353,23 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "color": {
-          "$ref": "#/definitions/MColor"
-        },
         "scale": {
           "type": "number",
+          "description": "Scale height of the proc gen.",
           "format": "float",
           "minimum": 0.0
         },
+        "color": {
+          "description": "Ground color, only applied if no texture or material is chosen.",
+          "$ref": "#/definitions/MColor"
+        },
         "material": {
+          "description": "Can pick a preset material with a texture from the base game. Does not work with color.",
           "$ref": "#/definitions/Material"
+        },
+        "texturePath": {
+          "type": "string",
+          "description": "Can use a custom texture. Does not work with material or color."
         }
       }
     },
@@ -372,12 +379,14 @@
       "x-enumNames": [
         "Default",
         "Ice",
-        "Quantum"
+        "Quantum",
+        "Rock"
       ],
       "enum": [
         "default",
         "ice",
-        "quantum"
+        "quantum",
+        "rock"
       ]
     },
     "AtmosphereModule": {
