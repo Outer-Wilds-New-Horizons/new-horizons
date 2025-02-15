@@ -19,6 +19,8 @@ namespace NewHorizons.Handlers
 {
     public static class TitleSceneHandler
     {
+        internal static Dictionary<IModBehaviour, TitleScreenBuilder> TitleScreenBuilders = new();
+
         public static void Init()
         {
             var planetRoot = SearchUtilities.Find("Scene/Background/PlanetPivot/PlanetRoot");
@@ -41,6 +43,7 @@ namespace NewHorizons.Handlers
                     profileManager.currentProfileInputJSON);
 
 
+            // TODO: Implement handlers as well
             // TODO: Select one title screen and if it has shareTitleScreen set to true do all the other ones that have it true too.
             var (mod, config) = Main.TitleScreenConfigs.FirstOrDefault(kvp => kvp.Value.KnowsFact() && kvp.Value.HasCondition());
             if (config != null)
@@ -368,6 +371,31 @@ namespace NewHorizons.Handlers
             sphere.transform.localScale = Vector3.one * diameter;
 
             return meshRenderer;
+        }
+
+        public static void RegisterBuilder(IModBehaviour mod, Action<GameObject> builder, bool disableNHPlanets, bool shareTitleScreen, string conditionRequired, string factRequired)
+        {
+            TitleScreenBuilders.SafeAdd(mod, new TitleScreenBuilder(mod, builder, disableNHPlanets, shareTitleScreen, conditionRequired, factRequired));
+        }
+
+        internal class TitleScreenBuilder
+        {
+            public IModBehaviour mod;
+            public Action<GameObject> builder;
+            public bool disableNHPlanets;
+            public bool shareTitleScreen;
+            public string conditionRequired;
+            public string factRequired;
+
+            public TitleScreenBuilder(IModBehaviour mod, Action<GameObject> builder, bool disableNHPlanets, bool shareTitleScreen, string conditionRequired, string factRequired)
+            {
+                this.mod = mod;
+                this.builder = builder;
+                this.disableNHPlanets = disableNHPlanets;
+                this.shareTitleScreen = shareTitleScreen;
+                this.conditionRequired = conditionRequired;
+                this.factRequired = factRequired;
+            }
         }
     }
 }

@@ -233,7 +233,16 @@ namespace NewHorizons
         /// <param name="id"></param>
         void SetNextSpawnID(string id);
 
-
-        void RegisterTitleScreenHandler(Action<GameObject> builder, bool deleteNHPlanets = true, bool shareTitleScreen = false, string conditionRequired = null, string factRequired = null);
+        /// <summary>
+        /// Registers a builder for the main menu.
+        /// Call this once before the main menu finishes loading
+        /// </summary>
+        /// <param name="mod"></param>
+        /// <param name="builder">Builder to run when this title screen is selected.</param>
+        /// <param name="disableNHPlanets">If set to true, NH generated planets will not show on the title screen. If false, this title screen has the same chance as other NH planet title screens to show.</param>
+        /// <param name="shareTitleScreen">If set to true, this custom title screen will merge with all other custom title screens with shareTitleScreen set to true. If false, NH will randomly select between this and other valid title screens that are loaded.</param>
+        /// <param name="conditionRequired">Persistent condition required for this title screen to appear.</param>
+        /// <param name="factRequired">Ship log fact required for this title screen to appear.</param>
+        void RegisterTitleScreenBuilder(IModBehaviour mod, Action<GameObject> builder, bool disableNHPlanets = true, bool shareTitleScreen = false, string conditionRequired = null, string factRequired = null);
     }
 }
