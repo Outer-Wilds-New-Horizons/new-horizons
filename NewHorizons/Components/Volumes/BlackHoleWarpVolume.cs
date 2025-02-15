@@ -21,6 +21,7 @@ namespace NewHorizons.Components.Volumes
         public override void VanishPlayer(OWRigidbody playerBody, RelativeLocationData entryLocation)
         {
             Locator.GetPlayerAudioController().PlayOneShotInternal(AudioType.BH_BlackHoleEmission);
+            FadeHandler.FadeOut(0.2f, false);
             Main.Instance.ChangeCurrentStarSystem(TargetSolarSystem, PlayerState.AtFlightConsole());
             PlayerSpawnHandler.TargetSpawnID = TargetSpawnID;
         }
