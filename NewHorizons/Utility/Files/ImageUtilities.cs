@@ -43,7 +43,17 @@ namespace NewHorizons.Utility.Files
                 return null;
             }
             // Copied from OWML but without the print statement lol
-            var path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, filename);
+            string path;
+            try
+            {
+                path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, filename);
+            }
+            catch (Exception e)
+            {
+                NHLogger.LogError($"Invalid path: Couldn't combine {mod.ModHelper.Manifest.ModFolderPath} {filename} - {e}");
+                return null;
+            }
+
             var key = GetKey(path);
             if (_textureCache.TryGetValue(key, out var existingTexture))
             {
