@@ -104,6 +104,39 @@ namespace NewHorizons.External.Modules.VariableSize
         /// The type of stellar remnant your star will leave behind.
         /// </summary>
         [DefaultValue("default")] public StellarRemnantType stellarRemnantType = StellarRemnantType.Default;
+
+        /// <summary>
+        /// Allows overriding solar flare graphical settings.
+        /// </summary>
+        public SolarFlareModule solarFlareSettings;
+
+        [JsonObject]
+        public class SolarFlareModule
+        {
+            /// <summary>
+            /// Size multiuplier for solar flares. Defaults to 1.
+            /// </summary>
+            [DefaultValue(1)]
+            public float scaleFactor = 1f;
+
+            /// <summary>
+            /// How long a solar flare is visible for. Defaults to 15.
+            /// </summary>
+            [DefaultValue(15f)]
+            public float lifeLength = 15f;
+
+            /// <summary>
+            /// Solar flares are emitted randomly. This is the minimum ammount of time between solar flares.
+            /// </summary>
+            [DefaultValue(5f)]
+            public float minTimeBetweenFlares = 5f;
+
+            /// <summary>
+            /// Solar flares are emitted randomly. This is the maximum ammount of time between solar flares.
+            /// </summary>
+            [DefaultValue(30f)]
+            public float maxTimeBetweenFlares = 30f;
+        }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -121,7 +154,7 @@ namespace NewHorizons.External.Modules.VariableSize
         [EnumMember(Value = @"default")] Default,
         [EnumMember(Value = @"whiteDwarf")] WhiteDwarf,
         [EnumMember(Value = @"neutronStar")] NeutronStar,
-        [EnumMember(Value = @"pulsar")] Pulsar,
+        [Obsolete] Pulsar,
         [EnumMember(Value = @"blackHole")] BlackHole,
         [EnumMember(Value = @"custom")] Custom
     }

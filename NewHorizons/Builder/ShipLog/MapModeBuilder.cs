@@ -7,22 +7,64 @@ using NewHorizons.Utility;
 using NewHorizons.Utility.Files;
 using NewHorizons.Utility.OuterWilds;
 using NewHorizons.Utility.OWML;
+using OWML.ModHelper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using static NewHorizons.External.Modules.ShipLogModule;
 
 namespace NewHorizons.Builder.ShipLog
 {
     public static class MapModeBuilder
     {
+        // Takes the game object because sometimes we change the AO to an NHAO and it breaks
+        private static Dictionary<GameObject, ShipLogAstroObject> _astroObjectToShipLog = new();
+        private static Dictionary<ShipLogAstroObject, MapModeInfo> _astroObjectToMapModeInfo = new();
+
+        public static MapModeInfo GetMapModeInfoForAstroObject(ShipLogAstroObject slao)
+        {
+            if (_astroObjectToMapModeInfo.TryGetValue(slao, out var mapModeInfo))
+            {
+                return mapModeInfo;
+            } 
+            else
+            {
+                return null;
+            }
+        }
+
         #region General
         public static ShipLogAstroObject[][] ConstructMapMode(string systemName, GameObject transformParent, ShipLogAstroObject[][] currentNav, int layer)
         {
+            _astroObjectToShipLog = new();
+            _astroObjectToMapModeInfo = new();
+
+            // Add stock planets
+            foreach (var shipLogAstroObject in currentNav.SelectMany(x => x))
+            {
+                var astroObject = Locator.GetAstroObject(AstroObject.StringIDToAstroObjectName(shipLogAstroObject._id));
+                if (astroObject == null)
+                {
+                    // Outsider compat
+                    if (shipLogAstroObject._id == "POWER_STATION")
+                    {
+                        astroObject = GameObject.FindObjectsOfType<AstroObject>().FirstOrDefault(x => x._customName == "Power Station");
+                        if (astroObject == null) continue;
+                    }
+                    else
+                    {
+                        NHLogger.LogError($"Couldn't find stock (?) astro object [{shipLogAstroObject?._id}]");
+                        continue;
+                    }
+                }
+                _astroObjectToShipLog[astroObject.gameObject] = shipLogAstroObject;
+            }
+
             Material greyScaleMaterial = SearchUtilities.Find(ShipLogHandler.PAN_ROOT_PATH + "/TimberHearth/Sprite").GetComponent<Image>().material;
             List<NewHorizonsBody> bodies = Main.BodyDict[systemName].Where(
-                b => !(b.Config.ShipLog?.mapMode?.remove ?? false) && !b.Config.isQuantumState
+                b => !(b.Config.ShipLog?.mapMode?.remove ?? false) && !b.Config.isQuantumState && !b.Config.destroy
             ).ToList();
             bool flagManualPositionUsed = systemName == "SolarSystem";
             bool flagAutoPositionUsed = false;
@@ -30,14 +72,14 @@ namespace NewHorizons.Builder.ShipLog
             {
                 if (body.Config.ShipLog == null) continue;
 
-                if (body.Config.ShipLog?.mapMode?.manualPosition == null)
+                if (body.Config.ShipLog.mapMode?.manualPosition == null)
                 {
                     flagAutoPositionUsed = true;
                 }
                 else
                 {
                     flagManualPositionUsed = true;
-                    if (body.Config.ShipLog?.mapMode?.manualNavigationPosition == null)
+                    if (body.Config.ShipLog?.mapMode != null && body.Config.ShipLog.mapMode.manualNavigationPosition == null && body.Config.ShipLog.mapMode.selectable)
                     {
                         NHLogger.LogError("Navigation position is missing for: " + body.Config.name);
                         return null;
@@ -45,18 +87,46 @@ namespace NewHorizons.Builder.ShipLog
                 }
             }
 
-            if (flagManualPositionUsed)
+            // If they're both false, just default to auto (this means that no planets even have ship log info)
+            if (!flagManualPositionUsed && !flagAutoPositionUsed)
             {
-                if (flagAutoPositionUsed && flagManualPositionUsed)
-                    NHLogger.LogWarning("Can't mix manual and automatic layout of ship log map mode, defaulting to manual");
-                return ConstructMapModeManual(bodies, transformParent, greyScaleMaterial, currentNav, layer);
-            }
-            else if (flagAutoPositionUsed)
-            {
-                return ConstructMapModeAuto(bodies, transformParent, greyScaleMaterial, layer);
+                flagAutoPositionUsed = true;
             }
 
-            return null;
+            var isBaseSolarSystem = systemName == "SolarSystem";
+
+            // Default to MANUAL in Base Solar System (we can't automatically fix them so it might just break, but AUTO breaks even more!)
+            var useManual = (flagManualPositionUsed && !flagAutoPositionUsed) || (flagAutoPositionUsed && flagManualPositionUsed && isBaseSolarSystem);
+
+            // Default to AUTO in other solar systems (since we can actually fix them)
+            var useAuto = (flagAutoPositionUsed && !flagManualPositionUsed) || (flagAutoPositionUsed && flagManualPositionUsed && !isBaseSolarSystem);
+
+            if (flagAutoPositionUsed && flagManualPositionUsed)
+            {
+                if (useAuto)
+                {
+                    NHLogger.LogWarning("Can't mix manual and automatic layout of ship log map mode, defaulting to AUTOMATIC");
+                }
+                else
+                {
+                    NHLogger.LogWarning("Can't mix manual and automatic layout of ship log map mode, defaulting to MANUAL");
+                }
+            }
+
+            ShipLogAstroObject[][] newNavMatrix = null;
+
+            if (useAuto)
+            {
+                newNavMatrix = ConstructMapModeAuto(bodies, transformParent, greyScaleMaterial, layer);
+            }
+            else if (useManual)
+            {
+                newNavMatrix = ConstructMapModeManual(bodies, transformParent, greyScaleMaterial, currentNav, layer);
+            }
+
+            ReplaceExistingMapModeIcons();
+
+            return newNavMatrix;
         }
 
         public static string GetAstroBodyShipLogName(string id)
@@ -101,6 +171,12 @@ namespace NewHorizons.Builder.ShipLog
 
         private static ShipLogAstroObject AddShipLogAstroObject(GameObject gameObject, NewHorizonsBody body, Material greyScaleMaterial, int layer)
         {
+            if (body.Object == null)
+            {
+                NHLogger.LogError($"Tried to make ship logs for planet with null Object: [{body?.Config?.name}]");
+                return null;
+            }
+
             const float unviewedIconOffset = 15;
 
             NHLogger.LogVerbose($"Adding ship log astro object for {body.Config.name}");
@@ -109,6 +185,8 @@ namespace NewHorizons.Builder.ShipLog
 
             ShipLogAstroObject astroObject = gameObject.AddComponent<ShipLogAstroObject>();
             astroObject._id = ShipLogHandler.GetAstroObjectId(body);
+            _astroObjectToShipLog[body.Object] = astroObject;
+            _astroObjectToMapModeInfo[astroObject] = body.Config.ShipLog?.mapMode;
 
             Texture2D image = null;
             Texture2D outline = null;
@@ -124,6 +202,7 @@ namespace NewHorizons.Builder.ShipLog
 
             astroObject._imageObj = CreateImage(gameObject, image, body.Config.name + " Revealed", layer);
             astroObject._outlineObj = CreateImage(gameObject, outline, body.Config.name + " Outline", layer);
+
             if (ShipLogHandler.BodyHasEntries(body))
             {
                 Image revealedImage = astroObject._imageObj.GetComponent<Image>();
@@ -138,6 +217,12 @@ namespace NewHorizons.Builder.ShipLog
 
             Rect imageRect = astroObject._imageObj.GetComponent<RectTransform>().rect;
             astroObject._unviewedObj.transform.localPosition = new Vector3(imageRect.width / 2 + unviewedIconOffset, imageRect.height / 2 + unviewedIconOffset, 0);
+
+            // Set all icons inactive, they will be conditionally activated when the map mode is opened for the first time
+            astroObject._unviewedObj.SetActive(false);
+            astroObject._imageObj.SetActive(false);
+            astroObject._outlineObj.SetActive(false);
+
             return astroObject;
         }
         #endregion
@@ -376,6 +461,11 @@ namespace NewHorizons.Builder.ShipLog
 
         private static MapModeObject ConstructPrimaryNode(List<NewHorizonsBody> bodies)
         {
+            float DistanceFromPrimary(NewHorizonsBody body)
+            {
+                return Mathf.Max(body.Config.Orbit.semiMajorAxis, body.Config.Orbit.staticPosition?.Length() ?? 0f);
+            }
+
             foreach (NewHorizonsBody body in bodies.Where(b => b.Config.Base.centerOfSolarSystem))
             {
                 bodies.Sort((b, o) => b.Config.Orbit.semiMajorAxis.CompareTo(o.Config.Orbit.semiMajorAxis));
@@ -475,7 +565,12 @@ namespace NewHorizons.Builder.ShipLog
 
         private static void MakeNode(ref MapModeObject node, GameObject parent, Material greyScaleMaterial, int layer)
         {
-            const float padding = 100f;
+            // Space between this node and the previous node
+            // Take whatever scale will prevent overlap
+            var lastSiblingScale = node.lastSibling?.mainBody?.Config?.ShipLog?.mapMode?.scale ?? 1f;
+            var scale = node.mainBody?.Config?.ShipLog?.mapMode?.scale ?? 1f;
+            float padding = 100f * (scale + lastSiblingScale) / 2f;
+
             Vector2 position = Vector2.zero;
             if (node.lastSibling != null)
             {
@@ -502,7 +597,10 @@ namespace NewHorizons.Builder.ShipLog
                 astroObject._unviewedObj.GetComponent<Image>().enabled = false;
             }
             node.astroObject = astroObject;
-            if (node.lastSibling != null) ConnectNodeToLastSibling(node, greyScaleMaterial);
+            if (NewHorizons.Main.Debug)
+            {
+                if (node.lastSibling != null) ConnectNodeToLastSibling(node, greyScaleMaterial);
+            }
             MakeDetails(node.mainBody, newNodeGO.transform, greyScaleMaterial);
         }
         #endregion
@@ -568,5 +666,68 @@ namespace NewHorizons.Builder.ShipLog
 
             return Color.white;
         }
+
+        #region Replacement
+        private static List<(NewHorizonsBody, ModBehaviour, MapModeInfo)> _mapModIconsToUpdate = new();
+        public static void TryReplaceExistingMapModeIcon(NewHorizonsBody body, ModBehaviour mod, MapModeInfo info)
+        {
+            if (!string.IsNullOrEmpty(info.revealedSprite) || !string.IsNullOrEmpty(info.outlineSprite))
+            {
+                _mapModIconsToUpdate.Add((body, mod, info));
+            }
+        }
+
+        private static void ReplaceExistingMapModeIcons()
+        {
+            foreach (var (body, mod, info) in _mapModIconsToUpdate)
+            {
+                ReplaceExistingMapModeIcon(body, mod, info);
+            }
+            _mapModIconsToUpdate.Clear();
+        }
+
+        private static void ReplaceExistingMapModeIcon(NewHorizonsBody body, ModBehaviour mod, MapModeInfo info)
+        { 
+            var astroObject = _astroObjectToShipLog[body.Object];
+            var gameObject = astroObject.gameObject;
+            var layer = gameObject.layer;
+
+            if (!string.IsNullOrEmpty(info.revealedSprite))
+            {
+                var revealedTexture = ImageUtilities.GetTexture(body.Mod, info.revealedSprite);
+                if (revealedTexture == null)
+                {
+                    NHLogger.LogError($"Couldn't load replacement revealed texture {info.revealedSprite}");
+                }
+                else
+                {
+                    GameObject.Destroy(astroObject._imageObj);
+                    if (ShipLogHandler.IsVanillaBody(body) || ShipLogHandler.BodyHasEntries(body))
+                    {
+                        Image revealedImage = astroObject._imageObj.GetComponent<Image>();
+                        revealedImage.material = astroObject._greyscaleMaterial;
+                        revealedImage.color = Color.white;
+                        astroObject._image = revealedImage;
+                    }
+                    astroObject._imageObj = CreateImage(gameObject, revealedTexture, body.Config.name + " Revealed", layer);
+                }
+            }
+            if (!string.IsNullOrEmpty(info.outlineSprite))
+            {
+                var outlineTexture = ImageUtilities.GetTexture(body.Mod, info.outlineSprite);
+                if (outlineTexture == null)
+                {
+                    NHLogger.LogError($"Couldn't load replacement outline texture {info.outlineSprite}");
+
+                }
+                else
+                {
+                    GameObject.Destroy(astroObject._outlineObj);
+                    astroObject._outlineObj = CreateImage(gameObject, outlineTexture, body.Config.name + " Outline", layer);
+                }
+            }
+            astroObject._invisibleWhenHidden = info.invisibleWhenHidden;
+        }
+        #endregion
     }
 }

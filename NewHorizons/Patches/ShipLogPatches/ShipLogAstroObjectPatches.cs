@@ -25,9 +25,32 @@ namespace NewHorizons.Patches.ShipLogPatches
             }
         }
 
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(ShipLogAstroObject.UpdateState))]
+        public static bool ShipLogAstroObject_UpdateState_Pre(ShipLogAstroObject __instance)
+        {
+            // Custom astro objects might have no entries, in this case they will be permanently hidden
+            // Just treat it as if it were revealed
+            if (__instance._entries == null || __instance._entries.Count == 0)
+            {
+                __instance._state = ShipLogEntry.State.Explored;
+                __instance._imageObj.SetActive(true);
+                __instance._outlineObj?.SetActive(false);
+                if (__instance._image != null)
+                {
+                    __instance.SetMaterialGreyscale(false);
+                    __instance._image.color = Color.white;
+                }
+
+                return false;
+            }
+
+            return true;
+        }
+
         [HarmonyPostfix]
         [HarmonyPatch(nameof(ShipLogAstroObject.UpdateState))]
-        public static void ShipLogAstroObject_UpdateState(ShipLogAstroObject __instance)
+        public static void ShipLogAstroObject_UpdateState_Post(ShipLogAstroObject __instance)
         {
             Transform detailsParent = __instance.transform.Find("Details");
             if (detailsParent != null)

@@ -1,4 +1,5 @@
 using HarmonyLib;
+using NewHorizons.Handlers;
 using UnityEngine;
 namespace NewHorizons.Patches.PlayerPatches
 {
@@ -13,10 +14,10 @@ namespace NewHorizons.Patches.PlayerPatches
 
             // Stop the game from trying to recall your ship when you're visiting far away planets
 
-            Transform sunTransform = Locator.GetSunTransform();
-            OWRigidbody shipBody = Locator.GetShipBody();
-            var maxDist2 = Mathf.Max(900000000f, Main.FurthestOrbit * Main.FurthestOrbit * 2f);
-            __result = sunTransform != null && shipBody != null && (sunTransform.position - shipBody.transform.position).sqrMagnitude > maxDist2;
+            var centerTransform = Locator.GetCenterOfTheUniverse().GetStaticReferenceFrame().transform;
+            var shipBody = Locator.GetShipBody();
+            var maxDist = Mathf.Max(PlanetCreationHandler.DefaultFurthestOrbit, PlanetCreationHandler.SolarSystemRadius);
+            __result = centerTransform != null && shipBody != null && (shipBody.transform.position - centerTransform.position).sqrMagnitude > maxDist * maxDist;
             return false;
         }
     }

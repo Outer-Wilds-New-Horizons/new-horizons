@@ -1,4 +1,5 @@
 using NewHorizons.Builder.Atmosphere;
+using NewHorizons.Components.SizeControllers;
 using NewHorizons.Utility.OWML;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,7 +18,11 @@ namespace NewHorizons.Components.Stars
         private readonly List<StarController> _stars = new();
         private readonly List<Light> _lights = new();
 
-        private StarController _activeStar;
+        // SunController or StarEvolutionController
+        public StarEvolutionController ActiveStarEvolutionController { get; private set; }
+        public SunController ActiveSunController { get; private set; }
+
+        private StarController _activeStarController;
         private SunLightController _sunLightController;
         private SunLightParamUpdater _sunLightParamUpdater;
 
@@ -49,10 +54,12 @@ namespace NewHorizons.Components.Stars
 
         public static void RemoveStar(StarController star)
         {
+            if (Instance == null) return;
+
             NHLogger.LogVerbose($"Removing star from list: {star?.gameObject?.name}");
             if (Instance._stars.Contains(star))
             {
-                if (Instance._activeStar != null && Instance._activeStar.Equals(star))
+                if (Instance._activeStarController != null && Instance._activeStarController.Equals(star))
                 {
                     Instance._stars.Remove(star);
                     if (Instance._stars.Count > 0) Instance.ChangeActiveStar(Instance._stars[0]);
@@ -74,7 +81,7 @@ namespace NewHorizons.Components.Stars
 
         public static void RemoveStarLight(Light light)
         {
-            if (light != null && Instance._lights.Contains(light))
+            if (Instance != null && light != null && Instance._lights.Contains(light))
             {
                 Instance._lights.Remove(light);
             }
@@ -119,11 +126,11 @@ namespace NewHorizons.Components.Stars
 
             if (_stars.Count > 0)
             {
-                if (_activeStar == null || !_activeStar.gameObject.activeInHierarchy)
+                if (_activeStarController == null || !_activeStarController.gameObject.activeInHierarchy)
                 {
-                    if (_stars.Contains(_activeStar))
+                    if (_stars.Contains(_activeStarController))
                     {
-                        _stars.Remove(_activeStar);
+                        _stars.Remove(_activeStarController);
                     }
 
                     if (_stars.Count > 0)
@@ -143,8 +150,8 @@ namespace NewHorizons.Components.Stars
                     // Update atmo shaders
                     foreach (var (planet, material) in AtmosphereBuilder.Skys)
                     {
-                        var sqrDist = (planet.transform.position - _activeStar.transform.position).sqrMagnitude;
-                        var intensity = Mathf.Min(_activeStar.Intensity / (sqrDist / hearthSunDistanceSqr), 1f);
+                        var sqrDist = (planet.transform.position - _activeStarController.transform.position).sqrMagnitude;
+                        var intensity = Mathf.Min(_activeStarController.Intensity / (sqrDist / hearthSunDistanceSqr), 1f);
 
                         material.SetFloat(SunIntensity, intensity);
                     }
@@ -154,7 +161,7 @@ namespace NewHorizons.Components.Stars
                         if (star == null) continue;
                         if (!(star.gameObject.activeSelf && star.gameObject.activeInHierarchy)) continue;
 
-                        if (star.Intensity * (star.transform.position - origin).sqrMagnitude < _activeStar.Intensity * (_activeStar.transform.position - origin).sqrMagnitude)
+                        if (star.Intensity * (star.transform.position - origin).sqrMagnitude < _activeStarController.Intensity * (_activeStarController.transform.position - origin).sqrMagnitude)
                         {
                             ChangeActiveStar(star);
                             break;
@@ -168,11 +175,13 @@ namespace NewHorizons.Components.Stars
         {
             if (_sunLightController == null || _sunLightParamUpdater == null) return;
 
-            if (_activeStar != null) _activeStar.Disable();
+            _activeStarController?.Disable();
 
             NHLogger.LogVerbose($"Switching active star: {star.gameObject.name}");
 
-            _activeStar = star;
+            _activeStarController = star;
+            ActiveStarEvolutionController = star.GetComponentInChildren<StarEvolutionController>();
+            ActiveSunController = star.GetComponent<SunController>();
 
             star.Enable();
 
@@ -190,6 +199,12 @@ namespace NewHorizons.Components.Stars
             // For the param thing to work it wants this to be on the star idk
             transform.parent = star.transform;
             transform.localPosition = Vector3.zero;
+
+            // Some effects use Locator.GetSunTransform so hopefully its fine to change it
+            // Use the root transform of the star because that's the default behaviour, breaks SunProxy if not (potentially others)
+            Locator._sunTransform = star.transform;
+            
+            // TODO?: maybe also turn off star controller stuff (mainly proxy light) since idk if that can handle more than 1 being on
         }
     }
 }

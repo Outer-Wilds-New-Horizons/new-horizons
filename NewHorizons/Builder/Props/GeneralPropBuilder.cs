@@ -11,11 +11,11 @@ namespace NewHorizons.Builder.Props
     {
         public static GameObject MakeFromExisting(GameObject go,
             GameObject planetGO, Sector sector, GeneralPointPropInfo info,
-            MVector3 defaultPosition = null, string defaultParentPath = null, Transform parentOverride = null)
+            MVector3 defaultPosition = null, string defaultParentPath = null, Transform defaultParent = null)
         {
             if (info == null) return go;
 
-            go.transform.parent = parentOverride ?? sector?.transform ?? planetGO?.transform;
+            go.transform.parent = defaultParent ?? sector?.transform ?? planetGO?.transform;
 
             if (info is GeneralSolarSystemPropInfo solarSystemInfo && !string.IsNullOrEmpty(solarSystemInfo.parentBody))
             {
@@ -87,20 +87,20 @@ namespace NewHorizons.Builder.Props
 
         public static GameObject MakeNew(string defaultName,
             GameObject planetGO, Sector sector, GeneralPointPropInfo info,
-            MVector3 defaultPosition = null, string defaultParentPath = null, Transform parentOverride = null)
+            MVector3 defaultPosition = null, string defaultParentPath = null, Transform defaultParent = null)
         {
             var go = new GameObject(defaultName);
             go.SetActive(false);
-            return MakeFromExisting(go, planetGO, sector, info, defaultPosition, defaultParentPath, parentOverride);
+            return MakeFromExisting(go, planetGO, sector, info, defaultPosition, defaultParentPath, defaultParent);
         }
 
         public static GameObject MakeFromPrefab(GameObject prefab, string defaultName,
             GameObject planetGO, Sector sector, GeneralPointPropInfo info,
-            MVector3 defaultPosition = null, string defaultParentPath = null, Transform parentOverride = null)
+            MVector3 defaultPosition = null, string defaultParentPath = null, Transform defaultParent = null)
         {
             var go = prefab.InstantiateInactive();
             go.name = defaultName;
-            return MakeFromExisting(go, planetGO, sector, info, defaultPosition, defaultParentPath, parentOverride);
+            return MakeFromExisting(go, planetGO, sector, info, defaultPosition, defaultParentPath, defaultParent);
         }
     }
 }

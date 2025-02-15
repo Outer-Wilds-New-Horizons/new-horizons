@@ -1,10 +1,13 @@
 using HarmonyLib;
+using NewHorizons.External;
 using NewHorizons.External.Modules.Props.Audio;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OWML;
 using OWML.Common;
 using OWML.Utils;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -35,25 +38,16 @@ namespace NewHorizons.Builder.Props.Audio
             };
             NumberOfFrequencies = EnumUtils.GetValues<SignalFrequency>().Length;
 
-            _qmSignals = new (){ SearchUtilities.Find("QuantumMoon_Body/Signal_Quantum").GetComponent<AudioSignal>() };
+            _qmSignals = new () { SearchUtilities.Find("QuantumMoon_Body/Signal_Quantum").GetComponent<AudioSignal>() };
             _cloakedSignals = new();
 
             Initialized = true;
 
+            SceneManager.sceneUnloaded -= OnSceneUnloaded;
             SceneManager.sceneUnloaded += OnSceneUnloaded;
-            Main.Instance.OnStarSystemLoaded.AddListener(OnStarSystemLoaded);
-        }
 
-        private static HashSet<SignalFrequency> _frequenciesInUse = new();
-
-        private static void OnSceneUnloaded(Scene _)
-        {
-            _frequenciesInUse.Clear();
-        }
-
-        private static void OnStarSystemLoaded(string starSystem)
-        {
             // If its the base game solar system or eye we get all the main frequencies
+            var starSystem = Main.Instance.CurrentStarSystem;
             if (starSystem == "SolarSystem" || starSystem == "EyeOfTheUniverse")
             {
                 _frequenciesInUse.Add(SignalFrequency.Quantum);
@@ -66,10 +60,36 @@ namespace NewHorizons.Builder.Props.Audio
             // We don't want a scenario where the player knows no frequencies
             _frequenciesInUse.Add(SignalFrequency.Traveler);
 
+            // Make sure the NH save file has all the right frequencies
+            // Skip "default"
+            for (int i = 1; i < PlayerData._currentGameSave.knownFrequencies.Length; i++)
+            {
+                if (PlayerData._currentGameSave.knownFrequencies[i])
+                {
+                    NewHorizonsData.LearnFrequency(AudioSignal.IndexToFrequency(i).ToString());
+                }
+            }
+
             NHLogger.LogVerbose($"Frequencies in use in {starSystem}: {_frequenciesInUse.Join(x => x.ToString())}");
         }
 
+        private static HashSet<SignalFrequency> _frequenciesInUse = new();
+
+        private static void OnSceneUnloaded(Scene _)
+        {
+            _frequenciesInUse.Clear();
+        }
+
         public static bool IsFrequencyInUse(SignalFrequency freq) => _frequenciesInUse.Contains(freq);
+
+        public static bool IsFrequencyInUse(string freqString)
+        {
+            if (Enum.TryParse<SignalFrequency>(freqString, out var freq))
+            {
+                return IsFrequencyInUse(freq);
+            }
+            return false;
+        }
 
         public static bool IsCloaked(this AudioSignal signal) => _cloakedSignals.Contains(signal);
 
@@ -77,8 +97,6 @@ namespace NewHorizons.Builder.Props.Audio
 
         public static SignalFrequency AddFrequency(string str)
         {
-            if (_customFrequencyNames == null) Init();
-
             var freq = CollectionUtilities.KeyByValue(_customFrequencyNames, str);
             if (freq != default) return freq;
 
@@ -96,23 +114,20 @@ namespace NewHorizons.Builder.Props.Audio
             NumberOfFrequencies = EnumUtils.GetValues<SignalFrequency>().Length;
 
             // This stuff happens after the signalscope is Awake so we have to change the number of frequencies now
-            Object.FindObjectOfType<Signalscope>()._strongestSignals = new AudioSignal[NumberOfFrequencies + 1];
+            GameObject.FindObjectOfType<Signalscope>()._strongestSignals = new AudioSignal[NumberOfFrequencies + 1];
 
             return freq;
         }
 
         public static string GetCustomFrequencyName(SignalFrequency frequencyName)
         {
-            if (_customFrequencyNames == null) Init();
-
+            if (_customFrequencyNames == null) return string.Empty;
             _customFrequencyNames.TryGetValue(frequencyName, out string name);
             return name;
         }
 
         public static SignalName AddSignalName(string str)
         {
-            if (_customSignalNames == null) Init();
-
             var name = CollectionUtilities.KeyByValue(_customSignalNames, str);
             if (name != default) return name;
 
@@ -126,14 +141,16 @@ namespace NewHorizons.Builder.Props.Audio
 
         public static string GetCustomSignalName(SignalName signalName)
         {
-            if (_customSignalNames == null) Init();
-
+            if (_customSignalNames == null) return string.Empty;
             _customSignalNames.TryGetValue(signalName, out string name);
             return name;
         }
 
         public static GameObject Make(GameObject planetGO, Sector sector, SignalInfo info, IModBehaviour mod)
         {
+            if (string.IsNullOrEmpty(info.frequency)) throw new System.Exception("Cannot make a signal without a frequency");
+            if (string.IsNullOrEmpty(info.name)) throw new System.Exception("Cannot make a signal without a name");
+
             var owAudioSource = GeneralAudioBuilder.Make(planetGO, sector, info, mod);
             var signalGO = owAudioSource.gameObject;
 
@@ -154,7 +171,15 @@ namespace NewHorizons.Builder.Props.Audio
             audioSignal._onlyAudibleToScope = info.onlyAudibleToScope;
             audioSignal._identificationDistance = info.identificationRadius;
             audioSignal._canBePickedUpByScope = true;
-            audioSignal._outerFogWarpVolume = planetGO.GetComponentInChildren<OuterFogWarpVolume>(); // shouldn't break non-bramble signals
+            // The outsider adds outer fog warp volumes to Bramble which break any signals NH places there
+            if (Main.Instance.ModHelper.Interaction.ModExists("SBtT.TheOutsider") && planetGO?.GetComponent<AstroObject>()?._name == AstroObject.Name.DarkBramble)
+            {
+                audioSignal._outerFogWarpVolume = null;
+            }
+            else
+            {
+                audioSignal._outerFogWarpVolume = planetGO.GetComponentInChildren<OuterFogWarpVolume>(); // shouldn't break non-bramble signals
+            }
 
             // If it can be heard regularly then we play it immediately
             owAudioSource.playOnAwake = !info.onlyAudibleToScope;

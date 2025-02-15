@@ -126,11 +126,11 @@ namespace NewHorizons.Handlers
 
         private static bool DetermineIfChildOfFocal(NewHorizonsBody body, FocalPointNode node)
         {
-            var name = body.Config.name.ToLower();
-            var primary = (body.Config.Orbit?.primaryBody ?? "").ToLower();
-            var primaryName = node.primary.body.Config.name.ToLower();
-            var secondaryName = node.secondary.body.Config.name.ToLower();
-            return name != primaryName && name != secondaryName && (primary == node.body.Config.name.ToLower() || primary == primaryName || primary == secondaryName);
+            var name = body.Config.name.ToLowerInvariant();
+            var primary = (body.Config.Orbit?.primaryBody ?? "").ToLowerInvariant();
+            var primaryName = node.primary.body.Config.name.ToLowerInvariant();
+            var secondaryName = node.secondary.body.Config.name.ToLowerInvariant();
+            return name != primaryName && name != secondaryName && (primary == node.body.Config.name.ToLowerInvariant() || primary == primaryName || primary == secondaryName);
         }
 
 

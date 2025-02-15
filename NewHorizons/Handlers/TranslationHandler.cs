@@ -1,22 +1,28 @@
 using NewHorizons.External.Configs;
+using NewHorizons.Utility;
 using NewHorizons.Utility.OWML;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
+using static TextTranslation;
 
 namespace NewHorizons.Handlers
 {
     public static class TranslationHandler
     {
-        private static Dictionary<TextTranslation.Language, Dictionary<string, string>> _shipLogTranslationDictionary = new Dictionary<TextTranslation.Language, Dictionary<string, string>>();
-        private static Dictionary<TextTranslation.Language, Dictionary<string, string>> _dialogueTranslationDictionary = new Dictionary<TextTranslation.Language, Dictionary<string, string>>();
-        private static Dictionary<TextTranslation.Language, Dictionary<string, string>> _uiTranslationDictionary = new Dictionary<TextTranslation.Language, Dictionary<string, string>>();
+        private static Dictionary<TextTranslation.Language, Dictionary<string, string>> _shipLogTranslationDictionary = new();
+        private static Dictionary<TextTranslation.Language, Dictionary<string, string>> _dialogueTranslationDictionary = new();
+        private static Dictionary<TextTranslation.Language, Dictionary<string, string>> _uiTranslationDictionary = new();
+        private static Dictionary<TextTranslation.Language, Dictionary<string, string>> _otherTranslationDictionary = new();
 
         public enum TextType
         {
             SHIPLOG,
             DIALOGUE,
-            UI
+            UI,
+            OTHER
         }
 
         public static string GetTranslation(string text, TextType type) => GetTranslation(text, type, true);
@@ -36,6 +42,9 @@ namespace NewHorizons.Handlers
                     break;
                 case TextType.UI:
                     dictionary = _uiTranslationDictionary;
+                    break;                     
+                case TextType.OTHER:
+                    dictionary = _otherTranslationDictionary;
                     break;
                 default:
                     if (warn) NHLogger.LogVerbose($"Invalid TextType {type}");
@@ -43,21 +52,46 @@ namespace NewHorizons.Handlers
             }
 
             // Get the translated text
-            if (dictionary.TryGetValue(language, out var table))
-                if (table.TryGetValue(text, out var translatedText))
-                    return translatedText;
+            if (TryGetTranslatedText(dictionary, language, text, out var translatedText))
+            {
+                return translatedText;
+            }
 
-            if (warn) NHLogger.LogVerbose($"Defaulting to english for {text}");
+            if (warn)
+            {
+                NHLogger.LogVerbose($"Defaulting to english for {text}");
+            }
 
-            // Try to default to English
-            if (dictionary.TryGetValue(TextTranslation.Language.ENGLISH, out var englishTable))
-                if (englishTable.TryGetValue(text, out var englishText))
-                    return englishText;
+            if (TryGetTranslatedText(dictionary, Language.ENGLISH, text, out translatedText))
+            {
+                return translatedText;
+            }
 
-            if (warn) NHLogger.LogVerbose($"Defaulting to key for {text}");
+            if (warn)
+            {
+                NHLogger.LogVerbose($"Defaulting to key for {text}");
+            }
 
-            // Default to the key
             return text;
+        }
+
+        private static bool TryGetTranslatedText(Dictionary<Language, Dictionary<string, string>> dict, Language language, string text, out string translatedText)
+        {
+            if (dict.TryGetValue(language, out var table))
+            {
+                if (table.TryGetValue(text, out translatedText))
+                {
+                    return true;
+                }
+                // Try without whitespace if its missing
+                else if (table.TryGetValue(text.TruncateWhitespaceAndToLower(), out translatedText))
+                {
+                    return true;
+                }
+            }
+
+            translatedText = null;
+            return false;
         }
 
         public static void RegisterTranslation(TextTranslation.Language language, TranslationConfig config)
@@ -80,8 +114,11 @@ namespace NewHorizons.Handlers
                 if (!_dialogueTranslationDictionary.ContainsKey(language)) _dialogueTranslationDictionary.Add(language, new Dictionary<string, string>());
                 foreach (var originalKey in config.DialogueDictionary.Keys)
                 {
-                    var key = originalKey.Replace("&lt;", "<").Replace("&gt;", ">").Replace("<![CDATA[", "").Replace("]]>", "");
-                    var value = config.DialogueDictionary[originalKey].Replace("&lt;", "<").Replace("&gt;", ">").Replace("<![CDATA[", "").Replace("]]>", "");
+                    // Fix new lines in dialogue translations, remove whitespace from keys else if the dialogue has weird whitespace and line breaks it gets really annoying
+                    // to write translation keys for (can't just copy paste out of xml, have to start adding \\n and \\r and stuff
+                    // If any of these issues become relevant to other dictionaries we can bring this code over, but for now why fix what isnt broke
+                    var key = originalKey.Replace("\\n", "\n").Replace("&lt;", "<").Replace("&gt;", ">").Replace("<![CDATA[", "").Replace("]]>", "").TruncateWhitespaceAndToLower();
+                    var value = config.DialogueDictionary[originalKey].Replace("\\n", "\n").Replace("&lt;", "<").Replace("&gt;", ">").Replace("<![CDATA[", "").Replace("]]>", "");
 
                     if (!_dialogueTranslationDictionary[language].ContainsKey(key)) _dialogueTranslationDictionary[language].Add(key, value);
                     else _dialogueTranslationDictionary[language][key] = value;
@@ -100,31 +137,79 @@ namespace NewHorizons.Handlers
                     else _uiTranslationDictionary[language][key] = value;
                 }
             }
+
+            if (config.OtherDictionary != null && config.OtherDictionary.Count() > 0)
+            {
+                if (!_otherTranslationDictionary.ContainsKey(language)) _otherTranslationDictionary.Add(language, new Dictionary<string, string>());
+                foreach (var originalKey in config.OtherDictionary.Keys)
+                {
+                    // Don't remove CDATA
+                    var key = originalKey.Replace("&lt;", "<").Replace("&gt;", ">");
+                    var value = config.OtherDictionary[originalKey].Replace("&lt;", "<").Replace("&gt;", ">");
+
+                    if (!_otherTranslationDictionary[language].ContainsKey(key)) _otherTranslationDictionary[language].Add(key, value);
+                    else _otherTranslationDictionary[language][key] = value;
+                }
+            }
+        }
+
+        public static (string, string) FixKeyValue(string key, string value)
+        {
+            key = key.Replace("&lt;", "<").Replace("&gt;", ">").Replace("<![CDATA[", "").Replace("]]>", "");
+            value = value.Replace("&lt;", "<").Replace("&gt;", ">").Replace("<![CDATA[", "").Replace("]]>", "");
+
+            return (key, value);
         }
 
         public static void AddDialogue(string rawText, bool trimRawTextForKey = false, params string[] rawPreText)
         {
             var key = string.Join(string.Empty, rawPreText) + (trimRawTextForKey? rawText.Trim() : rawText);
 
-            var text = GetTranslation(rawText, TextType.DIALOGUE);
+            var value = GetTranslation(rawText, TextType.DIALOGUE);
 
-            TextTranslation.Get().m_table.Insert(key, text);
+            // Manually insert directly into the dictionary, otherwise it logs errors about duplicates but we want to allow replacing
+            (key, value) = FixKeyValue(key, value);
+
+            TextTranslation.Get().m_table.theTable[key] = value;
+        }
+
+        /// <summary>
+        /// Two dialogue nodes might share indentical text but they will have different prefixes. Still, we want to reuse that old text.
+        /// </summary>
+        /// <param name="rawText"></param>
+        /// <param name="oldPrefixes"></param>
+        /// <param name="newPrefixes"></param>
+        public static void ReuseDialogueTranslation(string rawText, string[] oldPrefixes, string[] newPrefixes)
+        {
+            var key = string.Join(string.Empty, newPrefixes) + rawText;
+            var existingKey = string.Join(string.Empty, oldPrefixes) + rawText;
+            if (TextTranslation.Get().m_table.theTable.TryGetValue(existingKey, out var existingTranslation))
+            {
+                TextTranslation.Get().m_table.theTable[key] = existingTranslation;
+            }
+            else
+            {
+                NHLogger.LogWarning($"Couldn't find translation key {existingKey}");
+            }
         }
 
         public static void AddShipLog(string rawText, params string[] rawPreText)
         {
             var key = string.Join(string.Empty, rawPreText) + rawText;
 
-            string text = GetTranslation(rawText, TextType.SHIPLOG);
+            string value = GetTranslation(rawText, TextType.SHIPLOG);
 
-            TextTranslation.Get().m_table.InsertShipLog(key, text);
+            // Manually insert directly into the dictionary, otherwise it logs errors about duplicates but we want to allow replacing
+            (key, value) = FixKeyValue(key, value);
+
+            TextTranslation.Get().m_table.theShipLogTable[key] = value;
         }
 
         public static int AddUI(string rawText)
         {
             var uiTable = TextTranslation.Get().m_table.theUITable;
 
-            var text = GetTranslation(rawText, TextType.UI).ToUpper();
+            var text = GetTranslation(rawText, TextType.UI).ToUpperFixed();
 
             var key = uiTable.Keys.Max() + 1;
             try
@@ -135,7 +220,7 @@ namespace NewHorizons.Handlers
             }
             catch (Exception) { }
 
-            TextTranslation.Get().m_table.Insert_UI(key, text);
+            TextTranslation.Get().m_table.theUITable[key] = text;
 
             return key;
         }

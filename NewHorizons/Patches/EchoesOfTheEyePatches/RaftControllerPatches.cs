@@ -1,4 +1,5 @@
 using HarmonyLib;
+using NewHorizons.Components.Props;
 using UnityEngine;
 
 namespace NewHorizons.Patches.EchoesOfTheEyePatches
@@ -63,7 +64,8 @@ namespace NewHorizons.Patches.EchoesOfTheEyePatches
             if (__instance._playerInEffectsRange)
             {
                 // All this to change what fluidVolume we use on this line
-                float num = __instance._fluidDetector.InFluidType(FluidVolume.Type.WATER) ? __instance._fluidDetector._alignmentFluid.GetFractionSubmerged(__instance._fluidDetector) : 0f;
+                FluidVolume volume = __instance._fluidDetector._alignmentFluid;
+                float num = __instance._fluidDetector.InFluidType(FluidVolume.Type.WATER) && volume != null ? volume.GetFractionSubmerged(__instance._fluidDetector) : 0f;
                 bool allowMovement = num > 0.25f && num < 1f;
                 __instance._effectsController.UpdateMovementAudio(allowMovement, __instance._lightSensors);
                 __instance._effectsController.UpdateGroundedAudio(__instance._fluidDetector);
@@ -71,6 +73,32 @@ namespace NewHorizons.Patches.EchoesOfTheEyePatches
             __instance._localAcceleration = Vector3.zero;
 
             return false;
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(nameof(RaftController.UpdateMoveToTarget))]
+        public static void UpdateMoveToTarget(RaftController __instance)
+        {
+            // If it has a riverFluid volume then its a regular stranger one
+            if (__instance._movingToTarget && __instance._riverFluid == null)
+            {
+                OWRigidbody raftBody = __instance._raftBody;
+                OWRigidbody origParentBody = __instance._raftBody.GetOrigParentBody();
+                Transform transform = origParentBody.transform;
+                Vector3 vector = transform.TransformPoint(__instance._targetLocalPosition);
+
+                // Base game threshold has this at 1f (after doing smoothstep on it)
+                // For whatever reason it never hits that for NH planets (probably since they're moving so much compared to the steady velocity of the Stranger)
+                // Might break for somebody with a wacky spinning planet in which case we can adjust this or add some kind of fallback (i.e., wait x seconds and then just say its there)
+                // Fixes #1005
+                if (__instance.currentDistanceLerp > 0.999f)
+                {
+                    raftBody.SetPosition(vector);
+                    raftBody.SetRotation(transform.rotation * __instance._targetLocalRotation);
+                    __instance.StopMovingToTarget();
+                    __instance.OnArriveAtTarget.Invoke();
+                }
+            }
         }
     }
 }

@@ -28,13 +28,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
       - name: Read Manifest
         id: read-manifest
         uses: notiz-dev/github-action-json-property@release
-        with: 
-          path: './NewHorizons/manifest.json'
-          prop_path: 'version'
+        with:
+          path: "./NewHorizons/manifest.json"
+          prop_path: "version"
       - name: Print version numbers
         run: |
           echo "Manifest version: $MANIFEST_VERSION"
@@ -66,7 +66,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download Asset
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: xen.NewHorizons.Release
           path: xen.NewHorizons

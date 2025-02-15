@@ -5,7 +5,9 @@ using NewHorizons.External;
 using NewHorizons.External.Modules;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.Utility;
+using NewHorizons.Utility.Files;
 using NewHorizons.Utility.OWML;
+using OWML.Common;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -77,10 +79,10 @@ namespace NewHorizons.Builder.Body
             if (_exitWarps == null) _exitWarps = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/Interactables_HubDimension/OuterWarp_Hub").InstantiateInactive().Rename("Prefab_Bramble_OuterWarp").DontDestroyOnLoad();
             if (_repelVolume == null) _repelVolume = SearchUtilities.Find("DB_HubDimension_Body/BrambleRepelVolume").InstantiateInactive().Rename("Prefab_Bramble_RepelVolume").DontDestroyOnLoad();
             if (_material == null) _material = new Material(GameObject.Find("DB_PioneerDimension_Body/Sector_PioneerDimension").GetComponent<EffectRuleset>()._material).DontDestroyOnLoad();
-            if (_wallCollision == null) _wallCollision = Main.NHPrivateAssetBundle.LoadAsset<GameObject>("BrambleCollision");
+            if (_wallCollision == null) _wallCollision = AssetBundleUtilities.NHPrivateAssetBundle.LoadAsset<GameObject>("BrambleCollision");
         }
 
-        public static GameObject Make(NewHorizonsBody body, GameObject go, NHAstroObject ao, Sector sector, OWRigidbody owRigidBody)
+        public static GameObject Make(NewHorizonsBody body, GameObject go, NHAstroObject ao, Sector sector, IModBehaviour mod, OWRigidbody owRigidBody)
         {
             InitPrefabs();
 
@@ -102,7 +104,7 @@ namespace NewHorizons.Builder.Body
                 default: geometryPrefab = _hubGeometry; break;
             }
 
-            var geometry = DetailBuilder.Make(go, sector, geometryPrefab, new DetailInfo());
+            var geometry = DetailBuilder.Make(go, sector, mod, geometryPrefab, new DetailInfo());
 
             var exitWarps = _exitWarps.InstantiateInactive();
             var repelVolume = _repelVolume.InstantiateInactive();
@@ -229,6 +231,7 @@ namespace NewHorizons.Builder.Body
             if (config.fogTint != null)
             {
                 var color = config.fogTint.ToColor();
+                // Fog alpha has no impact: Must instead use fogDensity.
                 color.a = 1f;
                 fog.fogTint = color;
                 outerFogWarpVolume._fogColor = color;

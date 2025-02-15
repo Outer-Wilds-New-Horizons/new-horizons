@@ -37,14 +37,11 @@ namespace NewHorizons.External.Modules
         public float groundSize;
 
         /// <summary>
-        /// If the body should have a marker on the map screen.
+        /// Is this planet able to detect fluid volumes? Disabling this means that entering a star or lava volume will not destroy this planet
+        /// May have adverse effects if anglerfish are added to this planet, disable this if you want those to work (they have fluid volumes in their mouths)
         /// </summary>
-        public bool hasMapMarker;
-
-        /// <summary>
-        /// Can this planet survive entering a star?
-        /// </summary>
-        public bool invulnerableToSun;
+        [DefaultValue(true)]
+        public bool hasFluidDetector = true;
 
         /// <summary>
         /// Do we show the minimap when walking around this planet?
@@ -63,6 +60,8 @@ namespace NewHorizons.External.Modules
 
         /// <summary>
         /// A scale height used for a number of things. Should be the approximate radius of the body.
+        /// 
+        /// Affected settings include: Base sector size, proxy body scaling, surface gravity
         /// </summary>
         public float surfaceSize;
 
@@ -71,7 +70,29 @@ namespace NewHorizons.External.Modules
         /// </summary>
         [DefaultValue(0)] public int gravityVolumePriority = 0;
 
+        /// <summary>
+        /// Optional. Overrides how far the player must be from the planet for their feet to automatically orient towards the ground.
+        /// </summary>
+        public int? gravityAlignmentRadiusOverride = null;
+
+        /// <summary>
+        /// Apply physics to this planet when you bump into it. Will have a spherical collider the size of surfaceSize. 
+        /// For custom colliders they have to all be convex and you can leave surface size as 0.
+        /// This is meant for stuff like satellites which are relatively simple and can be de-orbited.
+        /// If you are using an orbit line but a tracking line, it will be removed when the planet is bumped in to.
+        /// </summary>
+        public bool pushable;
+
+        /// <summary>
+        /// Set this to true to have no proxy be generated for this planet. 
+        /// This is a small representation of the planet that appears when it is outside of the regular Unity camera range.
+        /// </summary>
+        public bool hideProxy;
+
         #region Obsolete
+
+        [Obsolete("invulnerableToSun is deprecated, please use hasFluidDetector instead")]
+        public bool invulnerableToSun;
 
         [Obsolete("IsSatellite is deprecated, please use ShowMinimap instead")]
         public bool isSatellite;
@@ -93,6 +114,9 @@ namespace NewHorizons.External.Modules
 
         [Obsolete("AmbientLight is deprecated, please use AmbientLightModule instead")]
         public float ambientLight;
+
+        [Obsolete("HasMapMarker is deprecated, please use MapMarkerModule instead")]
+        public bool hasMapMarker;
 
         [Obsolete("HasReferenceFrame is deprecated, please use ReferenceModule instead")]
         [DefaultValue(true)] public bool hasReferenceFrame = true;

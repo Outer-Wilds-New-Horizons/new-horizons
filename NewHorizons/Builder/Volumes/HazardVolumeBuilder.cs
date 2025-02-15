@@ -21,23 +21,32 @@ namespace NewHorizons.Builder.Volumes
             var owTriggerVolume = go.AddComponent<OWTriggerVolume>();
             owTriggerVolume._shape = shape;
 
+            var volume = AddHazardVolume(go, sector, owrb, info.type, info.firstContactDamageType, info.firstContactDamage, info.damagePerSecond);
+
+            go.SetActive(true);
+
+            return volume;
+        }
+
+        public static HazardVolume AddHazardVolume(GameObject go, Sector sector, OWRigidbody owrb, HazardVolumeInfo.HazardType? type, HazardVolumeInfo.InstantDamageType? firstContactDamageType, float firstContactDamage, float damagePerSecond)
+        { 
             HazardVolume hazardVolume = null;
-            if (info.type == HazardVolumeInfo.HazardType.RIVERHEAT)
+            if (type == HazardVolumeInfo.HazardType.RIVERHEAT)
             {
                 hazardVolume = go.AddComponent<RiverHeatHazardVolume>();
             }
-            else if (info.type == HazardVolumeInfo.HazardType.HEAT)
+            else if (type == HazardVolumeInfo.HazardType.HEAT)
             {
                 hazardVolume = go.AddComponent<HeatHazardVolume>();
             }
-            else if (info.type == HazardVolumeInfo.HazardType.DARKMATTER)
+            else if (type == HazardVolumeInfo.HazardType.DARKMATTER)
             {
                 hazardVolume = go.AddComponent<DarkMatterVolume>();
                 var visorFrostEffectVolume = go.AddComponent<VisorFrostEffectVolume>();
                 visorFrostEffectVolume._frostRate = 0.5f;
                 visorFrostEffectVolume._maxFrost = 0.91f;
 
-                var water = planetGO.GetComponentsInChildren<RadialFluidVolume>().FirstOrDefault(x => x._fluidType == FluidVolume.Type.WATER);
+                var water = owrb.GetComponentsInChildren<RadialFluidVolume>().FirstOrDefault(x => x._fluidType == FluidVolume.Type.WATER);
                 if (water != null)
                 {
                     var submerge = go.AddComponent<DarkMatterSubmergeController>();
@@ -58,7 +67,7 @@ namespace NewHorizons.Builder.Volumes
                     submerge._fluidDetector = detector;
                 }
             }
-            else if (info.type == HazardVolumeInfo.HazardType.ELECTRICITY)
+            else if (type == HazardVolumeInfo.HazardType.ELECTRICITY)
             {
                 var electricityVolume = go.AddComponent<ElectricityVolume>();
                 electricityVolume._shockAudioPool = new OWAudioSource[0];
@@ -67,15 +76,17 @@ namespace NewHorizons.Builder.Volumes
             else
             {
                 var simpleHazardVolume = go.AddComponent<SimpleHazardVolume>();
-                simpleHazardVolume._type = EnumUtils.Parse<HazardVolume.HazardType>(info.type.ToString(), HazardVolume.HazardType.GENERAL);
+                simpleHazardVolume._type = EnumUtils.Parse(type.ToString(), HazardVolume.HazardType.GENERAL);
                 hazardVolume = simpleHazardVolume;
             }
             hazardVolume._attachedBody = owrb;
-            hazardVolume._damagePerSecond = info.damagePerSecond;
-            hazardVolume._firstContactDamageType = EnumUtils.Parse<InstantDamageType>(info.firstContactDamageType.ToString(), InstantDamageType.Impact);
-            hazardVolume._firstContactDamage = info.firstContactDamage;
+            hazardVolume._damagePerSecond = type == null ? 0f : damagePerSecond;
 
-            go.SetActive(true);
+            if (firstContactDamageType != null)
+            {
+                hazardVolume._firstContactDamageType = EnumUtils.Parse(firstContactDamageType.ToString(), InstantDamageType.Impact);
+                hazardVolume._firstContactDamage = firstContactDamage;
+            }
 
             return hazardVolume;
         }

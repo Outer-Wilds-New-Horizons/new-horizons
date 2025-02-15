@@ -11,7 +11,6 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
 namespace NewHorizons.External.Configs
@@ -24,9 +23,8 @@ namespace NewHorizons.External.Configs
     {
         #region Fields
         /// <summary>
-        /// Unique name of your planet
+        /// Unique name of your planet. If not specified, the file name (without the extension) is used.
         /// </summary>
-        [Required]
         public string name;
 
         /// <summary>
@@ -53,6 +51,13 @@ namespace NewHorizons.External.Configs
         /// `true` if you want to delete this planet
         /// </summary>
         public bool destroy;
+
+        /// <summary>
+        /// Do we track the position of this body when calculating the solar system radius?
+        /// `true` if you want the map zoom speed, map panning distance/speed, map camera farclip plane,
+        /// and autopilot-returning-to-solar-system to adjust to this planet's orbit
+        /// </summary>
+        [DefaultValue(true)] public bool trackForSolarSystemRadius = true;
 
         /// <summary>
         /// A list of paths to child GameObjects to destroy on this planet
@@ -93,6 +98,16 @@ namespace NewHorizons.External.Configs
         public CloakModule Cloak;
 
         /// <summary>
+        /// Make this planet part of the dream world
+        /// </summary>
+        public DreamModule Dream;
+
+        /// <summary>
+        /// Add features exclusive to the Eye of the Universe scene
+        /// </summary>
+        public EyeOfTheUniverseModule EyeOfTheUniverse;
+
+        /// <summary>
         /// Make this body into a focal point (barycenter)
         /// </summary>
         public FocalPointModule FocalPoint;
@@ -111,6 +126,11 @@ namespace NewHorizons.External.Configs
         /// Add lava to this planet
         /// </summary>
         public LavaModule Lava;
+
+        /// <summary>
+        /// Map marker properties of this body
+        /// </summary>
+        public MapMarkerModule MapMarker;
 
         /// <summary>
         /// Describes this Body's orbit (or lack there of)
@@ -168,6 +188,12 @@ namespace NewHorizons.External.Configs
         public WaterModule Water;
 
         /// <summary>
+        /// Add particle effects in a field around the planet.
+        /// Also known as Vection Fields.
+        /// </summary>
+        public ParticleFieldModule[] ParticleFields;
+
+        /// <summary>
         /// Add various volumes on this body
         /// </summary>
         public VolumesModule Volumes;
@@ -206,8 +232,8 @@ namespace NewHorizons.External.Configs
             // Always have to have a base module
             if (Base == null) Base = new BaseModule();
             if (Orbit == null) Orbit = new OrbitModule();
-            if (ShipLog == null) ShipLog = new ShipLogModule();
             if (ReferenceFrame == null) ReferenceFrame = new ReferenceFrameModule();
+            if (MapMarker == null) MapMarker = new MapMarkerModule();
         }
 
         public void Validate()
@@ -220,61 +246,24 @@ namespace NewHorizons.External.Configs
             if (Bramble?.dimension != null) canShowOnTitle = false;
             if (Orbit?.staticPosition != null) Orbit.isStatic = true;
 
-            // For each quantum group, verify the following:
-            //      this group's id should be unique
-            //      if type == sockets, group.sockets should not be null or empty
-            //      if type == sockets, count every prop that references this group. the number should be < group.sockets.Count
-            //      if type == sockets, for each socket, if rotation == null, rotation = Vector3.zero
-            //      if type == sockets, for each socket, position must not be null
-            // For each detail prop,
-            //      if detail.quantumGroupID != null, there exists a quantum group with that id
-            if (Props?.quantumGroups != null && Props?.details != null)
-            {
-                Dictionary<string, QuantumGroupInfo> existingGroups = new Dictionary<string, QuantumGroupInfo>();
-                foreach (var quantumGroup in Props.quantumGroups)
-                {
-                    if (existingGroups.ContainsKey(quantumGroup.id)) { NHLogger.LogWarning($"Duplicate quantumGroup id found: {quantumGroup.id}"); quantumGroup.type = QuantumGroupType.FailedValidation; }
-
-                    existingGroups[quantumGroup.id] = quantumGroup;
-                    if (quantumGroup.type == QuantumGroupType.Sockets)
-                    {
-                        if (quantumGroup.sockets?.Length == 0) { NHLogger.LogError($"quantumGroup {quantumGroup.id} is of type \"sockets\" but has no defined sockets."); quantumGroup.type = QuantumGroupType.FailedValidation; }
-                        else
-                        {
-                            foreach (var socket in quantumGroup.sockets)
-                            {
-                                if (socket.rotation == null) socket.rotation = UnityEngine.Vector3.zero;
-                                if (socket.position == null) { NHLogger.LogError($"quantumGroup {quantumGroup.id} has a socket without a position."); quantumGroup.type = QuantumGroupType.FailedValidation; }
-                            }
-                        }
-                    }
-                }
-
-                var existingGroupsPropCounts = new Dictionary<string, int>();
-                foreach (var prop in Props?.details)
-                {
-                    if (prop.quantumGroupID == null) continue;
-                    if (!existingGroups.ContainsKey(prop.quantumGroupID)) NHLogger.LogWarning($"A prop wants to be a part of quantum group {prop.quantumGroupID}, but this group does not exist.");
-                    else existingGroupsPropCounts[prop.quantumGroupID] = existingGroupsPropCounts.GetValueOrDefault(prop.quantumGroupID) + 1;
-                }
-
-                foreach (var quantumGroup in Props.quantumGroups)
-                {
-                    if (quantumGroup.type == QuantumGroupType.Sockets && existingGroupsPropCounts.GetValueOrDefault(quantumGroup.id) >= quantumGroup.sockets?.Length)
-                    {
-                        NHLogger.LogError($"quantumGroup {quantumGroup.id} is of type \"sockets\" and has more props than sockets.");
-                        quantumGroup.type = QuantumGroupType.FailedValidation;
-                    }
-                }
-            }
-
             // Stars and focal points shouldnt be destroyed by stars
-            if (Star != null || FocalPoint != null) Base.invulnerableToSun = true;
+            if (Star != null || FocalPoint != null) Base.hasFluidDetector = false;
+
+            // Disable map marker for dream dimensions
+            if (Dream != null && Dream.inDreamWorld) MapMarker.enabled = false;
+
+            // User error #983
+            // This will not catch if they wrote the two names slightly differently but oh well don't be stupid
+            // Ideally we should just check for loops in PlanetGraph
+            if (Orbit.primaryBody == name && !string.IsNullOrEmpty(Orbit.primaryBody))
+            {
+                throw new Exception($"You set {name} to orbit itself, that is invalid. The planet will not load.");
+            }
         }
 
         public void Migrate()
         {
-            // Backwards compatability
+            // Backwards compatibility
             // Should be the only place that obsolete things are referenced
 #pragma warning disable 612, 618
             if (Base.waterSize != 0)
@@ -300,6 +289,8 @@ namespace NewHorizons.External.Configs
             if (Base.isSatellite) Base.showMinimap = false;
 
             if (!Base.hasReferenceFrame) ReferenceFrame.enabled = false;
+
+            if (Base.hasMapMarker) MapMarker.enabled = true;
 
             if (childrenToDestroy != null) removeChildren = childrenToDestroy;
 
@@ -341,6 +332,29 @@ namespace NewHorizons.External.Configs
                 // useBasicCloudShader is obsolete
                 if (Atmosphere.clouds != null && Atmosphere.clouds.useBasicCloudShader)
                     Atmosphere.clouds.cloudsPrefab = CloudPrefabType.Basic;
+
+                if (Atmosphere.hasRain)
+                {
+                    if (ParticleFields == null) ParticleFields = new ParticleFieldModule[0];
+                    ParticleFields = ParticleFields.Append(new ParticleFieldModule
+                    {
+                        type = ParticleFieldModule.ParticleFieldType.Rain,
+                        rename = "RainEmitter"
+                    }).ToArray();
+                }
+
+                if (Atmosphere.hasSnow)
+                {
+                    if (ParticleFields == null) ParticleFields = new ParticleFieldModule[0];
+                    for (int i = 0; i < 5; i++)
+                    {
+                        ParticleFields = ParticleFields.Append(new ParticleFieldModule
+                        {
+                            type = ParticleFieldModule.ParticleFieldType.SnowflakesHeavy,
+                            rename = "SnowEmitter"
+                        }).ToArray();
+                    }
+                }
             }
 
             if (Props?.tornados != null)
@@ -429,6 +443,9 @@ namespace NewHorizons.External.Configs
             if (Star != null)
             {
                 if (!Star.goSupernova) Star.stellarDeathType = StellarDeathType.None;
+
+                // Gave up on supporting pulsars
+                if (Star.stellarRemnantType == StellarRemnantType.Pulsar) Star.stellarRemnantType = StellarRemnantType.NeutronStar;
             }
 
             // Signals no longer use two different variables for audio
@@ -501,6 +518,22 @@ namespace NewHorizons.External.Configs
                     position = Spawn.shipSpawnPoint,
                     rotation = Spawn.shipSpawnRotation,
                 };
+            }
+
+            // Spawn points are now a list
+            if (Spawn != null && Spawn.playerSpawn != null && Spawn.playerSpawnPoints == null)
+            {
+                Spawn.playerSpawnPoints = new SpawnModule.PlayerSpawnPoint[] { Spawn.playerSpawn };
+            }
+            if (Spawn != null && Spawn.shipSpawn != null && Spawn.shipSpawnPoints == null)
+            {
+                Spawn.shipSpawnPoints = new SpawnModule.ShipSpawnPoint[] { Spawn.shipSpawn };
+            }
+
+            // Because these guys put TWO spawn points 
+            if (starSystem == "2walker2.OogaBooga" && name == "The Campground")
+            {
+                Spawn.playerSpawnPoints[0].isDefault = true;
             }
 
             // Remote dialogue trigger reorganized to use GeneralPointPropInfo
@@ -623,6 +656,88 @@ namespace NewHorizons.External.Configs
                 {
                     if (destructionVolume.onlyAffectsPlayerAndShip) destructionVolume.onlyAffectsPlayerRelatedBodies = true;
                 }
+            }
+
+            if (Base.invulnerableToSun)
+            {
+                Base.hasFluidDetector = false;
+            }
+
+            // OLD QUANTUM VALIDATION
+            // For each quantum group, verify the following:
+            //      this group's id should be unique
+            //      if type == sockets, group.sockets should not be null or empty
+            //      if type == sockets, count every prop that references this group. the number should be < group.sockets.Count
+            //      if type == sockets, for each socket, if rotation == null, rotation = Vector3.zero
+            //      if type == sockets, for each socket, position must not be null
+            // For each detail prop,
+            //      if detail.quantumGroupID != null, there exists a quantum group with that id
+            if (Props?.quantumGroups != null && Props?.details != null)
+            {
+                Dictionary<string, QuantumGroupInfo> existingGroups = new Dictionary<string, QuantumGroupInfo>();
+                foreach (var quantumGroup in Props.quantumGroups)
+                {
+                    if (existingGroups.ContainsKey(quantumGroup.id)) { NHLogger.LogWarning($"Duplicate quantumGroup id found: {quantumGroup.id}"); quantumGroup.type = QuantumGroupType.FailedValidation; }
+
+                    existingGroups[quantumGroup.id] = quantumGroup;
+                    if (quantumGroup.type == QuantumGroupType.Sockets)
+                    {
+                        if (quantumGroup.sockets?.Length == 0) { NHLogger.LogError($"quantumGroup {quantumGroup.id} is of type \"sockets\" but has no defined sockets."); quantumGroup.type = QuantumGroupType.FailedValidation; }
+                        else
+                        {
+                            foreach (var socket in quantumGroup.sockets)
+                            {
+                                if (socket.rotation == null) socket.rotation = UnityEngine.Vector3.zero;
+                                if (socket.position == null) { NHLogger.LogError($"quantumGroup {quantumGroup.id} has a socket without a position."); quantumGroup.type = QuantumGroupType.FailedValidation; }
+                            }
+                        }
+                    }
+                }
+
+                var existingGroupsPropCounts = new Dictionary<string, int>();
+                foreach (var prop in Props?.details)
+                {
+                    if (prop.quantumGroupID == null) continue;
+                    if (!existingGroups.ContainsKey(prop.quantumGroupID)) NHLogger.LogWarning($"A prop wants to be a part of quantum group {prop.quantumGroupID}, but this group does not exist.");
+                    else existingGroupsPropCounts[prop.quantumGroupID] = existingGroupsPropCounts.GetValueOrDefault(prop.quantumGroupID) + 1;
+                }
+
+                foreach (var quantumGroup in Props.quantumGroups)
+                {
+                    if (quantumGroup.type == QuantumGroupType.Sockets && existingGroupsPropCounts.GetValueOrDefault(quantumGroup.id) > quantumGroup.sockets?.Length)
+                    {
+                        NHLogger.LogError($"quantumGroup {quantumGroup.id} is of type \"sockets\" and has more props than sockets.");
+                        quantumGroup.type = QuantumGroupType.FailedValidation;
+                    }
+                }
+            }
+
+            if (Props != null && Props.quantumGroups != null)
+            {
+                var socketQuantumGroups = Props.quantumGroups.Where(x => x.type == QuantumGroupType.Sockets).Select(x => new SocketQuantumGroupInfo()
+                {
+                    rename = "Quantum Sockets - " + x.id,
+                    sockets = x.sockets,
+                    details = Props.details.Where(y => y.quantumGroupID == x.id).Select(x => new QuantumDetailInfo(x)).ToArray()
+                });
+                if (socketQuantumGroups.Any())
+                {
+                    Props.socketQuantumGroups = socketQuantumGroups.ToArray();
+                }
+                var stateQuantumGroups = Props.quantumGroups.Where(x => x.type == QuantumGroupType.States).Select(x => new StateQuantumGroupInfo()
+                {
+                    rename = "Quantum States - " + x.id,
+                    hasEmptyState = x.hasEmptyState,
+                    loop = x.loop,
+                    sequential = x.sequential,
+                    details = Props.details.Where(y => y.quantumGroupID == x.id).Select(x => new QuantumDetailInfo(x)).ToArray()
+                });
+                if (stateQuantumGroups.Any())
+                {
+                    Props.stateQuantumGroups = stateQuantumGroups.ToArray();
+                }
+
+                Props.details = Props.details.Where(x => string.IsNullOrEmpty(x.quantumGroupID)).ToArray();
             }
         }
         #endregion

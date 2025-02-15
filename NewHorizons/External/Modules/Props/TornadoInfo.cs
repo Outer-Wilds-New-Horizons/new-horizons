@@ -1,3 +1,4 @@
+using NewHorizons.External.Modules.Volumes.VolumeInfos;
 using NewHorizons.External.SerializableData;
 using NewHorizons.External.SerializableEnums;
 using Newtonsoft.Json;
@@ -69,6 +70,26 @@ namespace NewHorizons.External.Modules.Props
         /// Fluid type for sounds/effects when colliding with this tornado.
         /// </summary>
         [DefaultValue("cloud")] public NHFluidType fluidType = NHFluidType.CLOUD;
+
+        /// <summary>
+        /// The type of hazard for this volume. Leave empty for this tornado to not be hazardous.
+        /// </summary>
+        public HazardVolumeInfo.HazardType? hazardType;
+
+        /// <summary>
+        /// The amount of damage you will take per second while inside this tornado. Only used it hazardType is set.
+        /// </summary>
+        [DefaultValue(10f)] public float damagePerSecond = 10f;
+
+        /// <summary>
+        /// The type of damage you will take when you first touch this volume. Leave empty for this tornado to not cause damage on first contact.
+        /// </summary>
+        public HazardVolumeInfo.InstantDamageType? firstContactDamageType;
+
+        /// <summary>
+        /// The amount of damage you will take when you first touch this volume. Only relevant if firstContactDamageType is set.
+        /// </summary>
+        [DefaultValue(10f)] public float firstContactDamage = 10f;
     }
 
 }

@@ -10,16 +10,25 @@ namespace NewHorizons.Builder.Orbital
         private static Material _dottedLineMaterial;
         private static Material _lineMaterial;
 
-        public static OrbitLine Make(GameObject planetGO, NHAstroObject astroObject, bool isMoon, PlanetConfig config)
+        public static GameObject Make(GameObject planetGO, bool isMoon, PlanetConfig config)
+        {
+            var orbitGO = new GameObject("Orbit");
+            orbitGO.transform.parent = planetGO.transform;
+            orbitGO.transform.localPosition = Vector3.zero;
+
+            Delay.FireOnNextUpdate(() => PostMake(orbitGO, planetGO, isMoon, config));
+            return orbitGO;
+        }
+
+        private static void PostMake(GameObject orbitGO, GameObject planetGO, bool isMoon, PlanetConfig config)
         {
             if (_dottedLineMaterial == null) _dottedLineMaterial = SearchUtilities.FindResourceOfTypeAndName<Material>("Effects_SPA_OrbitLine_Dotted_mat");
             if (_lineMaterial == null) _lineMaterial = SearchUtilities.FindResourceOfTypeAndName<Material>("Effects_SPA_OrbitLine_mat");
 
-            if (_dottedLineMaterial == null || _lineMaterial == null) return null;
+            // Might've been otherwise destroyed when updating
+            if (orbitGO == null) return;
 
-            GameObject orbitGO = new GameObject("Orbit");
-            orbitGO.transform.parent = planetGO.transform;
-            orbitGO.transform.localPosition = Vector3.zero;
+            var astroObject = planetGO.GetComponent<NHAstroObject>();
 
             var lineRenderer = orbitGO.AddComponent<LineRenderer>();
 
@@ -47,7 +56,6 @@ namespace NewHorizons.Builder.Orbital
             else
             {
                 orbitLine = orbitGO.AddComponent<NHOrbitLine>();
-
                 (orbitLine as NHOrbitLine).SetFromParameters(astroObject);
             }
 
@@ -61,15 +69,17 @@ namespace NewHorizons.Builder.Orbital
 
             var fade = isMoon;
 
-            /*
-            if (config.Base.IsSatellite)
+            if (config.Orbit.orbitLineFadeStartDistance >= 0)
             {
-                if (config.Orbit.Tint != null) color = new Color(0.4082f, 0.516f, 0.4469f, 1f);
                 fade = true;
-                orbitLine._fadeEndDist = 5000;
-                orbitLine._fadeStartDist = 3000;
+                orbitLine._fadeStartDist = config.Orbit.orbitLineFadeStartDistance;
             }
-            */
+
+            if (config.Orbit.orbitLineFadeEndDistance >= 0)
+            {
+                fade = true;
+                orbitLine._fadeEndDist = config.Orbit.orbitLineFadeEndDistance;
+            }
 
             orbitLine._color = color;
             lineRenderer.endColor = new Color(color.r, color.g, color.b, 0f);
@@ -83,7 +93,15 @@ namespace NewHorizons.Builder.Orbital
 
             Delay.FireOnNextUpdate(orbitLine.InitializeLineRenderer);
 
-            return orbitLine;
+            // If the planet has physics and a regular orbit line, make sure that when it's bumped into the old orbit line vanishes
+            if (config.Base.pushable && !config.Orbit.trackingOrbitLine)
+            {
+                var impactSensor = planetGO.GetComponent<ImpactSensor>();
+                impactSensor.OnImpact += (ImpactData _) =>
+                {
+                    orbitGO.SetActive(false);
+                };
+            }
         }
     }
 }

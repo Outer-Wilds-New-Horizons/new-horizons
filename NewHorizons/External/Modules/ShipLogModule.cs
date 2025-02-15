@@ -23,7 +23,7 @@ namespace NewHorizons.External.Modules
         public MapModeInfo mapMode;
 
         /// <summary>
-        /// A path to the folder where entry sprites are stored.
+        /// A path to the folder where entry sprites (.png) are stored.
         /// </summary>
         public string spriteFolder;
 
@@ -61,7 +61,7 @@ namespace NewHorizons.External.Modules
             public float offset;
 
             /// <summary>
-            /// The path to the sprite to show when the planet is unexplored in map mode.
+            /// The path to the sprite (.png/.jpg/.exr) to show when the planet is unexplored in map mode.
             /// </summary>
             public string outlineSprite;
 
@@ -71,7 +71,7 @@ namespace NewHorizons.External.Modules
             public bool remove;
 
             /// <summary>
-            /// The path to the sprite to show when the planet is revealed in map mode.
+            /// The path to the sprite (.png/.jpg/.exr) to show when the planet is revealed in map mode.
             /// </summary>
             public string revealedSprite;
 
@@ -79,6 +79,12 @@ namespace NewHorizons.External.Modules
             /// Scale to apply to the planet in map mode.
             /// </summary>
             [DefaultValue(1f)] public float scale = 1f;
+
+            /// <summary>
+            /// Can this ship log map mode entry be selected
+            /// Ex) Set to false for stars with no entries on them so they are skipped in navigation
+            /// </summary>
+            [DefaultValue(true)] public bool selectable = true;
         }
 
         [JsonObject]
@@ -90,7 +96,7 @@ namespace NewHorizons.External.Modules
             public bool invisibleWhenHidden;
 
             /// <summary>
-            /// The sprite to show when the parent AstroBody is rumored/unexplored.
+            /// The sprite (.png/.jpg/.exr) to show when the parent AstroBody is rumored/unexplored.
             /// </summary>
             public string outlineSprite;
 
@@ -100,7 +106,7 @@ namespace NewHorizons.External.Modules
             public MVector2 position;
 
             /// <summary>
-            /// The sprite to show when the parent AstroBody is revealed.
+            /// The sprite (.png/.jpg/.exr) to show when the parent AstroBody is revealed.
             /// </summary>
             public string revealedSprite;
 

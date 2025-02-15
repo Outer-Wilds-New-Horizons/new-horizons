@@ -1,3 +1,4 @@
+using NewHorizons.Utility;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -143,7 +144,7 @@ namespace NewHorizons.Handlers
         {
             if (name is AstroObject.Name.CaveTwin or AstroObject.Name.TowerTwin)
             {
-                return GameObject.Find("FocalBody/StreamingGroup_HGT").GetComponent<StreamingGroup>();
+                return SearchUtilities.Find("FocalBody/StreamingGroup_HGT").GetComponent<StreamingGroup>();
             }
             else
             {

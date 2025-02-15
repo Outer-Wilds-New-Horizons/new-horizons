@@ -3,8 +3,12 @@ using NewHorizons.Builder.Atmosphere;
 using NewHorizons.Builder.Body;
 using NewHorizons.Builder.General;
 using NewHorizons.Builder.Props;
+using NewHorizons.Builder.Props.Audio;
+using NewHorizons.Builder.Props.EchoesOfTheEye;
 using NewHorizons.Builder.Props.TranslatorText;
+using NewHorizons.Components.EOTE;
 using NewHorizons.Components.Fixers;
+using NewHorizons.Components.Ship;
 using NewHorizons.Components.SizeControllers;
 using NewHorizons.External;
 using NewHorizons.External.Configs;
@@ -13,10 +17,12 @@ using NewHorizons.OtherMods.AchievementsPlus;
 using NewHorizons.OtherMods.MenuFramework;
 using NewHorizons.OtherMods.OWRichPresence;
 using NewHorizons.OtherMods.VoiceActing;
+using NewHorizons.Streaming;
 using NewHorizons.Utility;
+using NewHorizons.Utility.DebugTools;
 using NewHorizons.Utility.Files;
-using NewHorizons.Utility.OWML;
 using NewHorizons.Utility.OuterWilds;
+using NewHorizons.Utility.OWML;
 using OWML.Common;
 using OWML.ModHelper;
 using OWML.Utils;
@@ -29,39 +35,53 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
-using NewHorizons.Utility.DebugTools;
-using NewHorizons.Utility.DebugTools.Menu;
-using NewHorizons.Components.Ship;
-using NewHorizons.Builder.Props.Audio;
-
 namespace NewHorizons
 {
 
     public class Main : ModBehaviour
     {
-        public static AssetBundle NHAssetBundle { get; private set; }
-        public static AssetBundle NHPrivateAssetBundle { get; private set; }
         public static Main Instance { get; private set; }
 
         // Settings
         public static bool Debug { get; private set; }
+        public static bool VisualizeQuantumObjects { get; private set; }
         public static bool VerboseLogs { get; private set; }
-        private static bool _useCustomTitleScreen;
+        public static bool SequentialPreCaching { get; private set; }
+        public static bool CustomTitleScreen { get; private set; }
+        public static string DefaultSystemOverride { get; private set; }
         private static bool _wasConfigured = false;
-        private static string _defaultSystemOverride;
 
-        public static Dictionary<string, NewHorizonsSystem> SystemDict = new Dictionary<string, NewHorizonsSystem>();
-        public static Dictionary<string, List<NewHorizonsBody>> BodyDict = new Dictionary<string, List<NewHorizonsBody>>();
-        public static List<IModBehaviour> MountedAddons = new List<IModBehaviour>();
+        public static Dictionary<string, NewHorizonsSystem> SystemDict = new();
+        public static Dictionary<string, List<NewHorizonsBody>> BodyDict = new();
+        public static List<IModBehaviour> MountedAddons = new();
+        public static Dictionary<IModBehaviour, AddonConfig> AddonConfigs = new();
 
         public static float SecondsElapsedInLoop = -1;
 
-        public static bool IsSystemReady { get; private set; }
-        public static float FurthestOrbit { get; set; } = 50000f;
+        public static bool IsSystemReady { get; private set; }    
 
-        public string DefaultStarSystem => SystemDict.ContainsKey(_defaultSystemOverride) ? _defaultSystemOverride : _defaultStarSystem;
-        public string CurrentStarSystem => _currentStarSystem;
-        public bool TimeLoopEnabled => SystemDict[CurrentStarSystem]?.Config?.enableTimeLoop ?? true;
+        public string DefaultStarSystem => SystemDict.ContainsKey(DefaultSystemOverride) ? DefaultSystemOverride : _defaultStarSystem;
+        public string CurrentStarSystem
+        {
+            get
+            {
+                return _currentStarSystem;
+            }
+            set
+            {
+                // Prevent invalid values
+                if (value != "SolarSystem" && value != "EyeOfTheUniverse" && !SystemDict.ContainsKey(value) && !BodyDict.ContainsKey(value))
+                {
+                    NHLogger.LogError($"System \"{value}\" does not exist!");
+                    _currentStarSystem = DefaultStarSystem;
+                }
+                _currentStarSystem = value;
+            }
+        }
+        private string _currentStarSystem; 
+        private string _previousStarSystem;
+
+        public bool TimeLoopEnabled => CurrentStarSystem == null || (SystemDict[CurrentStarSystem]?.Config?.enableTimeLoop ?? true);
         public bool IsWarpingFromShip { get; private set; } = false;
         public bool IsWarpingFromVessel { get; private set; } = false;
         public bool IsWarpingBackToEye { get; internal set; } = false;
@@ -74,11 +94,14 @@ namespace NewHorizons
         public static bool HasWarpDrive { get; private set; } = false;
 
         private string _defaultStarSystem = "SolarSystem";
-        internal string _currentStarSystem = "SolarSystem";
+
         private bool _firstLoad = true;
 
         private bool _playerAwake;
         public bool PlayerSpawned { get; set; }
+        public bool ForceClearCaches { get; set; } // for reloading configs
+
+        public bool FlagDLCRequired { get; set; }
 
         public ShipWarpController ShipWarpController { get; private set; }
 
@@ -88,7 +111,14 @@ namespace NewHorizons
         public StarSystemEvent OnStarSystemLoaded = new();
         public StarSystemEvent OnPlanetLoaded = new();
 
-        public static bool HasDLC { get => EntitlementsManager.IsDlcOwned() == EntitlementsManager.AsyncOwnershipStatus.Owned; }
+        /// <summary>
+        /// Depending on platform, the AsyncOwnershipStatus might not be ready by the time we go to check it.
+        /// If that happens, I guess we just have to assume they do own the DLC.
+        /// Better to false positive than false negative and annoy people every time they launch the game when they do own the DLC
+        /// </summary>
+        public static bool HasDLC { get => EntitlementsManager.IsDlcOwned() != EntitlementsManager.AsyncOwnershipStatus.NotOwned; }
+
+        public static StarSystemConfig GetCurrentSystemConfig => SystemDict[Instance.CurrentStarSystem].Config;
 
         public override object GetApi()
         {
@@ -101,32 +131,33 @@ namespace NewHorizons
 
             var currentScene = SceneManager.GetActiveScene().name;
 
-            Debug = config.GetSettingsValue<bool>("Debug");
-            VerboseLogs = config.GetSettingsValue<bool>("Verbose Logs");
+            Debug = config.GetSettingsValue<bool>(nameof(Debug));
+            VisualizeQuantumObjects = config.GetSettingsValue<bool>(nameof(VisualizeQuantumObjects));
+            VerboseLogs = config.GetSettingsValue<bool>(nameof(VerboseLogs));
+            SequentialPreCaching = config.GetSettingsValue<bool>(nameof(SequentialPreCaching));
 
             if (currentScene == "SolarSystem")
             {
                 DebugReload.UpdateReloadButton();
-                DebugMenu.UpdatePauseMenuButton();
             }
 
             if (VerboseLogs) NHLogger.UpdateLogLevel(NHLogger.LogType.Verbose);
             else if (Debug) NHLogger.UpdateLogLevel(NHLogger.LogType.Log);
             else NHLogger.UpdateLogLevel(NHLogger.LogType.Error);
 
-            _defaultSystemOverride = config.GetSettingsValue<string>("Default System Override");
-
-            // Else it doesn't get set idk
-            if (currentScene == "TitleScreen" && SystemDict.ContainsKey(_defaultSystemOverride))
+            var oldDefaultSystemOverride = DefaultSystemOverride;
+            DefaultSystemOverride = config.GetSettingsValue<string>(nameof(DefaultSystemOverride));
+            if (oldDefaultSystemOverride != DefaultSystemOverride)
             {
-                _currentStarSystem = _defaultSystemOverride;
+                ResetCurrentStarSystem();
+                NHLogger.Log($"Changed default star system override to {DefaultSystemOverride}");
             }
 
-            var wasUsingCustomTitleScreen = _useCustomTitleScreen;
-            _useCustomTitleScreen = config.GetSettingsValue<bool>("Custom title screen");
+            var wasUsingCustomTitleScreen = CustomTitleScreen;
+            CustomTitleScreen = config.GetSettingsValue<bool>(nameof(CustomTitleScreen));
             // Reload the title screen if this was updated on it
             // Don't reload if we haven't configured yet (called on game start)
-            if (wasUsingCustomTitleScreen != _useCustomTitleScreen && SceneManager.GetActiveScene().name == "TitleScreen" && _wasConfigured)
+            if (wasUsingCustomTitleScreen != CustomTitleScreen && SceneManager.GetActiveScene().name == "TitleScreen" && _wasConfigured)
             {
                 NHLogger.LogVerbose("Reloading");
                 SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
@@ -142,7 +173,7 @@ namespace NewHorizons
 
             BodyDict["SolarSystem"] = new List<NewHorizonsBody>();
             BodyDict["EyeOfTheUniverse"] = new List<NewHorizonsBody>(); // Keep this empty tho fr
-            SystemDict["SolarSystem"] = new NewHorizonsSystem("SolarSystem", new StarSystemConfig(), "", Instance)
+            SystemDict["SolarSystem"] = new NewHorizonsSystem("SolarSystem", new StarSystemConfig() { name = "SolarSystem" }, "", Instance)
             {
                 Config =
                 {
@@ -158,12 +189,12 @@ namespace NewHorizons
                     }
                 }
             };
-            SystemDict["EyeOfTheUniverse"] = new NewHorizonsSystem("EyeOfTheUniverse", new StarSystemConfig(), "", Instance)
+            SystemDict["EyeOfTheUniverse"] = new NewHorizonsSystem("EyeOfTheUniverse", new StarSystemConfig() { name = "EyeOfTheUniverse" }, "", Instance)
             {
                 Config =
                 {
                     destroyStockPlanets = false,
-                    factRequiredForWarp = "OPC_EYE_COORDINATES_X1",
+                    //factRequiredForWarp = "OPC_EYE_COORDINATES_X1",
                     Vessel = new StarSystemConfig.VesselModule()
                     {
                         coords = new StarSystemConfig.NomaiCoordinates
@@ -172,7 +203,8 @@ namespace NewHorizons
                             y = new int[4] { 3, 0, 1, 4 },
                             z = new int[6] { 1, 2, 3, 0, 5, 4 }
                         }
-                    }
+                    },
+                    canEnterViaWarpDrive = false
                 }
             };
 
@@ -197,23 +229,18 @@ namespace NewHorizons
             // the campfire on the title screen calls this from RegisterShape before it gets patched, so we have to call it again. lol 
             ShapeManager.Initialize();
 
+            // Fix a thing (thanks jeff mobius) 1.1.15 updated the game over fonts to only include the characters they needed
+            for (int i = 0; i < TextTranslation.s_theTable.m_gameOverFonts.Length; i++)
+            {
+                var existingFont = TextTranslation.s_theTable.m_dynamicFonts[i];
+                TextTranslation.s_theTable.m_gameOverFonts[i] = existingFont;
+            }
+
             SceneManager.sceneLoaded += OnSceneLoaded;
             SceneManager.sceneUnloaded += OnSceneUnloaded;
 
             GlobalMessenger<DeathType>.AddListener("PlayerDeath", OnDeath);
             GlobalMessenger.AddListener("WakeUp", OnWakeUp);
-
-            NHAssetBundle = ModHelper.Assets.LoadBundle("Assets/newhorizons_public");
-            if (NHAssetBundle == null)
-            {
-                NHLogger.LogError("Couldn't find NHAssetBundle: The mod will likely not work.");
-            }
-
-            NHPrivateAssetBundle = ModHelper.Assets.LoadBundle("Assets/newhorizons_private");
-            if (NHPrivateAssetBundle == null)
-            {
-                NHLogger.LogError("Couldn't find NHPrivateAssetBundle: The mod will likely not work.");
-            }
 
             VesselWarpHandler.Initialize();
 
@@ -230,9 +257,9 @@ namespace NewHorizons
                 NHLogger.LogWarning("Couldn't find planets folder");
             }
 
+            // Call this from the menu since we hadn't hooked onto the event yet
             Delay.FireOnNextUpdate(() => OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single));
             Delay.FireOnNextUpdate(() => _firstLoad = false);
-            Instance.ModHelper.Menus.PauseMenu.OnInit += DebugReload.InitializePauseMenu;
 
             MenuHandler.Init();
             AchievementHandler.Init();
@@ -242,6 +269,12 @@ namespace NewHorizons
             OnChangeStarSystem.AddListener(RichPresenceHandler.OnChangeStarSystem);
 
             LoadAddonManifest("Assets/addon-manifest.json", this);
+        }
+
+        public override void SetupPauseMenu(IPauseMenuManager pauseMenu)
+        {
+            base.SetupPauseMenu(pauseMenu);
+            DebugReload.InitializePauseMenu(pauseMenu);
         }
 
         public void OnDestroy()
@@ -258,11 +291,25 @@ namespace NewHorizons
 
         private void OnSceneUnloaded(Scene scene)
         {
+            // Caches of GameObjects must always be cleared
             SearchUtilities.ClearCache();
-            ImageUtilities.ClearCache();
-            AudioUtilities.ClearCache();
-            AssetBundleUtilities.ClearCache();
+            ProxyHandler.ClearCache();
+
+            // Enum cache, if not cleared every time, breaks signals
+            // I don't know why, but it's probably the least expensive cache there is, so let's just clear it every time
             EnumUtilities.ClearCache();
+
+            // Caches of other assets only have to be cleared if we changed star systems
+            if (ForceClearCaches || CurrentStarSystem != _previousStarSystem)
+            {
+                ForceClearCaches = false;
+                
+                NHLogger.Log($"Changing star system from {_previousStarSystem} to {CurrentStarSystem} - Clearing system-specific caches!");
+                ImageUtilities.ClearCache();
+                AudioUtilities.ClearCache();
+                AssetBundleUtilities.ClearCache();
+            }
+
             IsSystemReady = false;
         }
 
@@ -283,6 +330,8 @@ namespace NewHorizons
             {
                 try
                 {
+                    EyeDetailCacher.Init();
+
                     AtmosphereBuilder.InitPrefabs();
                     BrambleDimensionBuilder.InitPrefabs();
                     BrambleNodeBuilder.InitPrefabs();
@@ -311,10 +360,17 @@ namespace NewHorizons
                     VolcanoBuilder.InitPrefab();
                     VolumesBuilder.InitPrefabs();
                     WaterBuilder.InitPrefabs();
+                    GravityCannonBuilder.InitPrefab();
+                    ShuttleBuilder.InitPrefab();
 
-                    ProjectionBuilder.InitPrefabs();
-                    CloakBuilder.InitPrefab();
-                    RaftBuilder.InitPrefab();
+                    if (HasDLC)
+                    {
+                        ProjectionBuilder.InitPrefabs();
+                        CloakBuilder.InitPrefab();
+                        RaftBuilder.InitPrefab();
+                        DreamCampfireBuilder.InitPrefab();
+                        DreamArrivalPointBuilder.InitPrefab();
+                    }
 
                     WarpPadBuilder.InitPrefabs();
                 }
@@ -326,25 +382,21 @@ namespace NewHorizons
 
             if (isEyeOfTheUniverse)
             {
-                _currentStarSystem = "EyeOfTheUniverse";
+                CurrentStarSystem = "EyeOfTheUniverse";
             }
             else if (IsWarpingBackToEye)
             {
                 IsWarpingBackToEye = false;
-                OWTime.Pause(OWTime.PauseType.Loading);
-                LoadManager.LoadSceneImmediate(OWScene.EyeOfTheUniverse);
-                OWTime.Unpause(OWTime.PauseType.Loading);
+                ManualOnStartSceneLoad(OWScene.EyeOfTheUniverse);
+                // LoadSceneImmediate doesn't cover the screen and you see the solar system for a frame without this
+                LoadManager.s_instance._fadeCanvas.enabled = true;
+                LoadManager.s_instance._fadeImage.color = Color.black;
+                LoadManager.LoadSceneImmediate(OWScene.EyeOfTheUniverse);                
                 return;
             }
 
-            if (!SystemDict.ContainsKey(_currentStarSystem) || !BodyDict.ContainsKey(_currentStarSystem))
-            {
-                NHLogger.LogError($"System \"{_currentStarSystem}\" does not exist!");
-                _currentStarSystem = DefaultStarSystem;
-            }
-
             // Set time loop stuff if its enabled and if we're warping to a new place
-            if (IsChangingStarSystem && (SystemDict[_currentStarSystem].Config.enableTimeLoop || _currentStarSystem == "SolarSystem") && SecondsElapsedInLoop > 0f)
+            if (IsChangingStarSystem && (SystemDict[CurrentStarSystem].Config.enableTimeLoop || CurrentStarSystem == "SolarSystem") && SecondsElapsedInLoop > 0f)
             {
                 TimeLoopUtilities.SetSecondsElapsed(SecondsElapsedInLoop);
                 // Prevent the OPC from firing
@@ -359,7 +411,7 @@ namespace NewHorizons
                     launchController.enabled = false;
                 }
                 var nomaiProbe = SearchUtilities.Find("NomaiProbe_Body");
-                if (nomaiProbe != null) nomaiProbe.gameObject.SetActive(false);
+                nomaiProbe?.gameObject.SetActive(false);
             }
 
             // Reset this
@@ -367,7 +419,7 @@ namespace NewHorizons
 
             IsChangingStarSystem = false;
 
-            if (isTitleScreen && _useCustomTitleScreen)
+            if (isTitleScreen && CustomTitleScreen)
             {
                 try
                 {
@@ -384,6 +436,7 @@ namespace NewHorizons
             if (isEyeOfTheUniverse)
             {
                 _playerAwake = true;
+                EyeSceneHandler.Init();
                 EyeSceneHandler.OnSceneLoad();
             }
 
@@ -402,6 +455,7 @@ namespace NewHorizons
                 // Some builders have to be reset each loop
                 SignalBuilder.Init();
                 BrambleDimensionBuilder.Init();
+                ItemBuilder.Init();
                 AstroObjectLocator.Init();
                 StreamingHandler.Init();
                 AudioTypeHandler.Init();
@@ -438,7 +492,10 @@ namespace NewHorizons
                         ShipWarpController = SearchUtilities.Find("Ship_Body").AddComponent<ShipWarpController>();
                         ShipWarpController.Init();
                     }
-                    if (HasWarpDrive == true) EnableWarpDrive();
+                    if (HasWarpDrive == true)
+                    {
+                        EnableWarpDrive();
+                    }
 
                     var shouldWarpInFromShip = IsWarpingFromShip && ShipWarpController != null;
                     var shouldWarpInFromVessel = IsWarpingFromVessel && VesselWarpHandler.VesselSpawnPoint != null;
@@ -448,59 +505,30 @@ namespace NewHorizons
                     DidWarpFromShip = shouldWarpInFromShip;
                     DidWarpFromVessel = shouldWarpInFromVessel;
 
-                    var map = FindObjectOfType<MapController>();
-                    if (map != null) map._maxPanDistance = FurthestOrbit * 1.5f;
-
                     // Fix the map satellite
                     SearchUtilities.Find("HearthianMapSatellite_Body", false).AddComponent<MapSatelliteOrbitFix>();
 
                     // Sector changes (so that projection pools actually turn off proxies and cull groups on these moons)
 
-                    //Fix attlerock vanilla sector components (they were set to timber hearth's sector)
-                    var thm = SearchUtilities.Find("Moon_Body/Sector_THM").GetComponent<Sector>();
-                    foreach (var component in thm.GetComponentsInChildren<Component>(true))
-                    {
-                        if (component is ISectorGroup sectorGroup)
-                        {
-                            sectorGroup.SetSector(thm);
-                        }
-
-                        if (component is SectoredMonoBehaviour behaviour)
-                        {
-                            behaviour.SetSector(thm);
-                        }
-                    }
-                    var thm_ss_obj = new GameObject("Sector_Streaming");
-                    thm_ss_obj.transform.SetParent(thm.transform, false);
-                    var thm_ss = thm_ss_obj.AddComponent<SectorStreaming>();
-                    thm_ss._streamingGroup = SearchUtilities.Find("TimberHearth_Body/StreamingGroup_TH").GetComponent<StreamingGroup>();
-                    thm_ss.SetSector(thm);
-
-
-                    //Fix hollow's lantern vanilla sector components (they were set to brittle hollow's sector)
-                    var vm = SearchUtilities.Find("VolcanicMoon_Body/Sector_VM").GetComponent<Sector>();
-                    foreach (var component in vm.GetComponentsInChildren<Component>(true))
-                    {
-                        if (component is ISectorGroup sectorGroup)
-                        {
-                            sectorGroup.SetSector(vm);
-                        }
-
-                        if (component is SectoredMonoBehaviour behaviour)
-                        {
-                            behaviour.SetSector(vm);
-                        }
-                    }
-                    var vm_ss_obj = new GameObject("Sector_Streaming");
-                    vm_ss_obj.transform.SetParent(vm.transform, false);
-                    var vm_ss = vm_ss_obj.AddComponent<SectorStreaming>();
-                    vm_ss._streamingGroup = SearchUtilities.Find("BrittleHollow_Body/StreamingGroup_BH").GetComponent<StreamingGroup>();
-                    vm_ss.SetSector(vm);
+                    // Fix moon vanilla sector components (they were set to their primaries' sectors)
+                    VanillaStreamingFix.UnparentSectorStreaming(SearchUtilities.Find("Moon_Body/Sector_THM").GetComponent<Sector>(), AstroObject.Name.TimberHearth);
+                    VanillaStreamingFix.UnparentSectorStreaming(SearchUtilities.Find("VolcanicMoon_Body/Sector_VM").GetComponent<Sector>(), AstroObject.Name.BrittleHollow);
 
                     //Fix brittle hollow north pole projection platform
                     var northPoleSurface = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_NorthPoleSurface").GetComponent<Sector>();
                     var remoteViewer = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_NorthPoleSurface/Interactables_NorthPoleSurface/LowBuilding/Prefab_NOM_RemoteViewer").GetComponent<NomaiRemoteCameraPlatform>();
                     remoteViewer._visualSector = northPoleSurface;
+
+                    // We are in a custom system on the first loop -> The time loop isn't active, that's not very good
+                    // TimeLoop uses the launch codes condition to know if the loop is active or not
+                    // We also skip them to loop 2, else if they enter a credits volume in this loop they get reset
+                    if (CurrentStarSystem != "SolarSystem" && PlayerData.LoadLoopCount() == 1)
+                    {
+                        PlayerData.SaveLoopCount(2);
+                        PlayerData.SetPersistentCondition("LAUNCH_CODES_GIVEN", true);
+                    }
+
+                    if (shouldWarpInFromVessel) VesselWarpHandler.LoadDB();
                 }
                 else if (isEyeOfTheUniverse)
                 {
@@ -508,6 +536,8 @@ namespace NewHorizons
                     IsWarpingFromVessel = false;
                     DidWarpFromVessel = false;
                     DidWarpFromShip = false;
+
+                    EyeSceneHandler.SetUpEyeCampfireSequence();
                 }
 
                 //Stop starfield from disappearing when there is no lights
@@ -523,7 +553,7 @@ namespace NewHorizons
                 var ssrLight = solarSystemRoot.AddComponent<Light>();
                 ssrLight.innerSpotAngle = 0;
                 ssrLight.spotAngle = 179;
-                ssrLight.range = FurthestOrbit * (4f / 3f);
+                ssrLight.range = PlanetCreationHandler.SolarSystemRadius * (4f / 3f);
                 ssrLight.intensity = 0.001f;
 
                 var fluid = playerBody.FindChild("PlayerDetector").GetComponent<DynamicFluidDetector>();
@@ -545,55 +575,150 @@ namespace NewHorizons
                 {
                     NHLogger.LogError($"Exception thrown when invoking star system loaded event with parameter [{Instance.CurrentStarSystem}]:\n{e}");
                 }
+
+                // Wait for player to be awake and also for frames to pass
+                var justLinkedToStatue = PlayerData.KnowsLaunchCodes() && PlayerData._currentGameSave.loopCount == 1;
+                Delay.RunWhenOrInNUpdates(() => OnSystemReady(DidWarpFromShip, DidWarpFromVessel), () => (_playerAwake && PlayerSpawned) || justLinkedToStatue, 30);
             }
             else
             {
-                // Reset back to original solar system after going to main menu.
-                // If the override is a valid system then we go there
-                if (SystemDict.ContainsKey(_defaultSystemOverride))
-                {
-                    _currentStarSystem = _defaultSystemOverride;
-                    IsWarpingFromShip = true; // always do this else sometimes the spawn gets messed up
-                }
-                else
-                {
-                    _currentStarSystem = _defaultStarSystem;
-                }
+                ResetCurrentStarSystem();
             }
 
-            // Wait for player to be awake and also for frames to pass
-            Delay.RunWhenAndInNUpdates(() => OnSystemReady(DidWarpFromShip, DidWarpFromVessel), () => _playerAwake && PlayerSpawned, 30);
+            // We only check previous when the scene unloads, and at that point current should be updated to the new system
+            NHLogger.LogVerbose($"Set the previous system to {CurrentStarSystem}");
+            _previousStarSystem = CurrentStarSystem;
         }
 
         // Had a bunch of separate unity things firing stuff when the system is ready so I moved it all to here
         private void OnSystemReady(bool shouldWarpInFromShip, bool shouldWarpInFromVessel)
         {
-            IsSystemReady = true;
+            if (IsSystemReady)
+            {
+                NHLogger.LogWarning("OnSystemReady was called twice.");
+            }
+            else
+            {
+                IsSystemReady = true;
 
-            // ShipWarpController will handle the invulnerability otherwise
-            if (!shouldWarpInFromShip)
-                Delay.FireOnNextUpdate(() => InvulnerabilityHandler.MakeInvulnerable(false));
+                // ShipWarpController or VesselWarpHandler will handle the invulnerability otherwise
+                if (!shouldWarpInFromShip && !shouldWarpInFromVessel)
+                {
+                    Delay.FireOnNextUpdate(() => InvulnerabilityHandler.MakeInvulnerable(false));
+                }
 
-            Locator.GetPlayerBody().gameObject.AddComponent<DebugRaycaster>();
-            Locator.GetPlayerBody().gameObject.AddComponent<DebugPropPlacer>();
-            Locator.GetPlayerBody().gameObject.AddComponent<DebugMenu>();
+                Locator.GetPlayerBody().gameObject.AddComponent<DebugRaycaster>();
+                Locator.GetPlayerBody().gameObject.AddComponent<PlayerShipAtmosphereDetectorFix>();
+                if (HasDLC) Locator.GetPlayerBody().gameObject.AddComponent<LanternExtinguisher>();
 
-            PlayerSpawnHandler.OnSystemReady(shouldWarpInFromShip, shouldWarpInFromVessel);
+                PlayerSpawnHandler.OnSystemReady(shouldWarpInFromShip, shouldWarpInFromVessel);
 
-            VesselCoordinatePromptHandler.RegisterPrompts(SystemDict.Where(system => system.Value.Config.Vessel?.coords != null).Select(x => x.Value).ToList());
+                VesselCoordinatePromptHandler.RegisterPrompts(SystemDict.Where(system => system.Value.Config.Vessel?.coords != null).Select(x => x.Value).ToList());
 
-            CloakHandler.OnSystemReady();
+                CloakHandler.OnSystemReady();
+            }
         }
 
         public void EnableWarpDrive()
         {
             NHLogger.LogVerbose("Setting up warp drive");
-            PlanetCreationHandler.LoadBody(LoadConfig(this, "Assets/WarpDriveConfig.json"));
+
+            // In weird edge case when starting in another system on a new expedition, don't want it to briefly pop up during warp
+            if (!IsWarpingFromShip)
+            {
+                // This is the dialogue that tells them the ship log has a warp drive feature
+                PlanetCreationHandler.LoadBody(LoadConfig(this, "Assets/WarpDriveConfig.json"));
+            }
+
             HasWarpDrive = true;
         }
 
+        /// <summary>
+        /// sometimes we call LoadSceneImmediate, which doesnt do the required event firing for mods to be happy.
+        /// this method emulates that via copying parts of LoadManager.
+        /// </summary>
+        public static void ManualOnStartSceneLoad(OWScene scene)
+        {
+            LoadManager.s_loadSceneJob = new LoadManager.LoadSceneJob();
+            LoadManager.s_loadSceneJob.sceneToLoad = scene;
+            LoadManager.s_loadSceneJob.fadeType = LoadManager.FadeType.None;
+            LoadManager.s_loadSceneJob.fadeLength = 0;
+            LoadManager.s_loadSceneJob.pauseDuringFade = true;
+            LoadManager.s_loadSceneJob.asyncOperation = false;
+            LoadManager.s_loadSceneJob.skipPreLoadMemoryDump = false;
+            LoadManager.s_loadSceneJob.skipVsyncChange = false;
+
+            LoadManager.s_loadingScene = LoadManager.s_loadSceneJob.sceneToLoad;
+            LoadManager.s_fadeType = LoadManager.s_loadSceneJob.fadeType;
+            LoadManager.s_fadeStartTime = Time.unscaledTime;
+            LoadManager.s_fadeLength = LoadManager.s_loadSceneJob.fadeLength;
+            LoadManager.s_pauseDuringFade = LoadManager.s_loadSceneJob.pauseDuringFade;
+            LoadManager.s_skipVsyncChange = LoadManager.s_loadSceneJob.skipVsyncChange;
+
+            // cant fire events from outside of class without reflection
+            ((Delegate)AccessTools.Field(typeof(LoadManager), nameof(LoadManager.OnStartSceneLoad)).GetValue(null))
+                .DynamicInvoke(LoadManager.s_currentScene, LoadManager.s_loadingScene);
+
+            if (LoadManager.s_pauseDuringFade)
+            {
+                OWTime.Pause(OWTime.PauseType.Loading);
+            }
+            
+            LoadManager.s_loadSceneJob = null;
+        }
 
         #region Load
+        public void LoadStarSystemConfig(StarSystemConfig starSystemConfig, string relativePath, IModBehaviour mod)
+        {
+            if (string.IsNullOrEmpty(starSystemConfig.name))
+            {
+                starSystemConfig.name = Path.GetFileNameWithoutExtension(relativePath);
+            }
+
+            var starSystemName = starSystemConfig.name;
+
+            starSystemConfig.Migrate();
+            starSystemConfig.FixCoordinates();
+
+            if (starSystemConfig.startHere)
+            {
+                // We always want to allow mods to overwrite setting the main SolarSystem as default but not the other way around
+                if (starSystemName != "SolarSystem")
+                {
+                    SetDefaultSystem(starSystemName);
+                    CurrentStarSystem = DefaultStarSystem;
+                }
+            }
+
+            if (SystemDict.ContainsKey(starSystemName))
+            {
+                // Both changing the Mod and RelativePath are weird and will likely cause incompat issues if two mods both affected the same system
+                // It's mostly just to fix up the config compared to the default one NH makes for the base StarSystem
+
+                if (SystemDict[starSystemName].Config.GlobalMusic == null && SystemDict[starSystemName].Config.Skybox == null)
+                {
+                    SystemDict[starSystemName].Mod = mod;
+                }
+
+                // If a mod contains a change to the default system, set the relative path.
+                // Warning: If multiple systems make changes to the default system, only the relativePath will be set to the last mod loaded.
+                if (string.IsNullOrEmpty(SystemDict[starSystemName].RelativePath))
+                {
+                    SystemDict[starSystemName].RelativePath = relativePath;
+                }
+                else
+                {
+                    NHLogger.LogWarning($"Two (or more) mods are making system changes to {starSystemName} which may result in errors");
+                }
+
+                SystemDict[starSystemName].Config.Merge(starSystemConfig);
+            }
+            else
+            {
+                SystemDict[starSystemName] = new NewHorizonsSystem(starSystemName, starSystemConfig, relativePath, mod);
+            }
+        }
+
         public void LoadConfigs(IModBehaviour mod)
         {
             try
@@ -621,35 +746,12 @@ namespace NewHorizons
 
                     foreach (var file in systemFiles)
                     {
-                        var name = Path.GetFileNameWithoutExtension(file);
-
-                        NHLogger.LogVerbose($"Loading system {name}");
-
                         var relativePath = file.Replace(folder, "");
+
+                        NHLogger.LogVerbose($"Loading system {Path.GetFileNameWithoutExtension(relativePath)}");
+
                         var starSystemConfig = mod.ModHelper.Storage.Load<StarSystemConfig>(relativePath, false);
-                        starSystemConfig.Migrate();
-                        starSystemConfig.FixCoordinates();
-
-                        if (starSystemConfig.startHere)
-                        {
-                            // We always want to allow mods to overwrite setting the main SolarSystem as default but not the other way around
-                            if (name != "SolarSystem")
-                            {
-                                SetDefaultSystem(name);
-                                _currentStarSystem = name;
-                            }
-                        }
-
-                        if (SystemDict.ContainsKey(name))
-                        {
-                            if (string.IsNullOrEmpty(SystemDict[name].Config.travelAudio) && SystemDict[name].Config.Skybox == null)
-                                SystemDict[name].Mod = mod;
-                            SystemDict[name].Config.Merge(starSystemConfig);
-                        }
-                        else
-                        {
-                            SystemDict[name] = new NewHorizonsSystem(name, starSystemConfig, relativePath, mod);
-                        }
+                        LoadStarSystemConfig(starSystemConfig, relativePath, mod);
                     }
                 }
                 if (Directory.Exists(planetsFolder))
@@ -668,11 +770,16 @@ namespace NewHorizons
                         var relativeDirectory = file.Replace(folder, "");
                         var body = LoadConfig(mod, relativeDirectory);
 
+                        // Only bother checking if they need the DLC if they don't have it
+                        if (!HasDLC && !FlagDLCRequired && body.RequiresDLC())
+                        {
+                            FlagDLCRequired = true;
+                            var popupText = TranslationHandler.GetTranslation("DLC_REQUIRED", TranslationHandler.TextType.UI).Replace("{0}", mod.ModHelper.Manifest.Name);
+                            MenuHandler.RegisterOneTimePopup(this, popupText, true);
+                        }
+
                         if (body != null)
                         {
-                            // Wanna track the spawn point of each system
-                            if (body.Config.Spawn != null) SystemDict[body.Config.starSystem].Spawn = body.Config.Spawn;
-
                             // Add the new planet to the planet dictionary
                             if (!BodyDict.ContainsKey(body.Config.starSystem)) BodyDict[body.Config.starSystem] = new List<NewHorizonsBody>();
                             BodyDict[body.Config.starSystem].Add(body);
@@ -702,6 +809,12 @@ namespace NewHorizons
 
             var addonConfig = mod.ModHelper.Storage.Load<AddonConfig>(file, false);
 
+            if (addonConfig == null)
+            {
+                NHLogger.LogError($"Addon manifest for {mod.ModHelper.Manifest.Name} could not load, check your JSON");
+                return;
+            }
+
             if (addonConfig.achievements != null)
             {
                 AchievementHandler.RegisterAddon(addonConfig, mod as ModBehaviour);
@@ -715,6 +828,15 @@ namespace NewHorizons
             {
                 MenuHandler.RegisterOneTimePopup(mod, TranslationHandler.GetTranslation(addonConfig.popupMessage, TranslationHandler.TextType.UI), addonConfig.repeatPopup);
             }
+            if (addonConfig.preloadAssetBundles != null)
+            {
+                foreach (var bundle in addonConfig.preloadAssetBundles)
+                {
+                    AssetBundleUtilities.PreloadBundle(bundle, mod);
+                }
+            }
+
+            AddonConfigs[mod] = addonConfig;
         }
 
         private void LoadTranslations(string folder, IModBehaviour mod)
@@ -724,7 +846,7 @@ namespace NewHorizons
             {
                 if (language is TextTranslation.Language.UNKNOWN or TextTranslation.Language.TOTAL) continue;
 
-                var relativeFile = Path.Combine("translations", language.ToString().ToLower() + ".json");
+                var relativeFile = Path.Combine("translations", language.ToString().ToLowerInvariant() + ".json");
 
                 if (File.Exists(Path.Combine(folder, relativeFile)))
                 {
@@ -760,28 +882,7 @@ namespace NewHorizons
 
                 NHLogger.LogVerbose($"Loaded {config.name}");
 
-                if (!SystemDict.ContainsKey(config.starSystem))
-                {
-                    // Since we didn't load it earlier there shouldn't be a star system config
-                    var starSystemConfig = mod.ModHelper.Storage.Load<StarSystemConfig>(Path.Combine("systems", config.starSystem + ".json"), false);
-                    if (starSystemConfig == null) starSystemConfig = new StarSystemConfig();
-                    else NHLogger.LogWarning($"Loaded system config for {config.starSystem}. Why wasn't this loaded earlier?");
-
-                    starSystemConfig.Migrate();
-                    starSystemConfig.FixCoordinates();
-
-                    var system = new NewHorizonsSystem(config.starSystem, starSystemConfig, $"", mod);
-
-                    SystemDict.Add(config.starSystem, system);
-
-                    BodyDict.Add(config.starSystem, new List<NewHorizonsBody>());
-                }
-
-                // Has to happen after we make sure theres a system config
-                config.Validate();
-                config.Migrate();
-
-                body = new NewHorizonsBody(config, mod, relativePath);
+                body = RegisterPlanetConfig(config, mod, relativePath);
             }
             catch (Exception e)
             {
@@ -792,9 +893,54 @@ namespace NewHorizons
             return body;
         }
 
+        public NewHorizonsBody RegisterPlanetConfig(PlanetConfig config, IModBehaviour mod, string relativePath)
+        {
+            if (!SystemDict.ContainsKey(config.starSystem))
+            {
+                var starSystemConfig = new StarSystemConfig() { name = config.starSystem };
+                starSystemConfig.Migrate();
+                starSystemConfig.FixCoordinates();
+
+                var system = new NewHorizonsSystem(config.starSystem, starSystemConfig, $"", mod);
+
+                SystemDict.Add(config.starSystem, system);
+
+                BodyDict.Add(config.starSystem, new List<NewHorizonsBody>());
+            }
+
+            // Fall back to file name if name not given
+            if (!string.IsNullOrEmpty(relativePath) && string.IsNullOrEmpty(config.name))
+            {
+                config.name = Path.GetFileNameWithoutExtension(relativePath);
+            }
+
+            // Has to happen after we make sure theres a system config
+            config.Validate();
+            config.Migrate();
+
+            // Check if this system can be warped to
+            if (config.Spawn?.shipSpawnPoints?.Any() ?? false)
+            {
+                SystemDict[config.starSystem].HasShipSpawn = true;
+            }
+
+            return new NewHorizonsBody(config, mod, relativePath);
+        }
+
         public void SetDefaultSystem(string defaultSystem)
         {
-            _defaultStarSystem = defaultSystem;
+            if (string.IsNullOrEmpty(defaultSystem))
+            {
+                _defaultStarSystem = "SolarSystem";
+            }
+            else
+            {
+                _defaultStarSystem = defaultSystem;
+            }
+            if (LoadManager.GetCurrentScene() != OWScene.SolarSystem && LoadManager.GetCurrentScene() != OWScene.EyeOfTheUniverse)
+            {
+                CurrentStarSystem = _defaultStarSystem;
+            }
         }
 
         #endregion Load
@@ -805,7 +951,7 @@ namespace NewHorizons
             // If we're just on the title screen set the system for later
             if (LoadManager.GetCurrentScene() == OWScene.TitleScreen)
             {
-                _currentStarSystem = newStarSystem;
+                CurrentStarSystem = newStarSystem;
                 IsWarpingFromShip = warp;
                 IsWarpingFromVessel = vessel;
                 DidWarpFromVessel = false;
@@ -832,6 +978,7 @@ namespace NewHorizons
                 IsWarpingFromVessel = vessel;
                 DidWarpFromVessel = false;
                 OnChangeStarSystem?.Invoke(newStarSystem);
+                VesselWarpController.s_relativeLocationSaved = false;
 
                 NHLogger.Log($"Warping to {newStarSystem}");
                 if (warp && ShipWarpController) ShipWarpController.WarpOut();
@@ -847,15 +994,16 @@ namespace NewHorizons
                 }
                 else
                 {
-                    PlayerData.SaveEyeCompletion(); // So that the title screen doesn't keep warping you back to eye
+                    if (!IsWarpingBackToEye)
+                        PlayerData.SaveEyeCompletion(); // So that the title screen doesn't keep warping you back to eye
 
-                    if (SystemDict[_currentStarSystem].Config.enableTimeLoop) SecondsElapsedInLoop = TimeLoop.GetSecondsElapsed();
+                    if (SystemDict[CurrentStarSystem].Config.enableTimeLoop) SecondsElapsedInLoop = TimeLoop.GetSecondsElapsed();
                     else SecondsElapsedInLoop = -1;
 
                     sceneToLoad = OWScene.SolarSystem;
                 }
 
-                _currentStarSystem = newStarSystem;
+                CurrentStarSystem = newStarSystem;
 
                 // Freeze player inputs
                 OWInput.ChangeInputMode(InputMode.None);
@@ -865,27 +1013,83 @@ namespace NewHorizons
                 {
                     // Slide reel unloading is tied to being removed from the sector, so we do that here to prevent a softlock
                     Locator.GetPlayerSectorDetector().RemoveFromAllSectors();
+                    ManualOnStartSceneLoad(sceneToLoad); // putting it before fade breaks ship warp effect cuz pause
                     LoadManager.LoadSceneImmediate(sceneToLoad);
                 });
             }
         }
 
+        /// <summary>
+        /// Exclusively for <see cref="Patches.WarpPatches.VesselWarpControllerPatches.VesselWarpController_OnSlotActivated(VesselWarpController, NomaiInterfaceSlot)"/>
+        /// </summary>
+        internal void ChangeCurrentStarSystemVesselAsync(string newStarSystem)
+        {
+            if (IsChangingStarSystem) return;
+
+            if (LoadManager.GetCurrentScene() == OWScene.SolarSystem || LoadManager.GetCurrentScene() == OWScene.EyeOfTheUniverse)
+            {
+                IsWarpingFromShip = false;
+                IsWarpingFromVessel = true;
+                DidWarpFromVessel = false;
+                OnChangeStarSystem?.Invoke(newStarSystem);
+
+                NHLogger.Log($"Vessel warping to {newStarSystem}");
+                IsChangingStarSystem = true;
+                WearingSuit = PlayerState.IsWearingSuit();
+
+                PlayerData.SaveEyeCompletion(); // So that the title screen doesn't keep warping you back to eye
+
+                if (SystemDict[CurrentStarSystem].Config.enableTimeLoop) SecondsElapsedInLoop = TimeLoop.GetSecondsElapsed();
+                else SecondsElapsedInLoop = -1;
+
+                CurrentStarSystem = newStarSystem;
+
+                LoadManager.LoadSceneAsync(OWScene.SolarSystem, false, LoadManager.FadeType.ToBlack);
+            }
+        }
+
         void OnDeath(DeathType _)
         {
+            VesselWarpController.s_relativeLocationSaved = false;
             // We reset the solar system on death
             if (!IsChangingStarSystem)
             {
-                if (SystemDict[_currentStarSystem].Config.respawnHere) return;
+                if (SystemDict[CurrentStarSystem].Config.respawnHere) return;
 
-                // If the override is a valid system then we go there
-                if (SystemDict.ContainsKey(_defaultSystemOverride))
+                ResetCurrentStarSystem();
+            }
+        }
+
+        private void ResetCurrentStarSystem()
+        {
+            if (SystemDict.ContainsKey(DefaultSystemOverride))
+            {
+                CurrentStarSystem = DefaultSystemOverride;
+
+                // #738 - Sometimes the override will not support spawning regularly, so always warp in if possible
+                if (SystemDict[DefaultSystemOverride].Config.Vessel?.spawnOnVessel == true)
                 {
-                    _currentStarSystem = _defaultSystemOverride;
+                    IsWarpingFromVessel = true;
+                }
+                else if (BodyDict.TryGetValue(DefaultSystemOverride, out var bodies) && bodies.Any(x => x.Config?.Spawn?.shipSpawnPoints?.Any() ?? false))
+                {
+                    IsWarpingFromShip = true;
                 }
                 else
                 {
-                    _currentStarSystem = _defaultStarSystem;
+                    IsWarpingFromShip = false;
                 }
+            }
+            else
+            {
+                // Ignore first load because it doesn't even know what systems we have
+                if (!_firstLoad && !string.IsNullOrEmpty(DefaultSystemOverride))
+                {
+                    NHLogger.LogError($"The given default system override {DefaultSystemOverride} is invalid - no system exists with that name");
+                }
+
+                CurrentStarSystem = _defaultStarSystem;
+                IsWarpingFromShip = false;
             }
         }
         #endregion Change star system

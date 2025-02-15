@@ -2,6 +2,7 @@ using HarmonyLib;
 using NewHorizons.Builder.Props.Audio;
 using NewHorizons.External;
 using NewHorizons.Handlers;
+using NewHorizons.Utility;
 using System;
 using UnityEngine;
 
@@ -10,6 +11,13 @@ namespace NewHorizons.Patches.SignalPatches
     [HarmonyPatch(typeof(AudioSignal))]
     public static class AudioSignalPatches
     {
+        [HarmonyPostfix]
+        [HarmonyPatch(nameof(AudioSignal.IsActive))]
+        public static void AudioSignal_IsActive(AudioSignal __instance, ref bool __result)
+        {
+            __result = __result && __instance.gameObject.activeInHierarchy;
+        }
+
         [HarmonyPrefix]
         [HarmonyPatch(nameof(AudioSignal.SignalNameToString))]
         public static bool AudioSignal_SignalNameToString(SignalName name, ref string __result)
@@ -17,7 +25,7 @@ namespace NewHorizons.Patches.SignalPatches
             var customSignalName = SignalBuilder.GetCustomSignalName(name);
             if (!string.IsNullOrEmpty(customSignalName))
             {
-                __result = TranslationHandler.GetTranslation(customSignalName, TranslationHandler.TextType.UI, false).ToUpper();
+                __result = TranslationHandler.GetTranslation(customSignalName, TranslationHandler.TextType.UI, false).ToUpperFixed();
                 return false;
             }
             return true;
@@ -68,7 +76,7 @@ namespace NewHorizons.Patches.SignalPatches
             var customName = SignalBuilder.GetCustomFrequencyName(frequency);
             if (!string.IsNullOrEmpty(customName))
             {
-                if (NewHorizonsData.KnowsFrequency(customName)) __result = TranslationHandler.GetTranslation(customName, TranslationHandler.TextType.UI, false).ToUpper();
+                if (NewHorizonsData.KnowsFrequency(customName)) __result = TranslationHandler.GetTranslation(customName, TranslationHandler.TextType.UI, false).ToUpperFixed();
                 else __result = UITextLibrary.GetString(UITextType.SignalFreqUnidentified);
                 return false;
             }

@@ -1,5 +1,7 @@
 using NewHorizons.Builder.General;
 using NewHorizons.Components;
+using NewHorizons.Components.Orbital;
+using NewHorizons.Components.Props;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
@@ -17,13 +19,40 @@ namespace NewHorizons.Builder.Props
 {
     public static class DetailBuilder
     {
-        private static readonly Dictionary<DetailInfo, GameObject> _detailInfoToCorrespondingSpawnedGameObject = new();
         private static readonly Dictionary<(Sector, string), (GameObject prefab, bool isItem)> _fixedPrefabCache = new();
+        private static GameObject _emptyPrefab;
+
+        private static readonly Dictionary<DetailInfo, GameObject> _detailInfoToGameObject = new();
+
+        public static GameObject GetGameObjectFromDetailInfo(DetailInfo info)
+        {
+            if (_detailInfoToGameObject.ContainsKey(info))
+            {
+                return _detailInfoToGameObject[info];
+            }
+            else
+            {
+                return null;
+            }
+        }
 
         static DetailBuilder()
         {
             SceneManager.sceneUnloaded += SceneManager_sceneUnloaded;
         }
+
+        #region obsolete
+        // Never change method signatures, people directly reference the NH dll and it can break backwards compatibility
+        // In particular, Outer Wives needs this method signature
+        [Obsolete]
+        public static GameObject Make(GameObject go, Sector sector, GameObject prefab, DetailInfo detail)
+            => Make(go, sector, mod: null, prefab, detail);
+
+        // Dreamstalker needed this one
+        [Obsolete]
+        public static GameObject Make(GameObject go, Sector sector, DetailInfo detail)
+            => Make(go, sector, mod: null, detail);
+        #endregion
 
         private static void SceneManager_sceneUnloaded(Scene scene)
         {
@@ -32,62 +61,53 @@ namespace NewHorizons.Builder.Props
                 UnityEngine.Object.Destroy(prefab.prefab);
             }
             _fixedPrefabCache.Clear();
-            _detailInfoToCorrespondingSpawnedGameObject.Clear();
-        }
-
-        public static GameObject GetSpawnedGameObjectByDetailInfo(DetailInfo detail)
-        {
-            if (!_detailInfoToCorrespondingSpawnedGameObject.ContainsKey(detail))
-            {
-                return null;
-            }
-            else
-            {
-                return _detailInfoToCorrespondingSpawnedGameObject[detail];
-            }
+            _detailInfoToGameObject.Clear();
         }
 
         /// <summary>
         /// Create a detail using an asset bundle or a path in the scene hierarchy of the item to copy.
         /// </summary>
-        public static GameObject Make(GameObject go, Sector sector, IModBehaviour mod, DetailInfo detail)
+        public static GameObject Make(GameObject planetGO, Sector sector, IModBehaviour mod, DetailInfo info)
         {
-            if (detail.assetBundle != null)
+            if (sector == null) info.keepLoaded = true;
+
+            if (info.assetBundle != null)
             {
                 // Shouldn't happen
                 if (mod == null) return null;
 
-                return Make(go, sector, AssetBundleUtilities.LoadPrefab(detail.assetBundle, detail.path, mod), detail);
+                return Make(planetGO, sector, mod, AssetBundleUtilities.LoadPrefab(info.assetBundle, info.path, mod), info);
             }
-            else
-                return Make(go, sector, detail);
-        }
 
-        /// <summary>
-        /// Create a detail using a path in the scene hierarchy of the item to copy.
-        /// </summary>
-        public static GameObject Make(GameObject planetGO, Sector sector, DetailInfo info)
-        {
-            var prefab = SearchUtilities.Find(info.path);
+            if (_emptyPrefab == null) _emptyPrefab = new GameObject("Empty");
+
+            // Allow for empty game objects so you can set up conditional activation on them and parent other props to them
+            var prefab = string.IsNullOrEmpty(info.path) ? _emptyPrefab : SearchUtilities.Find(info.path);
+
             if (prefab == null)
             {
                 NHLogger.LogError($"Couldn't find detail {info.path}");
                 return null;
             }
             else
-                return Make(planetGO, sector, prefab, info);
+            {
+                return Make(planetGO, sector, mod, prefab, info);
+            }
         }
 
         /// <summary>
         /// Create a detail using a prefab.
         /// </summary>
-        public static GameObject Make(GameObject go, Sector sector, GameObject prefab, DetailInfo detail)
+        public static GameObject Make(GameObject go, Sector sector, IModBehaviour mod, GameObject prefab, DetailInfo detail)
         {
             if (prefab == null) return null;
+
+            if (sector == null) detail.keepLoaded = true;
 
             GameObject prop;
             bool isItem;
             bool invalidComponentFound = false;
+            bool isFromAssetBundle = !string.IsNullOrEmpty(detail.assetBundle);
 
             // We save copies with all their components fixed, good if the user is placing the same detail more than once
             if (detail?.path != null && _fixedPrefabCache.TryGetValue((sector, detail.path), out var storedPrefab))
@@ -104,24 +124,59 @@ namespace NewHorizons.Builder.Props
                 // Could check this in the for loop but I'm not sure what order we need to know about this in
                 isItem = false;
 
+                var existingSectors = new HashSet<Sector>(prop.GetComponentsInChildren<Sector>(true));
+
                 foreach (var component in prop.GetComponentsInChildren<Component>(true))
                 {
-                    // Components can come through as null here (yes, really),
-                    // Usually if a script was added to a prefab in an asset bundle but isn't present in the loaded mod DLLs
-                    if (component == null)
+                    // Rather than having the entire prop not exist when a detail fails let's just try-catch and log an error
+                    try
                     {
-                        invalidComponentFound = true;
-                        continue;
-                    }
-                    if (component.gameObject == prop && component is OWItem) isItem = true;
+                        // Components can come through as null here (yes, really),
+                        // Usually if a script was added to a prefab in an asset bundle but isn't present in the loaded mod DLLs
+                        if (component == null)
+                        {
+                            invalidComponentFound = true;
+                            continue;
+                        }
+                        if (component.gameObject == prop && component is OWItem) isItem = true;
 
-                    if (sector == null)
+                        if (sector == null)
+                        {
+                            if (FixUnsectoredComponent(component)) continue;
+                        }
+                        else
+                        {
+                            // Fix cull groups only when not from an asset bundle (because then they're there on purpose!)
+                            // keepLoaded should remove existing groups
+                            // renderers/colliders get enabled later so we dont have to do that here
+                            if (detail.keepLoaded && !isFromAssetBundle && component is SectorCullGroup or SectorCollisionGroup or SectorLightsCullGroup)
+                            {
+                                UnityEngine.Object.DestroyImmediate(component);
+                                continue;
+                            }
+
+                            FixSectoredComponent(component, sector, existingSectors);
+                        }
+
+                        // Asset bundle is a real string -> Object loaded from unity
+                        // If they're adding dialogue we have to manually register the xml text
+                        if (isFromAssetBundle && component is CharacterDialogueTree dialogue)
+                        {
+                            DialogueBuilder.HandleUnityCreatedDialogue(dialogue);
+                        }
+
+                        // copied details need their lanterns fixed
+                        if (!isFromAssetBundle && component is DreamLanternController lantern)
+                        {
+                            lantern.gameObject.AddComponent<DreamLanternControllerFixer>();
+                        }
+
+                        FixComponent(component, go, detail.ignoreSun);
+                    }
+                    catch(Exception e)
                     {
-                        if (FixUnsectoredComponent(component)) continue;
+                        NHLogger.LogError($"Failed to correct component {component?.GetType()?.Name} on {go?.name} - {e}");
                     }
-                    else FixSectoredComponent(component, sector, detail.keepLoaded);
-
-                    FixComponent(component, go, detail.ignoreSun);
                 }
 
                 if (detail.path != null)
@@ -142,7 +197,22 @@ namespace NewHorizons.Builder.Props
                 }
             }
 
-            // Items shouldn't use these else they get weird
+            if (detail.item != null)
+            {
+                ItemBuilder.MakeItem(prop, go, sector, detail.item, mod);
+                isItem = true;
+                if (detail.hasPhysics)
+                {
+                    NHLogger.LogWarning($"An item with the path {detail.path} has both '{nameof(DetailInfo.hasPhysics)}' and '{nameof(DetailInfo.item)}' set. This will usually result in undesirable behavior.");
+                }
+            }
+
+            if (detail.itemSocket != null)
+            {
+                ItemBuilder.MakeSocket(prop, go, sector, detail.itemSocket);
+            }
+
+            // Items should always be kept loaded else they will vanish in your hand as you leave the sector
             if (isItem) detail.keepLoaded = true;
 
             prop.transform.localScale = detail.stretch ?? (detail.scale != 0 ? Vector3.one * detail.scale : prefab.transform.localScale);
@@ -174,8 +244,10 @@ namespace NewHorizons.Builder.Props
                 // Just swap all the children to a new game object
                 var newDetailGO = new GameObject(prop.name);
                 newDetailGO.SetActive(false);
-                newDetailGO.transform.position = prop.transform.position;
                 newDetailGO.transform.parent = prop.transform.parent;
+                newDetailGO.transform.position = prop.transform.position;
+                newDetailGO.transform.rotation = prop.transform.rotation;
+                newDetailGO.transform.localScale = prop.transform.localScale;
 
                 // Can't modify parents while looping through children bc idk
                 var children = new List<Transform>();
@@ -200,17 +272,36 @@ namespace NewHorizons.Builder.Props
             }
 
             if (!detail.keepLoaded) GroupsBuilder.Make(prop, sector);
+
+            // For DLC related props
+            // Make sure to do this before its set active
+            if (!string.IsNullOrEmpty(detail?.path) && 
+                (detail.path.ToLowerInvariant().StartsWith("ringworld") || detail.path.ToLowerInvariant().StartsWith("dreamworld")))
+            {
+                prop.AddComponent<DestroyOnDLC>()._destroyOnDLCNotOwned = true;
+            }
+
             prop.SetActive(true);
 
             if (detail.hasPhysics)
             {
                 var addPhysics = prop.AddComponent<AddPhysics>();
-                addPhysics.Sector = sector;
+                addPhysics.Sector = detail.keepLoaded ? null : sector;
                 addPhysics.Mass = detail.physicsMass;
                 addPhysics.Radius = detail.physicsRadius;
+                addPhysics.SuspendUntilImpact = detail.physicsSuspendUntilImpact;
             }
 
-            _detailInfoToCorrespondingSpawnedGameObject[detail] = prop;
+            if (!string.IsNullOrEmpty(detail.activationCondition))
+            {
+                ConditionalObjectActivation.SetUp(prop, detail.activationCondition, detail.blinkWhenActiveChanged, true);   
+            }
+            if (!string.IsNullOrEmpty(detail.deactivationCondition))
+            {
+                ConditionalObjectActivation.SetUp(prop, detail.deactivationCondition, detail.blinkWhenActiveChanged, false);
+            }
+
+            _detailInfoToGameObject[detail] = prop;
 
             return prop;
         }
@@ -218,48 +309,24 @@ namespace NewHorizons.Builder.Props
         /// <summary>
         /// Fix components that have sectors. Has a specific fix if there is a VisionTorchItem on the object.
         /// </summary>
-        private static void FixSectoredComponent(Component component, Sector sector, bool keepLoaded)
+        private static void FixSectoredComponent(Component component, Sector sector, HashSet<Sector> existingSectors)
         {
-            // keepLoaded should remove existing groups
-            // renderers/colliders get enabled later so we dont have to do that here
-            if (keepLoaded && component is SectorCullGroup or SectorCollisionGroup or SectorLightsCullGroup)
-            {
-                UnityEngine.Object.DestroyImmediate(component);
-                return;
-            }
-
             // fix Sector stuff, eg SectorCullGroup (without this, props that have a SectorCullGroup component will become invisible inappropriately)
-            if (component is ISectorGroup sectorGroup)
+            if (component is ISectorGroup sectorGroup && !existingSectors.Contains(sectorGroup.GetSector()))
             {
                 sectorGroup.SetSector(sector);
             }
 
             // Not doing else if here because idk if any of the classes below implement ISectorGroup
 
-            if (component is Sector s)
-            {
-                s.SetParentSector(sector);
-            }
-
-            else if (component is SectorCullGroup sectorCullGroup)
-            {
-                sectorCullGroup._controllingProxy = null;
-                
-                // fixes sector cull group deactivating renderers on map view enter and fast foward
-                // TODO: does this actually work? what? how?
-                sectorCullGroup._inMapView = false;
-                sectorCullGroup._isFastForwarding = false;
-                sectorCullGroup.SetVisible(sectorCullGroup.ShouldBeVisible(), true, false);
-            }
-
-            else if(component is SectoredMonoBehaviour behaviour)
+            if(component is SectoredMonoBehaviour behaviour && !existingSectors.Contains(behaviour._sector))
             {
                 // not using SetSector here because it registers the events twice
                 // perhaps this happens with ISectorGroup.SetSector or Sector.SetParentSector too? idk and nothing seems to break because of it yet
                 behaviour._sector = sector;
             }
 
-            else if(component is OWItemSocket socket)
+            else if(component is OWItemSocket socket && !existingSectors.Contains(socket._sector))
             {
                 socket._sector = sector;
             }
@@ -270,9 +337,19 @@ namespace NewHorizons.Builder.Props
 
             }
 
-            else if(component is NomaiRemoteCameraPlatform remoteCameraPlatform)
+            else if(component is NomaiRemoteCameraPlatform remoteCameraPlatform && !existingSectors.Contains(remoteCameraPlatform._visualSector))
             {
                 remoteCameraPlatform._visualSector = sector;
+            }
+
+            else if(component is SingleLightSensor singleLightSensor && !existingSectors.Contains(singleLightSensor._sector))
+            {
+                if (singleLightSensor._sector != null)
+                {
+                    singleLightSensor._sector.OnSectorOccupantsUpdated -= singleLightSensor.OnSectorOccupantsUpdated;
+                }
+                singleLightSensor._sector = sector;
+                singleLightSensor._sector.OnSectorOccupantsUpdated += singleLightSensor.OnSectorOccupantsUpdated;
             }
         }
 
@@ -304,12 +381,6 @@ namespace NewHorizons.Builder.Props
                     component.gameObject.layer = Layer.IgnoreSun;
                 }
             }
-            // I forget why this is here
-            else if (component is GhostIK or GhostEffects)
-            {
-                UnityEngine.Object.DestroyImmediate(component);
-                return;
-            }
             else if (component is DarkMatterVolume)
             {
                 var probeVisuals = component.gameObject.transform.Find("ProbeVisuals");
@@ -324,6 +395,12 @@ namespace NewHorizons.Builder.Props
             // Fix anglerfish speed on orbiting planets
             else if (component is AnglerfishController angler)
             {
+                if (planetGO?.GetComponent<NHAstroObject>() is NHAstroObject nhao && !nhao.invulnerableToSun)
+                {
+                    // Has a fluid detector, will go gorp (#830)
+                    NHLogger.LogWarning("Having an anglerfish on a planet that has a fluid detector can lead to things breaking!");
+                }
+
                 try
                 {
                     angler._chaseSpeed += OWPhysics.CalculateOrbitVelocity(planetGO.GetAttachedOWRigidbody(), planetGO.GetComponent<AstroObject>().GetPrimaryBody().GetAttachedOWRigidbody()).magnitude;
@@ -347,8 +424,9 @@ namespace NewHorizons.Builder.Props
             else if (component is NomaiInterfaceOrb orb)
             {
                 // detect planet gravity
-                var gravityVolume = planetGO.GetAttachedOWRigidbody().GetAttachedGravityVolume();
-                orb.GetComponent<ConstantForceDetector>()._detectableFields = gravityVolume ? new ForceVolume[] { gravityVolume } : new ForceVolume[] { };
+                // somehow Intervention has GetAttachedOWRigidbody as null sometimes, idk why
+                var gravityVolume = planetGO.GetAttachedOWRigidbody()?.GetAttachedGravityVolume();
+                orb.GetComponent<ConstantForceDetector>()._detectableFields = gravityVolume ? new ForceVolume[] { gravityVolume } : new ForceVolume[0];
             }
 
             else if (component is VisionTorchItem torchItem)
@@ -364,10 +442,31 @@ namespace NewHorizons.Builder.Props
             else if (component is Renderer renderer && component.gameObject.GetComponent<ElectricityEffect>() == null) renderer.enabled = true;
             else if(component is Shape shape) shape.enabled = true;
 
-            // If it's not a moving anglerfish make sure the anim controller is regular
-            else if(component is AnglerfishAnimController && component.transform.parent.GetComponent<AnglerfishController>() == null) //Manual parent chain so we can find inactive
+            // If it's not a moving ghostbird (ie Prefab_IP_GhostBird/Ghostbird_IP_ANIM) make sure it doesnt spam NREs
+            // Manual parent chain so we can find inactive
+            else if (component is GhostIK or GhostEffects && component.transform.parent.GetComponent<GhostBrain>() == null)
+            {
+                UnityEngine.Object.DestroyImmediate(component);
+            }
+            // If it's not a moving anglerfish (ie Anglerfish_Body/Beast_Anglerfish) make sure the anim controller is regular
+            // Manual parent chain so we can find inactive
+            else if(component is AnglerfishAnimController && component.transform.parent.GetComponent<AnglerfishController>() == null)
             {
                 component.gameObject.AddComponent<AnglerAnimFixer>();
+            }
+            // Add custom logic to NH-spawned rafts to handle fluid changes
+            else if (component is RaftController raft)
+            {
+                component.gameObject.AddComponent<NHRaftController>();
+            }
+            else if (component is RaftDock dock)
+            {
+                // These flood toggles are to disable flooded docks on the Stranger
+                // Presumably the user isn't making one of those
+                foreach (var toggle in dock.GetComponents<FloodToggle>())
+                {
+                    Component.DestroyImmediate(toggle);
+                }
             }
         }
 
@@ -385,7 +484,7 @@ namespace NewHorizons.Builder.Props
 
                 NHLogger.LogVerbose("Fixing anglerfish animation");
 
-                // Remove any event reference to its angler
+                // Remove any event reference to its angler so that they dont change its state
                 if (angler._anglerfishController)
                 {
                     angler._anglerfishController.OnChangeAnglerState -= angler.OnChangeAnglerState;
@@ -393,9 +492,13 @@ namespace NewHorizons.Builder.Props
                     angler._anglerfishController.OnAnglerSuspended -= angler.OnAnglerSuspended;
                     angler._anglerfishController.OnAnglerUnsuspended -= angler.OnAnglerUnsuspended;
                 }
-                angler.enabled = true;
+                // Disable the angler anim controller because we don't want Update or LateUpdate to run, just need it to set the initial Animator state
+                angler.enabled = false;
                 angler.OnChangeAnglerState(AnglerfishController.AnglerState.Lurking);
-                
+
+                angler._animator.SetFloat("MoveSpeed", angler._moveCurrent);
+                angler._animator.SetFloat("Jaw", angler._jawCurrent);
+
                 Destroy(this);
             }
         }
@@ -444,6 +547,54 @@ namespace NewHorizons.Builder.Props
                 var torchItem = GetComponent<VisionTorchItem>();
                 torchItem.mindSlideProjector._mindProjectorImageEffect = Locator.GetPlayerCamera().GetComponent<MindProjectorImageEffect>();
 
+                Destroy(this);
+            }
+        }
+
+        /// <summary>
+        /// need component here to run after DreamLanternController.Awake
+        /// </summary>
+        [RequireComponent(typeof(DreamLanternController))]
+        private class DreamLanternControllerFixer : MonoBehaviour
+        {
+            private void Start()
+            {
+                // based on https://github.com/Bwc9876/OW-Amogus/blob/master/Amogus/LanternCreator.cs
+                // needed to fix petals looking backwards, among other things
+
+                var lantern = GetComponent<DreamLanternController>();
+
+                // this is set in Awake, we wanna override it
+
+                // Manually copied these values from a artifact lantern so that we don't have to find it (works in Eye)
+                lantern._origLensFlareBrightness = 0f;
+                lantern._focuserPetalsBaseEulerAngles = new Vector3[] 
+                { 
+                    new Vector3(0.7f, 270.0f, 357.5f), 
+                    new Vector3(288.7f, 270.1f, 357.4f), 
+                    new Vector3(323.3f, 90.0f, 177.5f),
+                    new Vector3(35.3f, 90.0f, 177.5f), 
+                    new Vector3(72.7f, 270.1f, 357.5f) 
+                };
+                lantern._dirtyFlag_focus = true;
+                lantern._concealerRootsBaseScale = new Vector3[] 
+                {
+                    Vector3.one,
+                    Vector3.one,
+                    Vector3.one
+                };
+                lantern._concealerCoversStartPos = new Vector3[] 
+                {
+                    new Vector3(0.0f, 0.0f, 0.0f),
+                    new Vector3(0.0f, -0.1f, 0.0f),
+                    new Vector3(0.0f, -0.2f, 0.0f),
+                    new Vector3(0.0f, 0.2f, 0.0f),
+                    new Vector3(0.0f, 0.1f, 0.0f),
+                    new Vector3(0.0f, 0.0f, 0.0f)
+                };
+                lantern._dirtyFlag_concealment = true;
+                lantern.UpdateVisuals();
+                
                 Destroy(this);
             }
         }

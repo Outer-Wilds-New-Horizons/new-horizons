@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using NewHorizons.Builder.Props.Audio;
 using NewHorizons.Utility.OWML;
 
 namespace NewHorizons.External
@@ -124,7 +126,6 @@ namespace NewHorizons.External
             if (!KnowsFrequency(frequency))
             {
                 _activeProfile.KnownFrequencies.Add(frequency);
-                Save();
             }
         }
 
@@ -134,13 +135,12 @@ namespace NewHorizons.External
             if (KnowsFrequency(frequency))
             {
                 _activeProfile.KnownFrequencies.Remove(frequency);
-                Save();
             }
         }
 
         public static bool KnowsMultipleFrequencies()
         {
-            return _activeProfile != null && _activeProfile.KnownFrequencies.Count > 0;
+            return _activeProfile?.KnownFrequencies != null && _activeProfile.KnownFrequencies.Count(SignalBuilder.IsFrequencyInUse) > 1;
         }
 
         #endregion
@@ -159,7 +159,6 @@ namespace NewHorizons.External
             if (!KnowsSignal(signal))
             {
                 _activeProfile.KnownSignals.Add(signal);
-                Save();
             }
         }
 
@@ -170,7 +169,6 @@ namespace NewHorizons.External
         public static void AddNewlyRevealedFactID(string id)
         {
             _activeProfile?.NewlyRevealedFactIDs.Add(id);
-            Save();
         }
 
         public static List<string> GetNewlyRevealedFactIDs()
@@ -181,7 +179,6 @@ namespace NewHorizons.External
         public static void ClearNewlyRevealedFactIDs()
         {
             _activeProfile?.NewlyRevealedFactIDs.Clear();
-            Save();
         }
 
         #endregion
@@ -190,8 +187,11 @@ namespace NewHorizons.External
 
         public static void ReadOneTimePopup(string id)
         {
-            _activeProfile?.PopupsRead.Add(id);
-            Save();
+            // else it re-adds it each time
+            if (_activeProfile != null && !_activeProfile.PopupsRead.Contains(id))
+            {
+                _activeProfile.PopupsRead.Add(id);
+            }
         }
 
         public static bool HasReadOneTimePopup(string id)
@@ -208,7 +208,6 @@ namespace NewHorizons.External
         {
             if (name == CharacterDialogueTree.RECORDING_NAME || name == CharacterDialogueTree.SIGN_NAME) return;
             _activeProfile?.CharactersTalkedTo.SafeAdd(name);
-            Save();
         }
 
         public static bool HasTalkedToFiveCharacters()

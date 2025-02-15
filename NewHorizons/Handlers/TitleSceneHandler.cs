@@ -27,8 +27,8 @@ namespace NewHorizons.Handlers
 
         public static void DisplayBodyOnTitleScreen(List<NewHorizonsBody> bodies)
         {
-            //Try loading one planet why not
-            //var eligible = BodyDict.Values.ToList().SelectMany(x => x).ToList().Where(b => (b.Config.HeightMap != null || b.Config.Atmosphere?.Cloud != null) && b.Config.Star == null).ToArray();
+            // Try loading one planet why not
+            // var eligible = BodyDict.Values.ToList().SelectMany(x => x).ToList().Where(b => (b.Config.HeightMap != null || b.Config.Atmosphere?.Cloud != null) && b.Config.Star == null).ToArray();
             var eligible = bodies.Where(b => (b.Config.HeightMap != null || b.Config.Atmosphere?.clouds != null) && b.Config.Star == null && b.Config.canShowOnTitle).ToArray();
             var eligibleCount = eligible.Count();
             if (eligibleCount == 0) return;
@@ -38,26 +38,29 @@ namespace NewHorizons.Handlers
 
             NHLogger.LogVerbose($"Displaying {selectionCount} bodies on the title screen");
 
-            GameObject body1, body2, body3;
+            var planetSizes = new List<(GameObject planet, float size)>();
 
-            body1 = LoadTitleScreenBody(eligible[indices[0]]);
-            body1.transform.localRotation = Quaternion.Euler(15, 0, 0);
+            var bodyInfo = LoadTitleScreenBody(eligible[indices[0]]);
+            bodyInfo.planet.transform.localRotation = Quaternion.Euler(15, 0, 0);
+            planetSizes.Add(bodyInfo);
+
             if (selectionCount > 1)
             {
-                body1.transform.localScale = Vector3.one * (body1.transform.localScale.x) * 0.3f;
-                body1.transform.localPosition = new Vector3(0, -15, 0);
-                body1.transform.localRotation = Quaternion.Euler(10f, 0f, 0f);
-                body2 = LoadTitleScreenBody(eligible[indices[1]]);
-                body2.transform.localScale = Vector3.one * (body2.transform.localScale.x) * 0.3f;
-                body2.transform.localPosition = new Vector3(7, 30, 0);
-                body2.transform.localRotation = Quaternion.Euler(10f, 0f, 0f);
+                bodyInfo.planet.transform.localPosition = new Vector3(0, -15, 0);
+                bodyInfo.planet.transform.localRotation = Quaternion.Euler(10f, 0f, 0f);
+
+                var bodyInfo2 = LoadTitleScreenBody(eligible[indices[1]]);
+                bodyInfo2.planet.transform.localPosition = new Vector3(7, 30, 0);
+                bodyInfo2.planet.transform.localRotation = Quaternion.Euler(10f, 0f, 0f);
+                planetSizes.Add(bodyInfo2);
             }
+
             if (selectionCount > 2)
             {
-                body3 = LoadTitleScreenBody(eligible[indices[2]]);
-                body3.transform.localScale = Vector3.one * (body3.transform.localScale.x) * 0.3f;
-                body3.transform.localPosition = new Vector3(-5, 10, 0);
-                body3.transform.localRotation = Quaternion.Euler(10f, 0f, 0f);
+                var bodyInfo3 = LoadTitleScreenBody(eligible[indices[2]]);
+                bodyInfo3.planet.transform.localPosition = new Vector3(-5, 10, 0);
+                bodyInfo3.planet.transform.localRotation = Quaternion.Euler(10f, 0f, 0f);
+                planetSizes.Add(bodyInfo3);
             }
 
             SearchUtilities.Find("Scene/Background/PlanetPivot/Prefab_HEA_Campfire").SetActive(false);
@@ -72,87 +75,81 @@ namespace NewHorizons.Handlers
             light.color = Color.white;
             light.range = float.PositiveInfinity;
             light.intensity = 0.8f;
+
+            // Resize planets relative to each other
+            // If there are multiple planets shrink them down to 30% of the size
+            var maxSize = planetSizes.Select(x => x.size).Max();
+            var minSize = planetSizes.Select(x => x.size).Min();
+            var multiplePlanets = planetSizes.Count > 1;
+            foreach (var (planet, size) in planetSizes) 
+            {
+                var adjustedSize = size / maxSize;
+                // If some planets would be too small we'll do a funny thing
+                if (minSize / maxSize < 0.3f)
+                {
+                    var t = Mathf.InverseLerp(minSize, maxSize, size);
+                    adjustedSize = Mathf.Lerp(0.3f, 1f, t * t);
+                }
+
+                planet.transform.localScale *= adjustedSize * (multiplePlanets ? 0.3f : 1f);
+            }
         }
 
-        private static GameObject LoadTitleScreenBody(NewHorizonsBody body)
+        private static (GameObject planet, float size) LoadTitleScreenBody(NewHorizonsBody body)
         {
             NHLogger.LogVerbose($"Displaying {body.Config.name} on the title screen");
             var titleScreenGO = new GameObject(body.Config.name + "_TitleScreen");
 
-            var maxSize = -1f;
+            var maxRadius = -1f;
 
             if (body.Config.HeightMap != null)
             {
                 HeightMapBuilder.Make(titleScreenGO, null, body.Config.HeightMap, body.Mod, 30);
-                maxSize = Mathf.Max(maxSize, body.Config.HeightMap.maxHeight, body.Config.HeightMap.minHeight);
+                maxRadius = Mathf.Max(maxRadius, body.Config.HeightMap.maxHeight, body.Config.HeightMap.minHeight);
             }
+
             if (body.Config.Atmosphere?.clouds?.texturePath != null && body.Config.Atmosphere?.clouds?.cloudsPrefab != CloudPrefabType.Transparent)
             {
-                // Hacky but whatever I just want a sphere
+                // Hacky but whatever I just want a textured sphere
                 var cloudTextureMap = new HeightMapModule();
                 cloudTextureMap.maxHeight = cloudTextureMap.minHeight = body.Config.Atmosphere.size;
                 cloudTextureMap.textureMap = body.Config.Atmosphere.clouds.texturePath;
                 HeightMapBuilder.Make(titleScreenGO, null, cloudTextureMap, body.Mod, 30);
-                maxSize = Mathf.Max(maxSize, cloudTextureMap.maxHeight);
+
+                maxRadius = Mathf.Max(maxRadius, cloudTextureMap.maxHeight);
             }
-            else
+
+            if (body.Config.Base.groundSize > 0f)
             {
-                if (body.Config.Water != null)
+                MakeSphere(titleScreenGO, body.Config.Base.groundSize * 2f);
+                maxRadius = Mathf.Max(maxRadius, body.Config.Base.groundSize);
+            }
+
+            if (body.Config.Water != null)
+            {
+                var waterRadius = MakeWater(body, titleScreenGO);
+                maxRadius = Mathf.Max(maxRadius, waterRadius);
+            }
+
+            if (body.Config.Lava != null)
+            {
+                var lavaRadius = MakeLava(body, titleScreenGO);
+                maxRadius = Mathf.Max(maxRadius, lavaRadius);
+            }
+
+            if (body.Config.Sand != null)
+            {
+                var sandRadius = MakeSand(body, titleScreenGO);
+                maxRadius = Mathf.Max(maxRadius, sandRadius);
+            }
+
+            if (body.Config.Rings != null && body.Config.Rings.Length > 0)
+            {
+                foreach (var ring in body.Config.Rings)
                 {
-                    var waterGO = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                    var size = 2f * body.Config.Water.size * (body.Config.Water.curve?.FirstOrDefault()?.value ?? 1f);
+                    RingBuilder.Make(titleScreenGO, null, ring, body.Mod);
 
-                    waterGO.transform.localScale = Vector3.one * size;
-
-                    var mr = waterGO.GetComponent<MeshRenderer>();
-                    var colour = body.Config.Water.tint?.ToColor() ?? Color.blue;
-                    mr.material.color = new Color(colour.r, colour.g, colour.b, 0.9f);
-
-                    // Make it transparent!
-                    mr.material.SetOverrideTag("RenderType", "Transparent");
-                    mr.material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
-                    mr.material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-                    mr.material.SetInt("_ZWrite", 0);
-                    mr.material.DisableKeyword("_ALPHATEST_ON");
-                    mr.material.DisableKeyword("_ALPHABLEND_ON");
-                    mr.material.EnableKeyword("_ALPHAPREMULTIPLY_ON");
-                    mr.material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
-
-                    waterGO.transform.parent = titleScreenGO.transform;
-                    waterGO.transform.localPosition = Vector3.zero;
-
-                    maxSize = Mathf.Max(maxSize, size);
-                }
-                if (body.Config.Lava != null)
-                {
-                    var lavaGO = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                    var size = 2f * body.Config.Lava.size * (body.Config.Lava.curve?.FirstOrDefault()?.value ?? 1f);
-
-                    lavaGO.transform.localScale = Vector3.one * size;
-
-                    var mr = lavaGO.GetComponent<MeshRenderer>();
-                    mr.material.color = body.Config.Lava.tint?.ToColor() ?? Color.red;
-                    mr.material.SetColor("_EmissionColor", mr.material.color * 2f);
-
-                    lavaGO.transform.parent = titleScreenGO.transform;
-                    lavaGO.transform.localPosition = Vector3.zero;
-
-                    maxSize = Mathf.Max(maxSize, size);
-                }
-                if (body.Config.Sand != null)
-                {
-                    var sandGO = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                    var size = 2f * body.Config.Sand.size * (body.Config.Sand.curve?.FirstOrDefault()?.value ?? 1f);
-
-                    sandGO.transform.localScale = Vector3.one * size;
-                    var mr = sandGO.GetComponent<MeshRenderer>();
-                    mr.material.color = body.Config.Sand.tint?.ToColor() ?? Color.yellow;
-                    mr.material.SetFloat("_Glossiness", 0);
-
-                    sandGO.transform.parent = titleScreenGO.transform;
-                    sandGO.transform.localPosition = Vector3.zero;
-
-                    maxSize = Mathf.Max(maxSize, size);
+                    maxRadius = Mathf.Max(maxRadius, ring.outerRadius);
                 }
             }
 
@@ -164,21 +161,66 @@ namespace NewHorizons.Handlers
             }
             pivot.name = "Pivot";
 
-            if (body.Config.Rings != null && body.Config.Rings.Length > 0)
-            {
-                foreach (var ring in body.Config.Rings)
-                {
-                    RingBuilder.Make(titleScreenGO, null, ring, body.Mod);
-
-                    maxSize = Mathf.Max(maxSize, ring.outerRadius);
-                }
-            }
-
             titleScreenGO.transform.parent = pivot.transform;
             titleScreenGO.transform.localPosition = Vector3.zero;
-            titleScreenGO.transform.localScale = Vector3.one * 30f / maxSize;
+            titleScreenGO.transform.localScale = Vector3.one * 30f / maxRadius;
 
-            return titleScreenGO;
+            return (titleScreenGO, maxRadius);
+        }
+
+        // Returns radius
+        private static float MakeWater(NewHorizonsBody body, GameObject root)
+        {
+            var diameter = 2f * body.Config.Water.size * (body.Config.Water.curve?.FirstOrDefault()?.value ?? 1f);
+
+            var mr = MakeSphere(root, diameter);
+            var colour = body.Config.Water.tint?.ToColor() ?? Color.blue;
+            mr.material.color = new Color(colour.r, colour.g, colour.b, 0.9f);
+
+            // Make it transparent!
+            mr.material.SetOverrideTag("RenderType", "Transparent");
+            mr.material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+            mr.material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+            mr.material.SetInt("_ZWrite", 0);
+            mr.material.DisableKeyword("_ALPHATEST_ON");
+            mr.material.DisableKeyword("_ALPHABLEND_ON");
+            mr.material.EnableKeyword("_ALPHAPREMULTIPLY_ON");
+            mr.material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+
+            return diameter / 2f;
+        }
+
+        private static float MakeLava(NewHorizonsBody body, GameObject root)
+        {
+            var diameter = 2f * body.Config.Lava.size * (body.Config.Lava.curve?.FirstOrDefault()?.value ?? 1f);
+
+            var mr = MakeSphere(root, diameter);
+            mr.material.color = body.Config.Lava.tint?.ToColor() ?? Color.red;
+            mr.material.SetColor("_EmissionColor", mr.material.color * 2f);
+
+            return diameter / 2f;
+        }
+
+        private static float MakeSand(NewHorizonsBody body, GameObject root)
+        {
+            var diameter = 2f * body.Config.Sand.size * (body.Config.Sand.curve?.FirstOrDefault()?.value ?? 1f);
+
+            var mr = MakeSphere(root, diameter);
+            mr.material.color = body.Config.Sand.tint?.ToColor() ?? Color.yellow;
+            mr.material.SetFloat("_Glossiness", 0);
+
+            return diameter / 2f;
+        }
+
+        private static MeshRenderer MakeSphere(GameObject root, float diameter)
+        {
+            var sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            var meshRenderer = sphere.GetComponent<MeshRenderer>();
+            sphere.transform.parent = root.transform;
+            sphere.transform.localPosition = Vector3.zero;
+            sphere.transform.localScale = Vector3.one * diameter;
+
+            return meshRenderer;
         }
     }
 }

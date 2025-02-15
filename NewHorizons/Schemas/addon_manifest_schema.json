@@ -27,6 +27,17 @@
       "type": "boolean",
       "description": "If popupMessage is set, should it repeat every time the game starts or only once"
     },
+    "preloadAssetBundles": {
+      "type": "array",
+      "description": "These asset bundles will be loaded on the title screen and stay loaded. Will improve initial load time at the cost of increased memory use.\nThe path is the relative directory of the asset bundle in the mod folder.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "subtitlePath": {
+      "type": "string",
+      "description": "The path to the addons subtitle for the main menu.\nDefaults to \"subtitle.png\".\nThe dimensions of the Echoes of the Eye subtitle is 669 x 67, so aim for that size"
+    },
     "$schema": {
       "type": "string",
       "description": "The schema to validate with"

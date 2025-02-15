@@ -25,6 +25,13 @@
         "type": "string"
       }
     },
+    "OtherDictionary": {
+      "type": "object",
+      "description": "Translation table for other text, will be taken verbatim without correcting CDATA",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
     "AchievementTranslations": {
       "type": "object",
       "description": "Translation table for achievements. The key is the unique ID of the achievement",

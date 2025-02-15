@@ -55,15 +55,20 @@ namespace NewHorizons.Builder.ShipLog
         {
             string systemName = body.Config.starSystem;
             XElement astroBodyFile = XElement.Load(Path.Combine(body.Mod.ModHelper.Manifest.ModFolderPath, body.Config.ShipLog.xmlFile));
-            XElement astroBodyId = astroBodyFile.Element("ID");
+            AddShipLogXML(manager, astroBodyFile, body);
+        }
+
+        public static void AddShipLogXML(ShipLogManager manager, XElement xml, NewHorizonsBody body)
+        {
+            XElement astroBodyId = xml.Element("ID");
             if (astroBodyId == null)
             {
-                NHLogger.LogError("Failed to load ship logs for " + systemName + "!");
+                NHLogger.LogError("Failed to load ship logs for " + body.Config.name + "!");
             }
             else
             {
                 var entryIDs = new List<string>();
-                foreach (XElement entryElement in astroBodyFile.DescendantsAndSelf("Entry"))
+                foreach (XElement entryElement in xml.DescendantsAndSelf("Entry"))
                 {
                     XElement curiosityName = entryElement.Element("Curiosity");
                     XElement id = entryElement.Element("ID");
@@ -98,8 +103,8 @@ namespace NewHorizons.Builder.ShipLog
                     }
                     AddTranslation(entryElement);
                 }
-                TextAsset newAsset = new TextAsset(astroBodyFile.ToString());
-                List<TextAsset> newBodies = new List<TextAsset>(manager._shipLogXmlAssets) { newAsset };
+                var newAsset = new TextAsset(xml.ToString());
+                var newBodies = new List<TextAsset>(manager._shipLogXmlAssets) { newAsset };
                 manager._shipLogXmlAssets = newBodies.ToArray();
                 ShipLogHandler.AddConfig(astroBodyId.Value, entryIDs, body);
             }
@@ -146,6 +151,35 @@ namespace NewHorizons.Builder.ShipLog
                         colAccumulator += step;
                     }
                 }
+            }
+        }
+
+        public static void MergeEntries(ShipLogManager manager, ShipLogEntry entry, ShipLogEntry existing)
+        {
+            foreach (var fact in entry.GetRumorFacts())
+            {
+                existing._rumorFacts.Add(fact);
+                fact.OnFactRevealed += existing.OnFactRevealed;
+
+                manager._factRevealCount = Mathf.Max(manager._factRevealCount, fact.GetRevealOrder());
+                manager._factList.Add(fact);
+                manager._factDict.Add(fact.GetID(), fact);
+            }
+            foreach (var fact in entry.GetExploreFacts())
+            {
+                existing._exploreFacts.Add(fact);
+                existing._completionFacts.Add(fact);
+                fact.OnFactRevealed += existing.OnFactRevealed;
+
+                manager._factRevealCount = Mathf.Max(manager._factRevealCount, fact.GetRevealOrder());
+                manager._factList.Add(fact);
+                manager._factDict.Add(fact.GetID(), fact);
+            }
+            foreach (var child in entry.GetChildren())
+            {
+                existing._childEntries.Add(child);
+
+                manager.AddEntry(child);
             }
         }
 

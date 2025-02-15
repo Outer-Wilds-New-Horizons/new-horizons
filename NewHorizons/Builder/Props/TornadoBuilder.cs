@@ -1,3 +1,4 @@
+using NewHorizons.Builder.Volumes;
 using NewHorizons.Components.Props;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.Handlers;
@@ -157,7 +158,7 @@ namespace NewHorizons.Builder.Props
             // Resize it so the force volume goes all the way up
             var fluidGO = tornadoGO.transform.Find(downwards ? "MockDownTornado_FluidCenter" : "MockUpTornado_FluidCenter");
             fluidGO.GetComponent<TornadoFluidVolume>()._fluidType = info.fluidType.ConvertToOW(FluidVolume.Type.CLOUD);
-            fluidGO.localScale = new Vector3(1, 2f, 1);
+            fluidGO.localPosition = Vector3.up * 4.8f;
 
             if (info.tint != null)
             {
@@ -167,6 +168,11 @@ namespace NewHorizons.Builder.Props
             if (info.wanderRate != 0)
             {
                 ApplyWanderer(tornadoGO, planetGO, info);
+            }
+
+            if (info.hazardType != null || info.firstContactDamageType != null)
+            {
+                HazardVolumeBuilder.AddHazardVolume(fluidGO.gameObject, sector, planetGO.GetComponent<OWRigidbody>(), info.hazardType, info.firstContactDamageType, info.firstContactDamage, info.damagePerSecond);
             }
 
             soundGO.SetActive(true);
@@ -196,10 +202,6 @@ namespace NewHorizons.Builder.Props
                         child.localPosition = new Vector3(0, 60, 0);
                         child.localScale = Vector3.one * 1.1f;
                     }
-                    if (child.name.Equals("Effects_GD_HurricaneCycloneExterior"))
-                    {
-                        child.localScale = new Vector3(0.88f, 1f, 0.88f);
-                    }
                 }
             }
 
@@ -226,6 +228,11 @@ namespace NewHorizons.Builder.Props
             if (info.wanderRate != 0)
             {
                 ApplyWanderer(hurricaneGO, planetGO, info);
+            }
+
+            if (info.hazardType != null || info.firstContactDamageType != null)
+            {
+                HazardVolumeBuilder.AddHazardVolume(fluidVolume.gameObject, sector, planetGO.GetComponent<OWRigidbody>(), info.hazardType, info.firstContactDamageType, info.firstContactDamage, info.damagePerSecond);
             }
 
             hurricaneGO.SetActive(true);

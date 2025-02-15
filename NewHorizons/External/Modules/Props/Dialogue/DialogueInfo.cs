@@ -28,8 +28,17 @@ namespace NewHorizons.External.Modules.Props.Dialogue
         /// If it's a Recorder this will also delete the existing dialogue already attached to that prop.
         /// 
         /// If none of those components are present it will add a FacePlayerWhenTalking component.
+        /// 
+        /// `pathToAnimController` also makes the dialogue into a child of the anim controller. This can be used with `isRelativeToParent`
+        /// to position the dialogue on relative to the speaker. If you also provide `parentPath`, that will instead override which object 
+        /// is the parent, but the anim controller will otherwise function as expected.
         /// </summary>
         public string pathToAnimController;
+
+        /// <summary>
+        /// If this dialogue is adding to existing character dialogue, put a path to the game object with the dialogue on it here
+        /// </summary>
+        public string pathToExistingDialogue;
 
         /// <summary>
         /// Radius of the spherical collision volume where you get the "talk to" prompt when looking at. If you use a
@@ -41,6 +50,16 @@ namespace NewHorizons.External.Modules.Props.Dialogue
         /// Distance from radius the prompt appears
         /// </summary>
         [DefaultValue(2f)] public float range = 2f;
+
+        /// <summary>
+        /// The point that the camera looks at when dialogue advances.
+        /// </summary>
+        public AttentionPointInfo attentionPoint;
+
+        /// <summary>
+        /// Additional points that the camera looks at when dialogue advances through specific dialogue nodes and pages.
+        /// </summary>
+        public SwappedAttentionPointInfo[] swappedAttentionPoints;
 
         /// <summary>
         /// Allows you to trigger dialogue from a distance when you walk into an area.

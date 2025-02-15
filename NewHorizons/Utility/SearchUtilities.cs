@@ -9,12 +9,29 @@ namespace NewHorizons.Utility
 {
     public static class SearchUtilities
     {
+        private static readonly Dictionary<string, GameObject> DontDestroyOnLoadCachedGameObjects = new Dictionary<string, GameObject>();
         private static readonly Dictionary<string, GameObject> CachedGameObjects = new Dictionary<string, GameObject>();
+        private static readonly Dictionary<string, GameObject> CachedRootGameObjects = new Dictionary<string, GameObject>();
+
+        public static void AddToDontDestroyOnLoadCache(string path, GameObject go)
+        {
+            DontDestroyOnLoadCachedGameObjects[path] = go.InstantiateInactive().DontDestroyOnLoad();
+        }
+
+        public static void ClearDontDestroyOnLoadCache()
+        {
+            foreach (var go in DontDestroyOnLoadCachedGameObjects.Values)
+            {
+                GameObject.Destroy(go);
+            }
+            DontDestroyOnLoadCachedGameObjects.Clear();
+        }
 
         public static void ClearCache()
         {
             NHLogger.LogVerbose("Clearing search cache");
             CachedGameObjects.Clear();
+            CachedRootGameObjects.Clear();
         }
 
         public static List<T> FindObjectsOfTypeAndName<T>(string name) where T : Object
@@ -94,6 +111,8 @@ namespace NewHorizons.Utility
         /// </summary>
         public static GameObject Find(string path, bool warn = true)
         {
+            if (DontDestroyOnLoadCachedGameObjects.TryGetValue(path, out var gameObject)) return gameObject;
+
             if (CachedGameObjects.TryGetValue(path, out var go)) return go;
 
             // 1: normal find
@@ -107,8 +126,16 @@ namespace NewHorizons.Utility
             // 2: find inactive using root + transform.find
             var names = path.Split('/');
 
+            // Cache the root objects so we don't loop through all of them each time
             var rootName = names[0];
-            var root = SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(x => x.name == rootName);
+            if (!CachedRootGameObjects.TryGetValue(rootName, out var root)) 
+            {
+                root = SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(x => x.name == rootName);
+                if (root != null)
+                {
+                    CachedRootGameObjects.Add(rootName, root);
+                }
+            }
 
             var childPath = string.Join("/", names.Skip(1));
             go = root ? root.FindChild(childPath) : null;

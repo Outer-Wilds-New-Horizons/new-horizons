@@ -1,16 +1,17 @@
-using NewHorizons.External.Configs;
-using NewHorizons.Utility;
-using NewHorizons.External.Modules.VariableSize;
-using UnityEngine;
-
-using System.Collections.Generic;
-using NewHorizons.Components.SizeControllers;
-using Color = UnityEngine.Color;
-using NewHorizons.Components.Volumes;
 using NewHorizons.Builder.Props;
-using NewHorizons.Utility.OWML;
-using NewHorizons.Utility.OuterWilds;
+using NewHorizons.Builder.Volumes;
+using NewHorizons.Components.SizeControllers;
+using NewHorizons.Components.Volumes;
+using NewHorizons.External.Configs;
+using NewHorizons.External.Modules.VariableSize;
 using NewHorizons.External.SerializableData;
+using NewHorizons.Utility;
+using NewHorizons.Utility.OuterWilds;
+using NewHorizons.Utility.OWML;
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+using Color = UnityEngine.Color;
 
 namespace NewHorizons.Builder.Body
 {
@@ -86,7 +87,7 @@ namespace NewHorizons.Builder.Body
             Vector3 localRotation = singularity?.rotation == null ? Vector3.zero : singularity.rotation;
 
             GameObject newSingularity = MakeSingularity(go, sector, localPosition, localRotation, polarity, horizonRadius, distortRadius, 
-                hasHazardVolume, singularity.targetStarSystem, singularity.curve, singularity.hasWarpEffects, singularity.renderQueueOverride, singularity.rename, singularity.parentPath, singularity.isRelativeToParent);
+                hasHazardVolume, singularity.targetStarSystem, singularity.spawnPointID, singularity.curve, singularity.hasWarpEffects, singularity.renderQueueOverride, singularity.rename, singularity.parentPath, singularity.isRelativeToParent);
 
             var uniqueID = string.IsNullOrEmpty(singularity.uniqueID) ? config.name : singularity.uniqueID;
             
@@ -109,36 +110,57 @@ namespace NewHorizons.Builder.Body
         {
             foreach (var pair in _pairsToLink)
             {
-                var (blackHoleID, whiteHoleID) = pair;
-                if (!_singularitiesByID.TryGetValue(blackHoleID, out GameObject blackHole))
+                try
                 {
-                    NHLogger.LogWarning($"Black hole [{blackHoleID}] is missing.");
-                    break;
+                    var (blackHoleID, whiteHoleID) = pair;
+                    if (!_singularitiesByID.TryGetValue(blackHoleID, out GameObject blackHole))
+                    {
+                        NHLogger.LogWarning($"Black hole [{blackHoleID}] is missing.");
+                        continue;
+                    }
+                    if (!_singularitiesByID.TryGetValue(whiteHoleID, out GameObject whiteHole))
+                    {
+                        NHLogger.LogWarning($"White hole [{whiteHoleID}] is missing.");
+                        continue;
+                    }
+                    var whiteHoleVolume = whiteHole.GetComponentInChildren<WhiteHoleVolume>();
+                    var blackHoleVolume = blackHole.GetComponentInChildren<BlackHoleVolume>();
+                    if (whiteHoleVolume == null || blackHoleVolume == null)
+                    {
+                        NHLogger.LogWarning($"Singularities [{blackHoleID}] and [{whiteHoleID}] do not have compatible polarities.");
+                        continue;
+                    }
+                    if (blackHoleVolume._whiteHole != null && blackHoleVolume._whiteHole != whiteHoleVolume)
+                    {
+                        NHLogger.LogWarning($"Black hole [{blackHoleID}] has already been linked!");
+                        continue;
+                    }
+                    NHLogger.LogVerbose($"Pairing singularities [{blackHoleID}], [{whiteHoleID}]");
+                    blackHoleVolume._whiteHole = whiteHoleVolume;
+
+                    // If warping to a vanilla planet, we add a streaming volume to pre-load it
+                    var streamingGroup = whiteHoleVolume.GetAttachedOWRigidbody().GetComponentInChildren<StreamingGroup>();
+                    if (streamingGroup != null)
+                    {
+                        var sphereCollider = blackHoleVolume.GetComponent<SphereCollider>();
+                        // Shouldn't ever be null but doesn't hurt ig
+                        var loadRadius = sphereCollider == null ? 100f : sphereCollider.radius + 50f;
+                        var streamingVolume = VolumeBuilder.Make<StreamingWarpVolume>(blackHoleVolume.GetAttachedOWRigidbody().gameObject, blackHoleVolume.GetComponentInParent<Sector>(),
+                            new External.Modules.Volumes.VolumeInfos.VolumeInfo() { radius = loadRadius });
+                        streamingVolume.streamingGroup = streamingGroup;
+                        streamingVolume.transform.parent = blackHoleVolume.transform;
+                        streamingVolume.transform.localPosition = Vector3.zero;
+                    }
                 }
-                if (!_singularitiesByID.TryGetValue(whiteHoleID, out GameObject whiteHole))
+                catch (Exception e)
                 {
-                    NHLogger.LogWarning($"White hole [{whiteHoleID}] is missing.");
-                    break;
+                    NHLogger.LogError($"Failed to pair singularities {e}");
                 }
-                var whiteHoleVolume = whiteHole.GetComponentInChildren<WhiteHoleVolume>();
-                var blackHoleVolume = blackHole.GetComponentInChildren<BlackHoleVolume>();
-                if (whiteHoleVolume == null || blackHoleVolume == null)
-                {
-                    NHLogger.LogWarning($"Singularities [{blackHoleID}] and [{whiteHoleID}] do not have compatible polarities.");
-                    break;
-                }
-                if (blackHoleVolume._whiteHole != null && blackHoleVolume._whiteHole != whiteHoleVolume)
-                {
-                    NHLogger.LogWarning($"Black hole [{blackHoleID}] has already been linked!");
-                    break;
-                }
-                NHLogger.LogVerbose($"Pairing singularities [{blackHoleID}], [{whiteHoleID}]");
-                blackHoleVolume._whiteHole = whiteHoleVolume;
             }
         }
 
         public static GameObject MakeSingularity(GameObject planetGO, Sector sector, Vector3 position, Vector3 rotation, bool polarity, float horizon, float distort,
-            bool hasDestructionVolume, string targetStarSystem = null, TimeValuePair[] curve = null, bool warpEffects = true, int renderQueue = 2985, string rename = null, string parentPath = null, bool isRelativeToParent = false)
+            bool hasDestructionVolume, string targetStarSystem = null, string targetSpawnID = null, TimeValuePair[] curve = null, bool warpEffects = true, int renderQueue = 2985, string rename = null, string parentPath = null, bool isRelativeToParent = false)
         {
             // polarity true = black, false = white
 
@@ -167,7 +189,7 @@ namespace NewHorizons.Builder.Body
 
             OWAudioSource oneShotOWAudioSource = null;
             
-            var singularityAmbience = Object.Instantiate(_blackHoleAmbience, singularity.transform);
+            var singularityAmbience = GameObject.Instantiate(_blackHoleAmbience, singularity.transform);
             singularityAmbience.name = polarity ? "BlackHoleAmbience" : "WhiteHoleAmbience";
             singularityAmbience.SetActive(true);
             singularityAmbience.GetComponent<SectorAudioGroup>().SetSector(sector);
@@ -175,6 +197,10 @@ namespace NewHorizons.Builder.Body
             var singularityAudioSource = singularityAmbience.GetComponent<AudioSource>();
             singularityAudioSource.maxDistance = distort * 2.5f;
             singularityAudioSource.minDistance = horizon;
+
+            // Sounds really weird on large black holes but isn't noticeable on small ones. #226
+            singularityAudioSource.dopplerLevel = 0;
+
             singularityAmbience.transform.localPosition = Vector3.zero;
             if (sizeController != null) sizeController.audioSource = singularityAudioSource;
 
@@ -193,16 +219,25 @@ namespace NewHorizons.Builder.Body
                     sphereCollider.isTrigger = true;
                     if (sizeController != null) sizeController.sphereCollider = sphereCollider;
 
-                    if (hasDestructionVolume) destructionVolumeGO.AddComponent<BlackHoleDestructionVolume>();
+                    var audio = destructionVolumeGO.AddComponent<AudioSource>();
+                    audio.spatialBlend = 1f;
+                    audio.maxDistance = distort * 2.5f;
+                    destructionVolumeGO.AddComponent<OWAudioSource>();
+
+                    if (hasDestructionVolume)
+                    {
+                        destructionVolumeGO.AddComponent<BlackHoleDestructionVolume>();
+                    }
                     else if (targetStarSystem != null)
                     {
                         var wormholeVolume = destructionVolumeGO.AddComponent<BlackHoleWarpVolume>();
                         wormholeVolume.TargetSolarSystem = targetStarSystem;
+                        wormholeVolume.TargetSpawnID = targetSpawnID;
                     }
                 }
                 else
                 {
-                    var blackHoleOneShot = Object.Instantiate(_blackHoleEmissionOneShot, singularity.transform);
+                    var blackHoleOneShot = GameObject.Instantiate(_blackHoleEmissionOneShot, singularity.transform);
                     blackHoleOneShot.name = "BlackHoleEmissionOneShot";
                     blackHoleOneShot.SetActive(true);
                     oneShotOWAudioSource = blackHoleOneShot.GetComponent<OWAudioSource>();
@@ -211,10 +246,21 @@ namespace NewHorizons.Builder.Body
                     oneShotAudioSource.minDistance = horizon;
                     if (sizeController != null) sizeController.oneShotAudioSource = oneShotAudioSource;
 
-                    var blackHoleVolume = Object.Instantiate(_blackHoleVolume, singularity.transform);
+                    var blackHoleVolume = GameObject.Instantiate(_blackHoleVolume, singularity.transform);
                     blackHoleVolume.name = "BlackHoleVolume";
-                    blackHoleVolume.SetActive(true);
+
+                    // Scale vanish effect to black hole size
                     var bhVolume = blackHoleVolume.GetComponent<BlackHoleVolume>();
+                    foreach (var ps in bhVolume._vanishEffectPrefab.GetComponentsInChildren<ParticleSystem>())
+                    {
+#pragma warning disable CS0618 // Type or member is obsolete - It tells you to use some readonly shit instead
+                        ps.scalingMode = ParticleSystemScalingMode.Hierarchy;
+#pragma warning restore CS0618 // Type or member is obsolete
+                    }
+                    bhVolume._vanishEffectPrefab.transform.localScale = Vector3.one * horizon / 100f;
+
+                    blackHoleVolume.SetActive(true);
+
                     bhVolume._audioSector = sector;
                     bhVolume._emissionSource = oneShotOWAudioSource;
                     var blackHoleSphereCollider = blackHoleVolume.GetComponent<SphereCollider>();
@@ -226,7 +272,7 @@ namespace NewHorizons.Builder.Body
                         {
                             foreach (var renderer in blackHoleVolume.GetComponentsInChildren<ParticleSystemRenderer>(true))
                             {
-                                Object.Destroy(renderer);
+                                GameObject.Destroy(renderer);
                             } 
                         });
                     }
@@ -234,7 +280,7 @@ namespace NewHorizons.Builder.Body
             }
             else
             {
-                GameObject whiteHoleVolumeGO = Object.Instantiate(_whiteHoleVolume);
+                GameObject whiteHoleVolumeGO = GameObject.Instantiate(_whiteHoleVolume);
                 whiteHoleVolumeGO.transform.parent = singularity.transform;
                 whiteHoleVolumeGO.transform.localPosition = Vector3.zero;
                 whiteHoleVolumeGO.transform.localScale = Vector3.one;

@@ -35,6 +35,13 @@ namespace NewHorizons.Builder.Volumes
                     AudioVolumeBuilder.Make(go, sector, audioVolume, mod);
                 }
             }
+            if (config.Volumes.dayNightAudioVolumes != null)
+            {
+                foreach (var dayNightAudioVolume in config.Volumes.dayNightAudioVolumes)
+                {
+                    DayNightAudioVolumeBuilder.Make(go, sector, dayNightAudioVolume, mod);
+                }
+            }
             if (config.Volumes.notificationVolumes != null)
             {
                 foreach (var notificationVolume in config.Volumes.notificationVolumes)

@@ -1,3 +1,4 @@
+using NewHorizons.External.Modules.Props;
 using Newtonsoft.Json;
 
 namespace NewHorizons.External.Modules.WarpPad
@@ -14,7 +15,7 @@ namespace NewHorizons.External.Modules.WarpPad
         /// <summary>
         /// Will create a modern Nomai computer linked to this receiver.
         /// </summary>
-        public NomaiWarpComputerLoggerInfo computer;
+        public NomaiComputerInfo computer;
 
         /// <summary>
         /// Set to true if you want to include Nomai ruin details around the warp pad.

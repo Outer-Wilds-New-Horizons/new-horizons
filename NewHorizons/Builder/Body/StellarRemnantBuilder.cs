@@ -26,6 +26,7 @@ namespace NewHorizons.Builder.Body
                 NHLogger.Log($"Creating stellar remnant for [{star.Config.name}]");
 
                 var sector = SectorBuilder.Make(go, rb, soi);
+                sector._idString = star.Config.name;
                 sector.name = "StellarRemnant";
 
                 sector.gameObject.SetActive(false);
@@ -41,11 +42,6 @@ namespace NewHorizons.Builder.Body
                         break;
                     case StellarRemnantType.NeutronStar:
                         MakeNeutronStar(go, sector, mod, star.Config.Star);
-
-                        break;
-                    case StellarRemnantType.Pulsar:
-                        MakeNeutronStar(go, sector, mod, star.Config.Star);
-                        // TODO: add jets, up rotation speed (use a RotateTransform on the star instead of changing sidereal period)
 
                         break;
                     case StellarRemnantType.BlackHole:
@@ -120,7 +116,7 @@ namespace NewHorizons.Builder.Body
             flares.gameObject.transform.localScale = new Vector3(0.85f, 0.85f, 0.85f);
 
             // Add singularity
-            var singularityRenderer = SingularityBuilder.MakeSingularityGraphics(planetGO, true, neutronStarSize, neutronStarSize * 2.5f);
+            var singularityRenderer = SingularityBuilder.MakeSingularityGraphics(neutronStar, true, neutronStarSize, neutronStarSize * 2.5f);
             singularityRenderer.GetComponent<MeshRenderer>().material.color = new Color(0.5f, 2f, 2f, 1f);
 
             return neutronStar;
@@ -145,8 +141,6 @@ namespace NewHorizons.Builder.Body
                 case StellarRemnantType.WhiteDwarf:
                     return MakeWhiteDwarf(planet, null, mod, progenitor, proxy);
                 case StellarRemnantType.NeutronStar:
-                    return MakeNeutronStar(planet, null, mod, progenitor, proxy);
-                case StellarRemnantType.Pulsar:
                     return MakeNeutronStar(planet, null, mod, progenitor, proxy);
                 case StellarRemnantType.BlackHole:
                     return MakeBlackhole(planet, null, progenitor, proxy);

@@ -1,6 +1,8 @@
 #region
 
+using NewHorizons.Utility.OWML;
 using Newtonsoft.Json;
+using System;
 using UnityEngine;
 
 #endregion
@@ -26,6 +28,11 @@ namespace NewHorizons.External.SerializableData
 
         public static implicit operator Vector2(MVector2 vec)
         {
+            if (vec == null)
+            {
+                NHLogger.LogWarning($"Null MVector2 can't be turned into a non-nullable Vector2, returning Vector2.zero - {Environment.StackTrace}");
+                return Vector2.zero;
+            }
             return new Vector2(vec.x, vec.y);
         }
     }

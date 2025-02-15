@@ -1,6 +1,6 @@
 using NewHorizons.Components;
 using NewHorizons.Components.Orbital;
-using NewHorizons.External.Configs;
+using NewHorizons.External;
 using NewHorizons.Utility.OWML;
 using UnityEngine;
 
@@ -8,12 +8,18 @@ namespace NewHorizons.Builder.General
 {
     public static class AstroObjectBuilder
     {
-        public static NHAstroObject Make(GameObject body, AstroObject primaryBody, PlanetConfig config, bool isVanilla)
+        public static GameObject CenterOfUniverse { get; private set; }
+
+        public static NHAstroObject Make(GameObject body, AstroObject primaryBody, NewHorizonsBody nhBody, bool isVanilla)
         {
             NHAstroObject astroObject = body.AddComponent<NHAstroObject>();
+            astroObject.modUniqueName = nhBody.Mod.ModHelper.Manifest.UniqueName;
+
+            var config = nhBody.Config;
+
             astroObject.isVanilla = isVanilla;
-            astroObject.HideDisplayName = !config.Base.hasMapMarker;
-            astroObject.invulnerableToSun = config.Base.invulnerableToSun;
+            astroObject.HideDisplayName = !config.MapMarker.enabled;
+            astroObject.invulnerableToSun = !config.Base.hasFluidDetector;
 
             if (config.Orbit != null) astroObject.SetOrbitalParametersFromConfig(config.Orbit);
 
@@ -41,22 +47,25 @@ namespace NewHorizons.Builder.General
                 var alignmentAxis = config.Orbit.alignmentAxis ?? new Vector3(0, -1, 0);
 
                 // Start it off facing the right way
-                var facing = body.transform.TransformDirection(alignmentAxis);
-                body.transform.rotation = Quaternion.FromToRotation(facing, alignmentAxis) * body.transform.rotation;
-
                 var alignment = body.AddComponent<AlignWithTargetBody>();
                 alignment.SetTargetBody(primaryBody?.GetAttachedOWRigidbody());
-                alignment._usePhysicsToRotate = false;
                 alignment._localAlignmentAxis = alignmentAxis;
+                alignment._owRigidbody = body.GetComponent<OWRigidbody>();
+
+                // Have it face the right way
+                var currentDirection = alignment.transform.TransformDirection(alignment._localAlignmentAxis);
+                var targetDirection = alignment.GetAlignmentDirection();
+                alignment.transform.rotation = Quaternion.FromToRotation(currentDirection, targetDirection) * alignment.transform.rotation;
+                alignment._owRigidbody.SetAngularVelocity(Vector3.zero);
 
                 // Static bodies won't update rotation with physics for some reason
-                // Have to set it in 2 ticks else it flings the player into deep space on spawn (#171)
-                // Pushed to 3 frames after system is ready, bc spawning takes 2 frames, this is hurting my brain too much to try to improve the numbers idc
-                if (!config.Orbit.isStatic) Delay.RunWhen(() => Main.IsSystemReady, () => Delay.FireInNUpdates(() => alignment._usePhysicsToRotate = true, 3));
+                alignment._usePhysicsToRotate = !config.Orbit.isStatic;
             }
 
             if (config.Base.centerOfSolarSystem)
             {
+                CenterOfUniverse = body;
+
                 NHLogger.Log($"Setting center of universe to {config.name}");
 
                 Delay.RunWhen(

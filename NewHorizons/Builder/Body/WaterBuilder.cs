@@ -5,6 +5,9 @@ using NewHorizons.External.Modules.VariableSize;
 using Tessellation;
 using NewHorizons.Utility.OWML;
 using NewHorizons.Utility.OuterWilds;
+using NewHorizons.External.Configs;
+using NewHorizons.Components.Volumes;
+using System.Linq;
 
 namespace NewHorizons.Builder.Body
 {
@@ -41,9 +44,11 @@ namespace NewHorizons.Builder.Body
             if (_oceanAmbientLight == null) _oceanAmbientLight = SearchUtilities.Find("Ocean_GD").GetComponent<OceanLODController>()._ambientLight.gameObject.InstantiateInactive().Rename("OceanAmbientLight").DontDestroyOnLoad();
         }
 
-        public static RadialFluidVolume Make(GameObject planetGO, Sector sector, OWRigidbody rb, WaterModule module)
+        public static RadialFluidVolume Make(GameObject planetGO, Sector sector, OWRigidbody rb, PlanetConfig config)
         {
             InitPrefabs();
+
+            var module = config.Water;
 
             var waterSize = module.size;
 
@@ -124,13 +129,14 @@ namespace NewHorizons.Builder.Body
             fluidVolume._density = module.density;
             fluidVolume._layer = 5;
             fluidVolume._priority = 3;
-            fluidVolume._allowShipAutoroll = true;
+            fluidVolume._allowShipAutoroll = module.allowShipAutoroll;
             fluidVolume._disableOnStart = false;
 
             var fogGO = Object.Instantiate(_oceanFog, waterGO.transform);
             fogGO.name = "OceanFog";
             fogGO.transform.localPosition = Vector3.zero;
-            fogGO.transform.localScale = Vector3.one;
+            // In base game GD ocean fog is 550 while the water volume is 500
+            fogGO.transform.localScale = Vector3.one * 550f / 500f;
             fogGO.SetActive(true);
 
             if (module.tint != null)
@@ -154,7 +160,12 @@ namespace NewHorizons.Builder.Body
                 fogGO.GetComponent<MeshRenderer>().material.SetFloat("_Radius2", 0);
             }
 
-            // TODO: fix ruleset making the sand bubble pop up
+            if (config.Cloak != null)
+            {
+                fluidVolume.gameObject.AddComponent<WaterCloakFixerVolume>().material = TSR.sharedMaterials.First(x => x.name == "Ocean_GD_Surface_mat");
+            }
+
+            // TODO: fix ruleset making the sand bubble pop up when editing the twins
 
             waterGO.transform.position = planetGO.transform.position;
             waterGO.SetActive(true);

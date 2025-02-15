@@ -200,7 +200,7 @@ namespace NewHorizons.Components.SizeControllers
 
             var secondsElapsed = TimeLoop.GetSecondsElapsed();
             var lifespanInSeconds = lifespan * 60;
-            if (willExplode && secondsElapsed >= lifespanInSeconds)
+            if (!isProxy && willExplode && secondsElapsed >= lifespanInSeconds)
             {
                 var timeAfter = secondsElapsed - lifespanInSeconds;
                 if (timeAfter <= collapseTime)
@@ -271,7 +271,8 @@ namespace NewHorizons.Components.SizeControllers
             _surface._materials[0].Lerp(_collapseStartSurfaceMaterial, _collapseEndSurfaceMaterial, t);
 
             // After the collapse is done we go supernova
-            if (_collapseTimer > collapseTime) StartSupernova();
+            // Main star will call this on the proxy
+            if (!isProxy && _collapseTimer > collapseTime) StartSupernova();
         }
 
         private void UpdateSupernova()
@@ -364,7 +365,7 @@ namespace NewHorizons.Components.SizeControllers
             _surface._materials[0].CopyPropertiesFromMaterial(_collapseStartSurfaceMaterial);
             if (oneShotSource != null && !PlayerState.IsSleepingAtCampfire() && !PlayerState.InDreamWorld()) oneShotSource.PlayOneShot(AudioType.Sun_Collapse);
 
-            if (_proxy != null) _proxy.StartCollapse();
+            _proxy?.StartCollapse();
         }
 
         public void StopCollapse()
@@ -377,7 +378,7 @@ namespace NewHorizons.Components.SizeControllers
             _isCollapsing = false;
             _surface._materials[0].CopyPropertiesFromMaterial(_endSurfaceMaterial);
 
-            if (_proxy != null) _proxy.StopCollapse();
+            _proxy?.StopCollapse();
         }
 
         public void StartSupernova()
@@ -391,12 +392,24 @@ namespace NewHorizons.Components.SizeControllers
             supernova.Activate();
             _isSupernova = true;
             _supernovaStartTime = Time.time;
-            if (atmosphere != null) atmosphere.SetActive(false);
-            if (destructionVolume != null) destructionVolume._deathType = DeathType.Supernova;
-            if (planetDestructionVolume != null) planetDestructionVolume._deathType = DeathType.Supernova;
-            if (oneShotSource != null && !PlayerState.IsSleepingAtCampfire() && !PlayerState.InDreamWorld()) oneShotSource.PlayOneShot(AudioType.Sun_Explosion);
+            atmosphere?.SetActive(false);
 
-            if (_proxy != null) _proxy.StartSupernova();
+            if (destructionVolume != null)
+            {
+                destructionVolume._deathType = DeathType.Supernova;
+            }
+
+            if (planetDestructionVolume != null)
+            {
+                planetDestructionVolume._deathType = DeathType.Supernova;
+            }
+
+            if (oneShotSource != null && !PlayerState.IsSleepingAtCampfire() && !PlayerState.InDreamWorld())
+            {
+                oneShotSource.PlayOneShot(AudioType.Sun_Explosion);
+            }
+
+            _proxy?.StartSupernova();
         }
 
         public void StopSupernova()
@@ -406,26 +419,33 @@ namespace NewHorizons.Components.SizeControllers
             NHLogger.LogVerbose($"{gameObject.transform.root.name} stopped supernova");
 
             SupernovaStop.Invoke();
-            if (supernova != null) supernova.Deactivate();
+            supernova?.Deactivate();
             _isSupernova = false;
-            if (atmosphere != null) atmosphere.SetActive(true);
+            atmosphere?.SetActive(true);
+            
             if (destructionVolume != null)
             {
                 destructionVolume._deathType = DeathType.Energy;
                 destructionVolume.transform.localScale = Vector3.one;
             }
+            
             if (planetDestructionVolume != null)
             {
                 planetDestructionVolume._deathType = DeathType.Energy;
                 planetDestructionVolume.transform.localScale = Vector3.one;
             }
-            if (heatVolume != null) heatVolume.transform.localScale = Vector3.one;
+
+            if (heatVolume != null)
+            {
+                heatVolume.transform.localScale = Vector3.one;
+            }
+            
             gameObject.SetActive(true);
             transform.localScale = Vector3.one;
             _surface._materials[0] = _surfaceMaterial;
             _surface.transform.localScale = Vector3.one;
 
-            if (_proxy != null) _proxy.StopSupernova();
+            _proxy?.StopSupernova();
         }
 
         public bool IsCollapsing() => _isCollapsing;
@@ -444,6 +464,8 @@ namespace NewHorizons.Components.SizeControllers
 
         public float GetSupernovaRadius() => supernova.GetSupernovaRadius();
 
+        public float GetSurfaceRadius() => transform.localScale.x;
+
         public float GetMaxSupernovaRadius() => supernovaSize;
 
         protected new void FixedUpdate()
@@ -460,7 +482,11 @@ namespace NewHorizons.Components.SizeControllers
             {
                 base.FixedUpdate();
                 UpdateMainSequence();
-                if (willExplode && (TimeLoop.GetMinutesElapsed() / lifespan) >= 1) StartCollapse();
+                // Proxy will have its collapse triggered by the main star component
+                if (!isProxy && willExplode && (TimeLoop.GetMinutesElapsed() / lifespan) >= 1)
+                {
+                    StartCollapse();
+                }
             }
             else
             {

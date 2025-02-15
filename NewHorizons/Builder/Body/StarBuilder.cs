@@ -1,12 +1,12 @@
 using NewHorizons.Components.SizeControllers;
-using NewHorizons.Utility;
-using UnityEngine;
+using NewHorizons.Components.Stars;
 using NewHorizons.External.Modules.VariableSize;
+using NewHorizons.Utility;
+using NewHorizons.Utility.Files;
+using NewHorizons.Utility.OuterWilds;
 using OWML.Common;
 using System.Linq;
-using NewHorizons.Components.Stars;
-using NewHorizons.Utility.OuterWilds;
-using NewHorizons.Utility.Files;
+using UnityEngine;
 
 namespace NewHorizons.Builder.Body
 {
@@ -53,6 +53,7 @@ namespace NewHorizons.Builder.Body
             if (_starSurface == null) _starSurface = SearchUtilities.Find("Sun_Body/Sector_SUN/Geometry_SUN/Surface").InstantiateInactive().Rename("Prefab_Surface_Star").DontDestroyOnLoad();
             if (_starSolarFlareEmitter == null) _starSolarFlareEmitter = SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/SolarFlareEmitter").InstantiateInactive().Rename("Prefab_SolarFlareEmitter_Star").DontDestroyOnLoad();
             if (_supernovaPrefab == null) _supernovaPrefab = SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/Supernova").InstantiateInactive().Rename("Prefab_Supernova").DontDestroyOnLoad();
+            
             if (_mainSequenceMaterial == null) _mainSequenceMaterial = new Material(SearchUtilities.Find("Sun_Body").GetComponent<SunController>()._startSurfaceMaterial).DontDestroyOnLoad();
             if (_giantMaterial == null) _giantMaterial = new Material(SearchUtilities.Find("Sun_Body").GetComponent<SunController>()._endSurfaceMaterial).DontDestroyOnLoad();
             if (_flareMaterial == null)
@@ -177,14 +178,11 @@ namespace NewHorizons.Builder.Body
             light.color = lightColour;
             ambientLight.color = new Color(lightColour.r, lightColour.g, lightColour.b, lightColour.a == 0 ? 0.0001f : lightColour.a);
 
+            // used to use CopyPropertiesFrom, but that doesnt work here. instead, just copy settings from unity explorer
             var faceActiveCamera = sunLight.AddComponent<FaceActiveCamera>();
-            faceActiveCamera.CopyPropertiesFrom(_sunLight.GetComponent<FaceActiveCamera>());
+            faceActiveCamera._useLookAt = true;
             var csmTextureCacher = sunLight.AddComponent<CSMTextureCacher>();
-            csmTextureCacher.CopyPropertiesFrom(_sunLight.GetComponent<CSMTextureCacher>());
-            csmTextureCacher._light = light;
             var proxyShadowLight = sunLight.AddComponent<ProxyShadowLight>();
-            proxyShadowLight.CopyPropertiesFrom(_sunLight.GetComponent<ProxyShadowLight>());
-            proxyShadowLight._light = light;
 
             sunLight.name = "StarLight";
 
@@ -346,30 +344,54 @@ namespace NewHorizons.Builder.Body
             solarFlareEmitter.transform.localPosition = Vector3.zero;
             solarFlareEmitter.transform.localScale = Vector3.one;
             solarFlareEmitter.name = "SolarFlareEmitter";
-            solarFlareEmitter.SetActive(true);
+
+            var emitter = solarFlareEmitter.GetComponent<SolarFlareEmitter>();
+
+            if (starModule.solarFlareSettings != null)
+            {
+                emitter._minTimeBetweenFlares = starModule.solarFlareSettings.minTimeBetweenFlares;
+                emitter._maxTimeBetweenFlares = starModule.solarFlareSettings.maxTimeBetweenFlares;
+                emitter._lifeLength = starModule.solarFlareSettings.lifeLength;
+            }
 
             if (starModule.tint != null)
             {
-                var flareTint = starModule.tint.ToColor();
-                var emitter = solarFlareEmitter.GetComponent<SolarFlareEmitter>();
-                emitter.tint = flareTint;
+                emitter.tint = starModule.tint.ToColor();
+            }
 
-                var material = new Material(_flareMaterial);
-                // Since the star isn't awake yet the controllers haven't been made 
-                foreach (var prefab in new GameObject[] { emitter.domePrefab, emitter.loopPrefab, emitter.streamerPrefab })
+            var material = new Material(_flareMaterial);
+
+            // Make our own copies of all prefabs to make sure we don't actually modify them
+            // else it will affect any other star using these prefabs
+            // #668
+            emitter._domePrefab = emitter.domePrefab.InstantiateInactive();
+            emitter._loopPrefab = emitter.loopPrefab.InstantiateInactive();
+            emitter._streamerPrefab = emitter.streamerPrefab.InstantiateInactive();
+
+            // Get all possible controllers, prefabs or already created ones
+            foreach (var controller in new GameObject[] { emitter.domePrefab, emitter.loopPrefab, emitter.streamerPrefab }
+                .Select(x => x.GetComponent<SolarFlareController>())
+                .Concat(emitter.GetComponentsInChildren<SolarFlareController>()))
+            {
+                // controller._meshRenderer doesn't exist yet since Awake hasn't been called
+                if (starModule.tint != null)
                 {
-                    var controller = prefab.GetComponent<SolarFlareController>();
-                    // controller._meshRenderer doesn't exist yet since Awake hasn't been called
                     controller.GetComponent<MeshRenderer>().sharedMaterial = material;
                     controller._color = Color.white;
-                    controller._tint = flareTint;
+                    controller._tint = starModule.tint.ToColor();
                 }
+                if (starModule.solarFlareSettings != null)
+                {
+                    controller._scaleFactor = Vector3.one * starModule.solarFlareSettings.scaleFactor;
+                }
+                controller.gameObject.SetActive(true);
+                controller.enabled = true;
             }
 
             starGO.transform.position = rootObject.transform.position;
             starGO.transform.localScale = starModule.size * Vector3.one;
 
-            TessellatedSphereRenderer surface = sunSurface.GetComponent<TessellatedSphereRenderer>();
+            var surface = sunSurface.GetComponent<TessellatedSphereRenderer>();
 
             if (starModule.tint != null)
             {
@@ -386,10 +408,15 @@ namespace NewHorizons.Builder.Body
                 if (starModule.endTint != null)
                 {
                     var endColour = starModule.endTint.ToColor();
-                    darkenedColor = new Color(endColour.r * modifier, endColour.g * modifier, endColour.b * modifier);
+                    var adjustedEndColour = new Color(endColour.r * modifier, endColour.g * modifier, endColour.b * modifier);
+                    Color.RGBToHSV(adjustedEndColour, out var hEnd, out var sEnd, out var vEnd);
+                    var darkenedEndColor = Color.HSVToRGB(hEnd, sEnd * 1.2f, vEnd * 0.1f);
+                    surface.sharedMaterial.SetTexture(ColorRamp, ImageUtilities.LerpGreyscaleImageAlongX(_colorOverTime, adjustedColour, darkenedColor, adjustedEndColour, darkenedEndColor));
                 }
-
-                surface.sharedMaterial.SetTexture(ColorRamp, ImageUtilities.LerpGreyscaleImage(_colorOverTime, adjustedColour, darkenedColor));
+                else
+                {
+                    surface.sharedMaterial.SetTexture(ColorRamp, ImageUtilities.LerpGreyscaleImage(_colorOverTime, adjustedColour, darkenedColor));
+                }
             }
 
             if (!string.IsNullOrEmpty(starModule.starRampTexture))
@@ -400,6 +427,8 @@ namespace NewHorizons.Builder.Body
                     surface.sharedMaterial.SetTexture(ColorRamp, ramp);
                 }
             }
+
+            solarFlareEmitter.SetActive(true);
 
             return starGO;
         }

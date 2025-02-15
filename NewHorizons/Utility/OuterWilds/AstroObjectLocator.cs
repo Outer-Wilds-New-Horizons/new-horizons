@@ -1,5 +1,8 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using NewHorizons.Components.Orbital;
+using NewHorizons.Handlers;
 using NewHorizons.Utility.OWML;
 using UnityEngine;
 
@@ -31,7 +34,7 @@ namespace NewHorizons.Utility.OuterWilds
             }
 
             // Else check stock names
-            var stringID = name.ToUpper().Replace(" ", "_").Replace("'", "");
+            var stringID = name.ToUpperInvariant().Replace(" ", "_").Replace("'", "");
             if (stringID.Equals("ATTLEROCK")) stringID = "TIMBER_MOON";
             if (stringID.Equals("HOLLOWS_LANTERN")) stringID = "VOLCANIC_MOON";
             if (stringID.Equals("ASH_TWIN")) stringID = "TOWER_TWIN";
@@ -40,7 +43,7 @@ namespace NewHorizons.Utility.OuterWilds
             if (stringID.Equals("EYE") || stringID.Equals("EYEOFTHEUNIVERSE")) stringID = "EYE_OF_THE_UNIVERSE";
 
             string key;
-            if (stringID.ToUpper().Replace("_", "").Equals("MAPSATELLITE"))
+            if (stringID.ToUpperInvariant().Replace("_", "").Equals("MAPSATELLITE"))
             {
                 key = AstroObject.Name.MapSatellite.ToString();
             }
@@ -161,6 +164,9 @@ namespace NewHorizons.Utility.OuterWilds
                         .Select(x => x.gameObject)
                         .Where(x => x.name == "SS_Debris_Body"));
                     break;
+                case AstroObject.Name.Eye:
+                    otherChildren.Add(SearchUtilities.Find("Vessel_Body"));
+                    break;
                 // Just in case GetChildren runs before sun station's name is changed
                 case AstroObject.Name.CustomString:
                     if (primary._customName.Equals("Sun Station"))
@@ -176,6 +182,33 @@ namespace NewHorizons.Utility.OuterWilds
             }
 
             return otherChildren.ToArray();
+        }
+
+        public static string GetPlanetName(AstroObject astroObject)
+        {
+            if (astroObject != null)
+            {
+                if (astroObject is NHAstroObject nhAstroObject)
+                {
+                    var customName = nhAstroObject.GetCustomName();
+
+                    if (!string.IsNullOrWhiteSpace(customName))
+                    {
+                        return TranslationHandler.GetTranslation(customName, TranslationHandler.TextType.UI, false);
+                    }
+                }
+                else
+                {
+                    AstroObject.Name astroObjectName = astroObject.GetAstroObjectName();
+
+                    if (astroObjectName - AstroObject.Name.Sun <= 7 || astroObjectName - AstroObject.Name.TimberMoon <= 1)
+                    {
+                        return AstroObject.AstroObjectNameToString(astroObject.GetAstroObjectName());
+                    }
+                }
+            }
+
+            return "???";
         }
     }
 }
