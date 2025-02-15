@@ -50,14 +50,33 @@ namespace NewHorizons.External.Configs
         public string ambience;
 
         /// <summary>
-        /// Changes the speed the skybox rotates (and by extension the main menu planet). This is in degrees per second.
+        /// Edit properties of the background
         /// </summary>
-        public float rotationSpeed = 1;
+        public BackgroundModule Background;
 
         /// <summary>
         /// Edit properties of the main menu planet
         /// </summary>
         public MenuPlanetModule MenuPlanet;
+
+        [JsonObject]
+        public class BackgroundModule
+        {
+            /// <summary>
+            /// Changes the speed the background rotates (and by extension the main menu planet). This is in degrees per second.
+            /// </summary>
+            public float rotationSpeed = 1;
+
+            /// <summary>
+            /// Disables the renderers of objects at the provided paths
+            /// </summary>
+            public string[] removeChildren;
+
+            /// <summary>
+            /// A list of DetailInfos to populate the background with.
+            /// </summary>
+            public SimplifiedDetailInfo[] details;
+        }
 
         [JsonObject]
         public class MenuPlanetModule

@@ -127,7 +127,26 @@ namespace NewHorizons.Handlers
                 Delay.FireOnNextUpdate(() => ambienceSource.AssignAudioLibraryClip(audioType));
             }
 
-            SearchUtilities.Find("Scene/Background").GetComponent<RotateTransform>()._degreesPerSecond = config.rotationSpeed;
+            if (config.Background != null)
+            {
+                var background = SearchUtilities.Find("Scene/Background");
+
+                if (config.Background.removeChildren != null)
+                {
+                    RemoveChildren(background, config.Background.removeChildren);
+                }
+
+                if (config.Background.details != null)
+                {
+                    foreach (var simplifiedDetail in config.Background.details)
+                    {
+                        DetailBuilder.Make(background, null, mod, new DetailInfo(simplifiedDetail));
+                    }
+                }
+
+                var rotator = background.GetComponent<RotateTransform>();
+                rotator._degreesPerSecond = config.Background.rotationSpeed;
+            }
 
             if (config.MenuPlanet != null)
             {
@@ -152,7 +171,7 @@ namespace NewHorizons.Handlers
 
                 if (config.MenuPlanet.destroyMenuPlanet)
                 {
-                    menuPlanet.SetActive(false);
+                    SearchUtilities.Find("Scene/Background/PlanetPivot/PlanetRoot").SetActive(false);
                 }
             }
         }
