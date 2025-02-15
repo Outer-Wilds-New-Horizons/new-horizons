@@ -508,6 +508,9 @@ namespace NewHorizons.Handlers
             bool HasCondition();
         }
 
+        /// <summary>
+        /// For water and etc (they require a sector or else they will get deleted by detail builder)
+        /// </summary>
         private class FakeSector : Sector
         {
             public override void Awake()
