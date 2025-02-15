@@ -512,6 +512,7 @@ namespace NewHorizons.Handlers
         {
             public override void Awake()
             {
+                _triggerRoot = gameObject;
                 _subsectors = new List<Sector>();
                 _occupantMask = DynamicOccupant.Player;
                 SectorManager.RegisterSector(this);
