@@ -35,12 +35,12 @@ There are also tools to help generate these images for you such as [Textures For
 
 The following modules support variable sizing, meaning they can change scale over the course of the loop.
 
--   Water
--   Lava
--   Star
--   Sand
--   Funnel
--   Ring
+- Water
+- Lava
+- Star
+- Sand
+- Funnel
+- Ring
 
 To do this, simply specify a `curve` property on the module
 
@@ -89,6 +89,9 @@ This makes the second planet a quantum state of the first, anything you specify 
     }
 }
 ```
+
+Keep in mind that if you  redefine `Orbit` on all configs (even with the same parameters each time), **the planet will change its position within its orbit when changing states.**
+*If you want your Quantum Planet's position to* ***NOT*** *change,* ***only define `Orbit` on the main state***.
 
 ## Barycenters (Focal Points)
 

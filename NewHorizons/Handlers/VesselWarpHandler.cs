@@ -1,3 +1,4 @@
+using NewHorizons.Builder.General;
 using NewHorizons.Builder.Props;
 using NewHorizons.Components;
 using NewHorizons.Components.EyeOfTheUniverse;
@@ -5,7 +6,9 @@ using NewHorizons.Utility;
 using NewHorizons.Utility.OuterWilds;
 using NewHorizons.Utility.OWML;
 using UnityEngine;
+using System.Collections;
 using static NewHorizons.Main;
+using static NewHorizons.Utility.Files.AssetBundleUtilities;
 
 namespace NewHorizons.Handlers
 {
@@ -41,7 +44,7 @@ namespace NewHorizons.Handlers
         {
             var vesselConfig = SystemDict[Instance.CurrentStarSystem].Config?.Vessel;
             var shouldSpawnOnVessel = IsVesselPresent() && (vesselConfig?.spawnOnVessel ?? false);
-            return !Instance.IsWarpingFromShip && (Instance.IsWarpingFromVessel || shouldSpawnOnVessel);
+            return !Instance.IsWarpingFromShip && (Instance.IsWarpingFromVessel || Instance.DidWarpFromVessel || shouldSpawnOnVessel);
         }
 
         public static void LoadVessel()
@@ -54,20 +57,78 @@ namespace NewHorizons.Handlers
             }
 
             if (IsVesselPresentAndActive())
+            {
                 _vesselSpawnPoint = Instance.CurrentStarSystem == "SolarSystem" ? UpdateVessel() : CreateVessel();
+            }
             else
-                _vesselSpawnPoint = SearchUtilities.Find("DB_VesselDimension_Body/Sector_VesselDimension").GetComponentInChildren<SpawnPoint>();
+            {
+                var vesselDimension = SearchUtilities.Find("DB_VesselDimension_Body/Sector_VesselDimension");
+                var vesselDimensionSpawn = vesselDimension.GetComponentInChildren<SpawnPoint>(true);
+                var vesselWarpController = vesselDimension.GetComponentInChildren<VesselWarpController>(true);
+
+                var defaultPlayerWarpPoint = new GameObject("DefaultPlayerWarpPos");
+                defaultPlayerWarpPoint.transform.SetParent(vesselWarpController.transform, false);
+                defaultPlayerWarpPoint.transform.localPosition = new Vector3(0, -5.82f, -6.56f);
+                vesselWarpController._defaultPlayerWarpPoint = defaultPlayerWarpPoint.transform;
+
+                var vesselSpawnObj = new GameObject("SPAWN_Vessel");
+                vesselSpawnObj.transform.SetParent(vesselWarpController.transform.parent.parent, false);
+                vesselSpawnObj.transform.localPosition = new Vector3(-0.3f, -5.18f, -6.35f);
+                var vesselSpawnPoint = vesselSpawnObj.AddComponent<VesselSpawnPoint>();
+                vesselSpawnPoint.WarpController = vesselWarpController;
+                vesselSpawnPoint._triggerVolumes = vesselDimensionSpawn._triggerVolumes;
+                _vesselSpawnPoint = vesselSpawnPoint;
+            }
         }
 
         public static void TeleportToVessel()
         {
             var playerSpawner = Object.FindObjectOfType<PlayerSpawner>();
-            NHLogger.LogVerbose("Debug warping into vessel");
-            playerSpawner.DebugWarp(_vesselSpawnPoint);
+            if (_vesselSpawnPoint is VesselSpawnPoint vesselSpawnPoint)
+            {
+                NHLogger.LogVerbose("Relative warping into vessel");
+                vesselSpawnPoint.WarpPlayer();
+
+                // #1034 Vessel warp sometimes has the player get flung away into space and die
+                // We do what we do with regular spawns where we keep resetting their position to the right one while invincible until we're relatively certain
+                // that the spawning sequence is done
+                Delay.StartCoroutine(FixPlayerSpawning(25, vesselSpawnPoint));
+            }
+            else
+            {
+                NHLogger.LogVerbose("Debug warping into vessel");
+                playerSpawner.DebugWarp(_vesselSpawnPoint);
+            }
             Builder.General.SpawnPointBuilder.SuitUp();
 
+            LoadDB();
+        }
+
+        private static IEnumerator FixPlayerSpawning(int frameInterval, VesselSpawnPoint vesselSpawn)
+        {
+            InvulnerabilityHandler.MakeInvulnerable(true);
+
+            var frameCount = 0;
+            while (frameCount <= frameInterval)
+            {
+                vesselSpawn.WarpPlayer();
+                frameCount++;
+                yield return null; // Wait for the next frame
+            }
+
+            InvulnerabilityHandler.MakeInvulnerable(false);
+            var playerBody = SearchUtilities.Find("Player_Body").GetAttachedOWRigidbody();
+            var resources = playerBody.GetComponent<PlayerResources>();
+            resources._currentHealth = 100f;
+        }
+
+        public static void LoadDB()
+        {
             if (Instance.CurrentStarSystem == "SolarSystem")
             {
+                //Deactivate lock since we aren't in timber anymore
+                GameObject.Destroy(SearchUtilities.Find("TimberHearth_Body/StreamingGroup_TH").GetComponent<StreamingLock>());
+
                 // Deactivate village music because for some reason it still plays.
                 SearchUtilities.Find("TimberHearth_Body/Sector_TH/Sector_Village/Volumes_Village/MusicVolume_Village").GetComponent<VillageMusicVolume>().Deactivate();
 
@@ -81,7 +142,7 @@ namespace NewHorizons.Handlers
             }
         }
 
-        public static EyeSpawnPoint CreateVessel()
+        public static VesselSpawnPoint CreateVessel()
         {
             var system = SystemDict[Instance.CurrentStarSystem];
 
@@ -131,16 +192,23 @@ namespace NewHorizons.Handlers
             vesselWarpController._targetWarpPlatform._whiteHole.OnCollapse += vesselWarpController._targetWarpPlatform.OnWhiteHoleCollapse;
 
             GameObject blackHole = SearchUtilities.Find("DB_VesselDimension_Body/Sector_VesselDimension/Sector_VesselBridge/Interactibles_VesselBridge/BlackHole");
-            GameObject newBlackHole = Object.Instantiate(blackHole, Vector3.zero, Quaternion.identity, singularityRoot.transform);
+            GameObject newBlackHole = Object.Instantiate(blackHole, singularityRoot.transform);
+            newBlackHole.transform.localPosition = Vector3.zero;
+            newBlackHole.transform.localRotation = Quaternion.identity;
+            newBlackHole.transform.localScale = Vector3.one;
             newBlackHole.name = "BlackHole";
             vesselWarpController._blackHole = newBlackHole.GetComponentInChildren<SingularityController>();
             vesselWarpController._blackHoleOneShot = vesselWarpController._blackHole.transform.parent.Find("BlackHoleAudio_OneShot").GetComponent<OWAudioSource>();
 
             GameObject whiteHole = SearchUtilities.Find("DB_VesselDimension_Body/Sector_VesselDimension/Sector_VesselBridge/Interactibles_VesselBridge/WhiteHole");
-            GameObject newWhiteHole = Object.Instantiate(whiteHole, Vector3.zero, Quaternion.identity, singularityRoot.transform);
+            GameObject newWhiteHole = Object.Instantiate(whiteHole, singularityRoot.transform);
+            newWhiteHole.transform.localPosition = Vector3.zero;
+            newWhiteHole.transform.localRotation = Quaternion.identity;
+            newWhiteHole.transform.localScale = Vector3.one;
             newWhiteHole.name = "WhiteHole";
             vesselWarpController._whiteHole = newWhiteHole.GetComponentInChildren<SingularityController>();
             vesselWarpController._whiteHoleOneShot = vesselWarpController._whiteHole.transform.parent.Find("WhiteHoleAudio_OneShot").GetComponent<OWAudioSource>();
+            vesselWarpController._whiteHole._startActive = true;
 
             vesselObject.GetComponent<MapMarker>()._labelID = (UITextType)TranslationHandler.AddUI("Vessel");
 
@@ -165,6 +233,17 @@ namespace NewHorizons.Handlers
                     Object.Destroy(rfVolume.gameObject);
                 }
             }
+            
+            if (hasParentBody)
+            {
+                foreach (OWRigidbody dynamicProp in vesselObject.GetComponentsInChildren<OWRigidbody>(true))
+                {
+                    if (dynamicProp.GetComponent<NomaiInterfaceOrb>() == null)
+                    {
+                        dynamicProp.gameObject.AddComponent<FixPhysics>();
+                    }
+                }
+            }
 
             var attachWarpExitToVessel = system.Config.Vessel?.warpExit?.attachToVessel ?? false;
             var warpExitParent = vesselWarpController._targetWarpPlatform.transform.parent;
@@ -186,20 +265,23 @@ namespace NewHorizons.Handlers
                 }
             }
 
-            EyeSpawnPoint eyeSpawnPoint = vesselObject.GetComponentInChildren<EyeSpawnPoint>(true);
+            VesselSpawnPoint spawnPoint = vesselObject.GetComponentInChildren<VesselSpawnPoint>(true);
             if (ShouldSpawnAtVessel())
             {
-                system.SpawnPoint = eyeSpawnPoint;
+                SpawnPointBuilder.OverridePlayerSpawn(spawnPoint);
             }
 
             vesselObject.SetActive(true);
 
-            Delay.FireOnNextUpdate(() => SetupWarpController(vesselWarpController));
+            var power = vesselWarpController.transform.Find("PowerSwitchInterface");
+            var orb = power.GetComponentInChildren<NomaiInterfaceOrb>(true);
+            // Run after Start (when pillar is lowered immediately) and then skip 100 frames so that the weird orb rising thing doesn't happen #958
+            Delay.RunWhenAndInNUpdates(() => SetupWarpController(vesselWarpController, orb), () => !vesselWarpController._coordinateInterface._pillarRaised, 100);
 
-            return eyeSpawnPoint;
+            return spawnPoint;
         }
 
-        public static SpawnPoint UpdateVessel()
+        public static VesselSpawnPoint UpdateVessel()
         {
             var system = SystemDict[Instance.CurrentStarSystem];
 
@@ -207,7 +289,7 @@ namespace NewHorizons.Handlers
             var vectorSector = SearchUtilities.Find("DB_VesselDimension_Body/Sector_VesselDimension");
             VesselObject = vectorSector;
 
-            var spawnPoint = vectorSector.GetComponentInChildren<SpawnPoint>();
+            var spawnPoint = vectorSector.GetComponentInChildren<SpawnPoint>(true);
 
             VesselWarpController vesselWarpController = vectorSector.GetComponentInChildren<VesselWarpController>(true);
             WarpController = vesselWarpController;
@@ -219,12 +301,30 @@ namespace NewHorizons.Handlers
                 vesselWarpController._whiteHoleOneShot = vesselWarpController._whiteHole.transform.parent.Find("WhiteHoleAudio_OneShot").GetComponent<OWAudioSource>();
             }
 
-            Delay.FireOnNextUpdate(() => SetupWarpController(vesselWarpController, true));
+            vesselWarpController._whiteHole._startActive = true;
+            vesselWarpController._whiteHole.Stabilize();
 
-            return spawnPoint;
+            var defaultPlayerWarpPoint = new GameObject("DefaultPlayerWarpPos");
+            defaultPlayerWarpPoint.transform.SetParent(vesselWarpController.transform, false);
+            defaultPlayerWarpPoint.transform.localPosition = new Vector3(0, -5.82f, -6.56f);
+            vesselWarpController._defaultPlayerWarpPoint = defaultPlayerWarpPoint.transform;
+
+            var vesselSpawnObj = new GameObject("SPAWN_Vessel");
+            vesselSpawnObj.transform.SetParent(vesselWarpController.transform.parent.parent, false);
+            vesselSpawnObj.transform.localPosition = new Vector3(-0.3f, -5.18f, -6.35f);
+            var vesselSpawnPoint = vesselSpawnObj.AddComponent<VesselSpawnPoint>();
+            vesselSpawnPoint.WarpController = vesselWarpController;
+            vesselSpawnPoint._triggerVolumes = spawnPoint._triggerVolumes;
+
+            var power = vesselWarpController.transform.Find("PowerSwitchInterface");
+            var orb = power.GetComponentInChildren<NomaiInterfaceOrb>(true);
+            // Run after Start (when pillar is lowered immediately) and then skip 100 frames so that the weird orb rising thing doesn't happen #958
+            Delay.RunWhenAndInNUpdates(() => SetupWarpController(vesselWarpController, orb, true), () => !vesselWarpController._coordinateInterface._pillarRaised, 100);
+
+            return vesselSpawnPoint;
         }
 
-        public static void SetupWarpController(VesselWarpController vesselWarpController, bool db = false)
+        public static void SetupWarpController(VesselWarpController vesselWarpController, NomaiInterfaceOrb orb, bool db = false)
         {
             if (db)
             {
@@ -259,17 +359,33 @@ namespace NewHorizons.Handlers
                                 if (light.GetLight()) light.GetLight().enabled = true;
                             }
                         }
-                        vesselWarpController._coreSocket.PlaceIntoSocket(newCore);
+                        vesselWarpController._coreSocket._socketedItem = newCore;
+                        newCore.SocketItem(vesselWarpController._coreSocket._socketTransform, vesselWarpController._coreSocket._sector);
+                        newCore.PlaySocketAnimation();
+                        vesselWarpController._coreSocket.enabled = true;
+                        vesselWarpController.SetPowered(true);
                         break;
                     }
                 }
             }
+            else
+            {
+                foreach (NomaiLamp lamp in vesselWarpController.transform.root.GetComponentsInChildren<NomaiLamp>(true))
+                {
+                    lamp._startOn = true;
+                    lamp.Awake();
+                }
+            }
+
             vesselWarpController.OnSlotDeactivated(vesselWarpController._coordinatePowerSlot);
-            if (!db) vesselWarpController.OnSlotActivated(vesselWarpController._coordinatePowerSlot);
             vesselWarpController._gravityVolume.SetFieldMagnitude(vesselWarpController._origGravityMagnitude);
             vesselWarpController._coreCable.SetPowered(true);
-            vesselWarpController._coordinateCable.SetPowered(!db);
             vesselWarpController._warpPlatformCable.SetPowered(false);
+            orb.SetOrbPosition(vesselWarpController._coordinatePowerSlot.transform.position);
+            orb._occupiedSlot = vesselWarpController._coordinatePowerSlot;
+            orb._enterSlotTime = Time.time;
+            vesselWarpController.OnSlotActivated(vesselWarpController._coordinatePowerSlot);
+            vesselWarpController._coordinateCable.SetPowered(true);
             vesselWarpController._cageClosed = true;
             if (vesselWarpController._cageAnimator != null)
             {

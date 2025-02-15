@@ -1,6 +1,6 @@
 ![new horizons thumbnail 2](https://user-images.githubusercontent.com/22628069/154112130-b777f618-245f-44c9-9408-e11141fc5fde.png)
 
-[![Support me on Patreon](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.vercel.app%2Fapi%3Fusername%3Downh%26type%3Dpatrons&style=flat)](https://patreon.com/ownh)
+[![Support me on Patreon](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.vercel.app%2Fapi%3Fusername%3Dxen42%26type%3Dpatrons&style=flat)](https://patreon.com/xen42)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-blue.svg)](https://www.paypal.com/paypalme/xen42)
 ![Current version](https://img.shields.io/github/manifest-json/v/xen-42/outer-wilds-new-horizons?color=gree&filename=NewHorizons%2Fmanifest.json)
 ![Downloads](https://img.shields.io/github/downloads/xen-42/outer-wilds-new-horizons/total)
@@ -26,8 +26,9 @@ Check the ship's log for how to use your warp drive to travel between star syste
 
 ## Incompatible mods
 
--   Quantum Space Buddies.
--   OW Randomizer.
+New Horizons conflicts with the mod Common Resources. This mod is a requirement for other mods such as Cheats Mod (we recommend you use the [Cheat and Debug Menu](https://outerwildsmods.com/mods/cheatanddebugmenu/) mod instead) and OW Randomizer.
+
+Why do these two mods conflict? Common Resources is a mod which reimplements many of the game's features underneath the hood, for one reason or another. For instance, it completely overhauls how the orbits of planets work, as this is a requirement for it to support OW Randomizer. It does this even when you are only using Cheats Mod. In particular, having CR installed seems to, for whatever reason, break character dialogue introduced by New Horizons. As CR is no longer actively maintained, it is unlikely this issue will be resolved any time soon. 
 
 ## Supported Mods
 
@@ -40,12 +41,12 @@ New Horizons has optional support for a few other mods:
 ## Features
 
 -   Load planet meshes or details from asset bundles
--   Use our [template Unity project](https://github.com/xen-42/outer-wilds-unity-template) to create assets for use in NH, including all game scripts recovered using UtinyRipper
--   Separate solar system scenes accessible via wormhole OR via the ship's new warp drive feature accessible via the ship's log
--   Remove or edit existing planets, including what they orbit around
--   Create custom planets from heightmaps/texturemaps
+-   Use our [template Unity project](https://github.com/ow-mods/outer-wilds-unity-template) to create assets for use in NH, including all game scripts recovered using UtinyRipper
+-   Separate solar system scenes accessible via wormhole OR via the ship's new warp drive feature found in the ship's log
+-   Remove or edit existing planets, including their orbits
+-   Create custom planets from heightmaps/texturemaps with support for triplanar mapping
 -   Create stars (and supernovae), comets, asteroid belts, satellites, quantum planets/moons, and custom Dark Bramble dimensions.
--   Add stock planet features to custom ones, such as geysers, cloak fields, meteor-launching volcanoes, rafts, tornados, and Dark Bramble seeds/nodes.
+-   Add stock planet features to custom ones, such as geysers, cloaking fields, meteor-launching volcanoes, rafts, tornados, and Dark Bramble seeds/nodes.
 -   Binary orbits
 -   Signalscope signals and custom frequencies
 -   Surface scatter: rocks, trees, etc, using in-game models, or custom ones
@@ -86,6 +87,7 @@ Translation credits:
 -   Spanish: Ciborgm9, Ink, GayCoffee
 -   French: xen
 -   Japanese: TRSasasusu
+-   Portuguese: avengerx, loco-choco
 
 New Horizons was based off [Marshmallow](https://github.com/misternebula/Marshmallow) was made by:
 

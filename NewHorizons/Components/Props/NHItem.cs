@@ -1,12 +1,5 @@
 using NewHorizons.Builder.Props;
 using NewHorizons.Handlers;
-using OWML.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace NewHorizons.Components.Props
@@ -19,6 +12,10 @@ namespace NewHorizons.Components.Props
         public AudioType DropAudio;
         public AudioType SocketAudio;
         public AudioType UnsocketAudio;
+        public Vector3 HoldOffset;
+        public Vector3 HoldRotation;
+        public Vector3 SocketOffset;
+        public Vector3 SocketRotation;
         public string PickupCondition;
         public bool ClearPickupConditionOnDrop;
         public string PickupFact;
@@ -42,6 +39,8 @@ namespace NewHorizons.Components.Props
         public override void PickUpItem(Transform holdTranform)
         {
             base.PickUpItem(holdTranform);
+            transform.localPosition = HoldOffset;
+            transform.localEulerAngles = HoldRotation;
             TriggerPickupConditions();
             PlayCustomSound(PickupAudio);
         }
@@ -56,6 +55,8 @@ namespace NewHorizons.Components.Props
         public override void SocketItem(Transform socketTransform, Sector sector)
         {
             base.SocketItem(socketTransform, sector);
+            transform.localPosition = SocketOffset;
+            transform.localEulerAngles = SocketRotation;
             TriggerDropConditions();
             PlayCustomSound(SocketAudio);
         }

@@ -66,7 +66,7 @@ namespace NewHorizons.Builder.Atmosphere
                 }
                 _qmBottomMeshGroup.variants = variants.ToArray();
             }
-            if (_transparentCloud == null) _transparentCloud = Main.NHAssetBundle.LoadAsset<Material>("Assets/Resources/TransparentCloud.mat");
+            if (_transparentCloud == null) _transparentCloud = AssetBundleUtilities.NHAssetBundle.LoadAsset<Material>("Assets/Resources/TransparentCloud.mat");
         }
 
         public static void Make(GameObject planetGO, Sector sector, AtmosphereModule atmo, bool cloaked, IModBehaviour mod)
@@ -147,7 +147,7 @@ namespace NewHorizons.Builder.Atmosphere
             fluidCLFV._priority = 1;
             fluidCLFV._density = 1.2f;
             fluidCLFV._fluidType = atmo.clouds.fluidType.ConvertToOW(FluidVolume.Type.CLOUD);
-            fluidCLFV._allowShipAutoroll = true;
+            fluidCLFV._allowShipAutoroll = atmo.allowShipAutoroll;
             fluidCLFV._disableOnStart = false;
 
             // Fix the rotations once the rest is done

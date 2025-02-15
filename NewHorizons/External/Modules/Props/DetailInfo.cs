@@ -48,14 +48,13 @@ namespace NewHorizons.External.Modules.Props
         /// </summary>
         public MVector3 stretch;
 
-        /// <summary>
-        /// If this value is not null, this prop will be quantum. Assign this field to the id of the quantum group it should be a part of. The group it is assigned to determines what kind of quantum object it is
-        /// </summary>
+        [Obsolete("Use QuantumDetailInfo")]
         public string quantumGroupID;
 
         /// <summary>
         /// Should this detail stay loaded (visible and collideable) even if you're outside the sector (good for very large props)?
         /// Also makes this detail visible on the map.
+        /// Keeping many props loaded is bad for performance so use this only when it's actually relevant
         /// Most logic/behavior scripts will still only work inside the sector, as most of those scripts break if a sector is not provided.
         /// </summary>
         public bool keepLoaded;

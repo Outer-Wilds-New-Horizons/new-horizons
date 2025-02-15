@@ -96,6 +96,12 @@ namespace NewHorizons.Builder.Body
                 // We want to take the largest size I think
                 var realSize = body.Config.Base.surfaceSize;
 
+                if (realSize <= 0)
+                {
+                    // #941 handle proxy body edge case when all scales = 0
+                    realSize = 1;
+                }
+
                 if (body.Config.HeightMap != null)
                 {
                     HeightMapBuilder.Make(proxy, null, body.Config.HeightMap, body.Mod, 20);

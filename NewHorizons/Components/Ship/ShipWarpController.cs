@@ -47,12 +47,6 @@ namespace NewHorizons.Components.Ship
         public void Start()
         {
             _isWarpingIn = false;
-            GlobalMessenger.AddListener("FinishOpenEyes", new Callback(OnFinishOpenEyes));
-        }
-
-        public void OnDestroy()
-        {
-            GlobalMessenger.RemoveListener("FinishOpenEyes", new Callback(OnFinishOpenEyes));
         }
 
         private void MakeBlackHole()
@@ -144,6 +138,12 @@ namespace NewHorizons.Components.Ship
                     resources._currentHealth = 100f;
                     if (!PlayerState.AtFlightConsole()) TeleportToShip();
                 }
+
+                if (PlayerState.IsInsideShip() && !_eyesOpen)
+                {
+                    _eyesOpen = true;
+                    Locator.GetPlayerCamera().GetComponent<PlayerCameraEffectController>().OpenEyesImmediate();
+                }
             }
 
             // Idk whats making this work but now it works and idc
@@ -152,11 +152,6 @@ namespace NewHorizons.Components.Ship
                 Delay.FireInNUpdates(() => FinishWarpIn(), 1);
                 _waitingToBeSeated = false;
             }
-        }
-
-        private void OnFinishOpenEyes()
-        {
-            _eyesOpen = true;
         }
 
         private void StartWarpInEffect()
@@ -203,6 +198,7 @@ namespace NewHorizons.Components.Ship
             PlayerState.OnEnterShip();
 
             PlayerSpawnHandler.SpawnShip();
+            OWInput.ChangeInputMode(InputMode.ShipCockpit);
         }
     }
 }

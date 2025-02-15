@@ -1,8 +1,11 @@
+using NewHorizons.Handlers;
+
 namespace NewHorizons.Components.Volumes
 {
     public class BlackHoleWarpVolume : BlackHoleDestructionVolume
     {
         public string TargetSolarSystem { get; set; }
+        public string TargetSpawnID { get; set; }
 
         public override void Awake()
         {
@@ -19,6 +22,7 @@ namespace NewHorizons.Components.Volumes
         {
             Locator.GetPlayerAudioController().PlayOneShotInternal(AudioType.BH_BlackHoleEmission);
             Main.Instance.ChangeCurrentStarSystem(TargetSolarSystem, PlayerState.AtFlightConsole());
+            PlayerSpawnHandler.TargetSpawnID = TargetSpawnID;
         }
     }
 }

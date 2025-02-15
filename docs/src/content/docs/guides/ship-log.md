@@ -404,31 +404,28 @@ Of course, having a custom ship log is neat and all, but what use is it if the p
 
 ### Initial Reveal
 
-You can set facts to reveal as soon as the player enters the system by adding the `initialReveal` property
+You can set facts to reveal as soon as the player enters the system by adding the `initialReveal` property to your **star system config**
 
 ```json {4}
 {
-    "ShipLog": {
-        "xmlFile": "planets/example.xml",
-        "initialReveal": ["EXAMPLE_RUMOR_FACT"]
-    }
+    "initialReveal": ["EXAMPLE_RUMOR_FACT"]
 }
 ```
 
 ### Signal Discovery
 
-You can set a fact to reveal as soon as a signal is identified by editing the signal's `Reveals` attribute
+You can set a fact to reveal as soon as a signal is identified by editing the signal's `reveals` attribute
 
 ```json
 {
-    "Signal": {
-        "Signals": [
+    "Props": {
+        "signals": [
             {
-                "Frequency": "Quantum",
-                "Name": "Quantum Planet",
-                "AudioClip": "OW_QuantumSignal",
-                "SourceRadius": 1000,
-                "Reveals": "EXAMPLE_EXPLORE_FACT"
+                "frequency": "Quantum",
+                "name": "Quantum Planet",
+                "audio": "OW_QuantumSignal",
+                "sourceRadius": 1000,
+                "reveals": "EXAMPLE_EXPLORE_FACT"
             }
         ]
     }
@@ -459,7 +456,7 @@ You can set a fact to reveal in dialogue with the `<RevealFacts>` tag
 ### Reveal Volumes
 
 Reveal volumes are triggers/colliders in the world that can unlock facts from a variety of actions.  
-Reveal volumes are specified in the `Props` module, its key is `reveal`.
+Reveal volumes are specified in the `Volumes` module, its key is `revealVolumes`.
 
 #### Position
 
@@ -503,8 +500,8 @@ trigger the reveal
 
 ```json
 {
-    "Props": {
-        "reveal": [
+    "Volumes": {
+        "revealVolumes": [
             {
                 "position": {
                     "x": -55.65454,
@@ -545,3 +542,28 @@ Adding an entry location is similar to adding a Reveal Volume:
 ```
 
 ![entryLocationExample](@/assets/docs-images/ship_log/entry_position.webp)
+
+## Extending Base Game Entries
+
+You can add new facts and sub-entries to existing ship log entries by adding a dummy entry to your ship log XML file with the same ID as an existing entry. Any facts and sub-entries will be applied to the existing entry. For example, to extend the "Village" entry on Timber Hearth (which has the internal ID "TH_VILLAGE"):
+
+```xml title="ExampleShipLog.xml"
+<AstroObjectEntry xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/Outer-Wilds-New-Horizons/new-horizons/main/NewHorizons/Schemas/shiplog_schema.xsd">
+    <ID>TIMBER_HEARTH</ID>
+    <Entry>
+        <ID>TH_VILLAGE</ID>
+        <ExploreFact>
+            <ID>EXAMPLES_VILLAGE</ID>
+            <Text>A lot of unfamiliar characters are hanging around the village now.</Text>
+        </ExploreFact>
+        <Entry>
+            <ID>EXAMPLES_DREAM</ID>
+            <Name>Wetrock Dream</Name>
+            <ExploreFact>
+                <ID>EXAMPLES_DREAM_EXPLORED</ID>
+                <Text>I dreamed about Wetrock using a green campfire.</Text>
+            </ExploreFact>
+        </Entry>
+    </Entry>
+</AstroObjectEntry>
+```

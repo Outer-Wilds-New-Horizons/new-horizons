@@ -1,3 +1,4 @@
+using NewHorizons.Components.Props;
 using NewHorizons.External.Modules.Props.EchoesOfTheEye;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
@@ -65,6 +66,9 @@ namespace NewHorizons.Builder.Props
             var waterVolume = planetGO.GetComponentInChildren<RadialFluidVolume>();
             fluidDetector._alignmentFluid = waterVolume;
             fluidDetector._buoyancy.checkAgainstWaves = true;
+            // Rafts were unable to trigger docks because these were disabled for some reason
+            fluidDetector.GetComponent<BoxShape>().enabled = true;
+            fluidDetector.GetComponent<OWCollider>().enabled = true;
 
             // Light sensors
             foreach (var lightSensor in raftObject.GetComponentsInChildren<SingleLightSensor>())
@@ -72,6 +76,8 @@ namespace NewHorizons.Builder.Props
                 lightSensor._sector = sector;
                 sector.OnSectorOccupantsUpdated += lightSensor.OnSectorOccupantsUpdated;
             }
+
+            var nhRaftController = raftObject.AddComponent<NHRaftController>();
 
             var achievementObject = new GameObject("AchievementVolume");
             achievementObject.transform.SetParent(raftObject.transform, false);

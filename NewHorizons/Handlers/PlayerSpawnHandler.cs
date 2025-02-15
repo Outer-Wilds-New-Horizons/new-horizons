@@ -9,6 +9,11 @@ namespace NewHorizons.Handlers
 {
     public static class PlayerSpawnHandler
     {
+        /// <summary>
+        /// Set during the previous loop, force the player to spawn here
+        /// </summary>
+        public static string TargetSpawnID { get; set; }
+
         public static void SetUpPlayerSpawn()
         {
             if (UsingCustomSpawn())
@@ -46,15 +51,46 @@ namespace NewHorizons.Handlers
                 Delay.StartCoroutine(SpawnCoroutine(30));
             }
 
-            var cloak = GetDefaultSpawn()?.GetAttachedOWRigidbody()?.GetComponentInChildren<CloakFieldController>();
-            if (cloak != null)
+
+            // It was NREing in here when it was all ?. so explicit null checks
+            var spawn = GetDefaultSpawn();
+            if (spawn != null)
             {
-                // Ensures it has invoked everything and actually placed the player in the cloaking field #671
-                cloak._firstUpdate = true;
+                var attachedOWRigidBody = spawn.GetAttachedOWRigidbody();
+                if (attachedOWRigidBody != null)
+                {
+                    var cloak = attachedOWRigidBody.GetComponentInChildren<CloakFieldController>();
+                    if (cloak != null)
+                    {
+                        // Ensures it has invoked everything and actually placed the player in the cloaking field #671
+                        cloak._firstUpdate = true;
+                    }
+                }
             }
 
             // Spawn ship
             Delay.FireInNUpdates(SpawnShip, 30);
+
+            if (UsingCustomSpawn() || shouldWarpInFromShip || shouldWarpInFromVessel)
+            {
+                // Have had bug reports (#1034, #975) where sometimes after spawning via vessel warp or ship warp you die from impact velocity after being flung
+                // Something weird must be happening with velocity.
+                // Try to correct it here after the ship is done spawning
+                Delay.FireInNUpdates(() => FixVelocity(shouldWarpInFromVessel, shouldWarpInFromShip), 31);
+            }
+        }
+
+        private static void FixVelocity(bool shouldWarpInFromVessel, bool shouldWarpInFromShip)
+        {
+            var spawnOWRigidBody = GetDefaultSpawn().GetAttachedOWRigidbody();
+            if (shouldWarpInFromVessel) spawnOWRigidBody = VesselWarpHandler.VesselSpawnPoint.GetAttachedOWRigidbody();
+            if (shouldWarpInFromShip) spawnOWRigidBody = Locator.GetShipBody();
+
+            var spawnVelocity = spawnOWRigidBody.GetVelocity();
+            var spawnAngularVelocity = spawnOWRigidBody.GetPointTangentialVelocity(Locator.GetPlayerBody().GetPosition());
+            var velocity = spawnVelocity + spawnAngularVelocity;
+
+            Locator.GetPlayerBody().SetVelocity(velocity);
         }
 
         public static void SpawnShip()
@@ -137,30 +173,42 @@ namespace NewHorizons.Handlers
 
         private static IEnumerator SpawnCoroutine(int length)
         {
+            FixPlayerVelocity();
             for(int i = 0; i < length; i++) 
             {
-                FixPlayerVelocity();
+                FixPlayerVelocity(false); // dont recenter universe here or else it spams and lags game
                 yield return new WaitForEndOfFrame();
             }
+            FixPlayerVelocity();
 
             InvulnerabilityHandler.MakeInvulnerable(false);
+
+            // Done spawning
+            TargetSpawnID = null;
         }
 
-        private static void FixPlayerVelocity()
+        private static void FixPlayerVelocity(bool recenter = true)
         {
             var playerBody = SearchUtilities.Find("Player_Body").GetAttachedOWRigidbody();
             var resources = playerBody.GetComponent<PlayerResources>();
 
-            SpawnBody(playerBody, GetDefaultSpawn());
+            SpawnBody(playerBody, GetDefaultSpawn(), recenter: recenter);
 
             resources._currentHealth = 100f;
         }
 
-        public static void SpawnBody(OWRigidbody body, SpawnPoint spawn, Vector3? positionOverride = null)
+        public static void SpawnBody(OWRigidbody body, SpawnPoint spawn, Vector3? positionOverride = null, bool recenter = true)
         {
             var pos = positionOverride ?? spawn.transform.position;
 
-            body.WarpToPositionRotation(pos, spawn.transform.rotation);
+            if (recenter)
+            {
+                body.WarpToPositionRotation(pos, spawn.transform.rotation);
+            }
+            else
+            {
+                body.transform.SetPositionAndRotation(pos, spawn.transform.rotation);
+            }
 
             var spawnVelocity = spawn._attachedBody.GetVelocity();
             var spawnAngularVelocity = spawn._attachedBody.GetPointTangentialVelocity(pos);
@@ -191,8 +239,8 @@ namespace NewHorizons.Handlers
             return vector;
         }
 
-        public static bool UsingCustomSpawn() => Main.SystemDict[Main.Instance.CurrentStarSystem].SpawnPoint != null;
+        public static bool UsingCustomSpawn() => SpawnPointBuilder.PlayerSpawn != null;
         public static PlayerSpawner GetPlayerSpawner() => GameObject.FindObjectOfType<PlayerSpawner>();
-        public static SpawnPoint GetDefaultSpawn() => Main.SystemDict[Main.Instance.CurrentStarSystem].SpawnPoint ?? GetPlayerSpawner().GetSpawnPoint(SpawnLocation.TimberHearth);
+        public static SpawnPoint GetDefaultSpawn() => SpawnPointBuilder.PlayerSpawn ?? GetPlayerSpawner().GetSpawnPoint(SpawnLocation.TimberHearth);
     }
 }

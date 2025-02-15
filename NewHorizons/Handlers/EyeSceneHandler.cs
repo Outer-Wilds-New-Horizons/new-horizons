@@ -1,14 +1,66 @@
 using NewHorizons.Builder.General;
 using NewHorizons.Components.EyeOfTheUniverse;
 using NewHorizons.Components.Stars;
+using NewHorizons.External.Modules.Props.EyeOfTheUniverse;
 using NewHorizons.External.SerializableData;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWML;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace NewHorizons.Handlers
 {
     public static class EyeSceneHandler
     {
+        private static Dictionary<string, EyeTravelerData> _eyeTravelers = new();
+        private static EyeMusicController _eyeMusicController;
+
+        public static void Init()
+        {
+            _eyeTravelers.Clear();
+            _eyeMusicController = null;
+        }
+
+        public static EyeMusicController GetMusicController()
+        {
+            return _eyeMusicController;
+        }
+
+        public static EyeTravelerData GetEyeTravelerData(string id)
+        {
+            if (_eyeTravelers.TryGetValue(id, out EyeTravelerData traveler))
+            {
+                return traveler;
+            }
+            return traveler;
+        }
+
+        public static EyeTravelerData CreateEyeTravelerData(string id)
+        {
+            if (_eyeTravelers.TryGetValue(id, out EyeTravelerData traveler))
+            {
+                return traveler;
+            }
+            traveler = new EyeTravelerData()
+            {
+                id = id,
+                info = null,
+                controller = null,
+                loopAudioSource = null,
+                finaleAudioSource = null,
+                instrumentZones = new(),
+                quantumInstruments = new(),
+            };
+            _eyeTravelers[traveler.id] = traveler;
+            return traveler;
+        }
+
+        public static List<EyeTravelerData> GetActiveCustomEyeTravelers()
+        {
+            return _eyeTravelers.Values.Where(t => t.requirementsMet).ToList();
+        }
+
         public static void OnSceneLoad()
         {
             // Create astro objects for eye and vessel because they didn't have them somehow.
@@ -133,6 +185,143 @@ namespace NewHorizons.Handlers
             starLightController.Awake();
             SunLightEffectsController.AddStar(starController);
             SunLightEffectsController.AddStarLight(sunLight);
+        }
+
+        public static void SetUpEyeCampfireSequence()
+        {
+            if (!GetActiveCustomEyeTravelers().Any()) return;
+
+            _eyeMusicController = new GameObject("EyeMusicController").AddComponent<EyeMusicController>();
+
+            var quantumCampsiteController = Object.FindObjectOfType<QuantumCampsiteController>();
+            var cosmicInflationController = _eyeMusicController.CosmicInflationController;
+
+            _eyeMusicController.RegisterFinaleSource(cosmicInflationController._travelerFinaleSource);
+
+            foreach (var controller in quantumCampsiteController._travelerControllers)
+            {
+                _eyeMusicController.RegisterLoopSource(controller._signal.GetOWAudioSource());
+            }
+
+            foreach (var eyeTraveler in GetActiveCustomEyeTravelers())
+            {
+                if (eyeTraveler.controller != null)
+                {
+                    eyeTraveler.controller.gameObject.SetActive(false);
+
+                    ArrayHelpers.Append(ref quantumCampsiteController._travelerControllers, eyeTraveler.controller);
+                    eyeTraveler.controller.OnStartPlaying += quantumCampsiteController.OnTravelerStartPlaying;
+
+                    ArrayHelpers.Append(ref cosmicInflationController._travelers, eyeTraveler.controller);
+                    eyeTraveler.controller.OnStartPlaying += cosmicInflationController.OnTravelerStartPlaying;
+
+                    ArrayHelpers.Append(ref cosmicInflationController._inflationObjects, eyeTraveler.controller.transform);
+                }
+                else
+                {
+                    NHLogger.LogError($"Missing Eye Traveler for ID \"{eyeTraveler.id}\"");
+                }
+
+                if (eyeTraveler.loopAudioSource != null)
+                {
+                    eyeTraveler.loopAudioSource.GetComponent<AudioSignal>().SetSignalActivation(false);
+                    _eyeMusicController.RegisterLoopSource(eyeTraveler.loopAudioSource);
+                }
+                if (eyeTraveler.finaleAudioSource != null)
+                {
+                    _eyeMusicController.RegisterFinaleSource(eyeTraveler.finaleAudioSource);
+                }
+
+                foreach (var quantumInstrument in eyeTraveler.quantumInstruments)
+                {
+                    ArrayHelpers.Append(ref quantumInstrument._activateObjects, eyeTraveler.controller.gameObject);
+                    ArrayHelpers.Append(ref quantumInstrument._deactivateObjects, eyeTraveler.instrumentZones.Select(z => z.gameObject));
+
+                    var ancestorInstrumentZone = quantumInstrument.GetComponentInParent<InstrumentZone>();
+                    if (ancestorInstrumentZone == null)
+                    {
+                        // Quantum instrument is not a child of an instrument zone, so treat it like its own zone
+                        quantumInstrument.gameObject.SetActive(false);
+                        ArrayHelpers.Append(ref quantumCampsiteController._instrumentZones, quantumInstrument.gameObject);
+
+                        ArrayHelpers.Append(ref cosmicInflationController._inflationObjects, quantumInstrument.transform);
+                    }
+                }
+
+                foreach (var instrumentZone in eyeTraveler.instrumentZones)
+                {
+                    instrumentZone.gameObject.SetActive(false);
+                    ArrayHelpers.Append(ref quantumCampsiteController._instrumentZones, instrumentZone.gameObject);
+
+                    ArrayHelpers.Append(ref cosmicInflationController._inflationObjects, instrumentZone.transform);
+                }
+            }
+
+            UpdateTravelerPositions();
+        }
+
+        public static void UpdateTravelerPositions()
+        {
+            if (!GetActiveCustomEyeTravelers().Any()) return;
+
+            var quantumCampsiteController = Object.FindObjectOfType<QuantumCampsiteController>();
+
+            var travelers = new List<Transform>()
+            {
+                quantumCampsiteController._travelerControllers[0].transform, // Riebeck
+                quantumCampsiteController._travelerControllers[2].transform, // Chert
+                quantumCampsiteController._travelerControllers[6].transform, // Esker
+                quantumCampsiteController._travelerControllers[1].transform, // Felspar
+                quantumCampsiteController._travelerControllers[3].transform, // Gabbro
+            };
+
+            if (quantumCampsiteController._hasMetSolanum)
+            {
+                travelers.Add(quantumCampsiteController._travelerControllers[4].transform); // Solanum
+            }
+            if (quantumCampsiteController._hasMetPrisoner)
+            {
+                travelers.Add(quantumCampsiteController._travelerControllers[5].transform); // Prisoner
+            }
+
+            // Custom travelers (starting at index 7)
+            for (int i = 7; i < quantumCampsiteController._travelerControllers.Length; i++)
+            {
+                travelers.Add(quantumCampsiteController._travelerControllers[i].transform);
+            }
+
+            var radius = 2f + 0.2f * travelers.Count;
+            var angle = Mathf.PI * 2f / travelers.Count;
+            var index = 0;
+
+            foreach (var traveler in travelers)
+            {
+                // Esker isn't at height 0 so we have to do all this
+                var initialY = traveler.transform.position.y;
+                var newPos = quantumCampsiteController.transform.TransformPoint(new Vector3(
+                    Mathf.Cos(angle * index) * radius,
+                    0f,
+                    -Mathf.Sin(angle * index) * radius
+                ));
+                newPos.y = initialY;
+                traveler.transform.position = newPos;
+                var lookTarget = quantumCampsiteController.transform.position;
+                lookTarget.y = newPos.y;
+                traveler.transform.LookAt(lookTarget, traveler.transform.up);
+                index++;
+            }
+        }
+
+        public class EyeTravelerData
+        {
+            public string id;
+            public EyeTravelerInfo info;
+            public TravelerEyeController controller;
+            public OWAudioSource loopAudioSource;
+            public OWAudioSource finaleAudioSource;
+            public List<QuantumInstrument> quantumInstruments = new();
+            public List<InstrumentZone> instrumentZones = new();
+            public bool requirementsMet;
         }
     }
 }

@@ -15,7 +15,7 @@ namespace NewHorizons.Utility.DebugTools
 
         public static void InitializePauseMenu(IPauseMenuManager pauseMenu)
         {
-            _reloadButton = pauseMenu.MakeSimpleButton(TranslationHandler.GetTranslation("Reload Configs", TranslationHandler.TextType.UI).ToUpper(), 3, true);
+            _reloadButton = pauseMenu.MakeSimpleButton(TranslationHandler.GetTranslation("Reload Configs", TranslationHandler.TextType.UI).ToUpperFixed(), 3, true);
             _reloadButton.OnSubmitAction += ReloadConfigs;
             UpdateReloadButton();
         }
@@ -43,10 +43,21 @@ namespace NewHorizons.Utility.DebugTools
                 NHLogger.LogWarning("Error While Reloading");
             }
 
+            Main.Instance.ForceClearCaches = true;
+
+
             SearchUtilities.Find("/PauseMenu/PauseMenuManagers").GetComponent<PauseMenuManager>().OnSkipToNextTimeLoop();
 
-            Main.Instance.ForceClearCaches = true;
-            Main.Instance.ChangeCurrentStarSystem(Main.Instance.CurrentStarSystem);
+            if (Main.Instance.CurrentStarSystem == "EyeOfTheUniverse")
+            {
+                Main.Instance.IsWarpingBackToEye = true;
+                EyeDetailCacher.IsInitialized = false;
+                Main.Instance.ChangeCurrentStarSystem("SolarSystem");
+            }
+            else
+            {
+                Main.Instance.ChangeCurrentStarSystem(Main.Instance.CurrentStarSystem, Main.Instance.DidWarpFromShip, Main.Instance.DidWarpFromVessel);
+            }
 
             Main.SecondsElapsedInLoop = -1f;
         }

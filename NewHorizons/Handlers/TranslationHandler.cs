@@ -2,9 +2,11 @@ using NewHorizons.External.Configs;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OWML;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using static TextTranslation;
 
 namespace NewHorizons.Handlers
 {
@@ -50,30 +52,46 @@ namespace NewHorizons.Handlers
             }
 
             // Get the translated text
-            if (dictionary.TryGetValue(language, out var table))
+            if (TryGetTranslatedText(dictionary, language, text, out var translatedText))
             {
-                if (table.TryGetValue(text, out var translatedText))
+                return translatedText;
+            }
+
+            if (warn)
+            {
+                NHLogger.LogVerbose($"Defaulting to english for {text}");
+            }
+
+            if (TryGetTranslatedText(dictionary, Language.ENGLISH, text, out translatedText))
+            {
+                return translatedText;
+            }
+
+            if (warn)
+            {
+                NHLogger.LogVerbose($"Defaulting to key for {text}");
+            }
+
+            return text;
+        }
+
+        private static bool TryGetTranslatedText(Dictionary<Language, Dictionary<string, string>> dict, Language language, string text, out string translatedText)
+        {
+            if (dict.TryGetValue(language, out var table))
+            {
+                if (table.TryGetValue(text, out translatedText))
                 {
-                    return translatedText;
+                    return true;
                 }
                 // Try without whitespace if its missing
                 else if (table.TryGetValue(text.TruncateWhitespaceAndToLower(), out translatedText))
                 {
-                    return translatedText;
+                    return true;
                 }
             }
 
-            if (warn) NHLogger.LogVerbose($"Defaulting to english for {text}");
-
-            // Try to default to English
-            if (dictionary.TryGetValue(TextTranslation.Language.ENGLISH, out var englishTable))
-                if (englishTable.TryGetValue(text, out var englishText))
-                    return englishText;
-
-            if (warn) NHLogger.LogVerbose($"Defaulting to key for {text}");
-
-            // Default to the key
-            return text;
+            translatedText = null;
+            return false;
         }
 
         public static void RegisterTranslation(TextTranslation.Language language, TranslationConfig config)
@@ -155,6 +173,26 @@ namespace NewHorizons.Handlers
             TextTranslation.Get().m_table.theTable[key] = value;
         }
 
+        /// <summary>
+        /// Two dialogue nodes might share indentical text but they will have different prefixes. Still, we want to reuse that old text.
+        /// </summary>
+        /// <param name="rawText"></param>
+        /// <param name="oldPrefixes"></param>
+        /// <param name="newPrefixes"></param>
+        public static void ReuseDialogueTranslation(string rawText, string[] oldPrefixes, string[] newPrefixes)
+        {
+            var key = string.Join(string.Empty, newPrefixes) + rawText;
+            var existingKey = string.Join(string.Empty, oldPrefixes) + rawText;
+            if (TextTranslation.Get().m_table.theTable.TryGetValue(existingKey, out var existingTranslation))
+            {
+                TextTranslation.Get().m_table.theTable[key] = existingTranslation;
+            }
+            else
+            {
+                NHLogger.LogWarning($"Couldn't find translation key {existingKey}");
+            }
+        }
+
         public static void AddShipLog(string rawText, params string[] rawPreText)
         {
             var key = string.Join(string.Empty, rawPreText) + rawText;
@@ -171,7 +209,7 @@ namespace NewHorizons.Handlers
         {
             var uiTable = TextTranslation.Get().m_table.theUITable;
 
-            var text = GetTranslation(rawText, TextType.UI).ToUpper();
+            var text = GetTranslation(rawText, TextType.UI).ToUpperFixed();
 
             var key = uiTable.Keys.Max() + 1;
             try

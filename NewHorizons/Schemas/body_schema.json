@@ -4,14 +4,10 @@
   "type": "object",
   "description": "Describes a celestial body to generate",
   "additionalProperties": false,
-  "required": [
-    "name"
-  ],
   "properties": {
     "name": {
       "type": "string",
-      "description": "Unique name of your planet",
-      "minLength": 1
+      "description": "Unique name of your planet. If not specified, the file name (without the extension) is used."
     },
     "starSystem": {
       "type": "string",
@@ -34,6 +30,11 @@
     "destroy": {
       "type": "boolean",
       "description": "`true` if you want to delete this planet"
+    },
+    "trackForSolarSystemRadius": {
+      "type": "boolean",
+      "description": "Do we track the position of this body when calculating the solar system radius?\n`true` if you want the map zoom speed, map panning distance/speed, map camera farclip plane,\nand autopilot-returning-to-solar-system to adjust to this planet's orbit",
+      "default": true
     },
     "removeChildren": {
       "type": "array",
@@ -69,6 +70,14 @@
       "description": "Add a cloaking field to this planet",
       "$ref": "#/definitions/CloakModule"
     },
+    "Dream": {
+      "description": "Make this planet part of the dream world",
+      "$ref": "#/definitions/DreamModule"
+    },
+    "EyeOfTheUniverse": {
+      "description": "Add features exclusive to the Eye of the Universe scene",
+      "$ref": "#/definitions/EyeOfTheUniverseModule"
+    },
     "FocalPoint": {
       "description": "Make this body into a focal point (barycenter)",
       "$ref": "#/definitions/FocalPointModule"
@@ -84,6 +93,10 @@
     "Lava": {
       "description": "Add lava to this planet",
       "$ref": "#/definitions/LavaModule"
+    },
+    "MapMarker": {
+      "description": "Map marker properties of this body",
+      "$ref": "#/definitions/MapMarkerModule"
     },
     "Orbit": {
       "description": "Describes this Body's orbit (or lack there of)",
@@ -271,7 +284,7 @@
         },
         "inclination": {
           "type": "number",
-          "description": "Angle between the rings and the equatorial plane of the planet.",
+          "description": "Angle between the belt and the equatorial plane of the planet.",
           "format": "float"
         },
         "innerRadius": {
@@ -282,7 +295,7 @@
         },
         "longitudeOfAscendingNode": {
           "type": "number",
-          "description": "Angle defining the point where the rings rise up from the planet's equatorial plane if inclination is nonzero.",
+          "description": "Angle defining the point where the belt rises up from the planet's equatorial plane if inclination is nonzero.",
           "format": "float"
         },
         "maxSize": {
@@ -306,13 +319,33 @@
           "minimum": 0.0
         },
         "procGen": {
-          "description": "How the asteroids are generated",
+          "description": "How the asteroids are generated, unless you supply a detail yourself using \"assetBundle\" and \"path\"",
           "$ref": "#/definitions/ProcGenModule"
         },
         "randomSeed": {
           "type": "integer",
           "description": "Number used to randomize asteroid positions",
           "format": "int32"
+        },
+        "assetBundle": {
+          "type": "string",
+          "description": "You can use this to load a custom asset or ingame object, instead of using ProcGen. It will be scaled by \"minSize\" and \"maxSize\", so ideally it should be near a 1 meter radius.\nThis is a relative filepath to an asset-bundle to load the prefab defined in `path` from."
+        },
+        "path": {
+          "type": "string",
+          "description": "You can use this to load a custom asset or ingame object, instead of using ProcGen. It will be scaled by \"minSize\" and \"maxSize\", so ideally it should be near a 1 meter radius.\nThis is either the path in the scene hierarchy of the item to copy or the path to the object in the supplied asset bundle. "
+        },
+        "gravity": {
+          "type": "number",
+          "description": "Surface gravity of the asteroids.",
+          "format": "float",
+          "default": 1,
+          "minimum": 0.0
+        },
+        "randomOrientation": {
+          "type": "boolean",
+          "description": "Should the detail of the asteroid be randomly oriented, or should it point towards the center.",
+          "default": true
         }
       }
     },
@@ -366,7 +399,7 @@
         },
         "fogRampPath": {
           "type": "string",
-          "description": "Relative filepath to the fog color ramp texture, if you put fog.\nx axis is angle to sun (left at midnight, right at noon), y axis is distance to camera (close at bottom, far at top)."
+          "description": "Relative filepath to the fog color ramp texture, if you put fog.\nx axis is angle to sun (left at midnight, right at noon), y axis is distance to camera (close at bottom, far at top).\nOptional. If you set fogTint, a default fog ramp will be tinted for you."
         },
         "hasOxygen": {
           "type": "boolean",
@@ -405,6 +438,11 @@
           "description": "Maximum speed that your ship can go in the atmosphere where flames will appear at their brightest.",
           "format": "float",
           "default": 300.0
+        },
+        "allowShipAutoroll": {
+          "type": "boolean",
+          "description": "Will the ship automatically try to orient itself to face upwards while in this volume?",
+          "default": true
         }
       }
     },
@@ -543,13 +581,10 @@
           "description": "Radius of a simple sphere used as the ground for the planet. If you want to use more complex terrain, leave this as\n0.",
           "format": "float"
         },
-        "hasMapMarker": {
+        "hasFluidDetector": {
           "type": "boolean",
-          "description": "If the body should have a marker on the map screen."
-        },
-        "invulnerableToSun": {
-          "type": "boolean",
-          "description": "Can this planet survive entering a star?"
+          "description": "Is this planet able to detect fluid volumes? Disabling this means that entering a star or lava volume will not destroy this planet\nMay have adverse effects if anglerfish are added to this planet, disable this if you want those to work (they have fluid volumes in their mouths)",
+          "default": true
         },
         "showMinimap": {
           "type": "boolean",
@@ -568,7 +603,7 @@
         },
         "surfaceSize": {
           "type": "number",
-          "description": "A scale height used for a number of things. Should be the approximate radius of the body.",
+          "description": "A scale height used for a number of things. Should be the approximate radius of the body.\n\nAffected settings include: Base sector size, proxy body scaling, surface gravity",
           "format": "float"
         },
         "gravityVolumePriority": {
@@ -576,6 +611,14 @@
           "description": "Optional. You can force this planet's gravity to be felt over other gravity/zero-gravity sources by increasing this number.",
           "format": "int32",
           "default": 0
+        },
+        "gravityAlignmentRadiusOverride": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "Optional. Overrides how far the player must be from the planet for their feet to automatically orient towards the ground.",
+          "format": "int32"
         },
         "pushable": {
           "type": "boolean",
@@ -621,12 +664,12 @@
       "additionalProperties": false,
       "properties": {
         "fogTint": {
-          "description": "The color of the fog inside this dimension. \nLeave blank for the default grayish color: (84, 83, 73)",
+          "description": "The color of the fog inside this dimension. \nLeave blank for the default grayish color: (84, 83, 73)\nThe alpha value has no effect of the fog: Use fogDensity instead!",
           "$ref": "#/definitions/MColor"
         },
         "fogDensity": {
           "type": "number",
-          "description": "The density of the fog inside this dimension. The default is 6.",
+          "description": "The density of the fog inside this dimension. The default is 6. If you want no fog, set this to 0.",
           "format": "float",
           "default": 6.0
         },
@@ -692,13 +735,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -794,6 +837,888 @@
         "audio": {
           "type": "string",
           "description": "The audio that will play when entering the cloaking field. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+        }
+      }
+    },
+    "DreamModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "inDreamWorld": {
+          "type": "boolean",
+          "description": "Setting this value will make this body a dream world style dimension where its contents are only activated while entering it from a dream campfire. Disables the body's map marker."
+        },
+        "generateSimulationMeshes": {
+          "type": "boolean",
+          "description": "Whether to generate simulation meshes (the models used in the \"tronworld\" or \"matrix\" view) for most objects on this planet by cloning the existing meshes and applying the simulation materials. Leave this off if you are building your own simulation meshes or using existing objects which have them."
+        }
+      }
+    },
+    "EyeOfTheUniverseModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "eyeTravelers": {
+          "type": "array",
+          "description": "Add custom travelers to the campfire sequence",
+          "items": {
+            "$ref": "#/definitions/EyeTravelerInfo"
+          }
+        },
+        "instrumentZones": {
+          "type": "array",
+          "description": "Add instrument zones which contain puzzles to gather a quantum instrument. You can parent other props to these with `parentPath` ",
+          "items": {
+            "$ref": "#/definitions/InstrumentZoneInfo"
+          }
+        },
+        "quantumInstruments": {
+          "type": "array",
+          "description": "Add quantum instruments which cause their associated eye traveler to appear and instrument zones to disappear",
+          "items": {
+            "$ref": "#/definitions/QuantumInstrumentInfo"
+          }
+        }
+      }
+    },
+    "EyeTravelerInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "assetBundle": {
+          "type": "string",
+          "description": "Relative filepath to an asset-bundle to load the prefab defined in `path` from"
+        },
+        "path": {
+          "type": "string",
+          "description": "Either the path in the scene hierarchy of the item to copy or the path to the object in the supplied asset bundle. \nIf empty, will make an empty game object. This can be useful for adding other props to it as its children."
+        },
+        "removeChildren": {
+          "type": "array",
+          "description": "A list of children to remove from this detail",
+          "items": {
+            "type": "string"
+          }
+        },
+        "removeComponents": {
+          "type": "boolean",
+          "description": "Do we reset all the components on this object? Useful for certain props that have dialogue components attached to\nthem."
+        },
+        "scale": {
+          "type": "number",
+          "description": "Scale the prop",
+          "format": "float",
+          "default": 1.0
+        },
+        "stretch": {
+          "description": "Scale each axis of the prop. Overrides `scale`.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "keepLoaded": {
+          "type": "boolean",
+          "description": "Should this detail stay loaded (visible and collideable) even if you're outside the sector (good for very large props)?\nAlso makes this detail visible on the map.\nKeeping many props loaded is bad for performance so use this only when it's actually relevant\nMost logic/behavior scripts will still only work inside the sector, as most of those scripts break if a sector is not provided."
+        },
+        "hasPhysics": {
+          "type": "boolean",
+          "description": "Should this object dynamically move around?\nThis tries to make all mesh colliders convex, as well as adding a sphere collider in case the detail has no others."
+        },
+        "physicsMass": {
+          "type": "number",
+          "description": "The mass of the physics object.\nMost pushable props use the default value, which matches the player mass.",
+          "format": "float",
+          "default": 0.001
+        },
+        "physicsRadius": {
+          "type": "number",
+          "description": "The radius that the added sphere collider will use for physics collision.\nIf there's already good colliders on the detail, you can make this 0.",
+          "format": "float",
+          "default": 1.0
+        },
+        "physicsSuspendUntilImpact": {
+          "type": "boolean",
+          "description": "If true, this detail will stay still until it touches something.\nGood for zero-g props.",
+          "default": false
+        },
+        "ignoreSun": {
+          "type": "boolean",
+          "description": "Set to true if this object's lighting should ignore the effects of sunlight"
+        },
+        "activationCondition": {
+          "type": "string",
+          "description": "Activates this game object when the dialogue condition is met"
+        },
+        "deactivationCondition": {
+          "type": "string",
+          "description": "Deactivates this game object when the dialogue condition is met"
+        },
+        "blinkWhenActiveChanged": {
+          "type": "boolean",
+          "description": "Should the player close their eyes while the activation state changes. Only relevant if activationCondition or deactivationCondition are set.",
+          "default": true
+        },
+        "item": {
+          "description": "Should this detail be treated as an interactible item",
+          "$ref": "#/definitions/ItemInfo"
+        },
+        "itemSocket": {
+          "description": "Should this detail be treated as a socket for an interactible item",
+          "$ref": "#/definitions/ItemSocketInfo"
+        },
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "id": {
+          "type": "string",
+          "description": "A unique ID to associate this traveler with their corresponding quantum instruments and instrument zones. Must be unique for each traveler."
+        },
+        "requiredFact": {
+          "type": "string",
+          "description": "If set, the player must know this ship log fact for this traveler (and their instrument zones and quantum instruments) to appear. The fact does not need to exist in the current star system; the player's save data will be checked directly."
+        },
+        "requiredPersistentCondition": {
+          "type": "string",
+          "description": "If set, the player must have this persistent dialogue condition set for this traveler (and their instrument zones and quantum instruments) to appear."
+        },
+        "startPlayingCondition": {
+          "type": "string",
+          "description": "The dialogue condition that will trigger the traveler to start playing their instrument. Must be unique for each traveler."
+        },
+        "participatingCondition": {
+          "type": "string",
+          "description": "If specified, this dialogue condition must be set for the traveler to participate in the campfire song. Otherwise, the song will be able to start without them."
+        },
+        "signal": {
+          "description": "The audio signal to use for the traveler while playing around the campfire (and also for their paired quantum instrument if another is not specified). The audio clip should be 16 measures at 92 BPM (approximately 42 seconds long).",
+          "$ref": "#/definitions/SignalInfo"
+        },
+        "finaleAudio": {
+          "type": "string",
+          "description": "The audio to use for the traveler during the finale of the campfire song. It should be 8 measures of the main loop at 92 BPM followed by 2 measures of fade-out (approximately 26 seconds long in total). Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+        },
+        "dialogue": {
+          "description": "The dialogue to use for this traveler. If omitted, the first CharacterDialogueTree in the object will be used.",
+          "$ref": "#/definitions/DialogueInfo"
+        }
+      }
+    },
+    "ItemInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of the item to be displayed in the UI. Defaults to the name of the detail object."
+        },
+        "itemType": {
+          "type": "string",
+          "description": "The type of the item, which determines its orientation when held and what sockets it fits into. This can be a custom string, or a vanilla ItemType (Scroll, WarpCore, SharedStone, ConversationStone, Lantern, SlideReel, DreamLantern, or VisionTorch). Defaults to the item name."
+        },
+        "interactRange": {
+          "type": "number",
+          "description": "The furthest distance where the player can interact with this item. Defaults to two meters, same as most vanilla items. Set this to zero to disable all interaction by default.",
+          "format": "float",
+          "default": 2.0
+        },
+        "colliderRadius": {
+          "type": "number",
+          "description": "The radius that the added sphere collider will use for collision and hover detection.\nIf there's already a collider on the detail, you can make this 0.",
+          "format": "float",
+          "default": 0.5
+        },
+        "droppable": {
+          "type": "boolean",
+          "description": "Whether the item can be dropped. Defaults to true.",
+          "default": true
+        },
+        "dropOffset": {
+          "description": "A relative offset to apply to the item's position when dropping it on the ground.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "dropNormal": {
+          "description": "The direction the item will be oriented when dropping it on the ground. Defaults to up (0, 1, 0).",
+          "$ref": "#/definitions/MVector3"
+        },
+        "holdOffset": {
+          "description": "A relative offset to apply to the item's position when holding it. The initial position varies for vanilla item types.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "holdRotation": {
+          "description": "A relative offset to apply to the item's rotation when holding it.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "socketOffset": {
+          "description": "A relative offset to apply to the item's position when placing it into a socket.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "socketRotation": {
+          "description": "A relative offset to apply to the item's rotation when placing it into a socket.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "pickupAudio": {
+          "type": "string",
+          "description": "The audio to play when this item is picked up. Only applies to custom/non-vanilla item types.\nCan be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+        },
+        "dropAudio": {
+          "type": "string",
+          "description": "The audio to play when this item is dropped. Only applies to custom/non-vanilla item types.\nCan be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+        },
+        "socketAudio": {
+          "type": "string",
+          "description": "The audio to play when this item is inserted into a socket. Only applies to custom/non-vanilla item types.\nCan be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+        },
+        "unsocketAudio": {
+          "type": "string",
+          "description": "The audio to play when this item is removed from a socket. Only applies to custom/non-vanilla item types.\nCan be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+        },
+        "pickupCondition": {
+          "type": "string",
+          "description": "A dialogue condition to set when picking up this item."
+        },
+        "clearPickupConditionOnDrop": {
+          "type": "boolean",
+          "description": "Whether the pickup condition should be cleared when dropping the item. Defaults to true.",
+          "default": true
+        },
+        "pickupFact": {
+          "type": "string",
+          "description": "A ship log fact to reveal when picking up this item."
+        },
+        "pathToInitialSocket": {
+          "type": "string",
+          "description": "A relative path from the planet to a socket that this item will be automatically inserted into."
+        }
+      }
+    },
+    "ItemSocketInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "socketPath": {
+          "type": "string",
+          "description": "The relative path to a child game object of this detail that will act as the socket point for the item. Will be used instead of this socket's positioning info if set."
+        },
+        "itemType": {
+          "type": "string",
+          "description": "The type of item allowed in this socket. This can be a custom string, or a vanilla ItemType (Scroll, WarpCode, SharedStone, ConversationStone, Lantern, SlideReel, DreamLantern, or VisionTorch)."
+        },
+        "interactRange": {
+          "type": "number",
+          "description": "The furthest distance where the player can interact with this item socket. Defaults to two meters, same as most vanilla item sockets. Set this to zero to disable all interaction by default.",
+          "format": "float",
+          "default": 2.0
+        },
+        "useGiveTakePrompts": {
+          "type": "boolean",
+          "description": "Whether to use \"Give Item\" / \"Take Item\" prompts instead of \"Insert Item\" / \"Remove Item\"."
+        },
+        "insertCondition": {
+          "type": "string",
+          "description": "A dialogue condition to set when inserting an item into this socket."
+        },
+        "clearInsertConditionOnRemoval": {
+          "type": "boolean",
+          "description": "Whether the insert condition should be cleared when removing the socketed item. Defaults to true.",
+          "default": true
+        },
+        "insertFact": {
+          "type": "string",
+          "description": "A ship log fact to reveal when inserting an item into this socket."
+        },
+        "removalCondition": {
+          "type": "string",
+          "description": "A dialogue condition to set when removing an item from this socket, or when the socket is empty."
+        },
+        "clearRemovalConditionOnInsert": {
+          "type": "boolean",
+          "description": "Whether the removal condition should be cleared when inserting a socketed item. Defaults to true.",
+          "default": true
+        },
+        "removalFact": {
+          "type": "string",
+          "description": "A ship log fact to reveal when removing an item from this socket, or when the socket is empty."
+        },
+        "colliderRadius": {
+          "type": "number",
+          "description": "Default collider radius when interacting with the socket",
+          "format": "float",
+          "default": 0.0
+        }
+      }
+    },
+    "SignalInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "audio": {
+          "type": "string",
+          "description": "The audio to use. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+        },
+        "minDistance": {
+          "type": "number",
+          "description": "At this distance the sound is at its loudest.",
+          "format": "float"
+        },
+        "maxDistance": {
+          "type": "number",
+          "description": "The sound will drop off by this distance (Note: for signals, this only effects when it is heard aloud and not via the signalscope).",
+          "format": "float",
+          "default": 5.0
+        },
+        "volume": {
+          "type": "number",
+          "description": "How loud the sound will play",
+          "format": "float",
+          "default": 0.5
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "detectionRadius": {
+          "type": "number",
+          "description": "How close the player must get to the signal to detect it. This is when you get the \"Unknown Signal Detected\"\nnotification.",
+          "format": "float",
+          "minimum": 0.0
+        },
+        "frequency": {
+          "type": "string",
+          "description": "The frequency ID of the signal. The built-in game values are `Default`, `Traveler`, `Quantum`, `EscapePod`,\n`Statue`, `WarpCore`, `HideAndSeek`, and `Radio`. You can also put a custom value."
+        },
+        "identificationRadius": {
+          "type": "number",
+          "description": "How close the player must get to the signal to identify it. This is when you learn its name.",
+          "format": "float",
+          "default": 10.0,
+          "minimum": 0.0
+        },
+        "insideCloak": {
+          "type": "boolean",
+          "description": "Only set to `true` if you are putting this signal inside a cloaking field."
+        },
+        "name": {
+          "type": "string",
+          "description": "The unique ID of the signal."
+        },
+        "onlyAudibleToScope": {
+          "type": "boolean",
+          "description": "`false` if the player can hear the signal without equipping the signal-scope.",
+          "default": true
+        },
+        "reveals": {
+          "type": "string",
+          "description": "A ship log fact to reveal when the signal is identified.",
+          "default": ""
+        },
+        "sourceRadius": {
+          "type": "number",
+          "description": "Radius of the sphere giving off the signal.",
+          "format": "float",
+          "default": 1.0
+        }
+      }
+    },
+    "DialogueInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "blockAfterPersistentCondition": {
+          "type": "string",
+          "description": "Prevents the dialogue from being created after a specific persistent condition is set. Useful for remote dialogue\ntriggers that you want to have happen only once."
+        },
+        "lookAtRadius": {
+          "type": "number",
+          "description": "If a pathToAnimController is supplied, if you are within this distance the character will look at you. If it is set\nto 0, they will only look at you when spoken to.",
+          "format": "float"
+        },
+        "pathToAnimController": {
+          "type": "string",
+          "description": "If this dialogue is meant for a character, this is the relative path from the planet to that character's\nCharacterAnimController, TravelerController, TravelerEyeController (eye of the universe), FacePlayerWhenTalking, \nHearthianRecorderEffects or SolanumAnimController.\n\nIf it's a Recorder this will also delete the existing dialogue already attached to that prop.\n\nIf none of those components are present it will add a FacePlayerWhenTalking component.\n\n`pathToAnimController` also makes the dialogue into a child of the anim controller. This can be used with `isRelativeToParent`\nto position the dialogue on relative to the speaker. If you also provide `parentPath`, that will instead override which object \nis the parent, but the anim controller will otherwise function as expected."
+        },
+        "pathToExistingDialogue": {
+          "type": "string",
+          "description": "If this dialogue is adding to existing character dialogue, put a path to the game object with the dialogue on it here"
+        },
+        "radius": {
+          "type": "number",
+          "description": "Radius of the spherical collision volume where you get the \"talk to\" prompt when looking at. If you use a\nremoteTrigger, you can set this to 0 to make the dialogue only trigger remotely.",
+          "format": "float"
+        },
+        "range": {
+          "type": "number",
+          "description": "Distance from radius the prompt appears",
+          "format": "float",
+          "default": 2.0
+        },
+        "attentionPoint": {
+          "description": "The point that the camera looks at when dialogue advances.",
+          "$ref": "#/definitions/AttentionPointInfo"
+        },
+        "swappedAttentionPoints": {
+          "type": "array",
+          "description": "Additional points that the camera looks at when dialogue advances through specific dialogue nodes and pages.",
+          "items": {
+            "$ref": "#/definitions/SwappedAttentionPointInfo"
+          }
+        },
+        "remoteTrigger": {
+          "description": "Allows you to trigger dialogue from a distance when you walk into an area.",
+          "$ref": "#/definitions/RemoteTriggerInfo"
+        },
+        "xmlFile": {
+          "type": "string",
+          "description": "Relative path to the xml file defining the dialogue."
+        },
+        "flashlightToggle": {
+          "description": "What type of flashlight toggle to do when dialogue is interacted with",
+          "default": "none",
+          "$ref": "#/definitions/FlashlightToggle"
+        }
+      }
+    },
+    "AttentionPointInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "offset": {
+          "description": "An additional offset to apply to apply when the camera looks at this attention point.",
+          "$ref": "#/definitions/MVector3"
+        }
+      }
+    },
+    "SwappedAttentionPointInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "offset": {
+          "description": "An additional offset to apply to apply when the camera looks at this attention point.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "dialogueNode": {
+          "type": "string",
+          "description": "The name of the dialogue node to activate this attention point for. If null or blank, activates for every node."
+        },
+        "dialoguePage": {
+          "type": "integer",
+          "description": "The index of the page in the current dialogue node to activate this attention point for, if the node has multiple pages.",
+          "format": "int32"
+        },
+        "lookEasing": {
+          "type": "number",
+          "description": "The easing factor which determines how 'snappy' the camera is when looking at the attention point.",
+          "format": "float",
+          "default": 1
+        }
+      }
+    },
+    "RemoteTriggerInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of the remote trigger volume.",
+          "format": "float"
+        },
+        "prereqCondition": {
+          "type": "string",
+          "description": "This condition must be met for the remote trigger volume to trigger."
+        }
+      }
+    },
+    "FlashlightToggle": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "TurnOff",
+        "TurnOffThenOn",
+        "None"
+      ],
+      "enum": [
+        "turnOff",
+        "turnOffThenOn",
+        "none"
+      ]
+    },
+    "InstrumentZoneInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "assetBundle": {
+          "type": "string",
+          "description": "Relative filepath to an asset-bundle to load the prefab defined in `path` from"
+        },
+        "path": {
+          "type": "string",
+          "description": "Either the path in the scene hierarchy of the item to copy or the path to the object in the supplied asset bundle. \nIf empty, will make an empty game object. This can be useful for adding other props to it as its children."
+        },
+        "removeChildren": {
+          "type": "array",
+          "description": "A list of children to remove from this detail",
+          "items": {
+            "type": "string"
+          }
+        },
+        "removeComponents": {
+          "type": "boolean",
+          "description": "Do we reset all the components on this object? Useful for certain props that have dialogue components attached to\nthem."
+        },
+        "scale": {
+          "type": "number",
+          "description": "Scale the prop",
+          "format": "float",
+          "default": 1.0
+        },
+        "stretch": {
+          "description": "Scale each axis of the prop. Overrides `scale`.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "keepLoaded": {
+          "type": "boolean",
+          "description": "Should this detail stay loaded (visible and collideable) even if you're outside the sector (good for very large props)?\nAlso makes this detail visible on the map.\nKeeping many props loaded is bad for performance so use this only when it's actually relevant\nMost logic/behavior scripts will still only work inside the sector, as most of those scripts break if a sector is not provided."
+        },
+        "hasPhysics": {
+          "type": "boolean",
+          "description": "Should this object dynamically move around?\nThis tries to make all mesh colliders convex, as well as adding a sphere collider in case the detail has no others."
+        },
+        "physicsMass": {
+          "type": "number",
+          "description": "The mass of the physics object.\nMost pushable props use the default value, which matches the player mass.",
+          "format": "float",
+          "default": 0.001
+        },
+        "physicsRadius": {
+          "type": "number",
+          "description": "The radius that the added sphere collider will use for physics collision.\nIf there's already good colliders on the detail, you can make this 0.",
+          "format": "float",
+          "default": 1.0
+        },
+        "physicsSuspendUntilImpact": {
+          "type": "boolean",
+          "description": "If true, this detail will stay still until it touches something.\nGood for zero-g props.",
+          "default": false
+        },
+        "ignoreSun": {
+          "type": "boolean",
+          "description": "Set to true if this object's lighting should ignore the effects of sunlight"
+        },
+        "activationCondition": {
+          "type": "string",
+          "description": "Activates this game object when the dialogue condition is met"
+        },
+        "deactivationCondition": {
+          "type": "string",
+          "description": "Deactivates this game object when the dialogue condition is met"
+        },
+        "blinkWhenActiveChanged": {
+          "type": "boolean",
+          "description": "Should the player close their eyes while the activation state changes. Only relevant if activationCondition or deactivationCondition are set.",
+          "default": true
+        },
+        "item": {
+          "description": "Should this detail be treated as an interactible item",
+          "$ref": "#/definitions/ItemInfo"
+        },
+        "itemSocket": {
+          "description": "Should this detail be treated as a socket for an interactible item",
+          "$ref": "#/definitions/ItemSocketInfo"
+        },
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "id": {
+          "type": "string",
+          "description": "The unique ID of the Eye Traveler associated with this instrument zone."
+        }
+      }
+    },
+    "QuantumInstrumentInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "assetBundle": {
+          "type": "string",
+          "description": "Relative filepath to an asset-bundle to load the prefab defined in `path` from"
+        },
+        "path": {
+          "type": "string",
+          "description": "Either the path in the scene hierarchy of the item to copy or the path to the object in the supplied asset bundle. \nIf empty, will make an empty game object. This can be useful for adding other props to it as its children."
+        },
+        "removeChildren": {
+          "type": "array",
+          "description": "A list of children to remove from this detail",
+          "items": {
+            "type": "string"
+          }
+        },
+        "removeComponents": {
+          "type": "boolean",
+          "description": "Do we reset all the components on this object? Useful for certain props that have dialogue components attached to\nthem."
+        },
+        "scale": {
+          "type": "number",
+          "description": "Scale the prop",
+          "format": "float",
+          "default": 1.0
+        },
+        "stretch": {
+          "description": "Scale each axis of the prop. Overrides `scale`.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "keepLoaded": {
+          "type": "boolean",
+          "description": "Should this detail stay loaded (visible and collideable) even if you're outside the sector (good for very large props)?\nAlso makes this detail visible on the map.\nKeeping many props loaded is bad for performance so use this only when it's actually relevant\nMost logic/behavior scripts will still only work inside the sector, as most of those scripts break if a sector is not provided."
+        },
+        "hasPhysics": {
+          "type": "boolean",
+          "description": "Should this object dynamically move around?\nThis tries to make all mesh colliders convex, as well as adding a sphere collider in case the detail has no others."
+        },
+        "physicsMass": {
+          "type": "number",
+          "description": "The mass of the physics object.\nMost pushable props use the default value, which matches the player mass.",
+          "format": "float",
+          "default": 0.001
+        },
+        "physicsRadius": {
+          "type": "number",
+          "description": "The radius that the added sphere collider will use for physics collision.\nIf there's already good colliders on the detail, you can make this 0.",
+          "format": "float",
+          "default": 1.0
+        },
+        "physicsSuspendUntilImpact": {
+          "type": "boolean",
+          "description": "If true, this detail will stay still until it touches something.\nGood for zero-g props.",
+          "default": false
+        },
+        "ignoreSun": {
+          "type": "boolean",
+          "description": "Set to true if this object's lighting should ignore the effects of sunlight"
+        },
+        "activationCondition": {
+          "type": "string",
+          "description": "Activates this game object when the dialogue condition is met"
+        },
+        "deactivationCondition": {
+          "type": "string",
+          "description": "Deactivates this game object when the dialogue condition is met"
+        },
+        "blinkWhenActiveChanged": {
+          "type": "boolean",
+          "description": "Should the player close their eyes while the activation state changes. Only relevant if activationCondition or deactivationCondition are set.",
+          "default": true
+        },
+        "item": {
+          "description": "Should this detail be treated as an interactible item",
+          "$ref": "#/definitions/ItemInfo"
+        },
+        "itemSocket": {
+          "description": "Should this detail be treated as a socket for an interactible item",
+          "$ref": "#/definitions/ItemSocketInfo"
+        },
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "id": {
+          "type": "string",
+          "description": "The unique ID of the Eye Traveler associated with this quantum instrument."
+        },
+        "gatherCondition": {
+          "type": "string",
+          "description": "A dialogue condition to set when gathering this quantum instrument. Use it in conjunction with `activationCondition` or `deactivationCondition` on other details."
+        },
+        "gatherWithScope": {
+          "type": "boolean",
+          "description": "Allows gathering this quantum instrument using the zoomed-in signalscope, like Chert's bongos."
+        },
+        "signal": {
+          "description": "The audio signal emitted by this quantum instrument. The fields `name`, `audio`, and `frequency` will be copied from the corresponding Eye Traveler's signal if not specified here.",
+          "$ref": "#/definitions/SignalInfo"
+        },
+        "interactRadius": {
+          "type": "number",
+          "description": "The radius of the added sphere collider that will be used for interaction.",
+          "format": "float",
+          "default": 0.5
+        },
+        "interactRange": {
+          "type": "number",
+          "description": "The furthest distance where the player can interact with this quantum instrument.",
+          "format": "float",
+          "default": 2.0
         }
       }
     },
@@ -1022,6 +1947,26 @@
         }
       }
     },
+    "MapMarkerModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "If the body should have a marker on the map screen."
+        },
+        "minDisplayDistanceOverride": {
+          "type": "number",
+          "description": "Lowest distance away from the body that the marker can be shown. This is automatically set to 0 for all bodies except focal points where it is 5,000.",
+          "format": "float"
+        },
+        "maxDisplayDistanceOverride": {
+          "type": "number",
+          "description": "Highest distance away from the body that the marker can be shown. For planets and focal points the automatic value is 50,000. Moons and planets in focal points are 5,000. Stars are 1E+10 (10,000,000,000).",
+          "format": "float"
+        }
+      }
+    },
     "OrbitModule": {
       "type": "object",
       "additionalProperties": false,
@@ -1098,7 +2043,6 @@
           "type": "number",
           "description": "The semi-major axis of the ellipse that is the body's orbit. For a circular orbit this is the radius.",
           "format": "float",
-          "default": 5000.0,
           "minimum": 0.0
         },
         "inclination": {
@@ -1178,7 +2122,7 @@
         },
         "rafts": {
           "type": "array",
-          "description": "Add rafts to this planet",
+          "description": "Add rafts to this planet (requires Echoes of the Eye DLC)",
           "items": {
             "$ref": "#/definitions/RaftInfo"
           }
@@ -1192,16 +2136,9 @@
         },
         "slideShows": {
           "type": "array",
-          "description": "Add slideshows (from the DLC) to the planet",
+          "description": "Add slideshows to the planet (requires Echoes of the Eye DLC)",
           "items": {
             "$ref": "#/definitions/ProjectionInfo"
-          }
-        },
-        "quantumGroups": {
-          "type": "array",
-          "description": "A list of quantum groups that props can be added to. An example of a group would be a list of possible locations for a QuantumSocketedObject.",
-          "items": {
-            "$ref": "#/definitions/QuantumGroupInfo"
           }
         },
         "tornados": {
@@ -1273,6 +2210,76 @@
           "items": {
             "$ref": "#/definitions/ShuttleInfo"
           }
+        },
+        "socketQuantumGroups": {
+          "type": "array",
+          "description": "Add a socket quantum object to a planet. Define the position of multiple \"sockets\" and multiple objects that jump between sockets. \nIf the number of sockets equals the number of objects, they will shuffle around.",
+          "items": {
+            "$ref": "#/definitions/SocketQuantumGroupInfo"
+          }
+        },
+        "stateQuantumGroups": {
+          "type": "array",
+          "description": "Add a state quantum object to a planet. Switches between displaying different objects in a single place.",
+          "items": {
+            "$ref": "#/definitions/StateQuantumGroupInfo"
+          }
+        },
+        "lightningQuantumGroups": {
+          "type": "array",
+          "description": "Add quantum lightning to a planet. When lightning strikes, a different detail object is shown. The lightning will take the first defined position/rotation for all objects.",
+          "items": {
+            "$ref": "#/definitions/LightningQuantumInfo"
+          }
+        },
+        "dreamCampfires": {
+          "type": "array",
+          "description": "Add campfires that allow you to enter the dream world/simulation (requires Echoes of the Eye DLC). Must be paired with a dream arrival point, which can be placed on this planet or elsewhere.",
+          "items": {
+            "$ref": "#/definitions/DreamCampfireInfo"
+          }
+        },
+        "dreamArrivalPoints": {
+          "type": "array",
+          "description": "Add the points you will arrive at when entering the dream world/simulation from a paired dream campfire (requires Echoes of the Eye DLC). The planet with the arrival point should be statically positioned to avoid issues with the simulation view materials.",
+          "items": {
+            "$ref": "#/definitions/DreamArrivalPointInfo"
+          }
+        },
+        "grappleTotems": {
+          "type": "array",
+          "description": "Adds dream world grapple totems to this planet (requires Echoes of the Eye DLC).",
+          "items": {
+            "$ref": "#/definitions/GrappleTotemInfo"
+          }
+        },
+        "alarmTotems": {
+          "type": "array",
+          "description": "Adds dream world alarm totems to this planet (requires Echoes of the Eye DLC).",
+          "items": {
+            "$ref": "#/definitions/AlarmTotemInfo"
+          }
+        },
+        "portholes": {
+          "type": "array",
+          "description": "Adds portholes (the windows you can peek through in the Stranger) to this planet (requires Echoes of the Eye DLC).",
+          "items": {
+            "$ref": "#/definitions/PortholeInfo"
+          }
+        },
+        "dreamCandles": {
+          "type": "array",
+          "description": "Adds dream world candles to this planet (requires Echoes of the Eye DLC).",
+          "items": {
+            "$ref": "#/definitions/DreamCandleInfo"
+          }
+        },
+        "projectionTotems": {
+          "type": "array",
+          "description": "Adds dream world projection totems (requires Echoes of the Eye DLC).",
+          "items": {
+            "$ref": "#/definitions/ProjectionTotemInfo"
+          }
         }
       }
     },
@@ -1295,13 +2302,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -1336,13 +2343,9 @@
           "description": "Scale each axis of the prop. Overrides `scale`.",
           "$ref": "#/definitions/MVector3"
         },
-        "quantumGroupID": {
-          "type": "string",
-          "description": "If this value is not null, this prop will be quantum. Assign this field to the id of the quantum group it should be a part of. The group it is assigned to determines what kind of quantum object it is"
-        },
         "keepLoaded": {
           "type": "boolean",
-          "description": "Should this detail stay loaded (visible and collideable) even if you're outside the sector (good for very large props)?\nAlso makes this detail visible on the map.\nMost logic/behavior scripts will still only work inside the sector, as most of those scripts break if a sector is not provided."
+          "description": "Should this detail stay loaded (visible and collideable) even if you're outside the sector (good for very large props)?\nAlso makes this detail visible on the map.\nKeeping many props loaded is bad for performance so use this only when it's actually relevant\nMost logic/behavior scripts will still only work inside the sector, as most of those scripts break if a sector is not provided."
         },
         "hasPhysics": {
           "type": "boolean",
@@ -1392,263 +2395,6 @@
         }
       }
     },
-    "ItemInfo": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "name": {
-          "type": "string",
-          "description": "The name of the item to be displayed in the UI. Defaults to the name of the detail object."
-        },
-        "itemType": {
-          "type": "string",
-          "description": "The type of the item, which determines its orientation when held and what sockets it fits into. This can be a custom string, or a vanilla ItemType (Scroll, WarpCore, SharedStone, ConversationStone, Lantern, SlideReel, DreamLantern, or VisionTorch). Defaults to the item name."
-        },
-        "interactRange": {
-          "type": "number",
-          "description": "The furthest distance where the player can interact with this item. Defaults to two meters, same as most vanilla items. Set this to zero to disable all interaction by default.",
-          "format": "float",
-          "default": 2.0
-        },
-        "colliderRadius": {
-          "type": "number",
-          "description": "The radius that the added sphere collider will use for collision and hover detection.\nIf there's already a collider on the detail, you can make this 0.",
-          "format": "float",
-          "default": 0.5
-        },
-        "droppable": {
-          "type": "boolean",
-          "description": "Whether the item can be dropped. Defaults to true.",
-          "default": true
-        },
-        "dropOffset": {
-          "description": "A relative offset to apply to the item's position when dropping it on the ground.",
-          "$ref": "#/definitions/MVector3"
-        },
-        "dropNormal": {
-          "description": "The direction the item will be oriented when dropping it on the ground. Defaults to up (0, 1, 0).",
-          "$ref": "#/definitions/MVector3"
-        },
-        "pickupAudio": {
-          "type": "string",
-          "description": "The audio to play when this item is picked up. Only applies to custom/non-vanilla item types.\nCan be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
-        },
-        "dropAudio": {
-          "type": "string",
-          "description": "The audio to play when this item is dropped. Only applies to custom/non-vanilla item types.\nCan be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
-        },
-        "socketAudio": {
-          "type": "string",
-          "description": "The audio to play when this item is inserted into a socket. Only applies to custom/non-vanilla item types.\nCan be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
-        },
-        "unsocketAudio": {
-          "type": "string",
-          "description": "The audio to play when this item is removed from a socket. Only applies to custom/non-vanilla item types.\nCan be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
-        },
-        "pickupCondition": {
-          "type": "string",
-          "description": "A dialogue condition to set when picking up this item."
-        },
-        "clearPickupConditionOnDrop": {
-          "type": "boolean",
-          "description": "Whether the pickup condition should be cleared when dropping the item. Defaults to true.",
-          "default": true
-        },
-        "pickupFact": {
-          "type": "string",
-          "description": "A ship log fact to reveal when picking up this item."
-        },
-        "pathToInitialSocket": {
-          "type": "string",
-          "description": "A relative path from the planet to a socket that this item will be automatically inserted into."
-        }
-      }
-    },
-    "ItemSocketInfo": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "rotation": {
-          "description": "Rotation of the object",
-          "$ref": "#/definitions/MVector3"
-        },
-        "alignRadial": {
-          "type": [
-            "boolean",
-            "null"
-          ],
-          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
-        },
-        "position": {
-          "description": "Position of the object",
-          "$ref": "#/definitions/MVector3"
-        },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
-        "isRelativeToParent": {
-          "type": "boolean",
-          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
-        },
-        "rename": {
-          "type": "string",
-          "description": "An optional rename of this object"
-        },
-        "socketPath": {
-          "type": "string",
-          "description": "The relative path to a child game object of this detail that will act as the socket point for the item. Will be used instead of this socket's positioning info if set."
-        },
-        "itemType": {
-          "type": "string",
-          "description": "The type of item allowed in this socket. This can be a custom string, or a vanilla ItemType (Scroll, WarpCode, SharedStone, ConversationStone, Lantern, SlideReel, DreamLantern, or VisionTorch)."
-        },
-        "interactRange": {
-          "type": "number",
-          "description": "The furthest distance where the player can interact with this item socket. Defaults to two meters, same as most vanilla item sockets. Set this to zero to disable all interaction by default.",
-          "format": "float",
-          "default": 2.0
-        },
-        "useGiveTakePrompts": {
-          "type": "boolean",
-          "description": "Whether to use \"Give Item\" / \"Take Item\" prompts instead of \"Insert Item\" / \"Remove Item\"."
-        },
-        "insertCondition": {
-          "type": "string",
-          "description": "A dialogue condition to set when inserting an item into this socket."
-        },
-        "clearInsertConditionOnRemoval": {
-          "type": "boolean",
-          "description": "Whether the insert condition should be cleared when removing the socketed item. Defaults to true.",
-          "default": true
-        },
-        "insertFact": {
-          "type": "string",
-          "description": "A ship log fact to reveal when inserting an item into this socket."
-        },
-        "removalCondition": {
-          "type": "string",
-          "description": "A dialogue condition to set when removing an item from this socket, or when the socket is empty."
-        },
-        "clearRemovalConditionOnInsert": {
-          "type": "boolean",
-          "description": "Whether the removal condition should be cleared when inserting a socketed item. Defaults to true.",
-          "default": true
-        },
-        "removalFact": {
-          "type": "string",
-          "description": "A ship log fact to reveal when removing an item from this socket, or when the socket is empty."
-        }
-      }
-    },
-    "DialogueInfo": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "position": {
-          "description": "Position of the object",
-          "$ref": "#/definitions/MVector3"
-        },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
-        "isRelativeToParent": {
-          "type": "boolean",
-          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
-        },
-        "rename": {
-          "type": "string",
-          "description": "An optional rename of this object"
-        },
-        "blockAfterPersistentCondition": {
-          "type": "string",
-          "description": "Prevents the dialogue from being created after a specific persistent condition is set. Useful for remote dialogue\ntriggers that you want to have happen only once."
-        },
-        "lookAtRadius": {
-          "type": "number",
-          "description": "If a pathToAnimController is supplied, if you are within this distance the character will look at you. If it is set\nto 0, they will only look at you when spoken to.",
-          "format": "float"
-        },
-        "pathToAnimController": {
-          "type": "string",
-          "description": "If this dialogue is meant for a character, this is the relative path from the planet to that character's\nCharacterAnimController, TravelerController, TravelerEyeController (eye of the universe), FacePlayerWhenTalking, \nHearthianRecorderEffects or SolanumAnimController.\n\nIf it's a Recorder this will also delete the existing dialogue already attached to that prop.\n\nIf none of those components are present it will add a FacePlayerWhenTalking component."
-        },
-        "pathToExistingDialogue": {
-          "type": "string",
-          "description": "If this dialogue is adding to existing character dialogue, put a path to the game object with the dialogue on it here"
-        },
-        "radius": {
-          "type": "number",
-          "description": "Radius of the spherical collision volume where you get the \"talk to\" prompt when looking at. If you use a\nremoteTrigger, you can set this to 0 to make the dialogue only trigger remotely.",
-          "format": "float"
-        },
-        "range": {
-          "type": "number",
-          "description": "Distance from radius the prompt appears",
-          "format": "float",
-          "default": 2.0
-        },
-        "remoteTrigger": {
-          "description": "Allows you to trigger dialogue from a distance when you walk into an area.",
-          "$ref": "#/definitions/RemoteTriggerInfo"
-        },
-        "xmlFile": {
-          "type": "string",
-          "description": "Relative path to the xml file defining the dialogue."
-        },
-        "flashlightToggle": {
-          "description": "What type of flashlight toggle to do when dialogue is interacted with",
-          "default": "none",
-          "$ref": "#/definitions/FlashlightToggle"
-        }
-      }
-    },
-    "RemoteTriggerInfo": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "position": {
-          "description": "Position of the object",
-          "$ref": "#/definitions/MVector3"
-        },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
-        "isRelativeToParent": {
-          "type": "boolean",
-          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
-        },
-        "rename": {
-          "type": "string",
-          "description": "An optional rename of this object"
-        },
-        "radius": {
-          "type": "number",
-          "description": "The radius of the remote trigger volume.",
-          "format": "float"
-        },
-        "prereqCondition": {
-          "type": "string",
-          "description": "This condition must be met for the remote trigger volume to trigger."
-        }
-      }
-    },
-    "FlashlightToggle": {
-      "type": "string",
-      "description": "",
-      "x-enumNames": [
-        "TurnOff",
-        "TurnOffThenOn",
-        "None"
-      ],
-      "enum": [
-        "turnOff",
-        "turnOffThenOn",
-        "none"
-      ]
-    },
     "EntryLocationInfo": {
       "type": "object",
       "additionalProperties": false,
@@ -1657,13 +2403,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -1698,13 +2444,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -1777,13 +2523,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -1946,13 +2692,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -2030,6 +2776,10 @@
         "keepLoaded": {
           "type": "boolean",
           "description": "Should this detail stay loaded even if you're outside the sector (good for very large props)"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector). This parent should be at the position where you'd like to scatter (which would usually be zero)."
         }
       }
     },
@@ -2052,13 +2802,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -2067,6 +2817,20 @@
         "reveals": {
           "type": "array",
           "description": "The ship log facts revealed after finishing this slide reel.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "conditionsToSet": {
+          "type": "array",
+          "description": "The dialogue conditions to set after finishing this slide reel.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "persistentConditionsToSet": {
+          "type": "array",
+          "description": "The persistent conditions to set after finishing this slide reel.",
           "items": {
             "type": "string"
           }
@@ -2089,6 +2853,24 @@
           "description": "The type of object this is.",
           "default": "slideReel",
           "$ref": "#/definitions/SlideShowType"
+        },
+        "reelModel": {
+          "description": "Exclusive to the slide reel type. Model/mesh of the reel. Each model has a different number of slides on it. Whole has 7 slides but a full ring like 8.",
+          "default": "sevenSlides",
+          "$ref": "#/definitions/SlideReelType"
+        },
+        "reelCondition": {
+          "description": "Exclusive to the slide reel type. Condition/material of the reel. Antique is the Stranger, Pristine is the Dreamworld, Rusted is a burned reel.",
+          "default": "antique",
+          "$ref": "#/definitions/SlideReelCondition"
+        },
+        "displaySlides": {
+          "type": "array",
+          "description": "Set which slides appear on the slide reel model. Leave empty to default to the first few slides.\nTakes a list of indices, i.e., to show the first 5 slides in reverse you would put [4, 3, 2, 1, 0].\nIndex starts at 0.",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
         }
       }
     },
@@ -2154,6 +2936,11 @@
         "reveal": {
           "type": "string",
           "description": "Ship log fact revealed when viewing this slide.\nSet this to include ship log entry module. Base game default is \"\"."
+        },
+        "rotate": {
+          "type": "boolean",
+          "description": "Exclusive to slide reels. Whether this slide should rotate the reel item while inside a projector.",
+          "default": true
         }
       }
     },
@@ -2173,90 +2960,35 @@
         "standingVisionTorch"
       ]
     },
-    "QuantumGroupInfo": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "type": {
-          "description": "What type of group this is: does it define a list of states a single quantum object could take or a list of sockets one or more quantum objects could share?",
-          "$ref": "#/definitions/QuantumGroupType"
-        },
-        "id": {
-          "type": "string",
-          "description": "A unique string used by props (that are marked as quantum) use to refer back to this group"
-        },
-        "sockets": {
-          "type": "array",
-          "description": "Only required if type is `sockets`. This lists all the possible locations for any props assigned to this group.",
-          "items": {
-            "$ref": "#/definitions/QuantumSocketInfo"
-          }
-        },
-        "hasEmptyState": {
-          "type": "boolean",
-          "description": "Optional. Only used if type is `states`. If this is true, then the first prop made part of this group will be used to construct a visibility box for an empty game object, which will be considered one of the states."
-        },
-        "sequential": {
-          "type": "boolean",
-          "description": "Optional. Only used if type is `states`. If this is true, then the states will be presented in order, rather than in a random order"
-        },
-        "loop": {
-          "type": "boolean",
-          "description": "Optional. Only used if type is `states` and `sequential` is true. If this is false, then after the last state has appeared, the object will no longer change state",
-          "default": true
-        }
-      }
-    },
-    "QuantumGroupType": {
+    "SlideReelType": {
       "type": "string",
       "description": "",
       "x-enumNames": [
-        "Sockets",
-        "States"
+        "SixSlides",
+        "SevenSlides",
+        "EightSlides",
+        "Whole"
       ],
       "enum": [
-        "sockets",
-        "states"
+        "sixSlides",
+        "sevenSlides",
+        "eightSlides",
+        "whole"
       ]
     },
-    "QuantumSocketInfo": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "rotation": {
-          "description": "Rotation of the object",
-          "$ref": "#/definitions/MVector3"
-        },
-        "alignRadial": {
-          "type": [
-            "boolean",
-            "null"
-          ],
-          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
-        },
-        "position": {
-          "description": "Position of the object",
-          "$ref": "#/definitions/MVector3"
-        },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
-        "isRelativeToParent": {
-          "type": "boolean",
-          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
-        },
-        "rename": {
-          "type": "string",
-          "description": "An optional rename of this object"
-        },
-        "probability": {
-          "type": "number",
-          "description": "The probability any props that are part of this group will occupy this socket",
-          "format": "float",
-          "default": 1.0
-        }
-      }
+    "SlideReelCondition": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Antique",
+        "Pristine",
+        "Rusted"
+      ],
+      "enum": [
+        "antique",
+        "pristine",
+        "rusted"
+      ]
     },
     "TornadoInfo": {
       "type": "object",
@@ -2277,13 +3009,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -2445,13 +3177,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -2515,13 +3247,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -2558,6 +3290,10 @@
           "type": "string",
           "description": "If you want a black hole to load a new star system scene, put its name here."
         },
+        "spawnPointID": {
+          "type": "string",
+          "description": "If this is a black hole loading a new star system, set the ID of the spawn point you want to use\nOtherwise, will use the default spawn"
+        },
         "type": {
           "description": "Type of singularity (white hole or black hole)",
           "$ref": "#/definitions/SingularityType"
@@ -2587,90 +3323,6 @@
         "whiteHole"
       ]
     },
-    "SignalInfo": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "audio": {
-          "type": "string",
-          "description": "The audio to use. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
-        },
-        "minDistance": {
-          "type": "number",
-          "description": "At this distance the sound is at its loudest.",
-          "format": "float"
-        },
-        "maxDistance": {
-          "type": "number",
-          "description": "The sound will drop off by this distance (Note: for signals, this only effects when it is heard aloud and not via the signalscope).",
-          "format": "float",
-          "default": 5.0
-        },
-        "volume": {
-          "type": "number",
-          "description": "How loud the sound will play",
-          "format": "float",
-          "default": 0.5
-        },
-        "position": {
-          "description": "Position of the object",
-          "$ref": "#/definitions/MVector3"
-        },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
-        "isRelativeToParent": {
-          "type": "boolean",
-          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
-        },
-        "rename": {
-          "type": "string",
-          "description": "An optional rename of this object"
-        },
-        "detectionRadius": {
-          "type": "number",
-          "description": "How close the player must get to the signal to detect it. This is when you get the \"Unknown Signal Detected\"\nnotification.",
-          "format": "float",
-          "minimum": 0.0
-        },
-        "frequency": {
-          "type": "string",
-          "description": "The frequency ID of the signal. The built-in game values are `Default`, `Traveler`, `Quantum`, `EscapePod`,\n`Statue`, `WarpCore`, `HideAndSeek`, and `Radio`. You can also put a custom value."
-        },
-        "identificationRadius": {
-          "type": "number",
-          "description": "How close the player must get to the signal to identify it. This is when you learn its name.",
-          "format": "float",
-          "default": 10.0,
-          "minimum": 0.0
-        },
-        "insideCloak": {
-          "type": "boolean",
-          "description": "Only set to `true` if you are putting this signal inside a cloaking field."
-        },
-        "name": {
-          "type": "string",
-          "description": "The unique ID of the signal."
-        },
-        "onlyAudibleToScope": {
-          "type": "boolean",
-          "description": "`false` if the player can hear the signal without equipping the signal-scope.",
-          "default": true
-        },
-        "reveals": {
-          "type": "string",
-          "description": "A ship log fact to reveal when the signal is identified.",
-          "default": ""
-        },
-        "sourceRadius": {
-          "type": "number",
-          "description": "Radius of the sphere giving off the signal.",
-          "format": "float",
-          "default": 1.0
-        }
-      }
-    },
     "RemoteInfo": {
       "type": "object",
       "additionalProperties": false,
@@ -2689,13 +3341,13 @@
         },
         "platform": {
           "description": "Camera platform that the stones can project to and from",
-          "$ref": "#/definitions/PlatformInfo"
+          "$ref": "#/definitions/RemotePlatformInfo"
         },
         "stones": {
           "type": "array",
           "description": "Projection stones",
           "items": {
-            "$ref": "#/definitions/StoneInfo"
+            "$ref": "#/definitions/ProjectionStoneInfo"
           }
         }
       }
@@ -2719,13 +3371,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -2779,7 +3431,7 @@
         }
       }
     },
-    "PlatformInfo": {
+    "RemotePlatformInfo": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -2798,13 +3450,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -2825,7 +3477,7 @@
         }
       }
     },
-    "StoneInfo": {
+    "ProjectionStoneInfo": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -2844,13 +3496,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -2881,13 +3533,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -2926,13 +3578,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -2963,13 +3615,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -3016,13 +3668,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -3094,13 +3746,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -3141,13 +3793,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -3185,13 +3837,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -3200,6 +3852,669 @@
         "id": {
           "type": "string",
           "description": "Unique ID for this shuttle"
+        }
+      }
+    },
+    "SocketQuantumGroupInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rename": {
+          "type": "string",
+          "description": "Optional name to help identify this group"
+        },
+        "details": {
+          "type": "array",
+          "description": "List of props which will be used in this quantum group",
+          "items": {
+            "$ref": "#/definitions/QuantumDetailInfo"
+          }
+        },
+        "sockets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/QuantumSocketInfo"
+          }
+        }
+      }
+    },
+    "QuantumDetailInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "assetBundle": {
+          "type": "string",
+          "description": "Relative filepath to an asset-bundle to load the prefab defined in `path` from"
+        },
+        "path": {
+          "type": "string",
+          "description": "Either the path in the scene hierarchy of the item to copy or the path to the object in the supplied asset bundle. \nIf empty, will make an empty game object. This can be useful for adding other props to it as its children."
+        },
+        "removeChildren": {
+          "type": "array",
+          "description": "A list of children to remove from this detail",
+          "items": {
+            "type": "string"
+          }
+        },
+        "removeComponents": {
+          "type": "boolean",
+          "description": "Do we reset all the components on this object? Useful for certain props that have dialogue components attached to\nthem."
+        },
+        "scale": {
+          "type": "number",
+          "description": "Scale the prop",
+          "format": "float",
+          "default": 1.0
+        },
+        "stretch": {
+          "description": "Scale each axis of the prop. Overrides `scale`.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "keepLoaded": {
+          "type": "boolean",
+          "description": "Should this detail stay loaded (visible and collideable) even if you're outside the sector (good for very large props)?\nAlso makes this detail visible on the map.\nKeeping many props loaded is bad for performance so use this only when it's actually relevant\nMost logic/behavior scripts will still only work inside the sector, as most of those scripts break if a sector is not provided."
+        },
+        "hasPhysics": {
+          "type": "boolean",
+          "description": "Should this object dynamically move around?\nThis tries to make all mesh colliders convex, as well as adding a sphere collider in case the detail has no others."
+        },
+        "physicsMass": {
+          "type": "number",
+          "description": "The mass of the physics object.\nMost pushable props use the default value, which matches the player mass.",
+          "format": "float",
+          "default": 0.001
+        },
+        "physicsRadius": {
+          "type": "number",
+          "description": "The radius that the added sphere collider will use for physics collision.\nIf there's already good colliders on the detail, you can make this 0.",
+          "format": "float",
+          "default": 1.0
+        },
+        "physicsSuspendUntilImpact": {
+          "type": "boolean",
+          "description": "If true, this detail will stay still until it touches something.\nGood for zero-g props.",
+          "default": false
+        },
+        "ignoreSun": {
+          "type": "boolean",
+          "description": "Set to true if this object's lighting should ignore the effects of sunlight"
+        },
+        "activationCondition": {
+          "type": "string",
+          "description": "Activates this game object when the dialogue condition is met"
+        },
+        "deactivationCondition": {
+          "type": "string",
+          "description": "Deactivates this game object when the dialogue condition is met"
+        },
+        "blinkWhenActiveChanged": {
+          "type": "boolean",
+          "description": "Should the player close their eyes while the activation state changes. Only relevant if activationCondition or deactivationCondition are set.",
+          "default": true
+        },
+        "item": {
+          "description": "Should this detail be treated as an interactible item",
+          "$ref": "#/definitions/ItemInfo"
+        },
+        "itemSocket": {
+          "description": "Should this detail be treated as a socket for an interactible item",
+          "$ref": "#/definitions/ItemSocketInfo"
+        },
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "randomizeYRotation": {
+          "type": "boolean",
+          "description": "When used in a quantum socket this object will randomize its rotation around the local Y axis.",
+          "default": true
+        },
+        "alignWithGravity": {
+          "type": "boolean",
+          "description": "When used in a quantum socket this object will align to the nearest gravity volume. Else use the rotation of the quantum socket.",
+          "default": true
+        }
+      }
+    },
+    "QuantumSocketInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "probability": {
+          "type": "number",
+          "description": "The probability any props that are part of this group will occupy this socket",
+          "format": "float",
+          "default": 1.0
+        }
+      }
+    },
+    "StateQuantumGroupInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rename": {
+          "type": "string",
+          "description": "Optional name to help identify this group"
+        },
+        "details": {
+          "type": "array",
+          "description": "List of props which will be used in this quantum group",
+          "items": {
+            "$ref": "#/definitions/QuantumDetailInfo"
+          }
+        },
+        "sequential": {
+          "type": "boolean",
+          "description": "Optional. If this is true, then the states will be presented in order, rather than in a random order"
+        },
+        "loop": {
+          "type": "boolean",
+          "description": "Optional. Only used if `sequential` is true. If this is false, then after the last state has appeared, the object will no longer change state",
+          "default": true
+        },
+        "hasEmptyState": {
+          "type": "boolean",
+          "description": "Optional. Only used if type is `states`. If this is true, then the first prop made part of this group will be used to construct a visibility box for an empty game object, which will be considered one of the states."
+        }
+      }
+    },
+    "LightningQuantumInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "details": {
+          "type": "array",
+          "description": "List of props which will be alternated between during flashes of lightning",
+          "items": {
+            "$ref": "#/definitions/DetailInfo"
+          }
+        }
+      }
+    },
+    "DreamCampfireInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "id": {
+          "type": "string",
+          "description": "Unique ID for this dream-world campfire"
+        }
+      }
+    },
+    "DreamArrivalPointInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "id": {
+          "type": "string",
+          "description": "Unique ID for this dream-world arrival point"
+        },
+        "generateSimulationMeshes": {
+          "type": "boolean",
+          "description": "Whether to generate simulation meshes (the models used in the \"tronworld\" or \"matrix\" view) for most objects on the current planet by cloning the existing meshes and applying the simulation materials. Leave this off if you are building your own simulation meshes or using existing objects which have them."
+        }
+      }
+    },
+    "GrappleTotemInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "minDistance": {
+          "type": "number",
+          "description": "The minimum distance that the player must be from the grapple totem for it to activate.",
+          "format": "float",
+          "default": 10.0
+        },
+        "arrivalDistance": {
+          "type": "number",
+          "description": "The distance from the grapple totem that the player will stop at when it activates.",
+          "format": "float",
+          "default": 4.0
+        },
+        "maxAngle": {
+          "type": "number",
+          "description": "The maximum angle in degrees allowed between the grapple totem's face and the player's lantern in order to activate the totem.",
+          "format": "float",
+          "default": 45.0
+        },
+        "maxDistance": {
+          "type": "number",
+          "description": "The maximum distance allowed between the grapple totem's face and the player's lantern in order to activate the totem.",
+          "format": "float",
+          "default": 29.0
+        }
+      }
+    },
+    "AlarmTotemInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "sightDistance": {
+          "type": "number",
+          "description": "The maximum distance of the alarm's vision cone.",
+          "format": "float",
+          "default": 45.0
+        },
+        "sightAngle": {
+          "type": "number",
+          "description": "The width of the alarm's vision cone in degrees.",
+          "format": "float",
+          "default": 60.0
+        },
+        "stretchVisionCone": {
+          "description": "Scales the visible vision cone in the simulation view (does not affect the actual vision cone detection).",
+          "$ref": "#/definitions/MVector3"
+        }
+      }
+    },
+    "PortholeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "revealFacts": {
+          "type": "array",
+          "description": "Fact IDs to reveal when peeking through the porthole.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "fieldOfView": {
+          "type": "number",
+          "description": "The field of view of the porthole camera.",
+          "format": "float",
+          "default": 90.0
+        },
+        "target": {
+          "description": "The location of the camera when the player peeks through the porthole. Can be placed on a different planet.",
+          "$ref": "#/definitions/PortholeTargetInfo"
+        }
+      }
+    },
+    "PortholeTargetInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "parentBody": {
+          "type": "string",
+          "description": "The name of the planet that will be used with `parentPath`. Must be set if `parentPath` is set."
+        },
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        }
+      }
+    },
+    "DreamCandleInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "type": {
+          "description": "The type of dream candle this is.",
+          "default": "Ground",
+          "$ref": "#/definitions/DreamCandleType"
+        },
+        "startLit": {
+          "type": "boolean",
+          "description": "Whether the candle should start lit or extinguished."
+        }
+      }
+    },
+    "DreamCandleType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Ground",
+        "GroundSmall",
+        "GroundLarge",
+        "GroundSingle",
+        "Wall",
+        "WallLargeFlame",
+        "WallBigWick",
+        "Standing",
+        "Pile"
+      ],
+      "enum": [
+        "ground",
+        "groundSmall",
+        "groundLarge",
+        "groundSingle",
+        "wall",
+        "wallLargeFlame",
+        "wallBigWick",
+        "standing",
+        "pile"
+      ]
+    },
+    "ProjectionTotemInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "startLit": {
+          "type": "boolean",
+          "description": "Whether the totem should start lit or extinguished."
+        },
+        "extinguishOnly": {
+          "type": "boolean",
+          "description": "Whether the projection totem should be able to extinguished but not be able to be lit again with the artifact. Mainly useful if `startLit` is set to true."
+        },
+        "pathToAlarmTotem": {
+          "type": "string",
+          "description": "A relative path from this planet to an alarm totem that will be activated or deactivated based on whether this totem is lit."
+        },
+        "pathsToDreamCandles": {
+          "type": "array",
+          "description": "Relative paths from this planet to objects containing dream candles that will be activated or deactivated based on whether this totem is lit. All dream candles in the selected objects will be connected to this totem, so they do not need to be specified individually if a parent object is specified.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "pathsToProjectionTotems": {
+          "type": "array",
+          "description": "Relative paths from this planet to projection totems that will be deactivated if this totem is extinguished. All projection totems in the selected objects will be connected to this totem, so they do not need to be specified individually if a parent object is specified.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "pathsToProjectedObjects": {
+          "type": "array",
+          "description": "Relative paths from this planet to objects that will appear or disappear when this totem is lit or extinguished. Some types of objects and effects are not supported and will remain visible and active.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "toggleProjectedObjectsActive": {
+          "type": "boolean",
+          "description": "If set, projected objects will be set to fully active or fully disabled instantly instead of smoothly fading lights/renderers/colliders. Use this if the normal behavior is insufficient for the objects you're using."
         }
       }
     },
@@ -3337,7 +4652,7 @@
         },
         "spriteFolder": {
           "type": "string",
-          "description": "A path to the folder where entry sprites are stored."
+          "description": "A path to the folder where entry sprites (.png) are stored."
         },
         "xmlFile": {
           "type": "string",
@@ -3375,7 +4690,7 @@
         },
         "outlineSprite": {
           "type": "string",
-          "description": "The path to the sprite to show when the planet is unexplored in map mode."
+          "description": "The path to the sprite (.png/.jpg/.exr) to show when the planet is unexplored in map mode."
         },
         "remove": {
           "type": "boolean",
@@ -3383,13 +4698,18 @@
         },
         "revealedSprite": {
           "type": "string",
-          "description": "The path to the sprite to show when the planet is revealed in map mode."
+          "description": "The path to the sprite (.png/.jpg/.exr) to show when the planet is revealed in map mode."
         },
         "scale": {
           "type": "number",
           "description": "Scale to apply to the planet in map mode.",
           "format": "float",
           "default": 1.0
+        },
+        "selectable": {
+          "type": "boolean",
+          "description": "Can this ship log map mode entry be selected\nEx) Set to false for stars with no entries on them so they are skipped in navigation",
+          "default": true
         }
       }
     },
@@ -3403,7 +4723,7 @@
         },
         "outlineSprite": {
           "type": "string",
-          "description": "The sprite to show when the parent AstroBody is rumored/unexplored."
+          "description": "The sprite (.png/.jpg/.exr) to show when the parent AstroBody is rumored/unexplored."
         },
         "position": {
           "description": "The position (relative to the parent) to place the detail.",
@@ -3411,7 +4731,7 @@
         },
         "revealedSprite": {
           "type": "string",
-          "description": "The sprite to show when the parent AstroBody is revealed."
+          "description": "The sprite (.png/.jpg/.exr) to show when the parent AstroBody is revealed."
         },
         "rotation": {
           "type": "number",
@@ -3455,13 +4775,19 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "playerSpawn": {
-          "description": "If you want the player to spawn on the new body, set a value for this.",
-          "$ref": "#/definitions/PlayerSpawnPoint"
+        "playerSpawnPoints": {
+          "type": "array",
+          "description": "If you want the player to spawn on the new body, set a value for this.\nDifferent spawns can be unlocked with persistent conditions and facts",
+          "items": {
+            "$ref": "#/definitions/PlayerSpawnPoint"
+          }
         },
-        "shipSpawn": {
-          "description": "Required for the system to be accessible by warp drive.",
-          "$ref": "#/definitions/ShipSpawnPoint"
+        "shipSpawnPoints": {
+          "type": "array",
+          "description": "Required for the system to be accessible by warp drive.\nDifferent spawns can be unlocked with persistent conditions and facts",
+          "items": {
+            "$ref": "#/definitions/ShipSpawnPoint"
+          }
         }
       }
     },
@@ -3473,6 +4799,22 @@
           "description": "Offsets the player/ship by this local vector when spawning. Used to prevent spawning in the floor. Optional: defaults to (0, 4, 0).",
           "$ref": "#/definitions/MVector3"
         },
+        "isDefault": {
+          "type": "boolean",
+          "description": "Whether this planet's spawn point is the one the player/ship will initially spawn at, if multiple spawn points exist.\nDo not use at the same time as makeDefaultIfFactRevealed or makeDefaultIfPersistentCondition\nSpawns unlocked with this have lowest priority"
+        },
+        "makeDefaultIfFactRevealed": {
+          "type": "string",
+          "description": "If the given ship log fact is revealed, this spawn point will be used\nDo not use at the same time as isDefault or makeDefaultIfPersistentCondition\nSpawns unlocked with this have highest priority"
+        },
+        "makeDefaultIfPersistentCondition": {
+          "type": "string",
+          "description": "If the given persistent condition is true, this spawn point will be used\nDo not use at the same time as isDefault or makeDefaultIfFactRevealed\nSpawns unlocked with this have second highest priority"
+        },
+        "id": {
+          "type": "string",
+          "description": "ID used to have a black hole or warp volume bring the player to this spawn specifically"
+        },
         "rotation": {
           "description": "Rotation of the object",
           "$ref": "#/definitions/MVector3"
@@ -3488,13 +4830,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -3503,10 +4845,6 @@
         "startWithSuit": {
           "type": "boolean",
           "description": "If you spawn on a planet with no oxygen, you probably want to set this to true ;;)"
-        },
-        "isDefault": {
-          "type": "boolean",
-          "description": "Whether this planet's spawn point is the one the player will initially spawn at, if multiple spawn points exist."
         }
       }
     },
@@ -3518,6 +4856,22 @@
           "description": "Offsets the player/ship by this local vector when spawning. Used to prevent spawning in the floor. Optional: defaults to (0, 4, 0).",
           "$ref": "#/definitions/MVector3"
         },
+        "isDefault": {
+          "type": "boolean",
+          "description": "Whether this planet's spawn point is the one the player/ship will initially spawn at, if multiple spawn points exist.\nDo not use at the same time as makeDefaultIfFactRevealed or makeDefaultIfPersistentCondition\nSpawns unlocked with this have lowest priority"
+        },
+        "makeDefaultIfFactRevealed": {
+          "type": "string",
+          "description": "If the given ship log fact is revealed, this spawn point will be used\nDo not use at the same time as isDefault or makeDefaultIfPersistentCondition\nSpawns unlocked with this have highest priority"
+        },
+        "makeDefaultIfPersistentCondition": {
+          "type": "string",
+          "description": "If the given persistent condition is true, this spawn point will be used\nDo not use at the same time as isDefault or makeDefaultIfFactRevealed\nSpawns unlocked with this have second highest priority"
+        },
+        "id": {
+          "type": "string",
+          "description": "ID used to have a black hole or warp volume bring the player to this spawn specifically"
+        },
         "rotation": {
           "description": "Rotation of the object",
           "$ref": "#/definitions/MVector3"
@@ -3533,13 +4887,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -3744,6 +5098,11 @@
         "tint": {
           "description": "Tint of the water",
           "$ref": "#/definitions/MColor"
+        },
+        "allowShipAutoroll": {
+          "type": "boolean",
+          "description": "Will the ship automatically try to orient itself to face upwards while in this volume?",
+          "default": true
         }
       }
     },
@@ -4013,13 +5372,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -4111,13 +5470,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -4181,13 +5540,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -4202,7 +5561,7 @@
     },
     "NHDeathType": {
       "type": "string",
-      "description": "",
+      "description": "Some special death types are:\n\nSupernova: Special death type used when the supernova hits you. You will not wake up if in the Dreamworld. \n\nDigestion: Death type used by anglerfish (and cut-content ghosts and water monster)\n\nBig bang: Special death type used at the end of the game\n\nMeditation: Special death type used when skipping to the next loop. You will not wake up if in the Dreamworld. \n\nTimeloop: Special death type used when the time loop ends. You will not wake up if in the Dreamworld. \n\nBlackhole: Special death type used by the ATP blackhole (and custom NH blackholes without whitehole destinations)\n\nDream: Special DLC death type used to kill a player in the real world while in the Dreamworld (i.e., you will loop not wake up)\n\nDreamExplosion: Special DLC death type used by the prototype artifact to kill a player in the real world while in the Dreamworld (i.e., you will loop not wake up)\n\nCrushedByElevator: Similar to the Crushed death type, but much faster",
       "x-enumNames": [
         "Default",
         "Impact",
@@ -4264,13 +5623,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -4315,13 +5674,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -4358,13 +5717,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -4392,13 +5751,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -4463,13 +5822,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -4520,13 +5879,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -4643,13 +6002,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -4683,13 +6042,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -4733,13 +6092,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -4777,13 +6136,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -4849,13 +6208,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -4903,13 +6262,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -4943,13 +6302,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -4983,13 +6342,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",
@@ -4999,6 +6358,10 @@
           "type": "string",
           "description": "The star system that entering this volume will send you to.",
           "default": "SolarSystem"
+        },
+        "spawnPointID": {
+          "type": "string",
+          "description": "ID assigned to a spawn point in the other system that the player will be sent to\nUses the default spawn if not set"
         }
       }
     },
@@ -5016,13 +6379,13 @@
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
         "rename": {
           "type": "string",

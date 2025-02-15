@@ -471,12 +471,12 @@ namespace NewHorizons.Builder.Props.TranslatorText
 
             if (info.arcInfo != null && info.arcInfo.Count() != dict.Values.Count())
             {
-                NHLogger.LogError($"Can't make NomaiWallText, arcInfo length [{info.arcInfo.Count()}] doesn't equal text entries [{dict.Values.Count()}]");
+                NHLogger.LogError($"Can't make NomaiWallText, arcInfo length [{info.arcInfo.Count()}] doesn't equal number of TextBlocks [{dict.Values.Count()}] in the xml");
                 return;
             }
 
             ArcCacheData[] cachedData = null;
-            if (nhBody.Cache?.ContainsKey(cacheKey) ?? false)
+            if (nhBody?.Cache?.ContainsKey(cacheKey) ?? false)
                 cachedData = nhBody.Cache.Get<ArcCacheData[]>(cacheKey);
 
             var arranger = nomaiWallText.gameObject.AddComponent<NomaiTextArcArranger>();
@@ -583,7 +583,12 @@ namespace NewHorizons.Builder.Props.TranslatorText
                 case NomaiTextArcInfo.NomaiTextArcType.Stranger when _ghostArcMaterial != null:
                     profile = NomaiTextArcBuilder.strangerSpiralProfile;
                     mat = _ghostArcMaterial;
-                    overrideMesh = MeshUtilities.RectangleMeshFromCorners(new Vector3[]{ new Vector3(-0.9f, 0.0f, 0.0f), new Vector3(0.9f, 0.0f, 0.0f), new Vector3(-0.9f, 2.0f, 0.0f), new Vector3(0.9f, 2.0f, 0.0f) });
+                    overrideMesh = MeshUtilities.RectangleMeshFromCorners(new Vector3[]{ 
+                        new Vector3(-0.9f, 0.0f, 0.0f), 
+                        new Vector3(0.9f, 0.0f, 0.0f), 
+                        new Vector3(-0.9f, 2.0f, 0.0f), 
+                        new Vector3(0.9f, 2.0f, 0.0f) 
+                    });
                     overrideColor = new Color(0.0158f, 1.0f, 0.5601f, 1f);
                     break;
                 case NomaiTextArcInfo.NomaiTextArcType.Adult:
@@ -601,6 +606,19 @@ namespace NewHorizons.Builder.Props.TranslatorText
             {
                 if (parent != null) arc = parent.GetComponent<SpiralManipulator>().AddChild(profile).gameObject;
                 else arc = NomaiTextArcArranger.CreateSpiral(profile, conversationZone).gameObject;
+            }
+
+            // Hardcoded stranger point fix
+            if (type == NomaiTextArcInfo.NomaiTextArcType.Stranger)
+            {
+                Delay.FireOnNextUpdate(() =>
+                {
+                    var text = arc.GetComponent<NomaiTextLine>();
+                    for (int i = 0; i < text._points.Length; i++)
+                    {
+                        text._points[i] = new Vector3(0f, 2f * i / text._points.Length, 0f);
+                    }
+                });
             }
 
             if (mat != null) arc.GetComponent<MeshRenderer>().sharedMaterial = mat;

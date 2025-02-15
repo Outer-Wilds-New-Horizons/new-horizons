@@ -1,4 +1,3 @@
-using NewHorizons.Handlers;
 using OWML.Common;
 using System;
 using System.Collections.Generic;
@@ -147,7 +146,8 @@ namespace NewHorizons
         void DefineStarSystem(string name, string config, IModBehaviour mod);
 
         /// <summary>
-        /// Allows creation of dialogue by directly passing the xml and dialogueInfo json contents as strings
+        /// Allows creation of dialogue by directly passing the xml and dialogueInfo json contents as strings. 
+        /// Must be called at least 2 frames before entering dialogue if you're using ReuseDialogueOptionsFrom
         /// </summary>
         /// <param name="textAssetID">TextAsset name used for compatibility with voice mod. Just has to be a unique identifier.</param>
         /// <param name="xml">The contents of the dialogue xml file as a string</param>
@@ -215,5 +215,12 @@ namespace NewHorizons
         /// <param name="mod"></param>
         /// <param name="filePath"></param>
         void AddSubtitle(IModBehaviour mod, string filePath);
+
+        /// <summary>
+        /// Whatever system the player is warping to next, they will spawn at the spawn point with this ID
+        /// Gets reset after warping. Is also overriden by entering a system-changing black hole or warp volume by their `spawnPointID`
+        /// </summary>
+        /// <param name="id"></param>
+        void SetNextSpawnID(string id);
     }
 }

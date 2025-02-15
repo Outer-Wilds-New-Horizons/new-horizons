@@ -55,6 +55,12 @@ namespace NewHorizons.External.Modules.VariableSize
         public string targetStarSystem;
 
         /// <summary>
+        /// If this is a black hole loading a new star system, set the ID of the spawn point you want to use
+        /// Otherwise, will use the default spawn
+        /// </summary>
+        public string spawnPointID;
+
+        /// <summary>
         /// Type of singularity (white hole or black hole)
         /// </summary>
         public SingularityType type;

@@ -769,1164 +769,1164 @@ Ignore the numbers, just take the name.
 
 This is a list of AudioClips that will also work, there's a lot of overlap with the AudioType list. Many old addons with signals use values from this list.
 
--   Hotel Oneshot - Heavy Thud 4
--   Tool_Put_Away_01
--   OW Quantum Lightning 091118 AP 07
--   OW_GD_ElectricBarrier_Idle_Loop
--   Nomai_Stone_Door_End_V2_11
--   General Destruction 1
--   Dream Rule 02 backdrop loop 072321_2 AP
--   amb_observatory
--   Dream World Water Ambience - Creek 3
--   Pickup_Rock_01
--   gasp_traumatic4_lessmale
--   Ship_Impact_Light_Damage_V3_06
--   BlackHole_02
--   OW_GD_WavesAgainstRock
--   OW_TH_AmbienceInCanyons
--   OW_PR_FootstepsBushRustle_03
--   OW_PR_ActivateProbeMode
--   Ghost Walk Footstep Wood_v2 6
--   rockingchair4
--   Water Spray Impact 4
--   OW Secret Library 040821_2 AP
--   Real World Dam Break Alex Composite 2
--   Ghost Run Footstep Wood_v2 4
--   UI_Enter_Dialog_V6-002_highpass_2
--   Spark_10
--   Mournful Prisoner 3
--   OW_PR_FootstepsLeaves_06
--   FootstepsWoodCreak_02
--   OW Dreamworld Ruins 072021 AP 02c
--   OW_PR_HitWallUnderwater1
--   OW_TH_RiverWaterFlow_loop
--   OW ReelBeat 01c 021021 AP
--   FootstepsWoodCreak_07
--   Ignite_Marshmallow_03
--   Marshmallow_Replace_02
--   Ship_FuelLeak
--   Raft Heavy Impact 5
--   elevatorloop
--   Real World Alarm Bell Oneshot 3
--   BigBang_EndFlash
--   OW_FinalEndTimes_DB_loop
--   fogsphere_pulse4
--   Ringworld Ambience 3
--   Destruction Impact 4
--   Artifact Unconceal
--   OW_NM_DoorStart_06
--   OW_PR_SignalscopeZoomOut
--   Nomai_Stone_Door_End_Big_V2_03
--   Player Gravel Footstep 3
--   General Destruction 5
--   OW Dream Fire Room 121820_4 AP LP
--   OW_PR_DeactivateProbeMode
--   OW_PR_LandInWater4
--   OW_PR_FootstepsJumpNomai_04
--   OW_PR_FootstepsJumpMetal_03
--   WarpCore_Remove_V3_01
--   Probe_SnapShot_03
--   Ghost Idle Search 4
--   Solanum_Foley_IconExit
--   Dream Fire Room Ambience Test 1
--   Lantern Extinguish 4
--   OW_PR_OxygenLeakingFromSuit_loop_louder
--   Wood Door Open Stop
--   OW_PR_FootstepsJumpGrass_01
--   OW_SP_ThrustAfterburn
--   OW_PR_FootstepsGrass_01
--   Real World Alarm Bell Oneshot 4
--   OW_PR_FootstepsNomai_04
--   Hotel Oneshot - Heavy Thud 2
--   Light Sensor Fade In 4
--   AnglerFish_OpenMouth_v2_01
--   Footstep_Run4
--   Ghost Walk Footstep Forest 6
--   OW_PR_FootstepsGrass_06
--   OW_GD_AmbienceRain
--   RotationalThruster04
--   OW New Raft Music 082321_4 AP theme
--   Spark_01
--   OW Muted End Times 040821 AP
--   Nomai_WhiteHoleStationActivation
--   Tool_Take_Out_02
--   OW_PR_FootstepsJumpDirt_05
--   mallowpuff2
--   Dreamworld Tower Fall Part 2
--   Jump_Into_Fogsphere_04
--   FootstepsWoodCreak_05
--   OW_SP_MetalCreak_14
--   OW_NM_DoorStart_03
--   drowning_firsthalf2
--   Forest Oneshot - Tree Creak 4
--   shiplog_misc1
--   FootstepsWoodCreak_04
--   Real World Dam Crack
--   OW_NM_DoorStart_09
--   OW_SP_LandingPadHard4
--   OW_PR_FootstepsSand_06
--   BH_Ambience_Surface
--   Ghost Grunt 3
--   glass_crack_02
--   House Destruction 3
--   OW_QuantumMoon
--   Orb_Roll_Energy_Loop_v2_01
--   OW Eye Of The Universe 082018_2 AP
--   Footstep3
--   OW_NM_DoorStart_Big_01
--   OW Dreamworld Ruins Story Beats 071621 AP 1d
--   Dream World Tidal Wave Loop
--   Nomai_Stone_Door_End_Big_V2_15
--   OW_SP_ActivateComputer 1
--   OW_PR_FootstepsIce_07
--   Raft Light Impact V2 3
--   UI_Pause_v2_08
--   signalscope_static
--   OW_SP_LandingCamActivated 1
--   Footstep4
--   OW_PR_FootstepsSand_03
--   Prisoner Pick Up Vision Torch
--   OW_SP_MetalCreak_16
--   OW_SP_Touchdown_04
--   Platform_Break_V2_03
--   OW Nomai Time Loop Device 081818 AP
--   RockPile_Fall_02
--   Ship_Impact_No_Damage_V3_02
--   Destruction Impact 7
--   Ghost Grab Player 2
--   Forest Oneshot - Tree Creak 5
--   OW_PR_FootstepsMetal_01
--   OW NM Flashback 082818_3 AP base
--   Projector Totem Light 2
--   Slot_Linking_Stone_Loop_02
--   breathing_suit3
--   OW_PR_FootstepsWood_07
--   OW_SP_HeadlightsOff_v2
--   Nomai_Stone_Door_End_V2_06
--   Fix_Puncture_03
--   OW Dream Rule LP 032421 AP glitch
--   Real World Tidal Wave Loop Louder
--   OW Dreamworld Ruins 072021 AP 02loop
--   gasp_normal11_lessmale
--   OW ReelBeat 01a 021021 AP
--   OW_TH_ModelRocketThrustRotational_01
--   OW_PR_FootstepsBushRustle_05
--   OW NomaiRuinsRegular 081918 AP motif3c v2
--   OW Final End Times 022519_2 AP LOOP1
--   OW_PR_FootstepsSand_01
--   Anglerfish_Awake4
--   OW_PR_FootstepsJumpIce_04
--   Fix_Puncture_01
--   Raft Light Impact V2 1
--   Warp_Loop_01_v2
--   Ghost Start Hunt Grunt 1
--   Destruction Debris 4
--   Solanum_IconAppear_V3
--   OW_SP_ActivateComputer_OneShot
--   Destruction Impact 8
--   OW_SP_ShipGroan1_v2
--   OW ReelBackdrop 02a 021021 AP
--   OW_NM_ComputerRing1
--   OW_PR_FootstepsJumpGlass_04
--   Forest Oneshot - Tree Creak 6
--   OW_GD_HeatLightning_01
--   Raft Heavy Impacts V2 3
--   Solanum_Foley_RockFormStart
--   Raft Light Impact V2 5
--   Ghost Grunt 4
--   OW_PR_FootstepsJumpDirt_06
--   OW_PR_FootstepsJumpGrass_03
--   OW_TravelerTheme_whistling
--   Raft Heavy Impact 2
--   Nature Oneshot - Distant Deep Creature 1
--   OW_SP_CloseHatch_v2
--   linkingstone_in
--   OW_PR_FootstepsSnow_03
--   OW_NM_OrbDeSelect_Energy_02
--   Impact_Light_02
--   Nomai_Stone_Door_End_V2_10
--   Fix_Puncture_07
--   OW_NM_HoleEnterExit
--   OW NM Nomai Ruins 081718 AP
--   OW_PR_OxygenRefill
--   GhostMatter_Splash_v4_05
--   glass_crack_01
--   Ignite_Marshmallow_02
--   Ship_Impact_Medium_Damage_V3_03
--   Forest Oneshot - Animal 4
--   OW_PR_FootstepsIce_02
--   OW_GD_RainOnHelmet
--   Spaceship_RattleLoop
--   BigBang_WhooshLeadToExplo
--   OW_TH_Campfire_loop_01
--   bigbang_cosmicinflation_v2
--   Hotel Oneshot - Heavy Creak 4
--   OW_PR_FootstepsJumpGrass_02
--   Tronworld Ambience 1
--   AnglerFish_Target_v2_07
--   Eye_of_Universe_Ambience_v2_01
--   OW_PR_FootstepsJumpLeaves_04
--   OW_PR_FootstepsJumpSnow_03
--   OW_PR_FootstepsJumpGlass_01
--   OW Traveler Theme 091118 AP FINAL TIME NO PIANO EDIT
--   OW ReelBeat 02f 082521 AP
--   Metal Door Close Stop
--   medkit
--   OW_NM_BlackHole_Lp
--   Ghost Blow Out Lantern
--   OW_PR_MarshmallowEatBurnt_shorter
--   Solanum_Foley_IconEnter
--   OW_PR_SignalscopeSwitchFrequencies
--   Prisoner Pick Up Artifact
--   OW_PR_BanjoStrum_3b
--   Water Spray Impact 5
--   UI_Advance_Dialog_V6-002_highpass
--   Destruction Debris 8
--   OW_PR_FootstepsDirt_06
--   Vision Torch - Step In
--   OW_NM_DoorStart_Big_04
--   OW_PR_FootstepsBushRustle_06
--   Hotel Oneshot - Creak 5
--   OW_PR_FootstepsJumpLeaves_01
--   OW_SP_ShipGroan4_v2
--   Jump_Into_Fogsphere_03
--   Dreamworld Forest Ambience 2
--   OW_PR_FootstepsJumpRock_02
--   CrushedByElevator
--   Player Gravel Footstep 1
--   House Destruction 4
--   Ghost Begin Stalk Grunt 1
--   flashlightOff
--   OW ReelBeat 04b_2 040921 AP
--   OW_PR_FootstepsRock_02
--   AshTwinCore_Open_01
--   OW_SP_HeadlightsOn_v2
--   Tower Fall Part 2
--   OW_NM_DoorStart_Big_02
--   Meteor_Impact_01_b
--   OW_SP_LandingCamStatic
--   OW_PR_FootstepsWood_01
--   gasp_light5
--   OW_PR_FootstepsGrass_03
--   Spark_03
--   Loading Tunnel - Loop
--   FootstepsJumpWoodCreak_02
--   OW_Main_Menu
--   Lantern Put Down
--   OW Secret Library Whispers LP 040821 AP REF MIX
--   OW_DB_Ambience
--   Vision Torch Light Rays - On
--   Hotel Oneshot - Creak 1
--   Dreamworld Nature Ambience 4
--   OW_PR_ThrustRotationalUnderwater_04
--   OW_PR_FootstepsJumpGrass_06
--   Nomai_Stone_Door_End_Big_V2_09
--   Ship_Impact_No_Damage_V3_01
--   Raft Movement Stop 3
--   Destruction Impact 9
--   Recorder_Start_Button
--   AnglerFish_Target_v2_14
--   Ghost Begin Chase Grunt 2
--   Hotel Oneshot - Creak 6
--   Fragment_Break
--   Tronworld Exit 2
--   Ghost Walk Footstep Forest 2
--   Incinerate_v3_01
--   Light Sensor Fade Out 3
--   OW_TravelerTheme_flute
--   OW_PR_FootstepsLeaves_02
--   OW_PR_FootstepsLeaves_01
--   Fix_Puncture_05
--   Ghost Walk Footstep Wood_v2 3
--   OW_PR_FootstepsJumpSand_01
--   Sarcophagus Strain 2
--   OW_PR_HitWallUnderwater4
--   OW_PR_FootstepsRock_03
--   Loading Tunnel - Unload
--   OW_PR_FootstepsJumpNomai_03
--   OW_PR_FootstepsDirt_07
--   OW_PR_FootstepsSnow_04
--   Wood Door Close Stop
--   OW_PR_FootstepsJumpIce_02
--   OW ReelBeat 04a 031521 AP
--   Raft Light Impact V2 2
--   Meteor_Impact_02_b
--   JellyFish_Shock_02
--   Metal Door Open Start
--   OW_GD_UnderwaterCurrent
--   OW_GD_HeatLightning_06
--   nomai_textbranchout_noenergy2
--   asphyxiation_nosuit_secondhalf_version3
--   Artifact Focus
--   Ice_Cave_Amb_loop_v3_01
--   Forest Oneshot - Tree Creak 3
--   OW NomaiRuinsRegular 081918 AP motif4c
--   Dreamworld Lights Out Ambience 4
--   Projector Next Slide 2
--   BeaconIdea4
--   Destruction Impact 1
--   OW_PR_FootstepsNomai_06
--   OW_NM_FlickeryGravityCrystalAmbience
--   OW Demonic Vocal Sting 082321 AP
--   OW Quantum Lightning 091118 AP 08
--   OW_NM_SadTheme_older
--   Nature Oneshot - Distant Creature 2 - less reverb
--   FootstepsJumpWoodCreak_03
--   OW_PR_FootstepsJumpSand_02
--   Player Gravel Footstep 8
--   OW_PR_FootstepsSnow_06
--   gasp_traumatic3_lessmale
--   Real World Dam Break Water Oneshot
--   Repair_Loop
--   OW_TH_FlagFlapping_loop.\_01
--   Ship_Impact_Light_Damage_V3_02
--   Raft Socket
--   Jump_Into_TinyGalaxy_v2_01
--   OW NomaiRuinsRegular 081918 AP motif7c
--   gasp_normal13_lessmale
--   Sandfall_Inside_Loop_01
--   Solanum_RocksForm
--   Fix_Puncture_06
--   OW Dreamworld Ruins Story Beats 071621 AP 1h
--   Sarcophagus Open 2
--   fogsphere_pulse2
--   Elevator Rattle Loop 3
--   IllusoryWall_Alex
--   OW_GD_HeatLightning_04
--   Nomai_Stone_Door_End_Big_V2_14
--   OW_PR_FootstepsJumpMetal_01
--   Vine_Crash_V3_03_LowPassDelay
--   OW_PR_BanjoStrum_2b
--   OW_PR_FootstepsGlass_05
--   OW_PR_FootstepsLeaves_07
--   OW_NM_DoorStart_01
--   OW_PR_FootstepsGrass_05
--   OW_PR_FootstepsJumpIce_01
--   OW_PR_ThrustRotationalUnderwater_01
--   Anglerfish_Chase_Breathing
--   OW_PR_FootstepsRock_04
--   Metal Door Close Start
--   Gear Rotate 1
--   Airlock Loop
--   Solanum_Foley_RockFormEnd
--   mallowpuff3
--   OW_PR_FootstepsSand_05
--   OW_PR_FootstepsJumpRock_01
--   Artifact Unfocus
--   OW Eye Of The Universe 082818_2 AP
--   OW_PR_FootstepsJumpRock_03
--   galaxy_zoomout2
--   OW_GD_IslandFalling_v2_loop
--   Projector Previous Slide 2
--   Ignite_CampFire_04
--   SpaceshipAlarm2_3Iterations
--   Ghost Individual Death 3
--   OW_PR_FootstepsJumpNomai_01
--   OW_PR_FootstepsJumpSnow_01
--   Forest Oneshot - Animal 2
--   OW_PR_FootstepsJumpDirt_01
--   Dreamworld Tower Fall Part 1
--   Ship_Impact_Medium_Damage_V3_05
--   OW_NM_ComputerRing3
--   OW_PR_SuitOn
--   Airlock Pressurize
--   OW_PR_FootstepsBushRustle_01
--   OW_PR_FootstepsNomai_02
--   Ship_Impact_Medium_Damage_V3_04
--   OW_NM_VesselDiscovery
--   PlayerSubmerge
--   Player Gravel Footstep 5
--   OW_EndTimes
--   HGT_SandColumn_Ship
--   OW ReelBeat 02c 021021 AP
--   Spark_09
--   OW_PR_FootstepsSand_02
--   Damage_Light_05
--   OW_NM_ComputerRingFall2
--   gasp_traumatic7_lessmale
--   Ghost Investigation Grunt
--   Dream World Alarm Bell Oneshot 2
--   rockingchair2
--   OW_PR_FootstepsJumpDirt_04
--   Projector Next Slide
--   OW_PR_FootstepsSand_08
--   OW_NM_WHAmbience2_v2
--   drowning_secondhalf2
--   Ghost Walk Footstep Forest 1
--   Prisoner Cloth Foley 3
--   OW_PR_FootstepsGlass_03
--   Vision Torch Scanning - Loop
--   Raft Medium Impact V2 2
--   Hotel Oneshot - Heavy Thud 3
--   Destruction Impact - Large 4
--   OW_PR_FootstepsJumpLeaves_03
--   OW_PR_FootstepsJumpSand_03
--   OW Dreamworld Ruins SILENCE 02
--   OW_PR_FootstepsWood_06
--   ModelRocket_LightImpact
--   shiplog_scanningloop
--   OW Ghost Ambiences v2 011221 AP low LP
--   OW NomaiRuinsRegular 081918 AP motif2c
--   glass_crack_03
--   Fix_Puncture_08
--   OW_PR_FootstepsSnow_01
--   OW_PR_FootstepsDirt_01
--   asphyxiation_nosuit_firsthalf1
--   OW_NM_DoorSlide_Big_LP_01
--   OW_SUN_SupernovaWall
--   OW_NM_DoorAirLockAirPourOut_03
--   OW_PR_ThrustUnderwater
--   Solar Sail Stop
--   OW_TH_Waterwheel_loop
--   Forest Oneshot - Tree Creak 1
--   OW ReelBackdrop 03a 050321 LOOP
--   Platform_Break_V2_04
--   FireBall_01
--   OW ReelBackdrop 01a 022521 AP
--   Dreamworld Lights Out Ambience 1
--   Nomai_Stone_Door_End_Big_V2_11
--   Spark_07
--   OW_SP_ThrustTranslationalUnderwater
--   Dream World Water Ambience - Creek 1
--   Ghost Begin Stalk Grunt 2
--   Comet_Purr
--   JellyFish_Shock_04
--   OW_PR_FootstepsWood_08
--   Raft Reeling Loop
--   shiplog_switchmode_forward
--   Station Light Flicker - Dreamworld
--   Lantern Wake Up Light 3
--   flashlightOn
--   Dreamworld Base Ambience 1
--   Ship_Impact_Heavy_Damage_V3_09
--   Crushed_To_Death_V2_01
--   ow_kazoo_theme
--   JetPack_NotificationBeep
--   Ghost Run Footstep Wood_v2 1
--   OW_PR_FootstepsJumpNomai_05
--   OW_NM_DataStream_v2
--   UI_Tab_v2_02
--   OW_PR_ProbeTakePicture
--   OW_NM_GravityCannonAmbience
--   OW NM Flashback 082818 AP loop
--   OW_SP_LandingPadSoft4
--   OW_PR_FootstepsGlass_07
--   WarpCore_Insert_V3_01
--   OW_NM_TractorBeamLP
--   ShipRepair_Finish
--   Ghost Begin Chase Grunt 1
--   Destruction Impact 2
--   OW_PR_FootstepsLeaves_08
--   Recorder_Stop_Button
--   OW_PR_FootstepsLeaves_04
--   OW_PR_Jump1
--   Jump_Into_TinyGalaxy_v2_04
--   OW_GD_Tornado_v2_04
--   OW_PR_FootstepsJumpDirt_02
--   OW_SP_ConsoleReadoutStart
--   OW_NM_EscapePodHatch
--   OW_PR_FootstepsJumpNomai_02
--   Light Sensor Fade In 1
--   Light Sensor Fade In 2
--   Hotel Oneshot - Creak 9
--   CampfireTune_All_Reverb
--   Recording_Loop_03
--   PartyHouseWhistle_Confident
--   mallowpuff4
--   OW_NM_WhiteHoleAmbienceL
--   Station Shudder
--   drowning_firsthalf1
--   UI_Exit_Dialog_V6-002_highpass
--   Dream World Dam Break
--   Dreamfire Extinguish 1
--   MediumSplash
--   Vision Torch - First Slide Appears
--   Footstep1
--   OW_TravelerTheme_drums
--   Artifact Conceal
--   HGT_Ambience_Cave_Small
--   HGT_Ambience_Cave_Big
--   OW_TH_Waterfall_loop_01
--   OW Discovery 083021_2 AP darker shorter
--   Secret Passageway Open Loop 2
--   Hotel Oneshot - Creak 4
--   supernova_explosion_deepnuclear2
--   Ghost Shout 7
--   OW NM Flashback 081718 AP slam
--   Airlock Close
--   OW_TH_FlagFlapping_loop.\_02
--   OW_SP_RefuelJetpack_v2_short
--   Ship_Impact_No_Damage_V3_03
--   Raft Medium Impact V2 4
--   Anglerfish_Awake3
--   Wood Door Open Start
--   OW_TH_FlagFlapping_loop
--   Slide Reel Pickup 2
--   Tronworld Ambience 2 Alex Hack
--   Ghost Run Footstep Wood_v2 5
--   Ignite_CampFire_03
--   Single Ghost Scream 14
--   Raft Start Reeling
--   OW_PR_FootstepsGrass_08
--   Tronworld Enter 2
--   OW_PR_ProbeUnderwaterLaunch
--   OW_GD_IslandCrashingInWater_v2
--   Grapple Totem Zoom In
--   OW ReelBeat 02a 021021 AP
--   Nomai_Stone_Door_End_V2_08
--   OW_PR_FootstepsJumpGlass_02
--   OW_NM_DoorStart_02
--   Destruction Impact - Large 3
--   OW_SP_SignalscopeSlideV2
--   OW NomaiRuinsRegular 081918 AP motif6c
--   Wood Door Close Start 3 Alex
--   Destruction Impact - Large 2
--   Nomai_Stone_Door_End_Big_V2_01
--   OW_NM_ComputerAmbienceLP
--   Anglerfish_Awake2
--   OW_TH_Insects_loop_03
--   OW_PR_SignalscopeActivate
--   OW_NM_ComputerRingFall1
--   OW_PR_FootstepsDirt_02
--   OW_NM_ShuttleLight
--   Single Ghost Scream 1
--   Ghost Identify Fail
--   OW_SP_ShipGroan5_v2
--   Cloaking Field Exit
--   OW_PR_FootstepsNomai_01
--   OW Dreamworld Ruins 072021 AP 02e
--   Forest Oneshot - Tree Creak 2
--   fogsphere_pulse1
--   OW_PR_PullOutStick
--   OW_PR_LockOn
--   Nomai_Stone_Door_End_Big_V2_07
--   OW_PR_FootstepsJumpSand_06
--   InstantDeath2_Long_Ringing
--   Light Sensor Door Stop 2
--   Light Sensor Door Loop 2
--   OW_TH_GeyserEnd_02
--   pickaxe_01
--   OW_PR_FootstepsWaterWade_03
--   RockPile_Fall_03
--   OW_PR_ThrustAfterburn_v2_01
--   Light Sensor Fade Out 2
--   Light Sensor Fade In 3
--   OW Finally Set Free 072021_2 AP
--   Ghost Blow Out Lantern Charge
--   Wood Door Loop
--   BigBang_Explo
--   TH_Geyser_Loop_v3
--   Water Spray Impact 8
--   OW_TH_FlagFlapping_loop.\_03
--   OW_PR_FootstepsJumpLeaves_02
--   OW_PR_FootstepsIceSlide_Lp_01
--   Dreamworld Lights Out Ambience 3
--   knife_scrape_01
--   OW OBSERVATORY 011317 AP
--   Footstep_Run5
--   Light Sensor Door Open 2
--   Jetpack_O2_loop_01
--   OW_PR_FootstepsJumpWood_04
--   OW_SP_BuckleUp
--   Probe_SnapShot_02
--   Pickup_Ceramic_01
--   OW_PR_FootstepsWood_03
--   Destruction Debris 3
--   OW_PR_SignalscopeDeactivate
--   OW_PR_OxygenLeakingFromSuit_loop
--   Probe_SnapShot_01
--   Dreamworld Ghost Hotel Ambience 2
--   Slide Reel Put Down 2
--   Nomai_Stone_Door_End_V2_07
--   OW_SP_ProbeLauncherRotation_v2
--   OW_PR_MarshmallowEatUnburnt_noMmm_v3
--   SystemBackOnline
--   Ghost Idle Search 1
--   Ship_Impact_Light_Damage_V3_03
--   OW Dreamworld Ruins Story Beats 071621 AP 1i
--   OW_PR_FootstepsGrass_02
--   OW_NM_DoorSlide_LP_02
--   Ringworld Cave Ambience
--   Fix_Puncture_02
--   OW_PR_FootstepsWaterWade_08
--   OW_TH_GeyserStart_01
--   OW_TH_Insects_loop_01
--   OW ReelBeat 04d_2 040921 AP
--   OW_TH_ProjectorStop
--   Prisoner Cloth Foley 6
--   Dream World Alarm Bell Oneshot 3
--   shiplog_selectplanet2
--   Nature Oneshot - Distant Creature 1 - less reverb
--   OW_PR_FootstepsDirt_08
--   Spark_04
--   OW_GD_HeatLightning_02
--   OW Secret Loop 090121 AP muted
--   Creature Voice Test 1 Short
--   General Destruction 4
--   House Destruction 1
--   OW_PR_FootstepsSnow_02
--   Huge Splash 2
--   Player Gravel Footstep 4
--   Ghost Grab Player 1
--   shiplog_switchmode_back
--   OW_PR_FootstepsJumpWood_03
--   OW_PR_FootstepsJumpMetal_05
--   OW_SP_AutopilotEngaged 1
--   OW_NM_DoorAirlockOpen_03
--   OW Dreamworld Ruins 072021 AP 02b
--   Ghost Investiagation Grunt 2
--   Wood Door Close Start 2
--   Real World Alarm Bell Oneshot 2
--   OW Fabric SFX 102119 AP screen shatter SHORT
--   OW_NM_Ruins_ambience_scary_loop
--   Raft Heavy Impact 1
--   OW Whispers 041321_2 AP LP
--   Ghost Run Footstep Forest 4
--   Vine_Crash_V3_01_LowPassDelay
--   Solanum_Foley_HandLower
--   OW_PR_FootstepsSand_07
--   Grapple Totem Zoom Out Louder
--   Ship_Impact_Heavy_Damage_V3_07
--   OW_PR_FootstepsIce_01
--   OW Ghost Ambiences v2 011221 AP pad LP
--   Raft Movement Stop
--   OW_TH_Museum
--   gasp_normal12_lessmale
--   OW_PR_FootstepsJumpRock_05
--   OW_SP_ThrustRotationalUnderwater_02
--   Pool_Exit_v3
--   Flashlight_Malfunction_02
--   OW NomaiRuinsRegular 081918 AP motif1c
--   Nomai_Stone_Door_End_V2_05
--   OW_PR_FootstepsLeaves_05
--   Nomai_Stone_Door_End_V2_09
--   asphyxiation_suit_secondhalf1
--   Spark_08
--   OW Aquatic Exploration 050318 AP LOOP
--   OW_TH_GeyserEnd_01
--   UI_Navigate_03
--   OW ReelBeat 02b 021021 AP
--   Player_Impact_Damage_Light_02
--   OW_PR_FootstepsWood_02
--   Jump_Into_TinyGalaxy_v2_02
--   OW_PR_ThrustRotationalUnderwater_05
--   Atmosphere_High_Suit
--   OW_SP_MetalCreak_04
--   OW Prisoner Reveal 063021 AP
--   Ghost Grunt 1
--   OW_PR_FootstepsJumpDirt_03
--   OW Reelbeat 03c 061721 AP
--   Nomai_Stone_Door_End_Big_V2_10
--   Damage_Light_01
--   PutDown_Rock_01
--   OW_TH_ModelRocketCrashing
--   OW ReelBeat 03b 032521 AP
--   OW END OF GAME 021818 AP
--   Raft Movement Start 3
--   Impact_Light_03
--   OW_NM_Tech_Advanced
--   Ghost Walk Footstep Wood_v2 4
--   OW_PR_FootstepsJumpWood_05
--   OW_PR_FootstepsMetal_02
--   FootstepsJumpWoodCreak_01
--   OW Timber Hearth 032719 AP v2
--   Hotel Oneshot - Heavy Creak 3
--   shiplog_highlight
--   OW_GD_Tornado_v2_03
--   RotationalThruster02
--   OW Quantum Lightning 091118 AP 06
--   JetPack_NotificationBeep_Fast
--   SmallSplash
--   Ghost Run Footstep Forest 3
--   Nomai_Stone_Door_End_Big_V2_04
--   OW Prisoner Elevator 061121_5 AP loop
--   Tower Fall Part 1
--   OW_PR_FootstepsMetal_03
--   OW_PR_FootstepsRock_01
--   Ignite_Marshmallow_01
--   Ignite_CampFire_02
--   Ghost Walk Footstep Wood_v2 5
--   OW_GD_AmbienceCave
--   Ship_Impact_Heavy_Damage_V3_11
--   Raft Release
--   elevatorstop
--   Hotel Oneshot - Creak 2
--   Station Light Flicker
--   Forest Oneshot - Tree Creak 7
--   OW_GD_HeatLightning_03
--   Nomai_Stone_Door_End_Big_V2_08
--   OW_TH_AmbienceHighAltitude
--   Water Spray Impact 3
--   Ghost Grunt 2_SmoothFade
--   linkingstone_out
--   Ghost Shout 6
--   Ghost Individual Death 4
--   shiplog_highlight2
--   OW_PR_FootstepsMetal_04
--   OW Morning Cello 101718_2
--   Spark_11
--   fogsphere_jump2_delayed
--   Nomai_Stone_Door_End_V2_04
--   OW_SP_ElectricalDamageLP
--   OW_PR_FootstepsGlass_02
--   Ghost Run Footstep Forest 6
--   OW_NM_CenterClampsRemoving
--   OW_SP_ThrustRotationalUnderwater_03
--   OW_NM_InsertScroll
--   GhostMatter_Splash_v4_02
--   Airlock Open
--   OW_PR_TranslatorTranslateNew
--   Ship_Impact_Heavy_Damage_V3_10
--   House Destruction 2
--   shiplog_newentry3_softer
--   OW_TravelerTheme_piano
--   Stilts Destruction 3
--   OW_PR_LockOff
--   OW_TH_ModelRocketThrustTranslational_01
--   Hotel Oneshot - Creak 8
--   Dreamworld Candle Lighting Test Variation 6
--   Stilts Destruction 4
--   OW_SUN_BurnPlanet
--   Real World Dam Crack Water Loop
--   OW Final End Times 022519_2 AP LOOP2
--   OxygenRefill_Short
--   OW ReelBeat 03a 031521 AP
--   OW NomaiRuinsRegular 081918 AP motif5c v2
--   StoryReel5Short 063021_3 AP
--   OW_GD_AmbienceOcean
--   OW_TH_BridgeCreaking_loop
--   OW Traveler Theme 021821 AP FINAL TIME NO PIANO ADD PRISONER
--   OW_SP_ShipAmbiance_01
--   Prisoner Grunt 2
--   OW_NM_ComputerRingFall3
--   OW_NM_DoorStart_04
--   Ghost Neck Snap
--   Nomai_Warp_01
--   General Destruction 2
--   pickaxe_02
--   OW_PR_FootstepsSnow_07
--   Lava_Splash_02
--   OW_PR_FootstepsGlass_06
--   Anglerfish_Awake
--   OW_PR_ProbeRetrieval
--   OW_PR_FootstepsJumpSnow_04
--   Lantern Wake Up Light 2
--   Secret Passageway Open Stop 2
--   Lantern Shorting Out 2
--   OW_PR_BanjoStrum_1b
--   OW_PR_FootstepsSnow_08
--   Air Rushing Out Into Space
--   OW_PR_FootstepsJumpGlass_03
--   OW_PR_ProbeInAirSound
--   shiplog_movebetweenplanets
--   OW_PR_BanjoStrum_4b
--   Raft Stop Reeling
--   OW Traveler Theme 091118 AP FINAL TIME WITH PIANO EDIT
--   OW_PR_FootstepsMetal_08
--   OW ReelBeat 04a_2 040921 AP
--   OW_SP_ShipExploding
--   OW_PR_FootstepsJumpMetal_02
--   OW_TH_ModelRocketThrustRotational_04
--   JellyFish_Shock_03
--   OW No-Eye Ruins 121120_2 AP LP
--   OW_GD_HeatLightning_05
--   OW_NM_GravityCrystalAmbience_Louder
--   OW_GD_HeatLightning_07
--   Solar Sail Loop 2
--   OW_PR_FootstepsBushRustle_02
--   CityLights_Off_01
--   RotationalThruster01
--   OW_NM_BHEnterItem_v2
--   OW_PR_FootstepsBushRustle_09
--   Vision Torch - Vision Dissolves
--   OW_PR_FootstepsJumpMetal_04
--   Lantern Remove 2
--   Player_Impact_Damage_Light_01
--   StoryReel5Full 062821_4 AP
--   OW_PR_FootstepsWaterWade_07
--   OW_NM_SkypeLP
--   OW_SP_ShipGroan2_v2
--   Volcano_Ambience_Loop_V2
--   AnglerFish_Chomp_Loop_v2
--   Destruction Debris 2
--   OW_PR_LandInWater2
--   OW_PR_FootstepsIce_05
--   Footstep_Run1
--   Anglerfish_ChompBite_01
--   Destruction Debris 1
--   Ghost Run Footstep Forest 1
--   AnglerFish_Target_v2_02
--   Signalscope_Zoom_Loop
--   BH_Ambience_Below_Crust
--   fogsphere_pulse3
--   OW_GD_HeatLightning_08
--   AshTwinCore_Close_01
--   Airlock Depressurize
--   OW_TH_ModelRocketThrustRotational_03
--   OW_NM_ComputerRing2
--   RockPile_Fall_05
--   Vision Torch Fire - Loop
--   OW Farewell 061721 AP
--   Hologram_Enter_v2_01
--   OW_PR_ThrustRotationalUnderwater_03
--   Forest Oneshot - Tree Creak 8
--   OW_PR_LandInWater3
--   Hotel Oneshot - Creak 3
--   Hotel Oneshot - Heavy Thud 1
--   Distant Ghost Cacophony 1
--   Footstep_Run2
--   OW_TH_ProjectorRun_loop
--   OW_PR_FootstepsJumpGrass_04
--   Destruction Impact - Large 5
--   FootstepsWoodCreak_03
--   OW_PR_FootstepsIce_03
--   Solanum_Foley_HandRaise
--   OW_NM_DoorStart_Big_03
--   Candle Extinguishing Test Variation 6
--   Ignite_CampFire_01
--   Nature Oneshot - Distant Creature 3 - less reverb
--   Real World Water Ambience - Slow River
--   Ghost Grunt 5
--   IceMelt_v2_LowPass
--   OW_NM_GravityCannonDeactivated
--   OW Ghost Sequence 011121 AP LOW SUSPENSE LP
--   Anglerfish_Sleeping
--   Real World Water Ambience - Slow River 2
--   OW_PR_FootstepsWaterWade_02
--   Ghost Walk Footstep Forest 3
--   Spark_05
--   OW No-Eye Ruins 082121 AP stinger
--   Nature Oneshot - Distant Deep Creature 3
--   OW_NM_SunStation
--   Projector Totem Extinguish 1
--   Dreamfire Crackling Loop 3
--   OW Ghost Ambiences 012921_2 AP slam
--   Dreamfire Explosion
--   Dream World Water Ambience - Creek 8
--   OW_PR_FootstepsSnow_05
--   OW_PR_FootstepsIce_04
--   Dream World Water Ambience - Creek 5
--   Ghost Run Footstep Forest 2
--   OW_NM_DoorStart_08
--   Outer Wilds Party House v8 050321_2 AP traveler drone
--   Hotel Oneshot - Heavy Creak 1
--   Secret Passageway Open Start 2
--   FootstepsWoodCreak_01
--   Ghost Grunt 8
--   OW_PR_FootstepsMetal_06
--   Probe_Attach_v3_02
--   OW_PR_LandInWater1
--   FootstepsWoodCreak_06
--   OW_PR_FootstepsBushRustle_04
--   Projector Totem Blow
--   OW_PR_FootstepsWaterWade_01
--   Raft Movement Loop
--   OW_SP_ThrustRotationalUnderwater_01
--   OW_PR_FallingIntoLavaBeep_loop
--   Ship_Impact_Light_Damage_V3_01
--   Ship_Impact_Medium_Damage_V3_02
--   Ghost Walk Footstep Wood_v2 1
--   Nomai_Stone_Door_End_Big_V2_02
--   OW ReelBeat 04c_2 040921 AP
--   Raft Push
--   OW_PR_FootstepsJumpIce_03
--   Nomai_Stone_Door_End_Big_V2_05
--   Destruction Impact 5
--   HGT_SandFallSmall_Inside
--   OW Quantum Lightning 091118 AP 01
--   OW_PR_OxygenLeakingFromSuit_in
--   OW_PR_HelmetOn
--   OW_SP_AutopilotDisengaged 1
--   PutDown_Ceramic_01
--   OW_PR_FootstepsMetal_07
--   Water Spray Impact 7
--   Dream World Alarm Bell Oneshot 4
--   CityLights_On_01
--   rockingchair3
--   fogsphere_pulse5
--   Nomai_ShipPowerOn_V2_01
--   OW_GD_IslandSuckedInTornado
--   OW_NM_DoorStart_05
--   Probe_Attach_v3_01
--   OW_PR_ThrustRotationalUnderwater_02
--   Outer Wilds Party House v8 050321_3 AP traveler
--   Artifact Put Down
--   OW ReelBeat 01b 021021 AP
--   stoppedasphyxiating_suit2
--   FootstepsJumpWoodCreak_04
--   Destruction Debris 6
--   Nomai_Warp_03_Shorter
--   mallowpuff1
--   OW ReelBeat 02d 021021 AP
--   OW_TravelerTheme_harmonica
--   shiplog_misc4
--   Projector Totem Extinguish 3
--   OW ReelBackdrop 02b 021021 AP
--   OW_PR_FootstepsDirt_03
--   Lava_Splash_01
--   Engine_Start_V2
--   Solar Sail Start
--   OW_PR_ThrustTranslational_v2_01
--   Light Sensor Fade Out 1
--   Prisoner Cloth Foley 4
--   OW Quantum Lightning 091118 AP 02
--   OW_NM_RemoveScroll
--   asphyxiation_suit_firsthalf2
--   OW_TH_AmbienceNightInCanyons
--   Footstep2
--   OW ReelBackdrop 03b LOOP 031521 AP
--   OW_SP_ThrustRotationalUnderwater_04
--   OW_PR_FootstepsNomai_08
--   OW_PR_FootstepsNomai_03
--   OW ReelBeat 03d 061121 AP
--   OW_PR_FootstepsJumpSand_04
--   RotationalThruster03
--   Stilts Destruction 5
--   Raft Run Aground
--   OW Space Station 081420_2 AP
--   OW_PR_FootstepsWaterWade_06
--   Spark_02
--   Cloaking Field Entry
--   OW_NM_DataWormhole
--   OW_QuantumSignal
--   General Destruction 3
--   OW New Raft Music 082321_4 AP quiet
--   OW_SP_Unbuckle
--   Real World Water Ambience - Calm 2
--   Prisoner Grunt 3
--   OW_NM_OrbMoveGlass_lp_01
--   Prisoner Cloth Foley 7
--   OW_PR_FootstepsRock_05
--   OW Traveler Theme 021821 AP FINAL TIME WITH PIANO ADD PRISONER
--   OW Quantum Lightning 091118 AP 03
--   OW_TH_ModelRocketThrustRotational_02
--   OW_PR_HitWallUnderwater3
--   Flashlight_Malfunction_03
--   OW NM Flashback 082818 loop overlay AP
--   supernova_corecollapse_10sec_fadeOut
--   OW_PR_FootstepsWood_05
--   rockingchair1
--   Power_Failure_v2_02
--   OW_PR_FootstepsMetal_05
--   Stilts Destruction 2
--   Dreamworld Tower Tilt
--   OW New Texture 082921 AP loop
--   Lantern Insert 3
--   OW_PR_FootstepsNomai_07
--   OW_PR_FootstepsJumpWood_06
--   Pool_Enter_v3_Fade
--   Raft Movement Start
--   OW_PR_FootstepsNomai_05
--   OW_PR_HardSplash
--   Destruction Debris 5
--   Dreamworld Candle Lighting Test Variation 2
--   OW NM Flashback 082818_2 AP stinger delayed
--   Ghost Shout 4
--   Nomai_Stone_Door_End_Big_V2_06
--   Tower Tilt
--   OW_NM_DoorStart_Big_06
--   OW_PR_FootstepsLeaves_03
--   Ghost Run Footstep Wood_v2 3
--   OW_NM_BHExitItem_v2
--   Ghost Idle Search 5
--   Forest Oneshot - Animal 1
--   OW Dreamworld Ruins 072021 AP 02d
--   OW_PR_FootstepsJumpSnow_02
--   Platform_Break_V2_01
--   OW Party House 092820 AP short loop
--   OW_PR_FootstepsRock_06
--   OW_SP_ThrustTranslational
--   Footstep6
--   OW_PR_FootstepsWaterWade_05
--   Ghost Start Hunt Grunt 2
--   OW Dreamworld Ruins 072021 AP 02f
--   Nomai_Stone_Door_End_Big_V2_12
--   Jump_Into_TinyGalaxy_v2_03
--   Footstep_Run3
--   Negative1
--   OW_TravelerTheme_banjo
--   SandColumnEnd_v2
--   OW_PR_FootstepsJumpSand_05
--   Dreamworld Lights Out Ambience 2
--   OW Blair Witch Project 082921_3 AP darker mix loop
--   Fig_Backer_Sat_Audio_V3
--   OW_PR_FootstepsGlass_01
--   Light Sensor Fade Out 4
--   Projector Totem Light 1
--   Player Gravel Footstep 6
--   OW_TH_GeyserStart_03
--   Slide Reel Remove 3
--   Ship_Impact_Medium_Damage_V3_06
--   OW Quantum Lightning 091118 AP 05
--   OW_GD_Tornado_v2_01
--   OW_SP_ActivateComputerLP
--   Footstep_Run6
--   Spark_13
--   Vine_Crash_V3_02_LowPassDelay
--   OW Slideshow BURNT LOOP small 031521_2 AP
--   Raft Heavy Impact 4
--   Light Sensor Door Loop - Door Sensor Sliding
--   Sarcophagus Strain 3
--   Loading Tunnel - Load
--   elevatorstart
--   Nomai_Stone_Door_End_V2_02
--   OW_GD_Tornado_v2_02
--   OW_NM_DoorAirLockAirPourOut_01
--   OW_TravelerTheme_newtraveler 061021 AP
--   OW ReelBackdrop 04a_3 041321 AP LP
--   OW_PR_FootstepsJumpRock_04
--   Damage_Heavy_04
--   Raft Movement Stop 2
--   OW_SP_AnalogClick2_v2
--   Nomai_Stone_Door_End_V2_01
--   OW_PR_FootstepsRock_07
--   Raft Light Impact V2 4
--   Marshmallow_Replace_01
--   Footstep5
--   Destruction Impact 3
--   Helmet_Glass_Crack_08
--   Ghost Run Footstep Wood_v2 6
--   OW End Credits 022019_3 AP
--   Raft Heavy Impacts V2 2
--   Nomai_Stone_Door_End_Big_V2_13
--   OW_NM_GravityCannonActivated
--   Outer Wilds Party House v8 050321_2 AP Bass
--   Ringworld Muffled Indoor Ambience
--   Ghost Run Footstep Wood_v2 2
--   OW_GD_AmbienceUndewater
--   Forge_Loop_V3_03
--   OW_PR_CampfireAmbience
--   OW_PR_FootstepsRock_08
--   Platform_Break_V2_02
--   OW_PR_FootstepsJumpWood_02
--   OW Eye Temple 121820_2 AP LP
--   OW_GD_WavesAgainstBeach
--   OW_PR_ThrowProbe
--   OW_NM_DoorStart_07
--   OW_PR_FootstepsSand_04
--   Lantern Pickup
--   Real World Water Ambience - Rapids 2
--   OW_PR_FootstepsWood_04
--   OW_NM_TractorBeamPowerUp
--   OW New Stinger 082921 AP
--   OW_PR_FootstepsGrass_07
--   Hotel Oneshot - Creak 7
--   Player_On_Fire_Loop
--   OW_TH_UnderwaterRushing
--   GhostMatter_Splash_v4_01
--   OW_SP_ThrustRotationalUnderwater_06
--   OW Fabric SFX 102119 AP rip FADE OUT
--   OW Dreamworld Ruins 072021 AP 02a
--   Spark_06
--   OW_SP_SignalscopeChunkV2
--   Player Gravel Footstep 2
--   OW_PR_FootstepsBushRustle_07
--   Hologram_Exit_v2_01
--   Metal Door Open Stop
--   OW_PR_FootstepsJumpWood_01
--   OW_PR_FootstepsWaterWade_04
--   Nature Oneshot - Distant Deep Creature 2
--   Stilts Destruction 1
--   OW NM Flashback 082818 AP overlay1
--   drowning_secondhalf1
--   Gear Rotate Locked_Short
--   Prisoner Cloth Foley 5
--   shiplog_deselectplanet
--   Orb_End_v3_01
--   Atmosphere_High_Ship
--   Solar Sail Start 2
--   knife_scrape_02
--   OW_TH_GeyserEnd_03
--   Meteor_Impact_03_b
--   Destruction Impact 6
--   JellyFish_Shock_01
--   Light Sensor Loop
--   Candle Extinguishing Test Variation 4
--   Vision Torch Light Rays - Off
--   OW_NM_DoorSlide_Big_LP_05
--   OW_PR_FootstepsDirt_05
--   Sand_Column_Start_v2_03
--   Water Spray Impact 6
--   OW_NM_DoorStart_Big_07
--   OW_SP_ShipGroan3_v2
--   Heat_Damage_Loop_01
--   OW_SP_LandingCamDeactivated 1
--   breathing_lowO2_6
--   OW_PR_OxygenLeakingFromSuit_out
--   LogUpdated_001
--   Vine_Crash_V3_04_LowPassDelay
--   Destruction Debris 7
--   Hotel Oneshot - Heavy Creak 2
--   OW_PR_HelmetOff
--   OW_PR_FootstepsGrass_04
--   Forest Oneshot - Animal 3
--   OW Discovery 083021_2 AP shorter
--   Slide Reel Insert 3
--   OW_NM_BHEnterExitPlayer_v2
--   Ship_Impact_Light_Damage_V3_05
--   OW_SP_OpenHatch_NoBeep
--   OW_SP_ThrustRotationalUnderwater_05
--   ShipSubmerge
--   Artifact Fire Loop
--   OW_DarkBramble_loop
--   OW_PR_FootstepsBushRustle_08
--   OW NM Nomai City 081718 AP LOOP
--   Solar Sail Stop 2
--   Destruction Impact - Large 1
--   OW Dream Rule LP 032421 AP normal
--   Solar Sail Loop
--   OW_TH_GeyserStart_02
--   Ship_Impact_No_Damage_V3_05
--   OW_PR_FootstepsIce_06
--   Outer Wilds Party House v8 050321_2 AP vocals
--   asphyxiation_suit_secondhalf2
--   Affirmative1
--   Spark_12
--   OW_SP_ConsoleReadoutLP
--   OW ReelBackdrop 03c 042621 AP LP
--   gasp_light9
--   Nomai_Stone_Door_End_V2_03
--   OW_PR_FootstepsJumpNomai_06
--   OW_PR_FootstepsGlass_04
--   OW_PR_FootstepsDirt_04
--   Destruction Debris 9
--   OW_PR_FootstepsIce_08
--   OW_PR_SuitOff
--   Artifact Pickup
--   OW_SUN_Ambience_v4
--   JellyFish_Shock_05
--   OW_TH_Underwater
--   Station Shudder - Dreamworld
--   Ghost Walk Footstep Forest 5
--   OW_TH_ProjectorActivate
--   asphyxiation_suit_firsthalf1
--   OW_PR_SignalscopeZoomIn
--   HGT_Ambience_Surface
--   FootstepsWoodCreak_08
--   GhostMatter_Splash_v4_03
--   UI_Tab_v2_05
--   Raft Medium Impact V2 3
--   OW_NM_TractorBeamPowerDown
--   OW_Travel_Theme_Remaster
--   Big_Galaxy_Burn_v2_01
--   OW_TH_Insects_loop_02
--   Raft Heavy Impact 3
--   Raft Movement Start 2
--   OW Quantum Lightning 091118 AP 04
--   OW_TH_FlagFlapping_loop.\_04
--   OW_TH_ModelRocketThrustTranslational_02
--   knife_scrape_03
--   Incinerate_v3_02
--   Light Sensor Rotate
--   OW_NM_EscapePodDistressSignal
--   MapZoomOut_Tone
--   OW_NM_DoorStart_Big_05
--   Player Gravel Footstep 7
--   Ghost Walk Footstep Wood_v2 2
--   Ghost Run Footstep Forest 5
--   Ghost Walk Footstep Forest 4
--   OW_PR_HitWallUnderwater2
--   OW NM Flashback 082818_2 AP stinger
--   OW_PR_FootstepsJumpGrass_05
--   Fix_Puncture_04
--   Ghost Idle Search 3
+- Hotel Oneshot - Heavy Thud 4
+- Tool_Put_Away_01
+- OW Quantum Lightning 091118 AP 07
+- OW_GD_ElectricBarrier_Idle_Loop
+- Nomai_Stone_Door_End_V2_11
+- General Destruction 1
+- Dream Rule 02 backdrop loop 072321_2 AP
+- amb_observatory
+- Dream World Water Ambience - Creek 3
+- Pickup_Rock_01
+- gasp_traumatic4_lessmale
+- Ship_Impact_Light_Damage_V3_06
+- BlackHole_02
+- OW_GD_WavesAgainstRock
+- OW_TH_AmbienceInCanyons
+- OW_PR_FootstepsBushRustle_03
+- OW_PR_ActivateProbeMode
+- Ghost Walk Footstep Wood_v2 6
+- rockingchair4
+- Water Spray Impact 4
+- OW Secret Library 040821_2 AP
+- Real World Dam Break Alex Composite 2
+- Ghost Run Footstep Wood_v2 4
+- UI_Enter_Dialog_V6-002_highpass_2
+- Spark_10
+- Mournful Prisoner 3
+- OW_PR_FootstepsLeaves_06
+- FootstepsWoodCreak_02
+- OW Dreamworld Ruins 072021 AP 02c
+- OW_PR_HitWallUnderwater1
+- OW_TH_RiverWaterFlow_loop
+- OW ReelBeat 01c 021021 AP
+- FootstepsWoodCreak_07
+- Ignite_Marshmallow_03
+- Marshmallow_Replace_02
+- Ship_FuelLeak
+- Raft Heavy Impact 5
+- elevatorloop
+- Real World Alarm Bell Oneshot 3
+- BigBang_EndFlash
+- OW_FinalEndTimes_DB_loop
+- fogsphere_pulse4
+- Ringworld Ambience 3
+- Destruction Impact 4
+- Artifact Unconceal
+- OW_NM_DoorStart_06
+- OW_PR_SignalscopeZoomOut
+- Nomai_Stone_Door_End_Big_V2_03
+- Player Gravel Footstep 3
+- General Destruction 5
+- OW Dream Fire Room 121820_4 AP LP
+- OW_PR_DeactivateProbeMode
+- OW_PR_LandInWater4
+- OW_PR_FootstepsJumpNomai_04
+- OW_PR_FootstepsJumpMetal_03
+- WarpCore_Remove_V3_01
+- Probe_SnapShot_03
+- Ghost Idle Search 4
+- Solanum_Foley_IconExit
+- Dream Fire Room Ambience Test 1
+- Lantern Extinguish 4
+- OW_PR_OxygenLeakingFromSuit_loop_louder
+- Wood Door Open Stop
+- OW_PR_FootstepsJumpGrass_01
+- OW_SP_ThrustAfterburn
+- OW_PR_FootstepsGrass_01
+- Real World Alarm Bell Oneshot 4
+- OW_PR_FootstepsNomai_04
+- Hotel Oneshot - Heavy Thud 2
+- Light Sensor Fade In 4
+- AnglerFish_OpenMouth_v2_01
+- Footstep_Run4
+- Ghost Walk Footstep Forest 6
+- OW_PR_FootstepsGrass_06
+- OW_GD_AmbienceRain
+- RotationalThruster04
+- OW New Raft Music 082321_4 AP theme
+- Spark_01
+- OW Muted End Times 040821 AP
+- Nomai_WhiteHoleStationActivation
+- Tool_Take_Out_02
+- OW_PR_FootstepsJumpDirt_05
+- mallowpuff2
+- Dreamworld Tower Fall Part 2
+- Jump_Into_Fogsphere_04
+- FootstepsWoodCreak_05
+- OW_SP_MetalCreak_14
+- OW_NM_DoorStart_03
+- drowning_firsthalf2
+- Forest Oneshot - Tree Creak 4
+- shiplog_misc1
+- FootstepsWoodCreak_04
+- Real World Dam Crack
+- OW_NM_DoorStart_09
+- OW_SP_LandingPadHard4
+- OW_PR_FootstepsSand_06
+- BH_Ambience_Surface
+- Ghost Grunt 3
+- glass_crack_02
+- House Destruction 3
+- OW_QuantumMoon
+- Orb_Roll_Energy_Loop_v2_01
+- OW Eye Of The Universe 082018_2 AP
+- Footstep3
+- OW_NM_DoorStart_Big_01
+- OW Dreamworld Ruins Story Beats 071621 AP 1d
+- Dream World Tidal Wave Loop
+- Nomai_Stone_Door_End_Big_V2_15
+- OW_SP_ActivateComputer 1
+- OW_PR_FootstepsIce_07
+- Raft Light Impact V2 3
+- UI_Pause_v2_08
+- signalscope_static
+- OW_SP_LandingCamActivated 1
+- Footstep4
+- OW_PR_FootstepsSand_03
+- Prisoner Pick Up Vision Torch
+- OW_SP_MetalCreak_16
+- OW_SP_Touchdown_04
+- Platform_Break_V2_03
+- OW Nomai Time Loop Device 081818 AP
+- RockPile_Fall_02
+- Ship_Impact_No_Damage_V3_02
+- Destruction Impact 7
+- Ghost Grab Player 2
+- Forest Oneshot - Tree Creak 5
+- OW_PR_FootstepsMetal_01
+- OW NM Flashback 082818_3 AP base
+- Projector Totem Light 2
+- Slot_Linking_Stone_Loop_02
+- breathing_suit3
+- OW_PR_FootstepsWood_07
+- OW_SP_HeadlightsOff_v2
+- Nomai_Stone_Door_End_V2_06
+- Fix_Puncture_03
+- OW Dream Rule LP 032421 AP glitch
+- Real World Tidal Wave Loop Louder
+- OW Dreamworld Ruins 072021 AP 02loop
+- gasp_normal11_lessmale
+- OW ReelBeat 01a 021021 AP
+- OW_TH_ModelRocketThrustRotational_01
+- OW_PR_FootstepsBushRustle_05
+- OW NomaiRuinsRegular 081918 AP motif3c v2
+- OW Final End Times 022519_2 AP LOOP1
+- OW_PR_FootstepsSand_01
+- Anglerfish_Awake4
+- OW_PR_FootstepsJumpIce_04
+- Fix_Puncture_01
+- Raft Light Impact V2 1
+- Warp_Loop_01_v2
+- Ghost Start Hunt Grunt 1
+- Destruction Debris 4
+- Solanum_IconAppear_V3
+- OW_SP_ActivateComputer_OneShot
+- Destruction Impact 8
+- OW_SP_ShipGroan1_v2
+- OW ReelBackdrop 02a 021021 AP
+- OW_NM_ComputerRing1
+- OW_PR_FootstepsJumpGlass_04
+- Forest Oneshot - Tree Creak 6
+- OW_GD_HeatLightning_01
+- Raft Heavy Impacts V2 3
+- Solanum_Foley_RockFormStart
+- Raft Light Impact V2 5
+- Ghost Grunt 4
+- OW_PR_FootstepsJumpDirt_06
+- OW_PR_FootstepsJumpGrass_03
+- OW_TravelerTheme_whistling
+- Raft Heavy Impact 2
+- Nature Oneshot - Distant Deep Creature 1
+- OW_SP_CloseHatch_v2
+- linkingstone_in
+- OW_PR_FootstepsSnow_03
+- OW_NM_OrbDeSelect_Energy_02
+- Impact_Light_02
+- Nomai_Stone_Door_End_V2_10
+- Fix_Puncture_07
+- OW_NM_HoleEnterExit
+- OW NM Nomai Ruins 081718 AP
+- OW_PR_OxygenRefill
+- GhostMatter_Splash_v4_05
+- glass_crack_01
+- Ignite_Marshmallow_02
+- Ship_Impact_Medium_Damage_V3_03
+- Forest Oneshot - Animal 4
+- OW_PR_FootstepsIce_02
+- OW_GD_RainOnHelmet
+- Spaceship_RattleLoop
+- BigBang_WhooshLeadToExplo
+- OW_TH_Campfire_loop_01
+- bigbang_cosmicinflation_v2
+- Hotel Oneshot - Heavy Creak 4
+- OW_PR_FootstepsJumpGrass_02
+- Tronworld Ambience 1
+- AnglerFish_Target_v2_07
+- Eye_of_Universe_Ambience_v2_01
+- OW_PR_FootstepsJumpLeaves_04
+- OW_PR_FootstepsJumpSnow_03
+- OW_PR_FootstepsJumpGlass_01
+- OW Traveler Theme 091118 AP FINAL TIME NO PIANO EDIT
+- OW ReelBeat 02f 082521 AP
+- Metal Door Close Stop
+- medkit
+- OW_NM_BlackHole_Lp
+- Ghost Blow Out Lantern
+- OW_PR_MarshmallowEatBurnt_shorter
+- Solanum_Foley_IconEnter
+- OW_PR_SignalscopeSwitchFrequencies
+- Prisoner Pick Up Artifact
+- OW_PR_BanjoStrum_3b
+- Water Spray Impact 5
+- UI_Advance_Dialog_V6-002_highpass
+- Destruction Debris 8
+- OW_PR_FootstepsDirt_06
+- Vision Torch - Step In
+- OW_NM_DoorStart_Big_04
+- OW_PR_FootstepsBushRustle_06
+- Hotel Oneshot - Creak 5
+- OW_PR_FootstepsJumpLeaves_01
+- OW_SP_ShipGroan4_v2
+- Jump_Into_Fogsphere_03
+- Dreamworld Forest Ambience 2
+- OW_PR_FootstepsJumpRock_02
+- CrushedByElevator
+- Player Gravel Footstep 1
+- House Destruction 4
+- Ghost Begin Stalk Grunt 1
+- flashlightOff
+- OW ReelBeat 04b_2 040921 AP
+- OW_PR_FootstepsRock_02
+- AshTwinCore_Open_01
+- OW_SP_HeadlightsOn_v2
+- Tower Fall Part 2
+- OW_NM_DoorStart_Big_02
+- Meteor_Impact_01_b
+- OW_SP_LandingCamStatic
+- OW_PR_FootstepsWood_01
+- gasp_light5
+- OW_PR_FootstepsGrass_03
+- Spark_03
+- Loading Tunnel - Loop
+- FootstepsJumpWoodCreak_02
+- OW_Main_Menu
+- Lantern Put Down
+- OW Secret Library Whispers LP 040821 AP REF MIX
+- OW_DB_Ambience
+- Vision Torch Light Rays - On
+- Hotel Oneshot - Creak 1
+- Dreamworld Nature Ambience 4
+- OW_PR_ThrustRotationalUnderwater_04
+- OW_PR_FootstepsJumpGrass_06
+- Nomai_Stone_Door_End_Big_V2_09
+- Ship_Impact_No_Damage_V3_01
+- Raft Movement Stop 3
+- Destruction Impact 9
+- Recorder_Start_Button
+- AnglerFish_Target_v2_14
+- Ghost Begin Chase Grunt 2
+- Hotel Oneshot - Creak 6
+- Fragment_Break
+- Tronworld Exit 2
+- Ghost Walk Footstep Forest 2
+- Incinerate_v3_01
+- Light Sensor Fade Out 3
+- OW_TravelerTheme_flute
+- OW_PR_FootstepsLeaves_02
+- OW_PR_FootstepsLeaves_01
+- Fix_Puncture_05
+- Ghost Walk Footstep Wood_v2 3
+- OW_PR_FootstepsJumpSand_01
+- Sarcophagus Strain 2
+- OW_PR_HitWallUnderwater4
+- OW_PR_FootstepsRock_03
+- Loading Tunnel - Unload
+- OW_PR_FootstepsJumpNomai_03
+- OW_PR_FootstepsDirt_07
+- OW_PR_FootstepsSnow_04
+- Wood Door Close Stop
+- OW_PR_FootstepsJumpIce_02
+- OW ReelBeat 04a 031521 AP
+- Raft Light Impact V2 2
+- Meteor_Impact_02_b
+- JellyFish_Shock_02
+- Metal Door Open Start
+- OW_GD_UnderwaterCurrent
+- OW_GD_HeatLightning_06
+- nomai_textbranchout_noenergy2
+- asphyxiation_nosuit_secondhalf_version3
+- Artifact Focus
+- Ice_Cave_Amb_loop_v3_01
+- Forest Oneshot - Tree Creak 3
+- OW NomaiRuinsRegular 081918 AP motif4c
+- Dreamworld Lights Out Ambience 4
+- Projector Next Slide 2
+- BeaconIdea4
+- Destruction Impact 1
+- OW_PR_FootstepsNomai_06
+- OW_NM_FlickeryGravityCrystalAmbience
+- OW Demonic Vocal Sting 082321 AP
+- OW Quantum Lightning 091118 AP 08
+- OW_NM_SadTheme_older
+- Nature Oneshot - Distant Creature 2 - less reverb
+- FootstepsJumpWoodCreak_03
+- OW_PR_FootstepsJumpSand_02
+- Player Gravel Footstep 8
+- OW_PR_FootstepsSnow_06
+- gasp_traumatic3_lessmale
+- Real World Dam Break Water Oneshot
+- Repair_Loop
+- OW_TH_FlagFlapping_loop.\_01
+- Ship_Impact_Light_Damage_V3_02
+- Raft Socket
+- Jump_Into_TinyGalaxy_v2_01
+- OW NomaiRuinsRegular 081918 AP motif7c
+- gasp_normal13_lessmale
+- Sandfall_Inside_Loop_01
+- Solanum_RocksForm
+- Fix_Puncture_06
+- OW Dreamworld Ruins Story Beats 071621 AP 1h
+- Sarcophagus Open 2
+- fogsphere_pulse2
+- Elevator Rattle Loop 3
+- IllusoryWall_Alex
+- OW_GD_HeatLightning_04
+- Nomai_Stone_Door_End_Big_V2_14
+- OW_PR_FootstepsJumpMetal_01
+- Vine_Crash_V3_03_LowPassDelay
+- OW_PR_BanjoStrum_2b
+- OW_PR_FootstepsGlass_05
+- OW_PR_FootstepsLeaves_07
+- OW_NM_DoorStart_01
+- OW_PR_FootstepsGrass_05
+- OW_PR_FootstepsJumpIce_01
+- OW_PR_ThrustRotationalUnderwater_01
+- Anglerfish_Chase_Breathing
+- OW_PR_FootstepsRock_04
+- Metal Door Close Start
+- Gear Rotate 1
+- Airlock Loop
+- Solanum_Foley_RockFormEnd
+- mallowpuff3
+- OW_PR_FootstepsSand_05
+- OW_PR_FootstepsJumpRock_01
+- Artifact Unfocus
+- OW Eye Of The Universe 082818_2 AP
+- OW_PR_FootstepsJumpRock_03
+- galaxy_zoomout2
+- OW_GD_IslandFalling_v2_loop
+- Projector Previous Slide 2
+- Ignite_CampFire_04
+- SpaceshipAlarm2_3Iterations
+- Ghost Individual Death 3
+- OW_PR_FootstepsJumpNomai_01
+- OW_PR_FootstepsJumpSnow_01
+- Forest Oneshot - Animal 2
+- OW_PR_FootstepsJumpDirt_01
+- Dreamworld Tower Fall Part 1
+- Ship_Impact_Medium_Damage_V3_05
+- OW_NM_ComputerRing3
+- OW_PR_SuitOn
+- Airlock Pressurize
+- OW_PR_FootstepsBushRustle_01
+- OW_PR_FootstepsNomai_02
+- Ship_Impact_Medium_Damage_V3_04
+- OW_NM_VesselDiscovery
+- PlayerSubmerge
+- Player Gravel Footstep 5
+- OW_EndTimes
+- HGT_SandColumn_Ship
+- OW ReelBeat 02c 021021 AP
+- Spark_09
+- OW_PR_FootstepsSand_02
+- Damage_Light_05
+- OW_NM_ComputerRingFall2
+- gasp_traumatic7_lessmale
+- Ghost Investigation Grunt
+- Dream World Alarm Bell Oneshot 2
+- rockingchair2
+- OW_PR_FootstepsJumpDirt_04
+- Projector Next Slide
+- OW_PR_FootstepsSand_08
+- OW_NM_WHAmbience2_v2
+- drowning_secondhalf2
+- Ghost Walk Footstep Forest 1
+- Prisoner Cloth Foley 3
+- OW_PR_FootstepsGlass_03
+- Vision Torch Scanning - Loop
+- Raft Medium Impact V2 2
+- Hotel Oneshot - Heavy Thud 3
+- Destruction Impact - Large 4
+- OW_PR_FootstepsJumpLeaves_03
+- OW_PR_FootstepsJumpSand_03
+- OW Dreamworld Ruins SILENCE 02
+- OW_PR_FootstepsWood_06
+- ModelRocket_LightImpact
+- shiplog_scanningloop
+- OW Ghost Ambiences v2 011221 AP low LP
+- OW NomaiRuinsRegular 081918 AP motif2c
+- glass_crack_03
+- Fix_Puncture_08
+- OW_PR_FootstepsSnow_01
+- OW_PR_FootstepsDirt_01
+- asphyxiation_nosuit_firsthalf1
+- OW_NM_DoorSlide_Big_LP_01
+- OW_SUN_SupernovaWall
+- OW_NM_DoorAirLockAirPourOut_03
+- OW_PR_ThrustUnderwater
+- Solar Sail Stop
+- OW_TH_Waterwheel_loop
+- Forest Oneshot - Tree Creak 1
+- OW ReelBackdrop 03a 050321 LOOP
+- Platform_Break_V2_04
+- FireBall_01
+- OW ReelBackdrop 01a 022521 AP
+- Dreamworld Lights Out Ambience 1
+- Nomai_Stone_Door_End_Big_V2_11
+- Spark_07
+- OW_SP_ThrustTranslationalUnderwater
+- Dream World Water Ambience - Creek 1
+- Ghost Begin Stalk Grunt 2
+- Comet_Purr
+- JellyFish_Shock_04
+- OW_PR_FootstepsWood_08
+- Raft Reeling Loop
+- shiplog_switchmode_forward
+- Station Light Flicker - Dreamworld
+- Lantern Wake Up Light 3
+- flashlightOn
+- Dreamworld Base Ambience 1
+- Ship_Impact_Heavy_Damage_V3_09
+- Crushed_To_Death_V2_01
+- ow_kazoo_theme
+- JetPack_NotificationBeep
+- Ghost Run Footstep Wood_v2 1
+- OW_PR_FootstepsJumpNomai_05
+- OW_NM_DataStream_v2
+- UI_Tab_v2_02
+- OW_PR_ProbeTakePicture
+- OW_NM_GravityCannonAmbience
+- OW NM Flashback 082818 AP loop
+- OW_SP_LandingPadSoft4
+- OW_PR_FootstepsGlass_07
+- WarpCore_Insert_V3_01
+- OW_NM_TractorBeamLP
+- ShipRepair_Finish
+- Ghost Begin Chase Grunt 1
+- Destruction Impact 2
+- OW_PR_FootstepsLeaves_08
+- Recorder_Stop_Button
+- OW_PR_FootstepsLeaves_04
+- OW_PR_Jump1
+- Jump_Into_TinyGalaxy_v2_04
+- OW_GD_Tornado_v2_04
+- OW_PR_FootstepsJumpDirt_02
+- OW_SP_ConsoleReadoutStart
+- OW_NM_EscapePodHatch
+- OW_PR_FootstepsJumpNomai_02
+- Light Sensor Fade In 1
+- Light Sensor Fade In 2
+- Hotel Oneshot - Creak 9
+- CampfireTune_All_Reverb
+- Recording_Loop_03
+- PartyHouseWhistle_Confident
+- mallowpuff4
+- OW_NM_WhiteHoleAmbienceL
+- Station Shudder
+- drowning_firsthalf1
+- UI_Exit_Dialog_V6-002_highpass
+- Dream World Dam Break
+- Dreamfire Extinguish 1
+- MediumSplash
+- Vision Torch - First Slide Appears
+- Footstep1
+- OW_TravelerTheme_drums
+- Artifact Conceal
+- HGT_Ambience_Cave_Small
+- HGT_Ambience_Cave_Big
+- OW_TH_Waterfall_loop_01
+- OW Discovery 083021_2 AP darker shorter
+- Secret Passageway Open Loop 2
+- Hotel Oneshot - Creak 4
+- supernova_explosion_deepnuclear2
+- Ghost Shout 7
+- OW NM Flashback 081718 AP slam
+- Airlock Close
+- OW_TH_FlagFlapping_loop.\_02
+- OW_SP_RefuelJetpack_v2_short
+- Ship_Impact_No_Damage_V3_03
+- Raft Medium Impact V2 4
+- Anglerfish_Awake3
+- Wood Door Open Start
+- OW_TH_FlagFlapping_loop
+- Slide Reel Pickup 2
+- Tronworld Ambience 2 Alex Hack
+- Ghost Run Footstep Wood_v2 5
+- Ignite_CampFire_03
+- Single Ghost Scream 14
+- Raft Start Reeling
+- OW_PR_FootstepsGrass_08
+- Tronworld Enter 2
+- OW_PR_ProbeUnderwaterLaunch
+- OW_GD_IslandCrashingInWater_v2
+- Grapple Totem Zoom In
+- OW ReelBeat 02a 021021 AP
+- Nomai_Stone_Door_End_V2_08
+- OW_PR_FootstepsJumpGlass_02
+- OW_NM_DoorStart_02
+- Destruction Impact - Large 3
+- OW_SP_SignalscopeSlideV2
+- OW NomaiRuinsRegular 081918 AP motif6c
+- Wood Door Close Start 3 Alex
+- Destruction Impact - Large 2
+- Nomai_Stone_Door_End_Big_V2_01
+- OW_NM_ComputerAmbienceLP
+- Anglerfish_Awake2
+- OW_TH_Insects_loop_03
+- OW_PR_SignalscopeActivate
+- OW_NM_ComputerRingFall1
+- OW_PR_FootstepsDirt_02
+- OW_NM_ShuttleLight
+- Single Ghost Scream 1
+- Ghost Identify Fail
+- OW_SP_ShipGroan5_v2
+- Cloaking Field Exit
+- OW_PR_FootstepsNomai_01
+- OW Dreamworld Ruins 072021 AP 02e
+- Forest Oneshot - Tree Creak 2
+- fogsphere_pulse1
+- OW_PR_PullOutStick
+- OW_PR_LockOn
+- Nomai_Stone_Door_End_Big_V2_07
+- OW_PR_FootstepsJumpSand_06
+- InstantDeath2_Long_Ringing
+- Light Sensor Door Stop 2
+- Light Sensor Door Loop 2
+- OW_TH_GeyserEnd_02
+- pickaxe_01
+- OW_PR_FootstepsWaterWade_03
+- RockPile_Fall_03
+- OW_PR_ThrustAfterburn_v2_01
+- Light Sensor Fade Out 2
+- Light Sensor Fade In 3
+- OW Finally Set Free 072021_2 AP
+- Ghost Blow Out Lantern Charge
+- Wood Door Loop
+- BigBang_Explo
+- TH_Geyser_Loop_v3
+- Water Spray Impact 8
+- OW_TH_FlagFlapping_loop.\_03
+- OW_PR_FootstepsJumpLeaves_02
+- OW_PR_FootstepsIceSlide_Lp_01
+- Dreamworld Lights Out Ambience 3
+- knife_scrape_01
+- OW OBSERVATORY 011317 AP
+- Footstep_Run5
+- Light Sensor Door Open 2
+- Jetpack_O2_loop_01
+- OW_PR_FootstepsJumpWood_04
+- OW_SP_BuckleUp
+- Probe_SnapShot_02
+- Pickup_Ceramic_01
+- OW_PR_FootstepsWood_03
+- Destruction Debris 3
+- OW_PR_SignalscopeDeactivate
+- OW_PR_OxygenLeakingFromSuit_loop
+- Probe_SnapShot_01
+- Dreamworld Ghost Hotel Ambience 2
+- Slide Reel Put Down 2
+- Nomai_Stone_Door_End_V2_07
+- OW_SP_ProbeLauncherRotation_v2
+- OW_PR_MarshmallowEatUnburnt_noMmm_v3
+- SystemBackOnline
+- Ghost Idle Search 1
+- Ship_Impact_Light_Damage_V3_03
+- OW Dreamworld Ruins Story Beats 071621 AP 1i
+- OW_PR_FootstepsGrass_02
+- OW_NM_DoorSlide_LP_02
+- Ringworld Cave Ambience
+- Fix_Puncture_02
+- OW_PR_FootstepsWaterWade_08
+- OW_TH_GeyserStart_01
+- OW_TH_Insects_loop_01
+- OW ReelBeat 04d_2 040921 AP
+- OW_TH_ProjectorStop
+- Prisoner Cloth Foley 6
+- Dream World Alarm Bell Oneshot 3
+- shiplog_selectplanet2
+- Nature Oneshot - Distant Creature 1 - less reverb
+- OW_PR_FootstepsDirt_08
+- Spark_04
+- OW_GD_HeatLightning_02
+- OW Secret Loop 090121 AP muted
+- Creature Voice Test 1 Short
+- General Destruction 4
+- House Destruction 1
+- OW_PR_FootstepsSnow_02
+- Huge Splash 2
+- Player Gravel Footstep 4
+- Ghost Grab Player 1
+- shiplog_switchmode_back
+- OW_PR_FootstepsJumpWood_03
+- OW_PR_FootstepsJumpMetal_05
+- OW_SP_AutopilotEngaged 1
+- OW_NM_DoorAirlockOpen_03
+- OW Dreamworld Ruins 072021 AP 02b
+- Ghost Investiagation Grunt 2
+- Wood Door Close Start 2
+- Real World Alarm Bell Oneshot 2
+- OW Fabric SFX 102119 AP screen shatter SHORT
+- OW_NM_Ruins_ambience_scary_loop
+- Raft Heavy Impact 1
+- OW Whispers 041321_2 AP LP
+- Ghost Run Footstep Forest 4
+- Vine_Crash_V3_01_LowPassDelay
+- Solanum_Foley_HandLower
+- OW_PR_FootstepsSand_07
+- Grapple Totem Zoom Out Louder
+- Ship_Impact_Heavy_Damage_V3_07
+- OW_PR_FootstepsIce_01
+- OW Ghost Ambiences v2 011221 AP pad LP
+- Raft Movement Stop
+- OW_TH_Museum
+- gasp_normal12_lessmale
+- OW_PR_FootstepsJumpRock_05
+- OW_SP_ThrustRotationalUnderwater_02
+- Pool_Exit_v3
+- Flashlight_Malfunction_02
+- OW NomaiRuinsRegular 081918 AP motif1c
+- Nomai_Stone_Door_End_V2_05
+- OW_PR_FootstepsLeaves_05
+- Nomai_Stone_Door_End_V2_09
+- asphyxiation_suit_secondhalf1
+- Spark_08
+- OW Aquatic Exploration 050318 AP LOOP
+- OW_TH_GeyserEnd_01
+- UI_Navigate_03
+- OW ReelBeat 02b 021021 AP
+- Player_Impact_Damage_Light_02
+- OW_PR_FootstepsWood_02
+- Jump_Into_TinyGalaxy_v2_02
+- OW_PR_ThrustRotationalUnderwater_05
+- Atmosphere_High_Suit
+- OW_SP_MetalCreak_04
+- OW Prisoner Reveal 063021 AP
+- Ghost Grunt 1
+- OW_PR_FootstepsJumpDirt_03
+- OW Reelbeat 03c 061721 AP
+- Nomai_Stone_Door_End_Big_V2_10
+- Damage_Light_01
+- PutDown_Rock_01
+- OW_TH_ModelRocketCrashing
+- OW ReelBeat 03b 032521 AP
+- OW END OF GAME 021818 AP
+- Raft Movement Start 3
+- Impact_Light_03
+- OW_NM_Tech_Advanced
+- Ghost Walk Footstep Wood_v2 4
+- OW_PR_FootstepsJumpWood_05
+- OW_PR_FootstepsMetal_02
+- FootstepsJumpWoodCreak_01
+- OW Timber Hearth 032719 AP v2
+- Hotel Oneshot - Heavy Creak 3
+- shiplog_highlight
+- OW_GD_Tornado_v2_03
+- RotationalThruster02
+- OW Quantum Lightning 091118 AP 06
+- JetPack_NotificationBeep_Fast
+- SmallSplash
+- Ghost Run Footstep Forest 3
+- Nomai_Stone_Door_End_Big_V2_04
+- OW Prisoner Elevator 061121_5 AP loop
+- Tower Fall Part 1
+- OW_PR_FootstepsMetal_03
+- OW_PR_FootstepsRock_01
+- Ignite_Marshmallow_01
+- Ignite_CampFire_02
+- Ghost Walk Footstep Wood_v2 5
+- OW_GD_AmbienceCave
+- Ship_Impact_Heavy_Damage_V3_11
+- Raft Release
+- elevatorstop
+- Hotel Oneshot - Creak 2
+- Station Light Flicker
+- Forest Oneshot - Tree Creak 7
+- OW_GD_HeatLightning_03
+- Nomai_Stone_Door_End_Big_V2_08
+- OW_TH_AmbienceHighAltitude
+- Water Spray Impact 3
+- Ghost Grunt 2_SmoothFade
+- linkingstone_out
+- Ghost Shout 6
+- Ghost Individual Death 4
+- shiplog_highlight2
+- OW_PR_FootstepsMetal_04
+- OW Morning Cello 101718_2
+- Spark_11
+- fogsphere_jump2_delayed
+- Nomai_Stone_Door_End_V2_04
+- OW_SP_ElectricalDamageLP
+- OW_PR_FootstepsGlass_02
+- Ghost Run Footstep Forest 6
+- OW_NM_CenterClampsRemoving
+- OW_SP_ThrustRotationalUnderwater_03
+- OW_NM_InsertScroll
+- GhostMatter_Splash_v4_02
+- Airlock Open
+- OW_PR_TranslatorTranslateNew
+- Ship_Impact_Heavy_Damage_V3_10
+- House Destruction 2
+- shiplog_newentry3_softer
+- OW_TravelerTheme_piano
+- Stilts Destruction 3
+- OW_PR_LockOff
+- OW_TH_ModelRocketThrustTranslational_01
+- Hotel Oneshot - Creak 8
+- Dreamworld Candle Lighting Test Variation 6
+- Stilts Destruction 4
+- OW_SUN_BurnPlanet
+- Real World Dam Crack Water Loop
+- OW Final End Times 022519_2 AP LOOP2
+- OxygenRefill_Short
+- OW ReelBeat 03a 031521 AP
+- OW NomaiRuinsRegular 081918 AP motif5c v2
+- StoryReel5Short 063021_3 AP
+- OW_GD_AmbienceOcean
+- OW_TH_BridgeCreaking_loop
+- OW Traveler Theme 021821 AP FINAL TIME NO PIANO ADD PRISONER
+- OW_SP_ShipAmbiance_01
+- Prisoner Grunt 2
+- OW_NM_ComputerRingFall3
+- OW_NM_DoorStart_04
+- Ghost Neck Snap
+- Nomai_Warp_01
+- General Destruction 2
+- pickaxe_02
+- OW_PR_FootstepsSnow_07
+- Lava_Splash_02
+- OW_PR_FootstepsGlass_06
+- Anglerfish_Awake
+- OW_PR_ProbeRetrieval
+- OW_PR_FootstepsJumpSnow_04
+- Lantern Wake Up Light 2
+- Secret Passageway Open Stop 2
+- Lantern Shorting Out 2
+- OW_PR_BanjoStrum_1b
+- OW_PR_FootstepsSnow_08
+- Air Rushing Out Into Space
+- OW_PR_FootstepsJumpGlass_03
+- OW_PR_ProbeInAirSound
+- shiplog_movebetweenplanets
+- OW_PR_BanjoStrum_4b
+- Raft Stop Reeling
+- OW Traveler Theme 091118 AP FINAL TIME WITH PIANO EDIT
+- OW_PR_FootstepsMetal_08
+- OW ReelBeat 04a_2 040921 AP
+- OW_SP_ShipExploding
+- OW_PR_FootstepsJumpMetal_02
+- OW_TH_ModelRocketThrustRotational_04
+- JellyFish_Shock_03
+- OW No-Eye Ruins 121120_2 AP LP
+- OW_GD_HeatLightning_05
+- OW_NM_GravityCrystalAmbience_Louder
+- OW_GD_HeatLightning_07
+- Solar Sail Loop 2
+- OW_PR_FootstepsBushRustle_02
+- CityLights_Off_01
+- RotationalThruster01
+- OW_NM_BHEnterItem_v2
+- OW_PR_FootstepsBushRustle_09
+- Vision Torch - Vision Dissolves
+- OW_PR_FootstepsJumpMetal_04
+- Lantern Remove 2
+- Player_Impact_Damage_Light_01
+- StoryReel5Full 062821_4 AP
+- OW_PR_FootstepsWaterWade_07
+- OW_NM_SkypeLP
+- OW_SP_ShipGroan2_v2
+- Volcano_Ambience_Loop_V2
+- AnglerFish_Chomp_Loop_v2
+- Destruction Debris 2
+- OW_PR_LandInWater2
+- OW_PR_FootstepsIce_05
+- Footstep_Run1
+- Anglerfish_ChompBite_01
+- Destruction Debris 1
+- Ghost Run Footstep Forest 1
+- AnglerFish_Target_v2_02
+- Signalscope_Zoom_Loop
+- BH_Ambience_Below_Crust
+- fogsphere_pulse3
+- OW_GD_HeatLightning_08
+- AshTwinCore_Close_01
+- Airlock Depressurize
+- OW_TH_ModelRocketThrustRotational_03
+- OW_NM_ComputerRing2
+- RockPile_Fall_05
+- Vision Torch Fire - Loop
+- OW Farewell 061721 AP
+- Hologram_Enter_v2_01
+- OW_PR_ThrustRotationalUnderwater_03
+- Forest Oneshot - Tree Creak 8
+- OW_PR_LandInWater3
+- Hotel Oneshot - Creak 3
+- Hotel Oneshot - Heavy Thud 1
+- Distant Ghost Cacophony 1
+- Footstep_Run2
+- OW_TH_ProjectorRun_loop
+- OW_PR_FootstepsJumpGrass_04
+- Destruction Impact - Large 5
+- FootstepsWoodCreak_03
+- OW_PR_FootstepsIce_03
+- Solanum_Foley_HandRaise
+- OW_NM_DoorStart_Big_03
+- Candle Extinguishing Test Variation 6
+- Ignite_CampFire_01
+- Nature Oneshot - Distant Creature 3 - less reverb
+- Real World Water Ambience - Slow River
+- Ghost Grunt 5
+- IceMelt_v2_LowPass
+- OW_NM_GravityCannonDeactivated
+- OW Ghost Sequence 011121 AP LOW SUSPENSE LP
+- Anglerfish_Sleeping
+- Real World Water Ambience - Slow River 2
+- OW_PR_FootstepsWaterWade_02
+- Ghost Walk Footstep Forest 3
+- Spark_05
+- OW No-Eye Ruins 082121 AP stinger
+- Nature Oneshot - Distant Deep Creature 3
+- OW_NM_SunStation
+- Projector Totem Extinguish 1
+- Dreamfire Crackling Loop 3
+- OW Ghost Ambiences 012921_2 AP slam
+- Dreamfire Explosion
+- Dream World Water Ambience - Creek 8
+- OW_PR_FootstepsSnow_05
+- OW_PR_FootstepsIce_04
+- Dream World Water Ambience - Creek 5
+- Ghost Run Footstep Forest 2
+- OW_NM_DoorStart_08
+- Outer Wilds Party House v8 050321_2 AP traveler drone
+- Hotel Oneshot - Heavy Creak 1
+- Secret Passageway Open Start 2
+- FootstepsWoodCreak_01
+- Ghost Grunt 8
+- OW_PR_FootstepsMetal_06
+- Probe_Attach_v3_02
+- OW_PR_LandInWater1
+- FootstepsWoodCreak_06
+- OW_PR_FootstepsBushRustle_04
+- Projector Totem Blow
+- OW_PR_FootstepsWaterWade_01
+- Raft Movement Loop
+- OW_SP_ThrustRotationalUnderwater_01
+- OW_PR_FallingIntoLavaBeep_loop
+- Ship_Impact_Light_Damage_V3_01
+- Ship_Impact_Medium_Damage_V3_02
+- Ghost Walk Footstep Wood_v2 1
+- Nomai_Stone_Door_End_Big_V2_02
+- OW ReelBeat 04c_2 040921 AP
+- Raft Push
+- OW_PR_FootstepsJumpIce_03
+- Nomai_Stone_Door_End_Big_V2_05
+- Destruction Impact 5
+- HGT_SandFallSmall_Inside
+- OW Quantum Lightning 091118 AP 01
+- OW_PR_OxygenLeakingFromSuit_in
+- OW_PR_HelmetOn
+- OW_SP_AutopilotDisengaged 1
+- PutDown_Ceramic_01
+- OW_PR_FootstepsMetal_07
+- Water Spray Impact 7
+- Dream World Alarm Bell Oneshot 4
+- CityLights_On_01
+- rockingchair3
+- fogsphere_pulse5
+- Nomai_ShipPowerOn_V2_01
+- OW_GD_IslandSuckedInTornado
+- OW_NM_DoorStart_05
+- Probe_Attach_v3_01
+- OW_PR_ThrustRotationalUnderwater_02
+- Outer Wilds Party House v8 050321_3 AP traveler
+- Artifact Put Down
+- OW ReelBeat 01b 021021 AP
+- stoppedasphyxiating_suit2
+- FootstepsJumpWoodCreak_04
+- Destruction Debris 6
+- Nomai_Warp_03_Shorter
+- mallowpuff1
+- OW ReelBeat 02d 021021 AP
+- OW_TravelerTheme_harmonica
+- shiplog_misc4
+- Projector Totem Extinguish 3
+- OW ReelBackdrop 02b 021021 AP
+- OW_PR_FootstepsDirt_03
+- Lava_Splash_01
+- Engine_Start_V2
+- Solar Sail Start
+- OW_PR_ThrustTranslational_v2_01
+- Light Sensor Fade Out 1
+- Prisoner Cloth Foley 4
+- OW Quantum Lightning 091118 AP 02
+- OW_NM_RemoveScroll
+- asphyxiation_suit_firsthalf2
+- OW_TH_AmbienceNightInCanyons
+- Footstep2
+- OW ReelBackdrop 03b LOOP 031521 AP
+- OW_SP_ThrustRotationalUnderwater_04
+- OW_PR_FootstepsNomai_08
+- OW_PR_FootstepsNomai_03
+- OW ReelBeat 03d 061121 AP
+- OW_PR_FootstepsJumpSand_04
+- RotationalThruster03
+- Stilts Destruction 5
+- Raft Run Aground
+- OW Space Station 081420_2 AP
+- OW_PR_FootstepsWaterWade_06
+- Spark_02
+- Cloaking Field Entry
+- OW_NM_DataWormhole
+- OW_QuantumSignal
+- General Destruction 3
+- OW New Raft Music 082321_4 AP quiet
+- OW_SP_Unbuckle
+- Real World Water Ambience - Calm 2
+- Prisoner Grunt 3
+- OW_NM_OrbMoveGlass_lp_01
+- Prisoner Cloth Foley 7
+- OW_PR_FootstepsRock_05
+- OW Traveler Theme 021821 AP FINAL TIME WITH PIANO ADD PRISONER
+- OW Quantum Lightning 091118 AP 03
+- OW_TH_ModelRocketThrustRotational_02
+- OW_PR_HitWallUnderwater3
+- Flashlight_Malfunction_03
+- OW NM Flashback 082818 loop overlay AP
+- supernova_corecollapse_10sec_fadeOut
+- OW_PR_FootstepsWood_05
+- rockingchair1
+- Power_Failure_v2_02
+- OW_PR_FootstepsMetal_05
+- Stilts Destruction 2
+- Dreamworld Tower Tilt
+- OW New Texture 082921 AP loop
+- Lantern Insert 3
+- OW_PR_FootstepsNomai_07
+- OW_PR_FootstepsJumpWood_06
+- Pool_Enter_v3_Fade
+- Raft Movement Start
+- OW_PR_FootstepsNomai_05
+- OW_PR_HardSplash
+- Destruction Debris 5
+- Dreamworld Candle Lighting Test Variation 2
+- OW NM Flashback 082818_2 AP stinger delayed
+- Ghost Shout 4
+- Nomai_Stone_Door_End_Big_V2_06
+- Tower Tilt
+- OW_NM_DoorStart_Big_06
+- OW_PR_FootstepsLeaves_03
+- Ghost Run Footstep Wood_v2 3
+- OW_NM_BHExitItem_v2
+- Ghost Idle Search 5
+- Forest Oneshot - Animal 1
+- OW Dreamworld Ruins 072021 AP 02d
+- OW_PR_FootstepsJumpSnow_02
+- Platform_Break_V2_01
+- OW Party House 092820 AP short loop
+- OW_PR_FootstepsRock_06
+- OW_SP_ThrustTranslational
+- Footstep6
+- OW_PR_FootstepsWaterWade_05
+- Ghost Start Hunt Grunt 2
+- OW Dreamworld Ruins 072021 AP 02f
+- Nomai_Stone_Door_End_Big_V2_12
+- Jump_Into_TinyGalaxy_v2_03
+- Footstep_Run3
+- Negative1
+- OW_TravelerTheme_banjo
+- SandColumnEnd_v2
+- OW_PR_FootstepsJumpSand_05
+- Dreamworld Lights Out Ambience 2
+- OW Blair Witch Project 082921_3 AP darker mix loop
+- Fig_Backer_Sat_Audio_V3
+- OW_PR_FootstepsGlass_01
+- Light Sensor Fade Out 4
+- Projector Totem Light 1
+- Player Gravel Footstep 6
+- OW_TH_GeyserStart_03
+- Slide Reel Remove 3
+- Ship_Impact_Medium_Damage_V3_06
+- OW Quantum Lightning 091118 AP 05
+- OW_GD_Tornado_v2_01
+- OW_SP_ActivateComputerLP
+- Footstep_Run6
+- Spark_13
+- Vine_Crash_V3_02_LowPassDelay
+- OW Slideshow BURNT LOOP small 031521_2 AP
+- Raft Heavy Impact 4
+- Light Sensor Door Loop - Door Sensor Sliding
+- Sarcophagus Strain 3
+- Loading Tunnel - Load
+- elevatorstart
+- Nomai_Stone_Door_End_V2_02
+- OW_GD_Tornado_v2_02
+- OW_NM_DoorAirLockAirPourOut_01
+- OW_TravelerTheme_newtraveler 061021 AP
+- OW ReelBackdrop 04a_3 041321 AP LP
+- OW_PR_FootstepsJumpRock_04
+- Damage_Heavy_04
+- Raft Movement Stop 2
+- OW_SP_AnalogClick2_v2
+- Nomai_Stone_Door_End_V2_01
+- OW_PR_FootstepsRock_07
+- Raft Light Impact V2 4
+- Marshmallow_Replace_01
+- Footstep5
+- Destruction Impact 3
+- Helmet_Glass_Crack_08
+- Ghost Run Footstep Wood_v2 6
+- OW End Credits 022019_3 AP
+- Raft Heavy Impacts V2 2
+- Nomai_Stone_Door_End_Big_V2_13
+- OW_NM_GravityCannonActivated
+- Outer Wilds Party House v8 050321_2 AP Bass
+- Ringworld Muffled Indoor Ambience
+- Ghost Run Footstep Wood_v2 2
+- OW_GD_AmbienceUndewater
+- Forge_Loop_V3_03
+- OW_PR_CampfireAmbience
+- OW_PR_FootstepsRock_08
+- Platform_Break_V2_02
+- OW_PR_FootstepsJumpWood_02
+- OW Eye Temple 121820_2 AP LP
+- OW_GD_WavesAgainstBeach
+- OW_PR_ThrowProbe
+- OW_NM_DoorStart_07
+- OW_PR_FootstepsSand_04
+- Lantern Pickup
+- Real World Water Ambience - Rapids 2
+- OW_PR_FootstepsWood_04
+- OW_NM_TractorBeamPowerUp
+- OW New Stinger 082921 AP
+- OW_PR_FootstepsGrass_07
+- Hotel Oneshot - Creak 7
+- Player_On_Fire_Loop
+- OW_TH_UnderwaterRushing
+- GhostMatter_Splash_v4_01
+- OW_SP_ThrustRotationalUnderwater_06
+- OW Fabric SFX 102119 AP rip FADE OUT
+- OW Dreamworld Ruins 072021 AP 02a
+- Spark_06
+- OW_SP_SignalscopeChunkV2
+- Player Gravel Footstep 2
+- OW_PR_FootstepsBushRustle_07
+- Hologram_Exit_v2_01
+- Metal Door Open Stop
+- OW_PR_FootstepsJumpWood_01
+- OW_PR_FootstepsWaterWade_04
+- Nature Oneshot - Distant Deep Creature 2
+- Stilts Destruction 1
+- OW NM Flashback 082818 AP overlay1
+- drowning_secondhalf1
+- Gear Rotate Locked_Short
+- Prisoner Cloth Foley 5
+- shiplog_deselectplanet
+- Orb_End_v3_01
+- Atmosphere_High_Ship
+- Solar Sail Start 2
+- knife_scrape_02
+- OW_TH_GeyserEnd_03
+- Meteor_Impact_03_b
+- Destruction Impact 6
+- JellyFish_Shock_01
+- Light Sensor Loop
+- Candle Extinguishing Test Variation 4
+- Vision Torch Light Rays - Off
+- OW_NM_DoorSlide_Big_LP_05
+- OW_PR_FootstepsDirt_05
+- Sand_Column_Start_v2_03
+- Water Spray Impact 6
+- OW_NM_DoorStart_Big_07
+- OW_SP_ShipGroan3_v2
+- Heat_Damage_Loop_01
+- OW_SP_LandingCamDeactivated 1
+- breathing_lowO2_6
+- OW_PR_OxygenLeakingFromSuit_out
+- LogUpdated_001
+- Vine_Crash_V3_04_LowPassDelay
+- Destruction Debris 7
+- Hotel Oneshot - Heavy Creak 2
+- OW_PR_HelmetOff
+- OW_PR_FootstepsGrass_04
+- Forest Oneshot - Animal 3
+- OW Discovery 083021_2 AP shorter
+- Slide Reel Insert 3
+- OW_NM_BHEnterExitPlayer_v2
+- Ship_Impact_Light_Damage_V3_05
+- OW_SP_OpenHatch_NoBeep
+- OW_SP_ThrustRotationalUnderwater_05
+- ShipSubmerge
+- Artifact Fire Loop
+- OW_DarkBramble_loop
+- OW_PR_FootstepsBushRustle_08
+- OW NM Nomai City 081718 AP LOOP
+- Solar Sail Stop 2
+- Destruction Impact - Large 1
+- OW Dream Rule LP 032421 AP normal
+- Solar Sail Loop
+- OW_TH_GeyserStart_02
+- Ship_Impact_No_Damage_V3_05
+- OW_PR_FootstepsIce_06
+- Outer Wilds Party House v8 050321_2 AP vocals
+- asphyxiation_suit_secondhalf2
+- Affirmative1
+- Spark_12
+- OW_SP_ConsoleReadoutLP
+- OW ReelBackdrop 03c 042621 AP LP
+- gasp_light9
+- Nomai_Stone_Door_End_V2_03
+- OW_PR_FootstepsJumpNomai_06
+- OW_PR_FootstepsGlass_04
+- OW_PR_FootstepsDirt_04
+- Destruction Debris 9
+- OW_PR_FootstepsIce_08
+- OW_PR_SuitOff
+- Artifact Pickup
+- OW_SUN_Ambience_v4
+- JellyFish_Shock_05
+- OW_TH_Underwater
+- Station Shudder - Dreamworld
+- Ghost Walk Footstep Forest 5
+- OW_TH_ProjectorActivate
+- asphyxiation_suit_firsthalf1
+- OW_PR_SignalscopeZoomIn
+- HGT_Ambience_Surface
+- FootstepsWoodCreak_08
+- GhostMatter_Splash_v4_03
+- UI_Tab_v2_05
+- Raft Medium Impact V2 3
+- OW_NM_TractorBeamPowerDown
+- OW_Travel_Theme_Remaster
+- Big_Galaxy_Burn_v2_01
+- OW_TH_Insects_loop_02
+- Raft Heavy Impact 3
+- Raft Movement Start 2
+- OW Quantum Lightning 091118 AP 04
+- OW_TH_FlagFlapping_loop.\_04
+- OW_TH_ModelRocketThrustTranslational_02
+- knife_scrape_03
+- Incinerate_v3_02
+- Light Sensor Rotate
+- OW_NM_EscapePodDistressSignal
+- MapZoomOut_Tone
+- OW_NM_DoorStart_Big_05
+- Player Gravel Footstep 7
+- Ghost Walk Footstep Wood_v2 2
+- Ghost Run Footstep Forest 5
+- Ghost Walk Footstep Forest 4
+- OW_PR_HitWallUnderwater2
+- OW NM Flashback 082818_2 AP stinger
+- OW_PR_FootstepsJumpGrass_05
+- Fix_Puncture_04
+- Ghost Idle Search 3

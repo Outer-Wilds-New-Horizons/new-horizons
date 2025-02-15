@@ -1,18 +1,17 @@
-using NewHorizons.External.Configs;
-using NewHorizons.Utility;
-using NewHorizons.External.Modules.VariableSize;
-using UnityEngine;
-
-using System.Collections.Generic;
-using NewHorizons.Components.SizeControllers;
-using Color = UnityEngine.Color;
-using NewHorizons.Components.Volumes;
 using NewHorizons.Builder.Props;
-using NewHorizons.Utility.OWML;
-using NewHorizons.Utility.OuterWilds;
-using NewHorizons.External.SerializableData;
 using NewHorizons.Builder.Volumes;
+using NewHorizons.Components.SizeControllers;
+using NewHorizons.Components.Volumes;
+using NewHorizons.External.Configs;
+using NewHorizons.External.Modules.VariableSize;
+using NewHorizons.External.SerializableData;
+using NewHorizons.Utility;
+using NewHorizons.Utility.OuterWilds;
+using NewHorizons.Utility.OWML;
 using System;
+using System.Collections.Generic;
+using UnityEngine;
+using Color = UnityEngine.Color;
 
 namespace NewHorizons.Builder.Body
 {
@@ -88,7 +87,7 @@ namespace NewHorizons.Builder.Body
             Vector3 localRotation = singularity?.rotation == null ? Vector3.zero : singularity.rotation;
 
             GameObject newSingularity = MakeSingularity(go, sector, localPosition, localRotation, polarity, horizonRadius, distortRadius, 
-                hasHazardVolume, singularity.targetStarSystem, singularity.curve, singularity.hasWarpEffects, singularity.renderQueueOverride, singularity.rename, singularity.parentPath, singularity.isRelativeToParent);
+                hasHazardVolume, singularity.targetStarSystem, singularity.spawnPointID, singularity.curve, singularity.hasWarpEffects, singularity.renderQueueOverride, singularity.rename, singularity.parentPath, singularity.isRelativeToParent);
 
             var uniqueID = string.IsNullOrEmpty(singularity.uniqueID) ? config.name : singularity.uniqueID;
             
@@ -161,7 +160,7 @@ namespace NewHorizons.Builder.Body
         }
 
         public static GameObject MakeSingularity(GameObject planetGO, Sector sector, Vector3 position, Vector3 rotation, bool polarity, float horizon, float distort,
-            bool hasDestructionVolume, string targetStarSystem = null, TimeValuePair[] curve = null, bool warpEffects = true, int renderQueue = 2985, string rename = null, string parentPath = null, bool isRelativeToParent = false)
+            bool hasDestructionVolume, string targetStarSystem = null, string targetSpawnID = null, TimeValuePair[] curve = null, bool warpEffects = true, int renderQueue = 2985, string rename = null, string parentPath = null, bool isRelativeToParent = false)
         {
             // polarity true = black, false = white
 
@@ -233,6 +232,7 @@ namespace NewHorizons.Builder.Body
                     {
                         var wormholeVolume = destructionVolumeGO.AddComponent<BlackHoleWarpVolume>();
                         wormholeVolume.TargetSolarSystem = targetStarSystem;
+                        wormholeVolume.TargetSpawnID = targetSpawnID;
                     }
                 }
                 else

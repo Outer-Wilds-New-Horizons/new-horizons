@@ -1,6 +1,7 @@
 using NewHorizons.External;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
+using NewHorizons.External.Modules.Props;
 using NewHorizons.External.SerializableData;
 using NewHorizons.Handlers;
 using NewHorizons.Utility.OWML;
@@ -36,8 +37,7 @@ namespace NewHorizons.Builder.Body
 
                 config.Base = new BaseModule()
                 {
-                    hasMapMarker = false,
-                    surfaceGravity = 1,
+                    surfaceGravity = belt.gravity,
                     surfaceSize = size,
                     gravityFallOff = GravityFallOff.InverseSquared
                 };
@@ -50,7 +50,8 @@ namespace NewHorizons.Builder.Body
                     trueAnomaly = 360f * (i + Random.Range(-0.2f, 0.2f)) / (float)count,
                     primaryBody = bodyName,
                     semiMajorAxis = Random.Range(belt.innerRadius, belt.outerRadius),
-                    showOrbitLine = false
+                    showOrbitLine = false,
+                    isTidallyLocked = true
                 };
 
                 config.ReferenceFrame = new ReferenceFrameModule()
@@ -58,19 +59,41 @@ namespace NewHorizons.Builder.Body
                     enabled = false
                 };
 
-                config.ProcGen = belt.procGen;
-                if (config.ProcGen == null)
+                config.MapMarker = new MapMarkerModule()
+                {
+                    enabled = false
+                };
+
+                if (!string.IsNullOrEmpty(belt.assetBundle) || !string.IsNullOrEmpty(belt.path))
+                {
+                    config.Props = new PropModule()
+                    {
+                        details = new DetailInfo[1]
+                        {
+                            new DetailInfo()
+                            {
+                                assetBundle = belt.assetBundle,
+                                path = belt.path,
+                                scale = size,
+                                rotation = belt.randomOrientation ? Random.rotation.eulerAngles : Vector3.zero,
+                                keepLoaded = true
+                            }
+                        }
+                    };
+
+                }
+                else if (belt.procGen != null)
+                {
+                    config.ProcGen = belt.procGen;
+                    config.ProcGen.scale = size;
+                }
+                else
                 {
                     config.ProcGen = new ProcGenModule()
                     {
                         scale = size,
                         color = new MColor(126, 94, 73)
                     };
-                }
-                else
-                {
-                    // Still update the size
-                    config.ProcGen.scale = size;
                 }
 
                 var asteroid = new NewHorizonsBody(config, mod);
