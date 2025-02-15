@@ -29,10 +29,13 @@ namespace NewHorizons.Handlers
             var scene = SearchUtilities.Find("Scene");
             var background = SearchUtilities.Find("Scene/Background");
             var planetPivot = SearchUtilities.Find("Scene/Background/PlanetPivot");
+
+            // Add fake sectors for ocean water component support
             scene.AddComponent<FakeSector>();
             background.AddComponent<FakeSector>();
             planetPivot.AddComponent<FakeSector>();
 
+            // parent ambient light and campfire to the root (idk why they aren't parented in the first place mobius)
             var planetRoot = SearchUtilities.Find("Scene/Background/PlanetPivot/PlanetRoot");
             var campfire = SearchUtilities.Find("Scene/Background/PlanetPivot/Prefab_HEA_Campfire");
             campfire.transform.SetParent(planetRoot.transform, true);
@@ -47,24 +50,27 @@ namespace NewHorizons.Handlers
             var profileManager = StandaloneProfileManager.SharedInstance;
             profileManager.PreInitialize();
             profileManager.Initialize();
-            if (profileManager.currentProfile != null)
+            if (profileManager.currentProfile != null) // check if there is even a profile made yet
                 PlayerData.Init(profileManager.currentProfileGameSave,
                     profileManager.currentProfileGameSettings,
                     profileManager.currentProfileGraphicsSettings,
                     profileManager.currentProfileInputJSON);
 
+            // Grab configs and handlers and merge them into one list
             var validBuilders = Main.TitleScreenConfigs.Select(kvp => (ITitleScreenBuilder)new TitleScreenConfigBuilder(kvp.Key, kvp.Value))
                 .Concat(TitleScreenBuilders.Select(kvp => (ITitleScreenBuilder)kvp.Value))
                 .Where(builder => builder.KnowsFact() && builder.HasCondition()).ToList();
 
             var hasNHPlanets = eligibleCount != 0;
 
+            // Get random index for the main builder
             var index = UnityEngine.Random.Range(0, validBuilders.Count());
             var randomBuilder = validBuilders.ElementAtOrDefault(index);
             if (randomBuilder != null)
             {
                 validBuilders.RemoveAt(index);
 
+                // display nh planets if not disabled
                 if (!randomBuilder.DisableNHPlanets)
                 {
                     DisplayBodiesOnTitleScreen();
@@ -72,14 +78,17 @@ namespace NewHorizons.Handlers
 
                 randomBuilder.Build();
 
+                // if it can share build extras
                 if (randomBuilder.CanShare)
                 {
+                    // only build the ones that also can share and have the same value for disabling nh planet (if there is any nh planets)
                     foreach (var builder in validBuilders.Where(builder => builder.CanShare && (hasNHPlanets ? builder.DisableNHPlanets == randomBuilder.DisableNHPlanets : true)))
                     {
                         builder.Build();
                     }
                 }
             }
+            // default to displaying nh planets if no title screen builders
             else
                 DisplayBodiesOnTitleScreen();
         }
@@ -172,7 +181,7 @@ namespace NewHorizons.Handlers
                 }
 
                 var rotator = menuPlanet.GetComponent<RotateTransform>();
-                rotator._localAxis = Vector3.up;
+                rotator._localAxis = Vector3.up; // fix axis (because there is no reason for it to be negative when degrees were also negative)
                 rotator._degreesPerSecond = config.MenuPlanet.rotationSpeed;
 
                 if (config.MenuPlanet.destroyMenuPlanet)
