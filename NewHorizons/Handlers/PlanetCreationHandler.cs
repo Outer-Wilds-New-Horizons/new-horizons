@@ -169,7 +169,7 @@ namespace NewHorizons.Handlers
 
             // I don't remember doing this why is it exceptions what am I doing
             GameObject existingPlanet = null;
-            if (false && body.Config.checkForExisting)
+            if (body.Config.checkForExisting) // TODO: remove this when we cache name->fullpath in Find
             {
                 try
                 {
