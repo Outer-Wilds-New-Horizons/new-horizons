@@ -103,6 +103,11 @@ namespace NewHorizons.External.Configs
         public DreamModule Dream;
 
         /// <summary>
+        /// Add features exclusive to the Eye of the Universe scene
+        /// </summary>
+        public EyeOfTheUniverseModule EyeOfTheUniverse;
+
+        /// <summary>
         /// Make this body into a focal point (barycenter)
         /// </summary>
         public FocalPointModule FocalPoint;
@@ -650,6 +655,25 @@ namespace NewHorizons.External.Configs
                 foreach (var destructionVolume in Volumes.destructionVolumes)
                 {
                     if (destructionVolume.onlyAffectsPlayerAndShip) destructionVolume.onlyAffectsPlayerRelatedBodies = true;
+                }
+            }
+
+            if (Volumes?.creditsVolume != null)
+            {
+                foreach (var volume in Volumes.creditsVolume)
+                {
+                    if (!string.IsNullOrEmpty(volume.gameOverText))
+                    {
+                        if (volume.gameOver == null)
+                        {
+                            volume.gameOver = new();
+                        }
+                        volume.gameOver.text = volume.gameOverText;
+                    }
+                    if (volume.creditsType != null)
+                    {
+                        volume.gameOver.creditsType = (SerializableEnums.NHCreditsType)volume.creditsType;
+                    }
                 }
             }
 

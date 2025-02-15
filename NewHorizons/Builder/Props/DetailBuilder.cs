@@ -155,6 +155,17 @@ namespace NewHorizons.Builder.Props
                                 continue;
                             }
 
+                            /* We used to set SectorCullGroup._controllingProxy to null. Now we do not.
+                             * This may break things on copied details because it prevents SetSector from doing anything,
+                             * so that part of the detail might be culled by wrong sector.
+                             * So if you copy something from e.g. Giants Deep it might turn off the detail if you arent in 
+                             * the sector of the thing you copied from (since it's still pointing to the original proxy, 
+                             * which has the original sector at giants deep there)
+                             * 
+                             * Anyway nobody has complained about this for the year it's been like that so closing issue #831 until
+                             * this affects somebody
+                             */
+
                             FixSectoredComponent(component, sector, existingSectors);
                         }
 
@@ -459,6 +470,15 @@ namespace NewHorizons.Builder.Props
             {
                 component.gameObject.AddComponent<NHRaftController>();
             }
+            else if (component is RaftDock dock)
+            {
+                // These flood toggles are to disable flooded docks on the Stranger
+                // Presumably the user isn't making one of those
+                foreach (var toggle in dock.GetComponents<FloodToggle>())
+                {
+                    Component.DestroyImmediate(toggle);
+                }
+            }
         }
 
         /// <summary>
@@ -486,7 +506,10 @@ namespace NewHorizons.Builder.Props
                 // Disable the angler anim controller because we don't want Update or LateUpdate to run, just need it to set the initial Animator state
                 angler.enabled = false;
                 angler.OnChangeAnglerState(AnglerfishController.AnglerState.Lurking);
-                
+
+                angler._animator.SetFloat("MoveSpeed", angler._moveCurrent);
+                angler._animator.SetFloat("Jaw", angler._jawCurrent);
+
                 Destroy(this);
             }
         }

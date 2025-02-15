@@ -15,6 +15,9 @@ namespace NewHorizons.Utility.Files
         public static bool CheckCachedTexture(string key, out Texture existingTexture) => _textureCache.TryGetValue(key, out existingTexture);
         public static void TrackCachedTexture(string key, Texture texture) => _textureCache.Add(key, texture); // dont reinsert cuz that causes memory leak!
 
+        public static string GetKey(IModBehaviour mod, string filename)
+            => GetKey(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, filename));
+
         public static string GetKey(string path) =>
             path.Substring(Main.Instance.ModHelper.OwmlConfig.ModsPath.Length + 1).Replace('\\', '/');
 
@@ -54,7 +57,7 @@ namespace NewHorizons.Utility.Files
             var key = GetKey(path);
             if (_textureCache.TryGetValue(key, out var existingTexture))
             {
-                NHLogger.LogVerbose($"Already loaded image at path: {path}");
+                //NHLogger.LogVerbose($"Already loaded image at path: {path}");
                 return (Texture2D)existingTexture;
             }
 
@@ -75,6 +78,19 @@ namespace NewHorizons.Utility.Files
                 // Half the time when a texture doesn't load it doesn't need to exist so just log verbose
                 NHLogger.LogVerbose($"Exception thrown while loading texture [{filename}]:\n{ex}");
                 return null;
+            }
+        }
+
+        /// <summary>
+        /// Not sure why the other method takes in the texture as well
+        /// </summary>
+        /// <param name="key"></param>
+        public static void DeleteTexture(string key)
+        {
+            if (_textureCache.ContainsKey(key))
+            {
+                UnityEngine.Object.Destroy(_textureCache[key]);
+                _textureCache.Remove(key);
             }
         }
 
@@ -201,9 +217,9 @@ namespace NewHorizons.Utility.Files
                     {
                         for (int j = 0; j < size; j++)
                         {
-                            var colour = Color.black;
+                            var colour = Color.clear;
 
-                            if (srcTexture)
+                            if (srcTexture != null)
                             {
                                 var srcX = i * srcTexture.width / (float)size;
                                 var srcY = j * srcTexture.height / (float)size;

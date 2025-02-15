@@ -74,6 +74,10 @@
       "description": "Make this planet part of the dream world",
       "$ref": "#/definitions/DreamModule"
     },
+    "EyeOfTheUniverse": {
+      "description": "Add features exclusive to the Eye of the Universe scene",
+      "$ref": "#/definitions/EyeOfTheUniverseModule"
+    },
     "FocalPoint": {
       "description": "Make this body into a focal point (barycenter)",
       "$ref": "#/definitions/FocalPointModule"
@@ -850,6 +854,874 @@
         }
       }
     },
+    "EyeOfTheUniverseModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "eyeTravelers": {
+          "type": "array",
+          "description": "Add custom travelers to the campfire sequence",
+          "items": {
+            "$ref": "#/definitions/EyeTravelerInfo"
+          }
+        },
+        "instrumentZones": {
+          "type": "array",
+          "description": "Add instrument zones which contain puzzles to gather a quantum instrument. You can parent other props to these with `parentPath` ",
+          "items": {
+            "$ref": "#/definitions/InstrumentZoneInfo"
+          }
+        },
+        "quantumInstruments": {
+          "type": "array",
+          "description": "Add quantum instruments which cause their associated eye traveler to appear and instrument zones to disappear",
+          "items": {
+            "$ref": "#/definitions/QuantumInstrumentInfo"
+          }
+        }
+      }
+    },
+    "EyeTravelerInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "assetBundle": {
+          "type": "string",
+          "description": "Relative filepath to an asset-bundle to load the prefab defined in `path` from"
+        },
+        "path": {
+          "type": "string",
+          "description": "Either the path in the scene hierarchy of the item to copy or the path to the object in the supplied asset bundle. \nIf empty, will make an empty game object. This can be useful for adding other props to it as its children."
+        },
+        "removeChildren": {
+          "type": "array",
+          "description": "A list of children to remove from this detail",
+          "items": {
+            "type": "string"
+          }
+        },
+        "removeComponents": {
+          "type": "boolean",
+          "description": "Do we reset all the components on this object? Useful for certain props that have dialogue components attached to\nthem."
+        },
+        "scale": {
+          "type": "number",
+          "description": "Scale the prop",
+          "format": "float",
+          "default": 1.0
+        },
+        "stretch": {
+          "description": "Scale each axis of the prop. Overrides `scale`.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "keepLoaded": {
+          "type": "boolean",
+          "description": "Should this detail stay loaded (visible and collideable) even if you're outside the sector (good for very large props)?\nAlso makes this detail visible on the map.\nKeeping many props loaded is bad for performance so use this only when it's actually relevant\nMost logic/behavior scripts will still only work inside the sector, as most of those scripts break if a sector is not provided."
+        },
+        "hasPhysics": {
+          "type": "boolean",
+          "description": "Should this object dynamically move around?\nThis tries to make all mesh colliders convex, as well as adding a sphere collider in case the detail has no others."
+        },
+        "physicsMass": {
+          "type": "number",
+          "description": "The mass of the physics object.\nMost pushable props use the default value, which matches the player mass.",
+          "format": "float",
+          "default": 0.001
+        },
+        "physicsRadius": {
+          "type": "number",
+          "description": "The radius that the added sphere collider will use for physics collision.\nIf there's already good colliders on the detail, you can make this 0.",
+          "format": "float",
+          "default": 1.0
+        },
+        "physicsSuspendUntilImpact": {
+          "type": "boolean",
+          "description": "If true, this detail will stay still until it touches something.\nGood for zero-g props.",
+          "default": false
+        },
+        "ignoreSun": {
+          "type": "boolean",
+          "description": "Set to true if this object's lighting should ignore the effects of sunlight"
+        },
+        "activationCondition": {
+          "type": "string",
+          "description": "Activates this game object when the dialogue condition is met"
+        },
+        "deactivationCondition": {
+          "type": "string",
+          "description": "Deactivates this game object when the dialogue condition is met"
+        },
+        "blinkWhenActiveChanged": {
+          "type": "boolean",
+          "description": "Should the player close their eyes while the activation state changes. Only relevant if activationCondition or deactivationCondition are set.",
+          "default": true
+        },
+        "item": {
+          "description": "Should this detail be treated as an interactible item",
+          "$ref": "#/definitions/ItemInfo"
+        },
+        "itemSocket": {
+          "description": "Should this detail be treated as a socket for an interactible item",
+          "$ref": "#/definitions/ItemSocketInfo"
+        },
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "id": {
+          "type": "string",
+          "description": "A unique ID to associate this traveler with their corresponding quantum instruments and instrument zones. Must be unique for each traveler."
+        },
+        "requiredFact": {
+          "type": "string",
+          "description": "If set, the player must know this ship log fact for this traveler (and their instrument zones and quantum instruments) to appear. The fact does not need to exist in the current star system; the player's save data will be checked directly."
+        },
+        "requiredPersistentCondition": {
+          "type": "string",
+          "description": "If set, the player must have this persistent dialogue condition set for this traveler (and their instrument zones and quantum instruments) to appear."
+        },
+        "startPlayingCondition": {
+          "type": "string",
+          "description": "The dialogue condition that will trigger the traveler to start playing their instrument. Must be unique for each traveler."
+        },
+        "participatingCondition": {
+          "type": "string",
+          "description": "If specified, this dialogue condition must be set for the traveler to participate in the campfire song. Otherwise, the song will be able to start without them."
+        },
+        "signal": {
+          "description": "The audio signal to use for the traveler while playing around the campfire (and also for their paired quantum instrument if another is not specified). The audio clip should be 16 measures at 92 BPM (approximately 42 seconds long).",
+          "$ref": "#/definitions/SignalInfo"
+        },
+        "finaleAudio": {
+          "type": "string",
+          "description": "The audio to use for the traveler during the finale of the campfire song. It should be 8 measures of the main loop at 92 BPM followed by 2 measures of fade-out (approximately 26 seconds long in total). Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+        },
+        "dialogue": {
+          "description": "The dialogue to use for this traveler. If omitted, the first CharacterDialogueTree in the object will be used.",
+          "$ref": "#/definitions/DialogueInfo"
+        }
+      }
+    },
+    "ItemInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of the item to be displayed in the UI. Defaults to the name of the detail object."
+        },
+        "itemType": {
+          "type": "string",
+          "description": "The type of the item, which determines its orientation when held and what sockets it fits into. This can be a custom string, or a vanilla ItemType (Scroll, WarpCore, SharedStone, ConversationStone, Lantern, SlideReel, DreamLantern, or VisionTorch). Defaults to the item name."
+        },
+        "interactRange": {
+          "type": "number",
+          "description": "The furthest distance where the player can interact with this item. Defaults to two meters, same as most vanilla items. Set this to zero to disable all interaction by default.",
+          "format": "float",
+          "default": 2.0
+        },
+        "colliderRadius": {
+          "type": "number",
+          "description": "The radius that the added sphere collider will use for collision and hover detection.\nIf there's already a collider on the detail, you can make this 0.",
+          "format": "float",
+          "default": 0.5
+        },
+        "droppable": {
+          "type": "boolean",
+          "description": "Whether the item can be dropped. Defaults to true.",
+          "default": true
+        },
+        "dropOffset": {
+          "description": "A relative offset to apply to the item's position when dropping it on the ground.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "dropNormal": {
+          "description": "The direction the item will be oriented when dropping it on the ground. Defaults to up (0, 1, 0).",
+          "$ref": "#/definitions/MVector3"
+        },
+        "holdOffset": {
+          "description": "A relative offset to apply to the item's position when holding it. The initial position varies for vanilla item types.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "holdRotation": {
+          "description": "A relative offset to apply to the item's rotation when holding it.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "socketOffset": {
+          "description": "A relative offset to apply to the item's position when placing it into a socket.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "socketRotation": {
+          "description": "A relative offset to apply to the item's rotation when placing it into a socket.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "pickupAudio": {
+          "type": "string",
+          "description": "The audio to play when this item is picked up. Only applies to custom/non-vanilla item types.\nCan be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+        },
+        "dropAudio": {
+          "type": "string",
+          "description": "The audio to play when this item is dropped. Only applies to custom/non-vanilla item types.\nCan be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+        },
+        "socketAudio": {
+          "type": "string",
+          "description": "The audio to play when this item is inserted into a socket. Only applies to custom/non-vanilla item types.\nCan be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+        },
+        "unsocketAudio": {
+          "type": "string",
+          "description": "The audio to play when this item is removed from a socket. Only applies to custom/non-vanilla item types.\nCan be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+        },
+        "pickupCondition": {
+          "type": "string",
+          "description": "A dialogue condition to set when picking up this item."
+        },
+        "clearPickupConditionOnDrop": {
+          "type": "boolean",
+          "description": "Whether the pickup condition should be cleared when dropping the item. Defaults to true.",
+          "default": true
+        },
+        "pickupFact": {
+          "type": "string",
+          "description": "A ship log fact to reveal when picking up this item."
+        },
+        "pathToInitialSocket": {
+          "type": "string",
+          "description": "A relative path from the planet to a socket that this item will be automatically inserted into."
+        }
+      }
+    },
+    "ItemSocketInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "socketPath": {
+          "type": "string",
+          "description": "The relative path to a child game object of this detail that will act as the socket point for the item. Will be used instead of this socket's positioning info if set."
+        },
+        "itemType": {
+          "type": "string",
+          "description": "The type of item allowed in this socket. This can be a custom string, or a vanilla ItemType (Scroll, WarpCode, SharedStone, ConversationStone, Lantern, SlideReel, DreamLantern, or VisionTorch)."
+        },
+        "interactRange": {
+          "type": "number",
+          "description": "The furthest distance where the player can interact with this item socket. Defaults to two meters, same as most vanilla item sockets. Set this to zero to disable all interaction by default.",
+          "format": "float",
+          "default": 2.0
+        },
+        "useGiveTakePrompts": {
+          "type": "boolean",
+          "description": "Whether to use \"Give Item\" / \"Take Item\" prompts instead of \"Insert Item\" / \"Remove Item\"."
+        },
+        "insertCondition": {
+          "type": "string",
+          "description": "A dialogue condition to set when inserting an item into this socket."
+        },
+        "clearInsertConditionOnRemoval": {
+          "type": "boolean",
+          "description": "Whether the insert condition should be cleared when removing the socketed item. Defaults to true.",
+          "default": true
+        },
+        "insertFact": {
+          "type": "string",
+          "description": "A ship log fact to reveal when inserting an item into this socket."
+        },
+        "removalCondition": {
+          "type": "string",
+          "description": "A dialogue condition to set when removing an item from this socket, or when the socket is empty."
+        },
+        "clearRemovalConditionOnInsert": {
+          "type": "boolean",
+          "description": "Whether the removal condition should be cleared when inserting a socketed item. Defaults to true.",
+          "default": true
+        },
+        "removalFact": {
+          "type": "string",
+          "description": "A ship log fact to reveal when removing an item from this socket, or when the socket is empty."
+        },
+        "colliderRadius": {
+          "type": "number",
+          "description": "Default collider radius when interacting with the socket",
+          "format": "float",
+          "default": 0.0
+        }
+      }
+    },
+    "SignalInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "audio": {
+          "type": "string",
+          "description": "The audio to use. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+        },
+        "minDistance": {
+          "type": "number",
+          "description": "At this distance the sound is at its loudest.",
+          "format": "float"
+        },
+        "maxDistance": {
+          "type": "number",
+          "description": "The sound will drop off by this distance (Note: for signals, this only effects when it is heard aloud and not via the signalscope).",
+          "format": "float",
+          "default": 5.0
+        },
+        "volume": {
+          "type": "number",
+          "description": "How loud the sound will play",
+          "format": "float",
+          "default": 0.5
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "detectionRadius": {
+          "type": "number",
+          "description": "How close the player must get to the signal to detect it. This is when you get the \"Unknown Signal Detected\"\nnotification.",
+          "format": "float",
+          "minimum": 0.0
+        },
+        "frequency": {
+          "type": "string",
+          "description": "The frequency ID of the signal. The built-in game values are `Default`, `Traveler`, `Quantum`, `EscapePod`,\n`Statue`, `WarpCore`, `HideAndSeek`, and `Radio`. You can also put a custom value."
+        },
+        "identificationRadius": {
+          "type": "number",
+          "description": "How close the player must get to the signal to identify it. This is when you learn its name.",
+          "format": "float",
+          "default": 10.0,
+          "minimum": 0.0
+        },
+        "insideCloak": {
+          "type": "boolean",
+          "description": "Only set to `true` if you are putting this signal inside a cloaking field."
+        },
+        "name": {
+          "type": "string",
+          "description": "The unique ID of the signal."
+        },
+        "onlyAudibleToScope": {
+          "type": "boolean",
+          "description": "`false` if the player can hear the signal without equipping the signal-scope.",
+          "default": true
+        },
+        "reveals": {
+          "type": "string",
+          "description": "A ship log fact to reveal when the signal is identified.",
+          "default": ""
+        },
+        "sourceRadius": {
+          "type": "number",
+          "description": "Radius of the sphere giving off the signal.",
+          "format": "float",
+          "default": 1.0
+        }
+      }
+    },
+    "DialogueInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "blockAfterPersistentCondition": {
+          "type": "string",
+          "description": "Prevents the dialogue from being created after a specific persistent condition is set. Useful for remote dialogue\ntriggers that you want to have happen only once."
+        },
+        "lookAtRadius": {
+          "type": "number",
+          "description": "If a pathToAnimController is supplied, if you are within this distance the character will look at you. If it is set\nto 0, they will only look at you when spoken to.",
+          "format": "float"
+        },
+        "pathToAnimController": {
+          "type": "string",
+          "description": "If this dialogue is meant for a character, this is the relative path from the planet to that character's\nCharacterAnimController, TravelerController, TravelerEyeController (eye of the universe), FacePlayerWhenTalking, \nHearthianRecorderEffects or SolanumAnimController.\n\nIf it's a Recorder this will also delete the existing dialogue already attached to that prop.\n\nIf none of those components are present it will add a FacePlayerWhenTalking component.\n\n`pathToAnimController` also makes the dialogue into a child of the anim controller. This can be used with `isRelativeToParent`\nto position the dialogue on relative to the speaker. If you also provide `parentPath`, that will instead override which object \nis the parent, but the anim controller will otherwise function as expected."
+        },
+        "pathToExistingDialogue": {
+          "type": "string",
+          "description": "If this dialogue is adding to existing character dialogue, put a path to the game object with the dialogue on it here"
+        },
+        "radius": {
+          "type": "number",
+          "description": "Radius of the spherical collision volume where you get the \"talk to\" prompt when looking at. If you use a\nremoteTrigger, you can set this to 0 to make the dialogue only trigger remotely.",
+          "format": "float"
+        },
+        "range": {
+          "type": "number",
+          "description": "Distance from radius the prompt appears",
+          "format": "float",
+          "default": 2.0
+        },
+        "attentionPoint": {
+          "description": "The point that the camera looks at when dialogue advances.",
+          "$ref": "#/definitions/AttentionPointInfo"
+        },
+        "swappedAttentionPoints": {
+          "type": "array",
+          "description": "Additional points that the camera looks at when dialogue advances through specific dialogue nodes and pages.",
+          "items": {
+            "$ref": "#/definitions/SwappedAttentionPointInfo"
+          }
+        },
+        "remoteTrigger": {
+          "description": "Allows you to trigger dialogue from a distance when you walk into an area.",
+          "$ref": "#/definitions/RemoteTriggerInfo"
+        },
+        "xmlFile": {
+          "type": "string",
+          "description": "Relative path to the xml file defining the dialogue."
+        },
+        "flashlightToggle": {
+          "description": "What type of flashlight toggle to do when dialogue is interacted with",
+          "default": "none",
+          "$ref": "#/definitions/FlashlightToggle"
+        }
+      }
+    },
+    "AttentionPointInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "offset": {
+          "description": "An additional offset to apply to apply when the camera looks at this attention point.",
+          "$ref": "#/definitions/MVector3"
+        }
+      }
+    },
+    "SwappedAttentionPointInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "offset": {
+          "description": "An additional offset to apply to apply when the camera looks at this attention point.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "dialogueNode": {
+          "type": "string",
+          "description": "The name of the dialogue node to activate this attention point for. If null or blank, activates for every node."
+        },
+        "dialoguePage": {
+          "type": "integer",
+          "description": "The index of the page in the current dialogue node to activate this attention point for, if the node has multiple pages.",
+          "format": "int32"
+        },
+        "lookEasing": {
+          "type": "number",
+          "description": "The easing factor which determines how 'snappy' the camera is when looking at the attention point.",
+          "format": "float",
+          "default": 1
+        }
+      }
+    },
+    "RemoteTriggerInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of the remote trigger volume.",
+          "format": "float"
+        },
+        "prereqCondition": {
+          "type": "string",
+          "description": "This condition must be met for the remote trigger volume to trigger."
+        }
+      }
+    },
+    "FlashlightToggle": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "TurnOff",
+        "TurnOffThenOn",
+        "None"
+      ],
+      "enum": [
+        "turnOff",
+        "turnOffThenOn",
+        "none"
+      ]
+    },
+    "InstrumentZoneInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "assetBundle": {
+          "type": "string",
+          "description": "Relative filepath to an asset-bundle to load the prefab defined in `path` from"
+        },
+        "path": {
+          "type": "string",
+          "description": "Either the path in the scene hierarchy of the item to copy or the path to the object in the supplied asset bundle. \nIf empty, will make an empty game object. This can be useful for adding other props to it as its children."
+        },
+        "removeChildren": {
+          "type": "array",
+          "description": "A list of children to remove from this detail",
+          "items": {
+            "type": "string"
+          }
+        },
+        "removeComponents": {
+          "type": "boolean",
+          "description": "Do we reset all the components on this object? Useful for certain props that have dialogue components attached to\nthem."
+        },
+        "scale": {
+          "type": "number",
+          "description": "Scale the prop",
+          "format": "float",
+          "default": 1.0
+        },
+        "stretch": {
+          "description": "Scale each axis of the prop. Overrides `scale`.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "keepLoaded": {
+          "type": "boolean",
+          "description": "Should this detail stay loaded (visible and collideable) even if you're outside the sector (good for very large props)?\nAlso makes this detail visible on the map.\nKeeping many props loaded is bad for performance so use this only when it's actually relevant\nMost logic/behavior scripts will still only work inside the sector, as most of those scripts break if a sector is not provided."
+        },
+        "hasPhysics": {
+          "type": "boolean",
+          "description": "Should this object dynamically move around?\nThis tries to make all mesh colliders convex, as well as adding a sphere collider in case the detail has no others."
+        },
+        "physicsMass": {
+          "type": "number",
+          "description": "The mass of the physics object.\nMost pushable props use the default value, which matches the player mass.",
+          "format": "float",
+          "default": 0.001
+        },
+        "physicsRadius": {
+          "type": "number",
+          "description": "The radius that the added sphere collider will use for physics collision.\nIf there's already good colliders on the detail, you can make this 0.",
+          "format": "float",
+          "default": 1.0
+        },
+        "physicsSuspendUntilImpact": {
+          "type": "boolean",
+          "description": "If true, this detail will stay still until it touches something.\nGood for zero-g props.",
+          "default": false
+        },
+        "ignoreSun": {
+          "type": "boolean",
+          "description": "Set to true if this object's lighting should ignore the effects of sunlight"
+        },
+        "activationCondition": {
+          "type": "string",
+          "description": "Activates this game object when the dialogue condition is met"
+        },
+        "deactivationCondition": {
+          "type": "string",
+          "description": "Deactivates this game object when the dialogue condition is met"
+        },
+        "blinkWhenActiveChanged": {
+          "type": "boolean",
+          "description": "Should the player close their eyes while the activation state changes. Only relevant if activationCondition or deactivationCondition are set.",
+          "default": true
+        },
+        "item": {
+          "description": "Should this detail be treated as an interactible item",
+          "$ref": "#/definitions/ItemInfo"
+        },
+        "itemSocket": {
+          "description": "Should this detail be treated as a socket for an interactible item",
+          "$ref": "#/definitions/ItemSocketInfo"
+        },
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "id": {
+          "type": "string",
+          "description": "The unique ID of the Eye Traveler associated with this instrument zone."
+        }
+      }
+    },
+    "QuantumInstrumentInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "assetBundle": {
+          "type": "string",
+          "description": "Relative filepath to an asset-bundle to load the prefab defined in `path` from"
+        },
+        "path": {
+          "type": "string",
+          "description": "Either the path in the scene hierarchy of the item to copy or the path to the object in the supplied asset bundle. \nIf empty, will make an empty game object. This can be useful for adding other props to it as its children."
+        },
+        "removeChildren": {
+          "type": "array",
+          "description": "A list of children to remove from this detail",
+          "items": {
+            "type": "string"
+          }
+        },
+        "removeComponents": {
+          "type": "boolean",
+          "description": "Do we reset all the components on this object? Useful for certain props that have dialogue components attached to\nthem."
+        },
+        "scale": {
+          "type": "number",
+          "description": "Scale the prop",
+          "format": "float",
+          "default": 1.0
+        },
+        "stretch": {
+          "description": "Scale each axis of the prop. Overrides `scale`.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "keepLoaded": {
+          "type": "boolean",
+          "description": "Should this detail stay loaded (visible and collideable) even if you're outside the sector (good for very large props)?\nAlso makes this detail visible on the map.\nKeeping many props loaded is bad for performance so use this only when it's actually relevant\nMost logic/behavior scripts will still only work inside the sector, as most of those scripts break if a sector is not provided."
+        },
+        "hasPhysics": {
+          "type": "boolean",
+          "description": "Should this object dynamically move around?\nThis tries to make all mesh colliders convex, as well as adding a sphere collider in case the detail has no others."
+        },
+        "physicsMass": {
+          "type": "number",
+          "description": "The mass of the physics object.\nMost pushable props use the default value, which matches the player mass.",
+          "format": "float",
+          "default": 0.001
+        },
+        "physicsRadius": {
+          "type": "number",
+          "description": "The radius that the added sphere collider will use for physics collision.\nIf there's already good colliders on the detail, you can make this 0.",
+          "format": "float",
+          "default": 1.0
+        },
+        "physicsSuspendUntilImpact": {
+          "type": "boolean",
+          "description": "If true, this detail will stay still until it touches something.\nGood for zero-g props.",
+          "default": false
+        },
+        "ignoreSun": {
+          "type": "boolean",
+          "description": "Set to true if this object's lighting should ignore the effects of sunlight"
+        },
+        "activationCondition": {
+          "type": "string",
+          "description": "Activates this game object when the dialogue condition is met"
+        },
+        "deactivationCondition": {
+          "type": "string",
+          "description": "Deactivates this game object when the dialogue condition is met"
+        },
+        "blinkWhenActiveChanged": {
+          "type": "boolean",
+          "description": "Should the player close their eyes while the activation state changes. Only relevant if activationCondition or deactivationCondition are set.",
+          "default": true
+        },
+        "item": {
+          "description": "Should this detail be treated as an interactible item",
+          "$ref": "#/definitions/ItemInfo"
+        },
+        "itemSocket": {
+          "description": "Should this detail be treated as a socket for an interactible item",
+          "$ref": "#/definitions/ItemSocketInfo"
+        },
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "id": {
+          "type": "string",
+          "description": "The unique ID of the Eye Traveler associated with this quantum instrument."
+        },
+        "gatherCondition": {
+          "type": "string",
+          "description": "A dialogue condition to set when gathering this quantum instrument. Use it in conjunction with `activationCondition` or `deactivationCondition` on other details."
+        },
+        "gatherWithScope": {
+          "type": "boolean",
+          "description": "Allows gathering this quantum instrument using the zoomed-in signalscope, like Chert's bongos."
+        },
+        "signal": {
+          "description": "The audio signal emitted by this quantum instrument. The fields `name`, `audio`, and `frequency` will be copied from the corresponding Eye Traveler's signal if not specified here.",
+          "$ref": "#/definitions/SignalInfo"
+        },
+        "interactRadius": {
+          "type": "number",
+          "description": "The radius of the added sphere collider that will be used for interaction.",
+          "format": "float",
+          "default": 0.5
+        },
+        "interactRange": {
+          "type": "number",
+          "description": "The furthest distance where the player can interact with this quantum instrument.",
+          "format": "float",
+          "default": 2.0
+        }
+      }
+    },
     "FocalPointModule": {
       "type": "object",
       "additionalProperties": false,
@@ -1523,363 +2395,6 @@
         }
       }
     },
-    "ItemInfo": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "name": {
-          "type": "string",
-          "description": "The name of the item to be displayed in the UI. Defaults to the name of the detail object."
-        },
-        "itemType": {
-          "type": "string",
-          "description": "The type of the item, which determines its orientation when held and what sockets it fits into. This can be a custom string, or a vanilla ItemType (Scroll, WarpCore, SharedStone, ConversationStone, Lantern, SlideReel, DreamLantern, or VisionTorch). Defaults to the item name."
-        },
-        "interactRange": {
-          "type": "number",
-          "description": "The furthest distance where the player can interact with this item. Defaults to two meters, same as most vanilla items. Set this to zero to disable all interaction by default.",
-          "format": "float",
-          "default": 2.0
-        },
-        "colliderRadius": {
-          "type": "number",
-          "description": "The radius that the added sphere collider will use for collision and hover detection.\nIf there's already a collider on the detail, you can make this 0.",
-          "format": "float",
-          "default": 0.5
-        },
-        "droppable": {
-          "type": "boolean",
-          "description": "Whether the item can be dropped. Defaults to true.",
-          "default": true
-        },
-        "dropOffset": {
-          "description": "A relative offset to apply to the item's position when dropping it on the ground.",
-          "$ref": "#/definitions/MVector3"
-        },
-        "dropNormal": {
-          "description": "The direction the item will be oriented when dropping it on the ground. Defaults to up (0, 1, 0).",
-          "$ref": "#/definitions/MVector3"
-        },
-        "holdOffset": {
-          "description": "A relative offset to apply to the item's position when holding it. The initial position varies for vanilla item types.",
-          "$ref": "#/definitions/MVector3"
-        },
-        "holdRotation": {
-          "description": "A relative offset to apply to the item's rotation when holding it.",
-          "$ref": "#/definitions/MVector3"
-        },
-        "socketOffset": {
-          "description": "A relative offset to apply to the item's position when placing it into a socket.",
-          "$ref": "#/definitions/MVector3"
-        },
-        "socketRotation": {
-          "description": "A relative offset to apply to the item's rotation when placing it into a socket.",
-          "$ref": "#/definitions/MVector3"
-        },
-        "pickupAudio": {
-          "type": "string",
-          "description": "The audio to play when this item is picked up. Only applies to custom/non-vanilla item types.\nCan be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
-        },
-        "dropAudio": {
-          "type": "string",
-          "description": "The audio to play when this item is dropped. Only applies to custom/non-vanilla item types.\nCan be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
-        },
-        "socketAudio": {
-          "type": "string",
-          "description": "The audio to play when this item is inserted into a socket. Only applies to custom/non-vanilla item types.\nCan be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
-        },
-        "unsocketAudio": {
-          "type": "string",
-          "description": "The audio to play when this item is removed from a socket. Only applies to custom/non-vanilla item types.\nCan be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
-        },
-        "pickupCondition": {
-          "type": "string",
-          "description": "A dialogue condition to set when picking up this item."
-        },
-        "clearPickupConditionOnDrop": {
-          "type": "boolean",
-          "description": "Whether the pickup condition should be cleared when dropping the item. Defaults to true.",
-          "default": true
-        },
-        "pickupFact": {
-          "type": "string",
-          "description": "A ship log fact to reveal when picking up this item."
-        },
-        "pathToInitialSocket": {
-          "type": "string",
-          "description": "A relative path from the planet to a socket that this item will be automatically inserted into."
-        }
-      }
-    },
-    "ItemSocketInfo": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "rotation": {
-          "description": "Rotation of the object",
-          "$ref": "#/definitions/MVector3"
-        },
-        "alignRadial": {
-          "type": [
-            "boolean",
-            "null"
-          ],
-          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
-        },
-        "position": {
-          "description": "Position of the object",
-          "$ref": "#/definitions/MVector3"
-        },
-        "isRelativeToParent": {
-          "type": "boolean",
-          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
-        },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
-        "rename": {
-          "type": "string",
-          "description": "An optional rename of this object"
-        },
-        "socketPath": {
-          "type": "string",
-          "description": "The relative path to a child game object of this detail that will act as the socket point for the item. Will be used instead of this socket's positioning info if set."
-        },
-        "itemType": {
-          "type": "string",
-          "description": "The type of item allowed in this socket. This can be a custom string, or a vanilla ItemType (Scroll, WarpCode, SharedStone, ConversationStone, Lantern, SlideReel, DreamLantern, or VisionTorch)."
-        },
-        "interactRange": {
-          "type": "number",
-          "description": "The furthest distance where the player can interact with this item socket. Defaults to two meters, same as most vanilla item sockets. Set this to zero to disable all interaction by default.",
-          "format": "float",
-          "default": 2.0
-        },
-        "useGiveTakePrompts": {
-          "type": "boolean",
-          "description": "Whether to use \"Give Item\" / \"Take Item\" prompts instead of \"Insert Item\" / \"Remove Item\"."
-        },
-        "insertCondition": {
-          "type": "string",
-          "description": "A dialogue condition to set when inserting an item into this socket."
-        },
-        "clearInsertConditionOnRemoval": {
-          "type": "boolean",
-          "description": "Whether the insert condition should be cleared when removing the socketed item. Defaults to true.",
-          "default": true
-        },
-        "insertFact": {
-          "type": "string",
-          "description": "A ship log fact to reveal when inserting an item into this socket."
-        },
-        "removalCondition": {
-          "type": "string",
-          "description": "A dialogue condition to set when removing an item from this socket, or when the socket is empty."
-        },
-        "clearRemovalConditionOnInsert": {
-          "type": "boolean",
-          "description": "Whether the removal condition should be cleared when inserting a socketed item. Defaults to true.",
-          "default": true
-        },
-        "removalFact": {
-          "type": "string",
-          "description": "A ship log fact to reveal when removing an item from this socket, or when the socket is empty."
-        },
-        "colliderRadius": {
-          "type": "number",
-          "description": "Default collider radius when interacting with the socket",
-          "format": "float",
-          "default": 0.0
-        }
-      }
-    },
-    "DialogueInfo": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "position": {
-          "description": "Position of the object",
-          "$ref": "#/definitions/MVector3"
-        },
-        "isRelativeToParent": {
-          "type": "boolean",
-          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
-        },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
-        "rename": {
-          "type": "string",
-          "description": "An optional rename of this object"
-        },
-        "blockAfterPersistentCondition": {
-          "type": "string",
-          "description": "Prevents the dialogue from being created after a specific persistent condition is set. Useful for remote dialogue\ntriggers that you want to have happen only once."
-        },
-        "lookAtRadius": {
-          "type": "number",
-          "description": "If a pathToAnimController is supplied, if you are within this distance the character will look at you. If it is set\nto 0, they will only look at you when spoken to.",
-          "format": "float"
-        },
-        "pathToAnimController": {
-          "type": "string",
-          "description": "If this dialogue is meant for a character, this is the relative path from the planet to that character's\nCharacterAnimController, TravelerController, TravelerEyeController (eye of the universe), FacePlayerWhenTalking, \nHearthianRecorderEffects or SolanumAnimController.\n\nIf it's a Recorder this will also delete the existing dialogue already attached to that prop.\n\nIf none of those components are present it will add a FacePlayerWhenTalking component.\n\n`pathToAnimController` also makes the dialogue into a child of the anim controller. This can be used with `isRelativeToParent`\nto position the dialogue on relative to the speaker. If you also provide `parentPath`, that will instead override which object \nis the parent, but the anim controller will otherwise function as expected."
-        },
-        "pathToExistingDialogue": {
-          "type": "string",
-          "description": "If this dialogue is adding to existing character dialogue, put a path to the game object with the dialogue on it here"
-        },
-        "radius": {
-          "type": "number",
-          "description": "Radius of the spherical collision volume where you get the \"talk to\" prompt when looking at. If you use a\nremoteTrigger, you can set this to 0 to make the dialogue only trigger remotely.",
-          "format": "float"
-        },
-        "range": {
-          "type": "number",
-          "description": "Distance from radius the prompt appears",
-          "format": "float",
-          "default": 2.0
-        },
-        "attentionPoint": {
-          "description": "The point that the camera looks at when dialogue advances.",
-          "$ref": "#/definitions/AttentionPointInfo"
-        },
-        "swappedAttentionPoints": {
-          "type": "array",
-          "description": "Additional points that the camera looks at when dialogue advances through specific dialogue nodes and pages.",
-          "items": {
-            "$ref": "#/definitions/SwappedAttentionPointInfo"
-          }
-        },
-        "remoteTrigger": {
-          "description": "Allows you to trigger dialogue from a distance when you walk into an area.",
-          "$ref": "#/definitions/RemoteTriggerInfo"
-        },
-        "xmlFile": {
-          "type": "string",
-          "description": "Relative path to the xml file defining the dialogue."
-        },
-        "flashlightToggle": {
-          "description": "What type of flashlight toggle to do when dialogue is interacted with",
-          "default": "none",
-          "$ref": "#/definitions/FlashlightToggle"
-        }
-      }
-    },
-    "AttentionPointInfo": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "position": {
-          "description": "Position of the object",
-          "$ref": "#/definitions/MVector3"
-        },
-        "isRelativeToParent": {
-          "type": "boolean",
-          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
-        },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
-        "rename": {
-          "type": "string",
-          "description": "An optional rename of this object"
-        },
-        "offset": {
-          "description": "An additional offset to apply to apply when the camera looks at this attention point.",
-          "$ref": "#/definitions/MVector3"
-        }
-      }
-    },
-    "SwappedAttentionPointInfo": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "offset": {
-          "description": "An additional offset to apply to apply when the camera looks at this attention point.",
-          "$ref": "#/definitions/MVector3"
-        },
-        "position": {
-          "description": "Position of the object",
-          "$ref": "#/definitions/MVector3"
-        },
-        "isRelativeToParent": {
-          "type": "boolean",
-          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
-        },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
-        "rename": {
-          "type": "string",
-          "description": "An optional rename of this object"
-        },
-        "dialogueNode": {
-          "type": "string",
-          "description": "The name of the dialogue node to activate this attention point for. If null or blank, activates for every node."
-        },
-        "dialoguePage": {
-          "type": "integer",
-          "description": "The index of the page in the current dialogue node to activate this attention point for, if the node has multiple pages.",
-          "format": "int32"
-        },
-        "lookEasing": {
-          "type": "number",
-          "description": "The easing factor which determines how 'snappy' the camera is when looking at the attention point.",
-          "format": "float",
-          "default": 1
-        }
-      }
-    },
-    "RemoteTriggerInfo": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "position": {
-          "description": "Position of the object",
-          "$ref": "#/definitions/MVector3"
-        },
-        "isRelativeToParent": {
-          "type": "boolean",
-          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
-        },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
-        "rename": {
-          "type": "string",
-          "description": "An optional rename of this object"
-        },
-        "radius": {
-          "type": "number",
-          "description": "The radius of the remote trigger volume.",
-          "format": "float"
-        },
-        "prereqCondition": {
-          "type": "string",
-          "description": "This condition must be met for the remote trigger volume to trigger."
-        }
-      }
-    },
-    "FlashlightToggle": {
-      "type": "string",
-      "description": "",
-      "x-enumNames": [
-        "TurnOff",
-        "TurnOffThenOn",
-        "None"
-      ],
-      "enum": [
-        "turnOff",
-        "turnOffThenOn",
-        "none"
-      ]
-    },
     "EntryLocationInfo": {
       "type": "object",
       "additionalProperties": false,
@@ -2348,6 +2863,14 @@
           "description": "Exclusive to the slide reel type. Condition/material of the reel. Antique is the Stranger, Pristine is the Dreamworld, Rusted is a burned reel.",
           "default": "antique",
           "$ref": "#/definitions/SlideReelCondition"
+        },
+        "displaySlides": {
+          "type": "array",
+          "description": "Set which slides appear on the slide reel model. Leave empty to default to the first few slides.\nTakes a list of indices, i.e., to show the first 5 slides in reverse you would put [4, 3, 2, 1, 0].\nIndex starts at 0.",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
         }
       }
     },
@@ -2799,90 +3322,6 @@
         "blackHole",
         "whiteHole"
       ]
-    },
-    "SignalInfo": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "audio": {
-          "type": "string",
-          "description": "The audio to use. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
-        },
-        "minDistance": {
-          "type": "number",
-          "description": "At this distance the sound is at its loudest.",
-          "format": "float"
-        },
-        "maxDistance": {
-          "type": "number",
-          "description": "The sound will drop off by this distance (Note: for signals, this only effects when it is heard aloud and not via the signalscope).",
-          "format": "float",
-          "default": 5.0
-        },
-        "volume": {
-          "type": "number",
-          "description": "How loud the sound will play",
-          "format": "float",
-          "default": 0.5
-        },
-        "position": {
-          "description": "Position of the object",
-          "$ref": "#/definitions/MVector3"
-        },
-        "isRelativeToParent": {
-          "type": "boolean",
-          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
-        },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
-        "rename": {
-          "type": "string",
-          "description": "An optional rename of this object"
-        },
-        "detectionRadius": {
-          "type": "number",
-          "description": "How close the player must get to the signal to detect it. This is when you get the \"Unknown Signal Detected\"\nnotification.",
-          "format": "float",
-          "minimum": 0.0
-        },
-        "frequency": {
-          "type": "string",
-          "description": "The frequency ID of the signal. The built-in game values are `Default`, `Traveler`, `Quantum`, `EscapePod`,\n`Statue`, `WarpCore`, `HideAndSeek`, and `Radio`. You can also put a custom value."
-        },
-        "identificationRadius": {
-          "type": "number",
-          "description": "How close the player must get to the signal to identify it. This is when you learn its name.",
-          "format": "float",
-          "default": 10.0,
-          "minimum": 0.0
-        },
-        "insideCloak": {
-          "type": "boolean",
-          "description": "Only set to `true` if you are putting this signal inside a cloaking field."
-        },
-        "name": {
-          "type": "string",
-          "description": "The unique ID of the signal."
-        },
-        "onlyAudibleToScope": {
-          "type": "boolean",
-          "description": "`false` if the player can hear the signal without equipping the signal-scope.",
-          "default": true
-        },
-        "reveals": {
-          "type": "string",
-          "description": "A ship log fact to reveal when the signal is identified.",
-          "default": ""
-        },
-        "sourceRadius": {
-          "type": "number",
-          "description": "Radius of the sphere giving off the signal.",
-          "format": "float",
-          "default": 1.0
-        }
-      }
     },
     "RemoteInfo": {
       "type": "object",
@@ -5952,18 +6391,44 @@
           "type": "string",
           "description": "An optional rename of this object"
         },
-        "creditsType": {
-          "default": "fast",
-          "$ref": "#/definitions/NHCreditsType"
+        "deathType": {
+          "description": "The type of death the player will have if they enter this volume. Don't set to have the camera just fade out.",
+          "default": "default",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/NHDeathType"
+            }
+          ]
         },
-        "gameOverText": {
+        "gameOver": {
+          "description": "The game over message to display. Leave empty to go straight to credits.",
+          "$ref": "#/definitions/GameOverModule"
+        }
+      }
+    },
+    "GameOverModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "text": {
           "type": "string",
           "description": "Text displayed in orange on game over. For localization, put translations under UI."
         },
-        "deathType": {
-          "description": "The type of death the player will have if they enter this volume.",
-          "default": "default",
-          "$ref": "#/definitions/NHDeathType"
+        "colour": {
+          "description": "Change the colour of the game over text. Leave empty to use the default orange.",
+          "$ref": "#/definitions/MColor"
+        },
+        "condition": {
+          "type": "string",
+          "description": "Condition that must be true for this game over to trigger. If this is on a LoadCreditsVolume, leave empty to always trigger this game over.\nNote this is a regular dialogue condition, not a persistent condition."
+        },
+        "creditsType": {
+          "description": "The type of credits that will run after the game over message is shown",
+          "default": "fast",
+          "$ref": "#/definitions/NHCreditsType"
         }
       }
     },
@@ -5973,12 +6438,14 @@
       "x-enumNames": [
         "Fast",
         "Final",
-        "Kazoo"
+        "Kazoo",
+        "None"
       ],
       "enum": [
         "fast",
         "final",
-        "kazoo"
+        "kazoo",
+        "none"
       ]
     },
     "CometTailModule": {

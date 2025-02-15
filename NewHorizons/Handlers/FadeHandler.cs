@@ -11,24 +11,62 @@ namespace NewHorizons.Handlers
     /// </summary>
     public static class FadeHandler
     {
-        public static void FadeOut(float length) => Delay.StartCoroutine(FadeOutCoroutine(length));
+        public static void FadeOut(float length) => Delay.StartCoroutine(FadeOutCoroutine(length, true));
 
-        private static IEnumerator FadeOutCoroutine(float length)
+        public static void FadeOut(float length, bool fadeSound) => Delay.StartCoroutine(FadeOutCoroutine(length, fadeSound));
+
+        public static void FadeIn(float length) => Delay.StartCoroutine(FadeInCoroutine(length));
+
+        private static IEnumerator FadeOutCoroutine(float length, bool fadeSound)
         {
-            LoadManager.s_instance._fadeCanvas.enabled = true;
+            // Make sure its not already faded
+            if (!LoadManager.s_instance._fadeCanvas.enabled)
+            {
+                LoadManager.s_instance._fadeCanvas.enabled = true;
+                float startTime = Time.unscaledTime;
+                float endTime = Time.unscaledTime + length;
+
+                while (Time.unscaledTime < endTime)
+                {
+                    var t = Mathf.Clamp01((Time.unscaledTime - startTime) / length);
+                    LoadManager.s_instance._fadeImage.color = Color.Lerp(Color.clear, Color.black, t);
+                    if (fadeSound)
+                    {
+                        AudioListener.volume = 1f - t;
+                    }
+                    yield return new WaitForEndOfFrame();
+                }
+
+                LoadManager.s_instance._fadeImage.color = Color.black;
+                if (fadeSound)
+                {
+                    AudioListener.volume = 0;
+                }
+                yield return new WaitForEndOfFrame();
+            }
+            else
+            {
+                yield return new WaitForSeconds(length);
+            }
+        }
+
+        private static IEnumerator FadeInCoroutine(float length)
+        {
             float startTime = Time.unscaledTime;
             float endTime = Time.unscaledTime + length;
 
             while (Time.unscaledTime < endTime)
             {
                 var t = Mathf.Clamp01((Time.unscaledTime - startTime) / length);
-                LoadManager.s_instance._fadeImage.color = Color.Lerp(Color.clear, Color.black, t);
-                AudioListener.volume = 1f - t;
+                LoadManager.s_instance._fadeImage.color = Color.Lerp(Color.black, Color.clear, t);
+                AudioListener.volume = t;
                 yield return new WaitForEndOfFrame();
             }
 
-            LoadManager.s_instance._fadeImage.color = Color.black;
-            AudioListener.volume = 0;
+            AudioListener.volume = 1;
+            LoadManager.s_instance._fadeCanvas.enabled = false;
+            LoadManager.s_instance._fadeImage.color = Color.clear;
+
             yield return new WaitForEndOfFrame();
         }
 
@@ -36,7 +74,7 @@ namespace NewHorizons.Handlers
 
         private static IEnumerator FadeThenCoroutine(float length, Action action)
         {
-            yield return FadeOutCoroutine(length);
+            yield return FadeOutCoroutine(length, true);
 
             action?.Invoke();
         }

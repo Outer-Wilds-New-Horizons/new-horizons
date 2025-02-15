@@ -6,6 +6,7 @@ using NewHorizons.Builder.Props;
 using NewHorizons.Builder.Props.Audio;
 using NewHorizons.Builder.Props.EchoesOfTheEye;
 using NewHorizons.Builder.Props.TranslatorText;
+using NewHorizons.Components;
 using NewHorizons.Components.EOTE;
 using NewHorizons.Components.Fixers;
 using NewHorizons.Components.Ship;
@@ -436,6 +437,7 @@ namespace NewHorizons
             if (isEyeOfTheUniverse)
             {
                 _playerAwake = true;
+                EyeSceneHandler.Init();
                 EyeSceneHandler.OnSceneLoad();
             }
 
@@ -481,6 +483,8 @@ namespace NewHorizons
 
                 // Fix spawn point
                 PlayerSpawnHandler.SetUpPlayerSpawn();
+
+                new GameObject(nameof(NHGameOverManager)).AddComponent<NHGameOverManager>();
 
                 if (isSolarSystem)
                 {
@@ -535,6 +539,8 @@ namespace NewHorizons
                     IsWarpingFromVessel = false;
                     DidWarpFromVessel = false;
                     DidWarpFromShip = false;
+
+                    EyeSceneHandler.SetUpEyeCampfireSequence();
                 }
 
                 //Stop starfield from disappearing when there is no lights
@@ -598,8 +604,8 @@ namespace NewHorizons
             {
                 IsSystemReady = true;
 
-                // ShipWarpController will handle the invulnerability otherwise
-                if (!shouldWarpInFromShip)
+                // ShipWarpController or VesselWarpHandler will handle the invulnerability otherwise
+                if (!shouldWarpInFromShip && !shouldWarpInFromVessel)
                 {
                     Delay.FireOnNextUpdate(() => InvulnerabilityHandler.MakeInvulnerable(false));
                 }
@@ -831,6 +837,10 @@ namespace NewHorizons
                 {
                     AssetBundleUtilities.PreloadBundle(bundle, mod);
                 }
+            }
+            if (addonConfig.gameOver != null)
+            {
+                NHGameOverManager.gameOvers[mod.ModHelper.Manifest.UniqueName] = addonConfig.gameOver;
             }
 
             AddonConfigs[mod] = addonConfig;

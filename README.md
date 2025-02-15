@@ -87,6 +87,7 @@ Translation credits:
 -   Spanish: Ciborgm9, Ink, GayCoffee
 -   French: xen
 -   Japanese: TRSasasusu
+-   Portuguese: avengerx, loco-choco
 
 New Horizons was based off [Marshmallow](https://github.com/misternebula/Marshmallow) was made by:
 
