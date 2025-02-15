@@ -6391,18 +6391,44 @@
           "type": "string",
           "description": "An optional rename of this object"
         },
-        "creditsType": {
-          "default": "fast",
-          "$ref": "#/definitions/NHCreditsType"
+        "deathType": {
+          "description": "The type of death the player will have if they enter this volume. Don't set to have the camera just fade out.",
+          "default": "default",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/NHDeathType"
+            }
+          ]
         },
-        "gameOverText": {
+        "gameOver": {
+          "description": "The game over message to display. Leave empty to go straight to credits.",
+          "$ref": "#/definitions/GameOverModule"
+        }
+      }
+    },
+    "GameOverModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "text": {
           "type": "string",
           "description": "Text displayed in orange on game over. For localization, put translations under UI."
         },
-        "deathType": {
-          "description": "The type of death the player will have if they enter this volume.",
-          "default": "default",
-          "$ref": "#/definitions/NHDeathType"
+        "colour": {
+          "description": "Change the colour of the game over text. Leave empty to use the default orange.",
+          "$ref": "#/definitions/MColor"
+        },
+        "condition": {
+          "type": "string",
+          "description": "Condition that must be true for this game over to trigger. If this is on a LoadCreditsVolume, leave empty to always trigger this game over.\nNote this is a regular dialogue condition, not a persistent condition."
+        },
+        "creditsType": {
+          "description": "The type of credits that will run after the game over message is shown",
+          "default": "fast",
+          "$ref": "#/definitions/NHCreditsType"
         }
       }
     },
@@ -6412,12 +6438,14 @@
       "x-enumNames": [
         "Fast",
         "Final",
-        "Kazoo"
+        "Kazoo",
+        "None"
       ],
       "enum": [
         "fast",
         "final",
-        "kazoo"
+        "kazoo",
+        "none"
       ]
     },
     "CometTailModule": {

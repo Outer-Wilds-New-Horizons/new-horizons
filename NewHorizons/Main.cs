@@ -6,6 +6,7 @@ using NewHorizons.Builder.Props;
 using NewHorizons.Builder.Props.Audio;
 using NewHorizons.Builder.Props.EchoesOfTheEye;
 using NewHorizons.Builder.Props.TranslatorText;
+using NewHorizons.Components;
 using NewHorizons.Components.EOTE;
 using NewHorizons.Components.Fixers;
 using NewHorizons.Components.Ship;
@@ -483,6 +484,8 @@ namespace NewHorizons
                 // Fix spawn point
                 PlayerSpawnHandler.SetUpPlayerSpawn();
 
+                new GameObject(nameof(NHGameOverManager)).AddComponent<NHGameOverManager>();
+
                 if (isSolarSystem)
                 {
                     // Warp drive
@@ -834,6 +837,10 @@ namespace NewHorizons
                 {
                     AssetBundleUtilities.PreloadBundle(bundle, mod);
                 }
+            }
+            if (addonConfig.gameOver != null)
+            {
+                NHGameOverManager.gameOvers[mod.ModHelper.Manifest.UniqueName] = addonConfig.gameOver;
             }
 
             AddonConfigs[mod] = addonConfig;

@@ -1,3 +1,4 @@
+using NewHorizons.External.Modules;
 using NewHorizons.OtherMods.AchievementsPlus;
 using Newtonsoft.Json;
 
@@ -44,5 +45,11 @@ namespace NewHorizons.External.Configs
         /// The dimensions of the Echoes of the Eye subtitle is 669 x 67, so aim for that size
         /// </summary>
         public string subtitlePath = "subtitle.png";
+
+        /// <summary>
+        /// Custom game over messages for this mod. This can either display a title card before looping like in EOTE, or show a message and roll credits like the various time loop escape endings.
+        /// You must set a dialogue condition for the game over sequence to run.
+        /// </summary>
+        public GameOverModule[] gameOver;
     }
 }
