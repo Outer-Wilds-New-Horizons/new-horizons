@@ -36,10 +36,9 @@
       "type": "string",
       "description": "The ambience audio that will play on the title screen. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
     },
-    "rotationSpeed": {
-      "type": "number",
-      "description": "Changes the speed the skybox rotates (and by extension the main menu planet). This is in degrees per second.",
-      "format": "float"
+    "Background": {
+      "description": "Edit properties of the background",
+      "$ref": "#/definitions/BackgroundModule"
     },
     "MenuPlanet": {
       "description": "Edit properties of the main menu planet",
@@ -131,13 +130,14 @@
         }
       }
     },
-    "MenuPlanetModule": {
+    "BackgroundModule": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "destroyMenuPlanet": {
-          "type": "boolean",
-          "description": "Disables the renderers of the main menu planet and all objects on it (this is to improve compatibility with other mods that don't use the NH title screen json)."
+        "rotationSpeed": {
+          "type": "number",
+          "description": "Changes the speed the background rotates (and by extension the main menu planet). This is in degrees per second.",
+          "format": "float"
         },
         "removeChildren": {
           "type": "array",
@@ -148,15 +148,10 @@
         },
         "details": {
           "type": "array",
-          "description": "A list of DetailInfos to populate the main menu planet with.",
+          "description": "A list of DetailInfos to populate the background with.",
           "items": {
             "$ref": "#/definitions/SimplifiedDetailInfo"
           }
-        },
-        "rotationSpeed": {
-          "type": "number",
-          "description": "Changes the speed the main menu planet. This is in degrees per second.",
-          "format": "float"
         }
       }
     },
@@ -236,6 +231,35 @@
         },
         "z": {
           "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "MenuPlanetModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "destroyMenuPlanet": {
+          "type": "boolean",
+          "description": "Disables the renderers of the main menu planet and all objects on it (this is to improve compatibility with other mods that don't use the NH title screen json)."
+        },
+        "removeChildren": {
+          "type": "array",
+          "description": "Disables the renderers of objects at the provided paths",
+          "items": {
+            "type": "string"
+          }
+        },
+        "details": {
+          "type": "array",
+          "description": "A list of DetailInfos to populate the main menu planet with.",
+          "items": {
+            "$ref": "#/definitions/SimplifiedDetailInfo"
+          }
+        },
+        "rotationSpeed": {
+          "type": "number",
+          "description": "Changes the speed the main menu planet. This is in degrees per second.",
           "format": "float"
         }
       }
