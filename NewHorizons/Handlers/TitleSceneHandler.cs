@@ -515,13 +515,13 @@ namespace NewHorizons.Handlers
                 _triggerRoot = gameObject;
                 _subsectors = new List<Sector>();
                 _occupantMask = DynamicOccupant.Player;
-                SectorManager.RegisterSector(this);
                 var parentSector = GetComponentInParent<Sector>();
                 if (parentSector != null && parentSector != this)
                 {
                     _parentSector = parentSector;
-                    _parentSector._subsectors.SafeAdd(this);
+                    _parentSector.AddSubsector(this);
                 }
+                SectorManager.RegisterSector(this);
             }
 
             public void Start()
