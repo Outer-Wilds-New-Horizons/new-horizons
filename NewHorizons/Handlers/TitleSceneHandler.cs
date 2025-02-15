@@ -27,7 +27,11 @@ namespace NewHorizons.Handlers
         public static void Init()
         {
             var scene = SearchUtilities.Find("Scene");
+            var background = SearchUtilities.Find("Scene/Background");
+            var planetPivot = SearchUtilities.Find("Scene/Background/PlanetPivot");
             scene.AddComponent<FakeSector>();
+            background.AddComponent<FakeSector>();
+            planetPivot.AddComponent<FakeSector>();
 
             var planetRoot = SearchUtilities.Find("Scene/Background/PlanetPivot/PlanetRoot");
             var campfire = SearchUtilities.Find("Scene/Background/PlanetPivot/Prefab_HEA_Campfire");
@@ -132,7 +136,6 @@ namespace NewHorizons.Handlers
 
             var background = SearchUtilities.Find("Scene/Background");
             var menuPlanet = SearchUtilities.Find("Scene/Background/PlanetPivot");
-            var sector = background.GetComponentInParent<Sector>();
 
             if (config.Background != null)
             {
@@ -145,7 +148,7 @@ namespace NewHorizons.Handlers
                 {
                     foreach (var simplifiedDetail in config.Background.details)
                     {
-                        DetailBuilder.Make(background, sector, mod, new DetailInfo(simplifiedDetail));
+                        DetailBuilder.Make(background, background.GetComponentInParent<Sector>(), mod, new DetailInfo(simplifiedDetail));
                     }
                 }
 
@@ -164,7 +167,7 @@ namespace NewHorizons.Handlers
                 {
                     foreach (var simplifiedDetail in config.MenuPlanet.details)
                     {
-                        DetailBuilder.Make(menuPlanet, sector, mod, new DetailInfo(simplifiedDetail));
+                        DetailBuilder.Make(menuPlanet, menuPlanet.GetComponentInParent<Sector>(), mod, new DetailInfo(simplifiedDetail));
                     }
                 }
 
@@ -509,8 +512,16 @@ namespace NewHorizons.Handlers
         {
             public override void Awake()
             {
+                _subsectors = new List<Sector>();
                 _occupantMask = DynamicOccupant.Player;
                 SectorManager.RegisterSector(this);
+                _parentSector = GetComponentInParent<Sector>();
+                if (_parentSector != null && _parentSector != this) _parentSector.AddSubsector(this);
+            }
+
+            public void Start()
+            {
+                OnSectorOccupantsUpdated.Invoke();
             }
         }
     }

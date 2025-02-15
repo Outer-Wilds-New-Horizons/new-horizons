@@ -61,6 +61,7 @@ namespace NewHorizons.External.Modules.Props
 
         public DetailInfo(SimplifiedDetailInfo info)
         {
+            keepLoaded = true;
             JsonConvert.PopulateObject(JsonConvert.SerializeObject(info), this);
         }
 
