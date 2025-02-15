@@ -515,8 +515,8 @@ namespace NewHorizons.Handlers
                 _triggerRoot = gameObject;
                 _subsectors = new List<Sector>();
                 _occupantMask = DynamicOccupant.Player;
-                var parentSector = GetComponentInParent<Sector>();
-                if (parentSector != null && parentSector != this)
+                var parentSector = GetComponentsInParent<Sector>().FirstOrDefault(parentSector => parentSector != this);
+                if (parentSector != null)
                 {
                     _parentSector = parentSector;
                     _parentSector.AddSubsector(this);
