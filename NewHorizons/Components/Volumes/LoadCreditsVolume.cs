@@ -15,6 +15,8 @@ namespace NewHorizons.Components.Volumes
         public string gameOverText;
         public DeathType? deathType = DeathType.Default;
 
+        public Color? colour;
+
         private GameOverController _gameOverController;
         private PlayerCameraEffectController _playerCameraEffectController;
 
@@ -52,6 +54,8 @@ namespace NewHorizons.Components.Volumes
             }
             else
             {
+                // Wake up relaxed next loop
+                PlayerData.SetLastDeathType(DeathType.Meditation);
                 FadeHandler.FadeOut(fadeLength);
             }
             
@@ -61,6 +65,11 @@ namespace NewHorizons.Components.Volumes
             {
                 _gameOverController._deathText.text = TranslationHandler.GetTranslation(gameOverText, TranslationHandler.TextType.UI);
                 _gameOverController.SetupGameOverScreen(5f);
+
+                if (colour != null)
+                {
+                    _gameOverController._deathText.color = (Color)colour;
+                }
 
                 // Make sure the fade handler is off now
                 FadeHandler.FadeIn(0f);
@@ -95,6 +104,8 @@ namespace NewHorizons.Components.Volumes
                     LoadManager.LoadScene(OWScene.Credits_Fast, LoadManager.FadeType.ToBlack);
                     break;
                 default:
+                    // GameOverController disables post processing
+                    _gameOverController._flashbackCamera.postProcessing.enabled = true;
                     GlobalMessenger.FireEvent("TriggerFlashback");
                     break;
             }

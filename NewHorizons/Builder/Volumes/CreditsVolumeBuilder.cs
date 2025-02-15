@@ -14,6 +14,7 @@ namespace NewHorizons.Builder.Volumes
             volume.creditsType = info.creditsType;
             volume.gameOverText = info.gameOverText;
             volume.deathType = info.deathType == null ? null : EnumUtils.Parse(info.deathType.ToString(), DeathType.Default);
+            volume.colour = info.gameOverTextColour?.ToColor();
 
             return volume;
         }

@@ -41,10 +41,13 @@ namespace NewHorizons.Handlers
 
             while (Time.unscaledTime < endTime)
             {
-                LoadManager.s_instance._fadeImage.color = Color.Lerp(Color.black, Color.clear, (Time.unscaledTime - startTime) / length);
+                var t = Mathf.Clamp01((Time.unscaledTime - startTime) / length);
+                LoadManager.s_instance._fadeImage.color = Color.Lerp(Color.black, Color.clear, t);
+                AudioListener.volume = t;
                 yield return new WaitForEndOfFrame();
             }
 
+            AudioListener.volume = 1;
             LoadManager.s_instance._fadeCanvas.enabled = false;
             LoadManager.s_instance._fadeImage.color = Color.clear;
 
