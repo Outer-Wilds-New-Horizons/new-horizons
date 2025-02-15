@@ -43,10 +43,9 @@ namespace NewHorizons.Builder.Body
                     material.name = planetGO.name;
 
                     material.mainTexture = ImageUtilities.TintImage(ImageUtilities.ClearTexture(1, 1), colour);
-                    material.SetFloat("_Smoothness", 0.2f);
-                    material.SetFloat("_Metallic", 0.2f);
+                    material.SetFloat("_Smoothness", 0.1f);
+                    material.SetFloat("_Metallic", 0.1f);
                     break;
-
             }
             material.color = colour;
             cubeSphereMR.material = material;
