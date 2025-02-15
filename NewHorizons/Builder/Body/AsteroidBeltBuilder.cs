@@ -87,10 +87,6 @@ namespace NewHorizons.Builder.Body
                 {
                     config.ProcGen = belt.procGen;
                     config.ProcGen.scale = size;
-                    if (belt.procGen.color == null)
-                    {
-                        config.ProcGen.color = new MColor(126, 94, 73);
-                    }
                 }
                 else
                 {
@@ -100,7 +96,7 @@ namespace NewHorizons.Builder.Body
                         color = new MColor(126, 94, 73)
                     };
                 }
-                config.AmbientLights = new[] { new AmbientLightModule() { outerRadius = size * 1.2f, intensity = 0.6f } };
+                config.AmbientLights = new[] { new AmbientLightModule() { outerRadius = size * 1.2f, intensity = 0.1f } };
 
                 var asteroid = new NewHorizonsBody(config, mod);
                 PlanetCreationHandler.GenerateBody(asteroid);
