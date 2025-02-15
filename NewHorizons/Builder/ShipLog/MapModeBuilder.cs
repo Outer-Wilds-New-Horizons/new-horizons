@@ -10,6 +10,7 @@ using NewHorizons.Utility.OWML;
 using OWML.ModHelper;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -169,6 +170,49 @@ namespace NewHorizons.Builder.ShipLog
             return newGameObject;
         }
 
+        private static Texture2D GetCachedOutlineOrCreate(NewHorizonsBody body, Texture2D original, string originalPath)
+        {
+            if (string.IsNullOrEmpty(originalPath))
+            {
+                Texture2D defaultTexture = null;
+                if (body.Config.Star != null)
+                {
+                    defaultTexture = ImageUtilities.GetTexture(Main.Instance, "Assets/DefaultMapModeStarOutline.png");
+                }
+                else if (body.Config.Atmosphere != null)
+                {
+                    defaultTexture = ImageUtilities.GetTexture(Main.Instance, "Assets/DefaultMapModNoAtmoOutline.png");
+                }
+                else
+                {
+                    defaultTexture = ImageUtilities.GetTexture(Main.Instance, "Assets/DefaultMapModePlanetOutline.png");
+                }
+
+                return defaultTexture;
+            }
+            else
+            {
+                var cachedPath = Path.Combine(body.Mod.ModHelper.Manifest.ModFolderPath, $"TextureCache_{Main.Instance.CurrentStarSystem}", originalPath);
+                var outlineTexture = ImageUtilities.GetTexture(body.Mod, cachedPath);
+
+                if (outlineTexture == null)
+                {
+                    NHLogger.LogVerbose($"Caching outline to {cachedPath}");
+
+                    var newTexture = ImageUtilities.MakeOutline(original, Color.white, 10);
+
+                    Directory.CreateDirectory(Path.GetDirectoryName(cachedPath));
+                    File.WriteAllBytes(cachedPath, newTexture.EncodeToPNG());
+
+                    return newTexture;
+                }
+                else
+                {
+                    return outlineTexture;
+                }
+            }
+        }
+
         private static ShipLogAstroObject AddShipLogAstroObject(GameObject gameObject, NewHorizonsBody body, Material greyScaleMaterial, int layer)
         {
             if (body.Object == null)
@@ -198,7 +242,7 @@ namespace NewHorizons.Builder.ShipLog
             if (image == null) image = AutoGenerateMapModePicture(body);
 
             if (outlinePath != null) outline = ImageUtilities.GetTexture(body.Mod, outlinePath);
-            if (outline == null) outline = ImageUtilities.MakeOutline(image, Color.white, 10);
+            if (outline == null) outline = GetCachedOutlineOrCreate(body, image, imagePath);
 
             astroObject._imageObj = CreateImage(gameObject, image, body.Config.name + " Revealed", layer);
             astroObject._outlineObj = CreateImage(gameObject, outline, body.Config.name + " Outline", layer);
@@ -609,9 +653,18 @@ namespace NewHorizons.Builder.ShipLog
         {
             Texture2D texture;
 
-            if (body.Config.Star != null) texture = ImageUtilities.GetTexture(Main.Instance, "Assets/DefaultMapModeStar.png");
-            else if (body.Config.Atmosphere != null) texture = ImageUtilities.GetTexture(Main.Instance, "Assets/DefaultMapModNoAtmo.png");
-            else texture = ImageUtilities.GetTexture(Main.Instance, "Assets/DefaultMapModePlanet.png");
+            if (body.Config.Star != null)
+            {
+                texture = ImageUtilities.GetTexture(Main.Instance, "Assets/DefaultMapModeStar.png");
+            }
+            else if (body.Config.Atmosphere != null)
+            {
+                texture = ImageUtilities.GetTexture(Main.Instance, "Assets/DefaultMapModNoAtmo.png");
+            }
+            else
+            {
+                texture = ImageUtilities.GetTexture(Main.Instance, "Assets/DefaultMapModePlanet.png");
+            }
 
             var color = GetDominantPlanetColor(body);
             var darkColor = new Color(color.r / 3f, color.g / 3f, color.b / 3f);
