@@ -185,70 +185,70 @@ namespace NewHorizons.Handlers
         {
             try
             {
-            // Try loading one planet why not
-            var eligible = eligibleBodies;
-            var eligibleCount = eligible.Count();
-            if (eligibleCount == 0) return;
+                // Try loading one planet why not
+                var eligible = eligibleBodies;
+                var eligibleCount = eligible.Count();
+                if (eligibleCount == 0) return;
 
-            var selectionCount = Mathf.Min(eligibleCount, 3);
-            var indices = RandomUtility.GetUniqueRandomArray(0, eligible.Count(), selectionCount);
+                var selectionCount = Mathf.Min(eligibleCount, 3);
+                var indices = RandomUtility.GetUniqueRandomArray(0, eligible.Count(), selectionCount);
 
-            NHLogger.LogVerbose($"Displaying {selectionCount} bodies on the title screen");
+                NHLogger.LogVerbose($"Displaying {selectionCount} bodies on the title screen");
 
-            var planetSizes = new List<(GameObject planet, float size)>();
+                var planetSizes = new List<(GameObject planet, float size)>();
 
-            var bodyInfo = LoadTitleScreenBody(eligible[indices[0]]);
-            bodyInfo.planet.transform.localRotation = Quaternion.Euler(15, 0, 0);
-            planetSizes.Add(bodyInfo);
+                var bodyInfo = LoadTitleScreenBody(eligible[indices[0]]);
+                bodyInfo.planet.transform.localRotation = Quaternion.Euler(15, 0, 0);
+                planetSizes.Add(bodyInfo);
 
-            if (selectionCount > 1)
-            {
-                bodyInfo.planet.transform.localPosition = new Vector3(0, -15, 0);
-                bodyInfo.planet.transform.localRotation = Quaternion.Euler(10f, 0f, 0f);
-
-                var bodyInfo2 = LoadTitleScreenBody(eligible[indices[1]]);
-                bodyInfo2.planet.transform.localPosition = new Vector3(7, 30, 0);
-                bodyInfo2.planet.transform.localRotation = Quaternion.Euler(10f, 0f, 0f);
-                planetSizes.Add(bodyInfo2);
-            }
-
-            if (selectionCount > 2)
-            {
-                var bodyInfo3 = LoadTitleScreenBody(eligible[indices[2]]);
-                bodyInfo3.planet.transform.localPosition = new Vector3(-5, 10, 0);
-                bodyInfo3.planet.transform.localRotation = Quaternion.Euler(10f, 0f, 0f);
-                planetSizes.Add(bodyInfo3);
-            }
-
-            SearchUtilities.Find("Scene/Background/PlanetPivot/PlanetRoot").SetActive(false);
-
-            var lightGO = new GameObject("Light");
-            lightGO.transform.parent = SearchUtilities.Find("Scene/Background").transform;
-            lightGO.transform.localPosition = new Vector3(-47.9203f, 145.7596f, 43.1802f);
-            lightGO.transform.localRotation = Quaternion.Euler(13.1412f, 122.8785f, 169.4302f);
-            var light = lightGO.AddComponent<Light>();
-            light.type = LightType.Directional;
-            light.color = Color.white;
-            light.range = float.PositiveInfinity;
-            light.intensity = 0.8f;
-
-            // Resize planets relative to each other
-            // If there are multiple planets shrink them down to 30% of the size
-            var maxSize = planetSizes.Select(x => x.size).Max();
-            var minSize = planetSizes.Select(x => x.size).Min();
-            var multiplePlanets = planetSizes.Count > 1;
-            foreach (var (planet, size) in planetSizes) 
-            {
-                var adjustedSize = size / maxSize;
-                // If some planets would be too small we'll do a funny thing
-                if (minSize / maxSize < 0.3f)
+                if (selectionCount > 1)
                 {
-                    var t = Mathf.InverseLerp(minSize, maxSize, size);
-                    adjustedSize = Mathf.Lerp(0.3f, 1f, t * t);
+                    bodyInfo.planet.transform.localPosition = new Vector3(0, -15, 0);
+                    bodyInfo.planet.transform.localRotation = Quaternion.Euler(10f, 0f, 0f);
+
+                    var bodyInfo2 = LoadTitleScreenBody(eligible[indices[1]]);
+                    bodyInfo2.planet.transform.localPosition = new Vector3(7, 30, 0);
+                    bodyInfo2.planet.transform.localRotation = Quaternion.Euler(10f, 0f, 0f);
+                    planetSizes.Add(bodyInfo2);
                 }
 
-                planet.transform.localScale *= adjustedSize * (multiplePlanets ? 0.3f : 1f);
-            }
+                if (selectionCount > 2)
+                {
+                    var bodyInfo3 = LoadTitleScreenBody(eligible[indices[2]]);
+                    bodyInfo3.planet.transform.localPosition = new Vector3(-5, 10, 0);
+                    bodyInfo3.planet.transform.localRotation = Quaternion.Euler(10f, 0f, 0f);
+                    planetSizes.Add(bodyInfo3);
+                }
+
+                SearchUtilities.Find("Scene/Background/PlanetPivot/PlanetRoot").SetActive(false);
+
+                var lightGO = new GameObject("Light");
+                lightGO.transform.parent = SearchUtilities.Find("Scene/Background").transform;
+                lightGO.transform.localPosition = new Vector3(-47.9203f, 145.7596f, 43.1802f);
+                lightGO.transform.localRotation = Quaternion.Euler(13.1412f, 122.8785f, 169.4302f);
+                var light = lightGO.AddComponent<Light>();
+                light.type = LightType.Directional;
+                light.color = Color.white;
+                light.range = float.PositiveInfinity;
+                light.intensity = 0.8f;
+
+                // Resize planets relative to each other
+                // If there are multiple planets shrink them down to 30% of the size
+                var maxSize = planetSizes.Select(x => x.size).Max();
+                var minSize = planetSizes.Select(x => x.size).Min();
+                var multiplePlanets = planetSizes.Count > 1;
+                foreach (var (planet, size) in planetSizes) 
+                {
+                    var adjustedSize = size / maxSize;
+                    // If some planets would be too small we'll do a funny thing
+                    if (minSize / maxSize < 0.3f)
+                    {
+                        var t = Mathf.InverseLerp(minSize, maxSize, size);
+                        adjustedSize = Mathf.Lerp(0.3f, 1f, t * t);
+                    }
+
+                    planet.transform.localScale *= adjustedSize * (multiplePlanets ? 0.3f : 1f);
+                }
             }
             catch (Exception e)
             {
