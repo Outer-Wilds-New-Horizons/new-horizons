@@ -20,6 +20,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using NewHorizons.Streaming;
+using Newtonsoft.Json;
+using NewHorizons.External.Modules.VariableSize;
+using NewHorizons.Components;
 
 namespace NewHorizons.Handlers
 {
@@ -766,6 +770,8 @@ namespace NewHorizons.Handlers
                 NHLogger.LogVerbose($"Making spawn point on {body.Config.name}");
                 SpawnPointBuilder.Make(go, body.Config.Spawn, rb);
             }
+
+            SplashColourizer.Make(go, body.Config, sphereOfInfluence);
 
             // We allow removing children afterwards so you can also take bits off of the modules you used
             if (body.Config.removeChildren != null) RemoveChildren(go, body);

@@ -4751,7 +4751,7 @@
         },
         "outlineSprite": {
           "type": "string",
-          "description": "The path to the sprite (.png/.jpg/.exr) to show when the planet is unexplored in map mode."
+          "description": "The path to the sprite (.png/.jpg/.exr) to show when the planet is unexplored in map mode. If empty, a texture will be created and cached based on the revealed sprite."
         },
         "remove": {
           "type": "boolean",
