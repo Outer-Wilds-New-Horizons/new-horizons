@@ -82,9 +82,7 @@ public class SplashColourizer : MonoBehaviour
         // Cache all prefabs
         CachePrefabs(_playerDetector = Locator.GetPlayerDetector().GetComponent<DynamicFluidDetector>());
         CachePrefabs(_shipDetector = Locator.GetShipDetector().GetComponent<ShipFluidDetector>());
-        // Probe is null??????
-        // I'm losing my mind
-        // Can't cache it here
+        CachePrefabs(_probeDetector = Locator.GetProbe().GetDetectorObject().GetComponent<ProbeFluidDetector>());
 
         GlobalMessenger<SurveyorProbe>.AddListener("RetrieveProbe", OnRetrieveProbe);
 
@@ -262,22 +260,6 @@ public class SplashColourizer : MonoBehaviour
     {
         _probeInsideVolume = entering;
 
-        if (_probeDetector != null)
-        {
-            SetSplashEffects(_probeDetector, entering);
-        }
-    }
-
-    public void Update()
-    {
-        // Probe detector keeps being null, I hate my life
-        if (_probeDetector == null)
-        {
-            _probeDetector ??= Locator.GetProbe()?.GetDetectorObject()?.GetComponent<ProbeFluidDetector>();
-            if (_probeDetector != null)
-            {
-                CachePrefabs(_probeDetector);
-            }
-        }
+        SetSplashEffects(_probeDetector, entering);
     }
 }
