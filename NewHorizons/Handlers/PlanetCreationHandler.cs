@@ -1,3 +1,4 @@
+using HarmonyLib;
 using NewHorizons.Builder.Atmosphere;
 using NewHorizons.Builder.Body;
 using NewHorizons.Builder.General;
@@ -1008,7 +1009,9 @@ namespace NewHorizons.Handlers
                 var path = $"{goPath}/{childPath}";
 
                 var flag = true;
-                foreach (var childObj in transforms.Where(x => x.GetPath() == path))
+                var childObjs = transforms.Where(x => x.GetPath() == path).ToList();
+                var childObjs2 = go.transform.FindAll(childPath);
+                foreach (var childObj in childObjs)
                 {
                     flag = false;
                     // idk why we wait here but we do
@@ -1020,6 +1023,8 @@ namespace NewHorizons.Handlers
                         }
                     }, 2);
                 }
+
+                Main.Instance.ModHelper.Console.WriteLine($"remove children planet\n{go.transform.GetPath()}\n{childPath}\n\n{childObjs.Join()}\n{childObjs2.Join()}");
 
                 if (flag) NHLogger.LogWarning($"Couldn't find \"{childPath}\".");
             }
