@@ -48,17 +48,11 @@ namespace NewHorizons.Handlers
                 .Concat(TitleScreenBuilders.Select(kvp => (ITitleScreenBuilder)kvp.Value))
                 .Where(builder => builder.KnowsFact() && builder.HasCondition()).ToList();
 
-            foreach (var builder in validBuilders)
-            {
-                NHLogger.LogVerbose("Valid builder: " + builder.Mod.ModHelper.Manifest.UniqueName);
-            }
-
             var index = UnityEngine.Random.Range(0, validBuilders.Count());
             var randomBuilder = validBuilders.ElementAtOrDefault(index);
             if (randomBuilder != null)
             {
                 validBuilders.RemoveAt(index);
-                NHLogger.LogVerbose("Building main: " + randomBuilder.Mod.ModHelper.Manifest.UniqueName + " | " + (randomBuilder.CanShare ? "Share" : "Unshare") + " " + (randomBuilder.DisableNHPlanets ? "Disable" : "Enable"));
 
                 if (!randomBuilder.DisableNHPlanets)
                 {
@@ -71,7 +65,6 @@ namespace NewHorizons.Handlers
                 {
                     foreach (var builder in validBuilders.Where(builder => builder.CanShare && builder.DisableNHPlanets == randomBuilder.DisableNHPlanets))
                     {
-                        NHLogger.LogVerbose("Building extra: " + randomBuilder.Mod.ModHelper.Manifest.UniqueName);
                         builder.Build();
                     }
                 }
