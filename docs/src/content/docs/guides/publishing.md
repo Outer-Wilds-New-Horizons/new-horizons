@@ -14,6 +14,7 @@ Before you release anything, you'll want to make sure:
 - Your repo has the description field (click the cog in the right column on the "Code" tab) set. (this will be shown in the manager)
 - There's no `config.json` in your addon. (Not super important, but good practice)
 - Your manifest has a valid name, author, and unique name.
+- You have included any caches New Horizons has made (i.e., slide reel caches). Since these are made in the install location of the mod you will have to manually copy them into the mod repo and ensure they stay up to date. While these files are not required, they ensure that your players will have faster loading times and reduced memory usage on their first loop (after which the caches will generate for them locally).
 
 ## Releasing
 
