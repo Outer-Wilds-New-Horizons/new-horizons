@@ -251,3 +251,7 @@ Note: If you're loading dialogue in code, 2 frames must pass before entering the
 ### How do I easily position my dialogue relative to a speaking character
 
 Use `pathToAnimController` to specify the path to the speaking character (if they are a Nomai or Hearthian make sure this goes directly to whatever script controls their animations), then set `isRelativeToParent` to true (this is setting available on all NH props for easier positioning). Now when you set their `position`, it will be relative to the speaker. Since this position is normally where the character is standing, set the `y` position to match how tall the character is. Instead of `pathToAnimController` you can also use `parentPath`.
+
+### How do I have the dialogue prompt say "Read" or "Play recording"
+
+`<NameField>` sets the name of the character, which will then show in the prompt to start dialogue. You can alternatively use `<NameField>SIGN</NameField>` to have the prompt say "Read", and `<NameField>RECORDING</NameField>` to have it say "Play recording".
