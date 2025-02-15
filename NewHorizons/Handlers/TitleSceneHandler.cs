@@ -20,6 +20,8 @@ namespace NewHorizons.Handlers
     public static class TitleSceneHandler
     {
         internal static Dictionary<IModBehaviour, TitleScreenBuilder> TitleScreenBuilders = new();
+        internal static NewHorizonsBody[] eligibleBodies => Main.BodyDict.Values.ToList().SelectMany(x => x).ToList()
+            .Where(b => (b.Config.HeightMap != null || b.Config.Atmosphere?.clouds != null) && b.Config.Star == null && b.Config.canShowOnTitle).ToArray();
 
         public static void Init()
         {
@@ -183,19 +185,8 @@ namespace NewHorizons.Handlers
         {
             try
             {
-                TitleSceneHandler.DisplayBodyOnTitleScreen(Main.BodyDict.Values.ToList().SelectMany(x => x).ToList());
-            }
-            catch (Exception e)
-            {
-                NHLogger.LogError($"Failed to make title screen bodies: {e}");
-            }
-        }
-
-        public static void DisplayBodyOnTitleScreen(List<NewHorizonsBody> bodies)
-        {
             // Try loading one planet why not
-            // var eligible = BodyDict.Values.ToList().SelectMany(x => x).ToList().Where(b => (b.Config.HeightMap != null || b.Config.Atmosphere?.Cloud != null) && b.Config.Star == null).ToArray();
-            var eligible = bodies.Where(b => (b.Config.HeightMap != null || b.Config.Atmosphere?.clouds != null) && b.Config.Star == null && b.Config.canShowOnTitle).ToArray();
+            var eligible = eligibleBodies;
             var eligibleCount = eligible.Count();
             if (eligibleCount == 0) return;
 
@@ -257,6 +248,11 @@ namespace NewHorizons.Handlers
                 }
 
                 planet.transform.localScale *= adjustedSize * (multiplePlanets ? 0.3f : 1f);
+            }
+            }
+            catch (Exception e)
+            {
+                NHLogger.LogError($"Failed to make title screen bodies: {e}");
             }
         }
 
