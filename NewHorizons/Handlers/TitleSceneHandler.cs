@@ -22,6 +22,7 @@ namespace NewHorizons.Handlers
         internal static Dictionary<IModBehaviour, TitleScreenBuilder> TitleScreenBuilders = new();
         internal static NewHorizonsBody[] eligibleBodies => Main.BodyDict.Values.ToList().SelectMany(x => x).ToList()
             .Where(b => (b.Config.HeightMap != null || b.Config.Atmosphere?.clouds != null) && b.Config.Star == null && b.Config.canShowOnTitle).ToArray();
+        internal static int eligibleCount => eligibleBodies.Count();
 
         public static void Init()
         {
@@ -49,6 +50,8 @@ namespace NewHorizons.Handlers
                 .Concat(TitleScreenBuilders.Select(kvp => (ITitleScreenBuilder)kvp.Value))
                 .Where(builder => builder.KnowsFact() && builder.HasCondition()).ToList();
 
+            var hasNHPlanets = eligibleCount != 0;
+
             var index = UnityEngine.Random.Range(0, validBuilders.Count());
             var randomBuilder = validBuilders.ElementAtOrDefault(index);
             if (randomBuilder != null)
@@ -64,7 +67,7 @@ namespace NewHorizons.Handlers
 
                 if (randomBuilder.CanShare)
                 {
-                    foreach (var builder in validBuilders.Where(builder => builder.CanShare && builder.DisableNHPlanets == randomBuilder.DisableNHPlanets))
+                    foreach (var builder in validBuilders.Where(builder => builder.CanShare && (hasNHPlanets ? builder.DisableNHPlanets == randomBuilder.DisableNHPlanets : true)))
                     {
                         builder.Build();
                     }
