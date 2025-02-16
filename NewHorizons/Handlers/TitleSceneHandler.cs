@@ -90,7 +90,9 @@ namespace NewHorizons.Handlers
             }
             // default to displaying nh planets if no title screen builders
             else
+            {
                 DisplayBodiesOnTitleScreen();
+            }
 
             try
             {
