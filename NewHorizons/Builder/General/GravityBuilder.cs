@@ -15,10 +15,11 @@ namespace NewHorizons.Builder.General
             var gravityRadius = GM / 0.1f;
             if (exponent == 2f) gravityRadius = Mathf.Sqrt(gravityRadius);
 
+            if (config.FocalPoint != null) gravityRadius = 0; // keep it at the lowest possible
+            else if (config.Base.soiOverride != 0f) gravityRadius = config.Base.soiOverride;
+            else if (config.Star != null) gravityRadius = Mathf.Min(gravityRadius, 15 * config.Base.surfaceSize);
             // To let you actually orbit things the way you would expect we cap this at 4x the diameter if its not a star (this is what giants deep has)
-            if (config.Star == null) gravityRadius = Mathf.Min(gravityRadius, 4 * config.Base.surfaceSize);
-            else gravityRadius = Mathf.Min(gravityRadius, 15 * config.Base.surfaceSize);
-            if (config.Base.soiOverride != 0f) gravityRadius = config.Base.soiOverride;
+            else gravityRadius = Mathf.Min(gravityRadius, 4 * config.Base.surfaceSize);
 
             var gravityGO = new GameObject("GravityWell");
             gravityGO.transform.parent = planetGO.transform;
@@ -26,9 +27,9 @@ namespace NewHorizons.Builder.General
             gravityGO.layer = Layer.BasicEffectVolume;
             gravityGO.SetActive(false);
 
-            var SC = gravityGO.AddComponent<SphereCollider>();
-            SC.isTrigger = true;
-            SC.radius = gravityRadius;
+            var sphereCollider = gravityGO.AddComponent<SphereCollider>();
+            sphereCollider.isTrigger = true;
+            sphereCollider.radius = gravityRadius;
 
             var owCollider = gravityGO.AddComponent<OWCollider>();
             owCollider.SetLODActivationMask(DynamicOccupant.Player);
@@ -47,8 +48,9 @@ namespace NewHorizons.Builder.General
             var alignmentRadius = config.Atmosphere?.clouds?.outerCloudRadius ?? 1.5f * config.Base.surfaceSize;
             if (config.Base.surfaceGravity == 0) alignmentRadius = 0;
 
-            gravityVolume._alignmentRadius = alignmentRadius;
-            gravityVolume._upperSurfaceRadius = config.Base.surfaceSize;
+            gravityVolume._alignmentRadius = config.Base.gravityAlignmentRadiusOverride ?? alignmentRadius;
+            // Nobody write any FocalPoint overriding here, those work as intended gravitationally so deal with it!
+            gravityVolume._upperSurfaceRadius = config.Base.surfaceSize; 
             gravityVolume._lowerSurfaceRadius = 0;
             gravityVolume._layer = 3;
             gravityVolume._priority = config.Base.gravityVolumePriority;
@@ -57,6 +59,21 @@ namespace NewHorizons.Builder.General
             gravityVolume._inheritable = false;
             gravityVolume._isPlanetGravityVolume = true;
             gravityVolume._cutoffRadius = 0f;
+
+            // If it's a focal point dont add collision stuff
+            // This is overkill
+            if (config.FocalPoint != null)
+            {
+                owCollider.enabled = false;
+                owTriggerVolume.enabled = false;
+                sphereCollider.radius = 0;
+                sphereCollider.enabled = false;
+                sphereCollider.isTrigger = false;
+                // This should ensure that even if the player enters the volume, it counts them as being inside the zero-gee cave equivalent
+                gravityVolume._cutoffRadius = gravityVolume._upperSurfaceRadius;
+                gravityVolume._lowerSurfaceRadius = gravityVolume._upperSurfaceRadius;
+                gravityVolume._cutoffAcceleration = 0;
+            }
 
             gravityGO.SetActive(true);
 

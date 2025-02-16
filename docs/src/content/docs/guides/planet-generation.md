@@ -35,12 +35,12 @@ There are also tools to help generate these images for you such as [Textures For
 
 The following modules support variable sizing, meaning they can change scale over the course of the loop.
 
--   Water
--   Lava
--   Star
--   Sand
--   Funnel
--   Ring
+- Water
+- Lava
+- Star
+- Sand
+- Funnel
+- Ring
 
 To do this, simply specify a `curve` property on the module
 

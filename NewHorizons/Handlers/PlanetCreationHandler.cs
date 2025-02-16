@@ -1,4 +1,3 @@
-using Epic.OnlineServices;
 using NewHorizons.Builder.Atmosphere;
 using NewHorizons.Builder.Body;
 using NewHorizons.Builder.General;
@@ -236,6 +235,7 @@ namespace NewHorizons.Handlers
                             var rb = existingPlanet.GetComponent<OWRigidbody>();
 
                             var sector = SectorBuilder.Make(existingPlanet, rb, GetSphereOfInfluence(body));
+                            sector._idString = body.Config.name;
                             sector.name = $"Sector-{existingPlanet.GetComponentsInChildren<Sector>().Count()}";
 
                             SharedGenerateBody(body, existingPlanet, sector, rb);
@@ -395,6 +395,7 @@ namespace NewHorizons.Handlers
             var ao = AstroObjectBuilder.Make(go, null, body, false);
 
             var sector = SectorBuilder.Make(go, owRigidBody, sphereOfInfluence);
+            sector._idString = body.Config.name;
             ao._rootSector = sector;
             ao._type = AstroObject.Type.None;
 
@@ -413,7 +414,7 @@ namespace NewHorizons.Handlers
             AstroObjectLocator.RegisterCustomAstroObject(ao);
 
             // Now that we're done move the planet into place
-            SetPositionFromVector(go, body.Config.Orbit.staticPosition);
+            SetPositionFromVector(go, body.Config.Orbit.staticPosition, body.Config.trackForSolarSystemRadius);
 
             NHLogger.LogVerbose($"Finished creating Bramble Dimension [{body.Config.name}]");
 
@@ -471,6 +472,7 @@ namespace NewHorizons.Handlers
             var ao = AstroObjectBuilder.Make(go, primaryBody, body, false);
 
             var sector = SectorBuilder.Make(go, owRigidBody, sphereOfInfluence * 2f);
+            sector._idString = body.Config.name;
             ao._rootSector = sector;
 
             if (body.Config.Base.surfaceGravity != 0)
@@ -500,25 +502,19 @@ namespace NewHorizons.Handlers
             // Now that we're done move the planet into place
             if (body.Config.Orbit?.staticPosition != null)
             {
-                SetPositionFromVector(go, body.Config.Orbit.staticPosition);
+                SetPositionFromVector(go, body.Config.Orbit.staticPosition, body.Config.trackForSolarSystemRadius);
             }
             else
             {
-                UpdatePosition(go, body.Config.Orbit, primaryBody, ao);
+                UpdatePosition(go, body.Config.Orbit, primaryBody, ao, body.Config.trackForSolarSystemRadius);
             }
 
             // Have to do this after setting position
             var initialMotion = InitialMotionBuilder.Make(go, primaryBody, ao, owRigidBody, body.Config.Orbit);
 
-            // Spawning on other planets is a bit hacky so we do it last
-            if (body.Config.Spawn != null)
-            {
-                NHLogger.LogVerbose($"Making spawn point on {body.Config.name}");
-                var spawnPoint = SpawnPointBuilder.Make(go, body.Config.Spawn, owRigidBody);
-            }
-
             if (body.Config.Orbit.showOrbitLine && !body.Config.Orbit.isStatic)
             {
+                // No map mode at eye
                 if (LoadManager.GetCurrentScene() != OWScene.EyeOfTheUniverse)
                 {
                     OrbitlineBuilder.Make(body.Object, body.Config.Orbit.isMoon, body.Config);
@@ -606,6 +602,7 @@ namespace NewHorizons.Handlers
                         var remnant = Main.BodyDict[body.Config.starSystem].Where(x => x.Config.name == body.Config.name && x.Config.isStellarRemnant).FirstOrDefault();
 
                         var remnantSector = SectorBuilder.Make(go, rb, sphereOfInfluence);
+                        remnantSector._idString = body.Config.name;
                         remnantSector.name = "CustomStellarRemnant";
 
                         SharedGenerateBody(remnant, go, remnantSector, rb);
@@ -698,6 +695,18 @@ namespace NewHorizons.Handlers
                 atmosphere = AtmosphereBuilder.Make(go, sector, body.Config.Atmosphere, surfaceSize).GetComponentInChildren<LODGroup>();
             }
 
+            if (body.Config.EyeOfTheUniverse != null)
+            {
+                if (Main.Instance.CurrentStarSystem == "EyeOfTheUniverse")
+                {
+                    EyeOfTheUniverseBuilder.Make(go, sector, body.Config.EyeOfTheUniverse, body);
+                }
+                else
+                {
+                    NHLogger.LogWarning($"A mod creator (you?) has defined Eye of the Universe specific settings on a body [{body.Config.name}] that is not in the eye of the universe");
+                }
+            }
+
             if (body.Config.ParticleFields != null)
             {
                 EffectsBuilder.Make(go, sector, body.Config);
@@ -747,6 +756,12 @@ namespace NewHorizons.Handlers
             if (body.Config.ShockEffect?.hasSupernovaShockEffect == true)
             {
                 SupernovaEffectBuilder.Make(go, sector, body.Config, body.Mod, procGen, ambientLight, fog, atmosphere, null, fog?._fogImpostor);
+            }
+
+            if (body.Config.Spawn != null)
+            {
+                NHLogger.LogVerbose($"Making spawn point on {body.Config.name}");
+                SpawnPointBuilder.Make(go, body.Config.Spawn, rb);
             }
 
             // We allow removing children afterwards so you can also take bits off of the modules you used
@@ -844,6 +859,7 @@ namespace NewHorizons.Handlers
                 var isMoon = newAO.GetAstroObjectType() is AstroObject.Type.Moon or AstroObject.Type.Satellite or AstroObject.Type.SpaceStation;
                 if (body.Config.Orbit.showOrbitLine)
                 {
+                    // No map mode at eye
                     if (LoadManager.GetCurrentScene() != OWScene.EyeOfTheUniverse)
                     {
                         OrbitlineBuilder.Make(go, isMoon, body.Config);
@@ -854,6 +870,8 @@ namespace NewHorizons.Handlers
 
                 // Get ready to move all the satellites
                 var relativeMoonPositions = children.Select(x => x.transform.position - go.transform.position).ToArray();
+                var relativeMoonMoonPositions = children.Select(x => AstroObjectLocator.GetChildren(x.GetComponent<AstroObject>())
+                    .Select(childchild => (childchild?.transform?.position ?? Vector3.zero) - go.transform.position)).ToArray();
 
                 // If its tidally locked change the alignment
                 var alignment = go.GetComponent<AlignWithTargetBody>();
@@ -863,7 +881,7 @@ namespace NewHorizons.Handlers
                 }
 
                 // Move the primary
-                UpdatePosition(go, body.Config.Orbit, primary, newAO);
+                UpdatePosition(go, body.Config.Orbit, primary, newAO, body.Config.trackForSolarSystemRadius);
 
                 for (int i = 0; i < children.Count(); i++)
                 {
@@ -880,11 +898,15 @@ namespace NewHorizons.Handlers
                         }
                         else
                         {
+                            var j = 0;
                             foreach (var childChild in AstroObjectLocator.GetChildren(childAO))
                             {
-                                if (childChild == null) continue;
-                                var dPos = childChild.transform.position - child.transform.position;
-                                childChild.transform.position = go.transform.position + relativeMoonPositions[i] + dPos;
+                                if (childChild != null)
+                                {
+                                    var dPos = relativeMoonMoonPositions[i].ElementAt(j);
+                                    childChild.transform.position = go.transform.position + dPos;
+                                }
+                                j++;
                             }
                             // Make sure the moons get updated to the new AO
                             childAO._primaryBody = newAO;
@@ -913,6 +935,12 @@ namespace NewHorizons.Handlers
 
         public static void UpdatePosition(GameObject go, IOrbitalParameters orbit, AstroObject primaryBody, AstroObject secondaryBody)
         {
+            // Keeping old method signature because its the kind of method I think something somewhere might call
+            UpdatePosition(go, orbit, primaryBody, secondaryBody, true);
+        }
+
+        public static void UpdatePosition(GameObject go, IOrbitalParameters orbit, AstroObject primaryBody, AstroObject secondaryBody, bool trackForSolarSystemRadius)
+        {
             NHLogger.LogVerbose($"Placing [{secondaryBody?.name}] around [{primaryBody?.name}]");
 
             if (primaryBody != null)
@@ -921,15 +949,15 @@ namespace NewHorizons.Handlers
                 var secondaryGravity = new Gravity(secondaryBody.GetGravityVolume());
 
                 var pos = orbit.GetOrbitalParameters(primaryGravity, secondaryGravity).InitialPosition + primaryBody.transform.position;
-                SetPositionFromVector(go, pos);
+                SetPositionFromVector(go, pos, trackForSolarSystemRadius);
             }
             else
             {
-                SetPositionFromVector(go, Vector3.zero);
+                SetPositionFromVector(go, Vector3.zero, trackForSolarSystemRadius);
             }
         }
 
-        public static void SetPositionFromVector(GameObject go, Vector3 position)
+        public static void SetPositionFromVector(GameObject go, Vector3 position, bool trackForSolarSystemRadius)
         {
             var rb = go.GetAttachedOWRigidbody();
             if (rb)
@@ -961,7 +989,7 @@ namespace NewHorizons.Handlers
 
             // Uses the ratio of the interlopers furthest point to what the base game considers the edge of the solar system
             var distanceToCenter = go.transform.position.magnitude / (24000 / 30000f);
-            if (distanceToCenter > SolarSystemRadius)
+            if (distanceToCenter > SolarSystemRadius && trackForSolarSystemRadius)
             {
                 SolarSystemRadius = distanceToCenter;
             }

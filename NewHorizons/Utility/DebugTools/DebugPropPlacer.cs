@@ -194,7 +194,7 @@ namespace NewHorizons.Utility.DebugTools
 
             foreach (var detail in config.Props.details)
             {
-                var spawnedProp = DetailBuilder.GetSpawnedGameObjectByDetailInfo(detail);
+                /*var spawnedProp = DetailBuilder.GetSpawnedGameObjectByDetailInfo(detail);
 
                 if (spawnedProp == null)
                 {
@@ -209,7 +209,7 @@ namespace NewHorizons.Utility.DebugTools
                 if (detail.assetBundle == null && !RecentlyPlacedProps.Contains(data.detailInfo.path))
                 {
                     if (pathsList != null) pathsList.Add(data.detailInfo.path);
-                }
+                }*/
             }
         }
 

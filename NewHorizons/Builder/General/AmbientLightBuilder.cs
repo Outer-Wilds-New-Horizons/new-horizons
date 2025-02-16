@@ -42,7 +42,7 @@ namespace NewHorizons.Builder.General
                 }
                 else
                 {
-                    var baseCubemap = Main.NHPrivateAssetBundle.LoadAsset<Cubemap>("AmbientLight_QM");
+                    var baseCubemap = AssetBundleUtilities.NHPrivateAssetBundle.LoadAsset<Cubemap>("AmbientLight_QM");
                     var cubemap = new Cubemap(baseCubemap.width, baseCubemap.format, baseCubemap.mipmapCount != 1);
                     cubemap.name = key;
                     cubemap.wrapMode = baseCubemap.wrapMode;

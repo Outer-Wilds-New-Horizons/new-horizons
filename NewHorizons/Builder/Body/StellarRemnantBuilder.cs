@@ -26,6 +26,7 @@ namespace NewHorizons.Builder.Body
                 NHLogger.Log($"Creating stellar remnant for [{star.Config.name}]");
 
                 var sector = SectorBuilder.Make(go, rb, soi);
+                sector._idString = star.Config.name;
                 sector.name = "StellarRemnant";
 
                 sector.gameObject.SetActive(false);

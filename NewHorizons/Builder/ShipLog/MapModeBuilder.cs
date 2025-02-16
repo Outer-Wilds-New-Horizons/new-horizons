@@ -21,11 +21,25 @@ namespace NewHorizons.Builder.ShipLog
     {
         // Takes the game object because sometimes we change the AO to an NHAO and it breaks
         private static Dictionary<GameObject, ShipLogAstroObject> _astroObjectToShipLog = new();
+        private static Dictionary<ShipLogAstroObject, MapModeInfo> _astroObjectToMapModeInfo = new();
+
+        public static MapModeInfo GetMapModeInfoForAstroObject(ShipLogAstroObject slao)
+        {
+            if (_astroObjectToMapModeInfo.TryGetValue(slao, out var mapModeInfo))
+            {
+                return mapModeInfo;
+            } 
+            else
+            {
+                return null;
+            }
+        }
 
         #region General
         public static ShipLogAstroObject[][] ConstructMapMode(string systemName, GameObject transformParent, ShipLogAstroObject[][] currentNav, int layer)
         {
             _astroObjectToShipLog = new();
+            _astroObjectToMapModeInfo = new();
 
             // Add stock planets
             foreach (var shipLogAstroObject in currentNav.SelectMany(x => x))
@@ -50,7 +64,7 @@ namespace NewHorizons.Builder.ShipLog
 
             Material greyScaleMaterial = SearchUtilities.Find(ShipLogHandler.PAN_ROOT_PATH + "/TimberHearth/Sprite").GetComponent<Image>().material;
             List<NewHorizonsBody> bodies = Main.BodyDict[systemName].Where(
-                b => !(b.Config.ShipLog?.mapMode?.remove ?? false) && !b.Config.isQuantumState
+                b => !(b.Config.ShipLog?.mapMode?.remove ?? false) && !b.Config.isQuantumState && !b.Config.destroy
             ).ToList();
             bool flagManualPositionUsed = systemName == "SolarSystem";
             bool flagAutoPositionUsed = false;
@@ -65,7 +79,7 @@ namespace NewHorizons.Builder.ShipLog
                 else
                 {
                     flagManualPositionUsed = true;
-                    if (body.Config.ShipLog?.mapMode?.manualNavigationPosition == null)
+                    if (body.Config.ShipLog?.mapMode != null && body.Config.ShipLog.mapMode.manualNavigationPosition == null && body.Config.ShipLog.mapMode.selectable)
                     {
                         NHLogger.LogError("Navigation position is missing for: " + body.Config.name);
                         return null;
@@ -157,6 +171,12 @@ namespace NewHorizons.Builder.ShipLog
 
         private static ShipLogAstroObject AddShipLogAstroObject(GameObject gameObject, NewHorizonsBody body, Material greyScaleMaterial, int layer)
         {
+            if (body.Object == null)
+            {
+                NHLogger.LogError($"Tried to make ship logs for planet with null Object: [{body?.Config?.name}]");
+                return null;
+            }
+
             const float unviewedIconOffset = 15;
 
             NHLogger.LogVerbose($"Adding ship log astro object for {body.Config.name}");
@@ -166,6 +186,7 @@ namespace NewHorizons.Builder.ShipLog
             ShipLogAstroObject astroObject = gameObject.AddComponent<ShipLogAstroObject>();
             astroObject._id = ShipLogHandler.GetAstroObjectId(body);
             _astroObjectToShipLog[body.Object] = astroObject;
+            _astroObjectToMapModeInfo[astroObject] = body.Config.ShipLog?.mapMode;
 
             Texture2D image = null;
             Texture2D outline = null;
@@ -440,6 +461,11 @@ namespace NewHorizons.Builder.ShipLog
 
         private static MapModeObject ConstructPrimaryNode(List<NewHorizonsBody> bodies)
         {
+            float DistanceFromPrimary(NewHorizonsBody body)
+            {
+                return Mathf.Max(body.Config.Orbit.semiMajorAxis, body.Config.Orbit.staticPosition?.Length() ?? 0f);
+            }
+
             foreach (NewHorizonsBody body in bodies.Where(b => b.Config.Base.centerOfSolarSystem))
             {
                 bodies.Sort((b, o) => b.Config.Orbit.semiMajorAxis.CompareTo(o.Config.Orbit.semiMajorAxis));
@@ -571,7 +597,10 @@ namespace NewHorizons.Builder.ShipLog
                 astroObject._unviewedObj.GetComponent<Image>().enabled = false;
             }
             node.astroObject = astroObject;
-            if (node.lastSibling != null) ConnectNodeToLastSibling(node, greyScaleMaterial);
+            if (NewHorizons.Main.Debug)
+            {
+                if (node.lastSibling != null) ConnectNodeToLastSibling(node, greyScaleMaterial);
+            }
             MakeDetails(node.mainBody, newNodeGO.transform, greyScaleMaterial);
         }
         #endregion

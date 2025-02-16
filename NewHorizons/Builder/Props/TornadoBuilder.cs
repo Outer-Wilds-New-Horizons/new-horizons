@@ -158,7 +158,7 @@ namespace NewHorizons.Builder.Props
             // Resize it so the force volume goes all the way up
             var fluidGO = tornadoGO.transform.Find(downwards ? "MockDownTornado_FluidCenter" : "MockUpTornado_FluidCenter");
             fluidGO.GetComponent<TornadoFluidVolume>()._fluidType = info.fluidType.ConvertToOW(FluidVolume.Type.CLOUD);
-            fluidGO.localScale = new Vector3(1, 2f, 1);
+            fluidGO.localPosition = Vector3.up * 4.8f;
 
             if (info.tint != null)
             {
