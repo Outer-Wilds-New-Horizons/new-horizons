@@ -143,5 +143,13 @@ namespace NewHorizons.Patches.PlayerPatches
         {
             NewHorizonsData.Save();
         }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(nameof(PlayerData.SetPersistentCondition))]
+        public static void PlayerData_SetPersistentCondition(string condition, bool state)
+        {
+            // Firing off a custom event for the Conditionals system to use. This could've been done with direct calls or a Unity event but it felt cleaner to mirror the vanilla "DialogueConditionChanged" event.
+            GlobalMessenger<string, bool>.FireEvent("NHPersistentConditionChanged", condition, state);
+        }
     }
 }
