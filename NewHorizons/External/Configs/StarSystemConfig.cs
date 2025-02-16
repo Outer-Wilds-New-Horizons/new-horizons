@@ -389,6 +389,15 @@ namespace NewHorizons.External.Configs
                 GlobalMusic ??= otherConfig.GlobalMusic;
             }
 
+            if (conditionalChecks != null && otherConfig.conditionalChecks != null)
+            {
+                conditionalChecks = Concatenate(conditionalChecks, otherConfig.conditionalChecks);
+            }
+            else
+            {
+                conditionalChecks ??= otherConfig.conditionalChecks;
+            }
+
             entryPositions = Concatenate(entryPositions, otherConfig.entryPositions);
             curiosities = Concatenate(curiosities, otherConfig.curiosities);
             initialReveal = Concatenate(initialReveal, otherConfig.initialReveal);
