@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Xml;
 using NewHorizons.External.Modules;
+using NewHorizons.External.Modules.Conditionals;
 using NewHorizons.External.SerializableData;
 using Newtonsoft.Json;
 using static NewHorizons.External.Modules.ShipLogModule;
@@ -154,6 +155,11 @@ namespace NewHorizons.External.Configs
         /// List colors of curiosity entries
         /// </summary>
         public CuriosityColorInfo[] curiosities;
+
+        /// <summary>
+        /// A list of conditional checks to be performed while in this star system.
+        /// </summary>
+        public ConditionalCheckInfo[] conditionalChecks;
 
         /// <summary>
         /// Extra data that may be used by extension mods
