@@ -110,6 +110,13 @@
         "$ref": "#/definitions/CuriosityColorInfo"
       }
     },
+    "conditionalChecks": {
+      "type": "array",
+      "description": "A list of conditional checks to be performed while in this star system.",
+      "items": {
+        "$ref": "#/definitions/ConditionalCheckInfo"
+      }
+    },
     "extras": {
       "type": "object",
       "description": "Extra data that may be used by extension mods",
@@ -449,6 +456,117 @@
           "default": 255,
           "maximum": 255.0,
           "minimum": 0.0
+        }
+      }
+    },
+    "ConditionalCheckInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "check": {
+          "description": "The conditions that must be met for the check to pass",
+          "$ref": "#/definitions/ConditionalCheckConditionsInfo"
+        },
+        "then": {
+          "description": "The effects of the check if it passes",
+          "$ref": "#/definitions/ConditionalCheckEffectsInfo"
+        }
+      }
+    },
+    "ConditionalCheckConditionsInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "allConditionsSet": {
+          "type": "array",
+          "description": "The check will only pass if all of these dialogue conditions are set",
+          "items": {
+            "type": "string"
+          }
+        },
+        "anyConditionsSet": {
+          "type": "array",
+          "description": "The check will only pass if any of these dialogue conditions are set",
+          "items": {
+            "type": "string"
+          }
+        },
+        "allPersistentConditionsSet": {
+          "type": "array",
+          "description": "The check will only pass if all of these persistent conditions are set",
+          "items": {
+            "type": "string"
+          }
+        },
+        "anyPersistentConditionsSet": {
+          "type": "array",
+          "description": "The check will only pass if any of these persistent conditions are set",
+          "items": {
+            "type": "string"
+          }
+        },
+        "allFactsRevealed": {
+          "type": "array",
+          "description": "The check will only pass if all of these ship log facts are revealed",
+          "items": {
+            "type": "string"
+          }
+        },
+        "anyFactsRevealed": {
+          "type": "array",
+          "description": "The check will only pass if any of these ship log facts are revealed",
+          "items": {
+            "type": "string"
+          }
+        },
+        "invert": {
+          "type": "boolean",
+          "description": "If the check should pass only if the conditions are not met"
+        }
+      }
+    },
+    "ConditionalCheckEffectsInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "setConditions": {
+          "type": "array",
+          "description": "The check will set these dialogue conditions if it passes",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unsetConditions": {
+          "type": "array",
+          "description": "The check will unset these dialogue conditions if it passes",
+          "items": {
+            "type": "string"
+          }
+        },
+        "setPersistentConditions": {
+          "type": "array",
+          "description": "The check will set these persistent conditions if it passes",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unsetPersistentConditions": {
+          "type": "array",
+          "description": "The check will unset these persistent conditions if it passes",
+          "items": {
+            "type": "string"
+          }
+        },
+        "revealFacts": {
+          "type": "array",
+          "description": "The check will reveal these ship log facts if it passes",
+          "items": {
+            "type": "string"
+          }
+        },
+        "reversible": {
+          "type": "boolean",
+          "description": "If the check should undo its effects if the conditions are not met anymore (unset the set conditions, etc.). Note: ship log facts cannot currently be unrevealed."
         }
       }
     }
