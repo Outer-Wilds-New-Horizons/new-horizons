@@ -266,28 +266,48 @@ namespace NewHorizons.Handlers
 
             var quantumCampsiteController = Object.FindObjectOfType<QuantumCampsiteController>();
 
-            var travelers = new List<Transform>()
-            {
-                quantumCampsiteController._travelerControllers[0].transform, // Riebeck
-                quantumCampsiteController._travelerControllers[2].transform, // Chert
-                quantumCampsiteController._travelerControllers[6].transform, // Esker
-                quantumCampsiteController._travelerControllers[1].transform, // Felspar
-                quantumCampsiteController._travelerControllers[3].transform, // Gabbro
-            };
+            var travelers = new List<Transform>();
 
-            if (quantumCampsiteController._hasMetSolanum)
+            var hasMetSolanum = quantumCampsiteController._hasMetSolanum;
+            var hasMetPrisoner = quantumCampsiteController._hasMetPrisoner;
+
+            // The order of the travelers in the base game differs depending on if the player has met both Solanum and the Prisoner or not.
+            if (hasMetPrisoner && hasMetSolanum)
             {
-                travelers.Add(quantumCampsiteController._travelerControllers[4].transform); // Solanum
-            }
-            if (quantumCampsiteController._hasMetPrisoner)
-            {
+                travelers.Add(quantumCampsiteController._travelerControllers[0].transform); // Riebeck
                 travelers.Add(quantumCampsiteController._travelerControllers[5].transform); // Prisoner
+                travelers.Add(quantumCampsiteController._travelerControllers[6].transform); // Esker
+                travelers.Add(quantumCampsiteController._travelerControllers[1].transform); // Felspar
+                travelers.Add(quantumCampsiteController._travelerControllers[3].transform); // Gabbro
+                travelers.Add(quantumCampsiteController._travelerControllers[4].transform); // Solanum
+                travelers.Add(quantumCampsiteController._travelerControllers[2].transform); // Chert
+            }
+            else
+            {
+                travelers.Add(quantumCampsiteController._travelerControllers[0].transform); // Riebeck
+                travelers.Add(quantumCampsiteController._travelerControllers[2].transform); // Chert
+                travelers.Add(quantumCampsiteController._travelerControllers[6].transform); // Esker
+                travelers.Add(quantumCampsiteController._travelerControllers[1].transform); // Felspar
+                travelers.Add(quantumCampsiteController._travelerControllers[3].transform); // Gabbro
+                if (hasMetSolanum)
+                    travelers.Add(quantumCampsiteController._travelerControllers[4].transform); // Solanum
+                if (hasMetPrisoner)
+                    travelers.Add(quantumCampsiteController._travelerControllers[5].transform); // Prisoner
             }
 
-            // Custom travelers (starting at index 7)
+            // Custom travelers (starting at index 7, after Esker). We loop through the array instead of the list of custom travelers in case a non-NH mod added their own.
             for (int i = 7; i < quantumCampsiteController._travelerControllers.Length; i++)
             {
-                travelers.Add(quantumCampsiteController._travelerControllers[i].transform);
+                var travelerInfo = GetActiveCustomEyeTravelers().FirstOrDefault(t => t.controller == quantumCampsiteController._travelerControllers[i]);
+                var travelerName = travelerInfo?.info?.afterTraveler;
+                if (travelerName.HasValue)
+                {
+                    InsertTravelerAfter(quantumCampsiteController, travelers, travelerInfo.info.afterTraveler.ToString(), quantumCampsiteController._travelerControllers[i].transform);
+                }
+                else
+                {
+                    travelers.Add(quantumCampsiteController._travelerControllers[i].transform);
+                }
             }
 
             var radius = 2f + 0.2f * travelers.Count;
@@ -309,6 +329,22 @@ namespace NewHorizons.Handlers
                 lookTarget.y = newPos.y;
                 traveler.transform.LookAt(lookTarget, traveler.transform.up);
                 index++;
+            }
+        }
+
+        private static void InsertTravelerAfter(QuantumCampsiteController campsite, List<Transform> travelers, string travelerName, Transform newTraveler)
+        {
+            if (travelerName == "Prisoner")
+                travelerName = "Prisoner_Campfire";
+            var existingTraveler = campsite._travelerControllers.FirstOrDefault(c => c.name == travelerName);
+            if (existingTraveler != null)
+            {
+                var index = travelers.IndexOf(existingTraveler.transform);
+                travelers.Insert(index + 1, newTraveler);
+            }
+            else
+            {
+                travelers.Add(newTraveler);
             }
         }
 
