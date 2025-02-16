@@ -43,6 +43,11 @@
         "type": "string"
       }
     },
+    "checkForExisting": {
+      "type": "boolean",
+      "description": "optimization. turn this off if you know you're generating a new body and aren't worried about other addons editing it.",
+      "default": true
+    },
     "AmbientLights": {
       "type": "array",
       "description": "Add ambient lights to this body",
@@ -353,15 +358,71 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "color": {
-          "$ref": "#/definitions/MColor"
-        },
         "scale": {
           "type": "number",
+          "description": "Scale height of the proc gen.",
           "format": "float",
           "minimum": 0.0
+        },
+        "color": {
+          "description": "Ground color, only applied if no texture or material is chosen.",
+          "$ref": "#/definitions/MColor"
+        },
+        "material": {
+          "description": "Can pick a preset material with a texture from the base game. Does not work with color or any textures.",
+          "$ref": "#/definitions/Material"
+        },
+        "texture": {
+          "type": "string",
+          "description": "Can use a custom texture. Does not work with material or color."
+        },
+        "smoothnessMap": {
+          "type": "string",
+          "description": "Relative filepath to the texture used for the terrain's smoothness and metallic, which are controlled by the texture's alpha and red channels respectively. Optional.\nTypically black with variable transparency, when metallic isn't wanted."
+        },
+        "smoothness": {
+          "type": "number",
+          "description": "How \"glossy\" the surface is, where 0 is diffuse, and 1 is like a mirror.\nMultiplies with the alpha of the smoothness map if using one.",
+          "format": "float",
+          "default": 0.0,
+          "maximum": 1.0,
+          "minimum": 0.0
+        },
+        "metallic": {
+          "type": "number",
+          "description": "How metallic the surface is, from 0 to 1.\nMultiplies with the red of the smoothness map if using one.",
+          "format": "float",
+          "default": 0.0,
+          "maximum": 1.0,
+          "minimum": 0.0
+        },
+        "normalMap": {
+          "type": "string",
+          "description": "Relative filepath to the texture used for the normal (aka bump) map. Optional."
+        },
+        "normalStrength": {
+          "type": "number",
+          "description": "Strength of the normal map. Usually 0-1, but can go above, or negative to invert the map.",
+          "format": "float",
+          "default": 1.0
         }
       }
+    },
+    "Material": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Default",
+        "Ice",
+        "Quantum",
+        "Rock"
+      ],
+      "enum": [
+        "default",
+        "ice",
+        "quantum",
+        "rock"
+      ]
     },
     "AtmosphereModule": {
       "type": "object",
@@ -1022,6 +1083,17 @@
         "dialogue": {
           "description": "The dialogue to use for this traveler. If omitted, the first CharacterDialogueTree in the object will be used.",
           "$ref": "#/definitions/DialogueInfo"
+        },
+        "afterTraveler": {
+          "description": "The name of the base game traveler to position this traveler after at the campfire, starting clockwise from Riebeck. Defaults to the end of the list (right before Riebeck).",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/TravelerName"
+            }
+          ]
         }
       }
     },
@@ -1464,6 +1536,28 @@
         "turnOff",
         "turnOffThenOn",
         "none"
+      ]
+    },
+    "TravelerName": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Riebeck",
+        "Chert",
+        "Esker",
+        "Felspar",
+        "Gabbro",
+        "Solanum",
+        "Prisoner"
+      ],
+      "enum": [
+        "Riebeck",
+        "Chert",
+        "Esker",
+        "Felspar",
+        "Gabbro",
+        "Solanum",
+        "Prisoner"
       ]
     },
     "InstrumentZoneInfo": {
@@ -4690,7 +4784,7 @@
         },
         "outlineSprite": {
           "type": "string",
-          "description": "The path to the sprite (.png/.jpg/.exr) to show when the planet is unexplored in map mode."
+          "description": "The path to the sprite (.png/.jpg/.exr) to show when the planet is unexplored in map mode. If empty, a texture will be created and cached based on the revealed sprite."
         },
         "remove": {
           "type": "boolean",
@@ -6391,18 +6485,44 @@
           "type": "string",
           "description": "An optional rename of this object"
         },
-        "creditsType": {
-          "default": "fast",
-          "$ref": "#/definitions/NHCreditsType"
+        "deathType": {
+          "description": "The type of death the player will have if they enter this volume. Don't set to have the camera just fade out.",
+          "default": "default",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/NHDeathType"
+            }
+          ]
         },
-        "gameOverText": {
+        "gameOver": {
+          "description": "The game over message to display. Leave empty to go straight to credits.",
+          "$ref": "#/definitions/GameOverModule"
+        }
+      }
+    },
+    "GameOverModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "text": {
           "type": "string",
           "description": "Text displayed in orange on game over. For localization, put translations under UI."
         },
-        "deathType": {
-          "description": "The type of death the player will have if they enter this volume.",
-          "default": "default",
-          "$ref": "#/definitions/NHDeathType"
+        "colour": {
+          "description": "Change the colour of the game over text. Leave empty to use the default orange.",
+          "$ref": "#/definitions/MColor"
+        },
+        "condition": {
+          "type": "string",
+          "description": "Condition that must be true for this game over to trigger. If this is on a LoadCreditsVolume, leave empty to always trigger this game over.\nNote this is a regular dialogue condition, not a persistent condition."
+        },
+        "creditsType": {
+          "description": "The type of credits that will run after the game over message is shown",
+          "default": "fast",
+          "$ref": "#/definitions/NHCreditsType"
         }
       }
     },
@@ -6412,12 +6532,14 @@
       "x-enumNames": [
         "Fast",
         "Final",
-        "Kazoo"
+        "Kazoo",
+        "None"
       ],
       "enum": [
         "fast",
         "final",
-        "kazoo"
+        "kazoo",
+        "none"
       ]
     },
     "CometTailModule": {

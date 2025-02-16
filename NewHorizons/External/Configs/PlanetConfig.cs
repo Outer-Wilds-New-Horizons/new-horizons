@@ -64,6 +64,11 @@ namespace NewHorizons.External.Configs
         /// </summary>
         public string[] removeChildren;
 
+        /// <summary>
+        /// optimization. turn this off if you know you're generating a new body and aren't worried about other addons editing it.
+        /// </summary>
+        [DefaultValue(true)] public bool checkForExisting = true;
+
         #endregion
 
         #region Modules
@@ -530,7 +535,7 @@ namespace NewHorizons.External.Configs
                 Spawn.shipSpawnPoints = new SpawnModule.ShipSpawnPoint[] { Spawn.shipSpawn };
             }
 
-            // Because these guys put TWO spawn points 
+            // Because these guys put TWO spawn points
             if (starSystem == "2walker2.OogaBooga" && name == "The Campground")
             {
                 Spawn.playerSpawnPoints[0].isDefault = true;
@@ -655,6 +660,25 @@ namespace NewHorizons.External.Configs
                 foreach (var destructionVolume in Volumes.destructionVolumes)
                 {
                     if (destructionVolume.onlyAffectsPlayerAndShip) destructionVolume.onlyAffectsPlayerRelatedBodies = true;
+                }
+            }
+
+            if (Volumes?.creditsVolume != null)
+            {
+                foreach (var volume in Volumes.creditsVolume)
+                {
+                    if (!string.IsNullOrEmpty(volume.gameOverText))
+                    {
+                        if (volume.gameOver == null)
+                        {
+                            volume.gameOver = new();
+                        }
+                        volume.gameOver.text = volume.gameOverText;
+                    }
+                    if (volume.creditsType != null)
+                    {
+                        volume.gameOver.creditsType = (SerializableEnums.NHCreditsType)volume.creditsType;
+                    }
                 }
             }
 

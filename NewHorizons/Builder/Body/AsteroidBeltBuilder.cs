@@ -39,7 +39,8 @@ namespace NewHorizons.Builder.Body
                 {
                     surfaceGravity = belt.gravity,
                     surfaceSize = size,
-                    gravityFallOff = GravityFallOff.InverseSquared
+                    gravityFallOff = GravityFallOff.InverseSquared,
+                    hasFluidDetector = false
                 };
 
                 config.Orbit = new OrbitModule()
@@ -95,6 +96,7 @@ namespace NewHorizons.Builder.Body
                         color = new MColor(126, 94, 73)
                     };
                 }
+                config.AmbientLights = new[] { new AmbientLightModule() { outerRadius = size * 1.2f, intensity = 0.1f } };
 
                 var asteroid = new NewHorizonsBody(config, mod);
                 PlanetCreationHandler.GenerateBody(asteroid);

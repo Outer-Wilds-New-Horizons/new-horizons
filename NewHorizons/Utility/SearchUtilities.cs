@@ -2,6 +2,7 @@ using NewHorizons.Utility.OWML;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Profiling;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
@@ -116,19 +117,23 @@ namespace NewHorizons.Utility
             if (CachedGameObjects.TryGetValue(path, out var go)) return go;
 
             // 1: normal find
+            Profiler.BeginSample("1");
             go = GameObject.Find(path);
             if (go)
             {
                 CachedGameObjects.Add(path, go);
+                Profiler.EndSample();
                 return go;
             }
+            Profiler.EndSample();
 
+            Profiler.BeginSample("2");
             // 2: find inactive using root + transform.find
             var names = path.Split('/');
 
             // Cache the root objects so we don't loop through all of them each time
             var rootName = names[0];
-            if (!CachedRootGameObjects.TryGetValue(rootName, out var root)) 
+            if (!CachedRootGameObjects.TryGetValue(rootName, out var root))
             {
                 root = SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(x => x.name == rootName);
                 if (root != null)
@@ -142,9 +147,12 @@ namespace NewHorizons.Utility
             if (go)
             {
                 CachedGameObjects.Add(path, go);
+                Profiler.EndSample();
                 return go;
             }
+            Profiler.EndSample();
 
+            Profiler.BeginSample("3");
             var name = names.Last();
             if (warn) NHLogger.LogWarning($"Couldn't find object in path {path}, will look for potential matches for name {name}");
             // 3: find resource to include inactive objects (but skip prefabs)
@@ -153,10 +161,12 @@ namespace NewHorizons.Utility
             if (go)
             {
                 CachedGameObjects.Add(path, go);
+                Profiler.EndSample();
                 return go;
             }
 
             if (warn) NHLogger.LogWarning($"Couldn't find object with name {name}");
+            Profiler.EndSample();
             return null;
         }
 
@@ -168,6 +178,32 @@ namespace NewHorizons.Utility
                 children.Add(child.gameObject);
             }
             return children;
+        }
+
+        /// <summary>
+        /// transform.find but works for gameobjects with same name
+        /// </summary>
+        public static List<Transform> FindAll(this Transform @this, string path)
+        {
+            var names = path.Split('/');
+            var currentTransforms = new List<Transform> { @this };
+            foreach (var name in names)
+            {
+                var newTransforms = new List<Transform>();
+                foreach (var currentTransform in currentTransforms)
+                {
+                    foreach (Transform child in currentTransform)
+                    {
+                        if (child.name == name)
+                        {
+                            newTransforms.Add(child);
+                        }
+                    }
+                }
+                currentTransforms = newTransforms;
+            }
+
+            return currentTransforms;
         }
     }
 }

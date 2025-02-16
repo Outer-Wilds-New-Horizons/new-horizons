@@ -2,6 +2,7 @@ using NewHorizons.Utility;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace NewHorizons.Handlers
 {
@@ -51,6 +52,9 @@ namespace NewHorizons.Handlers
         /// </summary>
         public static void SetUpStreaming(GameObject obj, Sector sector)
         {
+            // TODO: used OFTEN by detail builder. 20-40ms adds up to seconds. speed up!
+
+            Profiler.BeginSample("get bundles");
             // find the asset bundles to load
             // tries the cache first, then builds
             if (!_objectCache.TryGetValue(obj, out var assetBundles))
@@ -94,7 +98,9 @@ namespace NewHorizons.Handlers
                 assetBundles = assetBundlesList.ToArray();
                 _objectCache[obj] = assetBundles;
             }
+            Profiler.EndSample();
 
+            Profiler.BeginSample("get sectors");
             foreach (var assetBundle in assetBundles)
             {
                 // Track the sector even if its null. null means stay loaded forever
@@ -105,7 +111,9 @@ namespace NewHorizons.Handlers
                 }
                 sectors.SafeAdd(sector);
             }
+            Profiler.EndSample();
 
+            Profiler.BeginSample("load assets");
             if (sector)
             {
                 sector.OnOccupantEnterSector += _ =>
@@ -128,6 +136,7 @@ namespace NewHorizons.Handlers
                 foreach (var assetBundle in assetBundles)
                     StreamingManager.LoadStreamingAssets(assetBundle);
             }
+            Profiler.EndSample();
         }
 
         public static bool IsBundleInUse(string assetBundle)

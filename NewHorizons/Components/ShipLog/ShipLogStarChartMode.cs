@@ -63,7 +63,7 @@ namespace NewHorizons.Components.ShipLog
                 }
             }
 
-            /* 
+            /*
             if(VesselCoordinatePromptHandler.KnowsEyeCoordinates())
             {
                 AddSystemCard("EyeOfTheUniverse");
@@ -279,7 +279,7 @@ namespace NewHorizons.Components.ShipLog
         {
             var rect = new Rect(0, 0, texture.width, texture.height);
             var pivot = new Vector2(texture.width / 2, texture.height / 2);
-            return Sprite.Create(texture, rect, pivot);
+            return Sprite.Create(texture, rect, pivot, 100, 0, SpriteMeshType.FullRect, Vector4.zero, false);
         }
 
         private void OnTargetReferenceFrame(ReferenceFrame referenceFrame)

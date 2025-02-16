@@ -11,7 +11,7 @@ namespace NewHorizons.Builder.Body
 {
     public static class HeightMapBuilder
     {
-        public static Shader PlanetShader;
+        private static Shader _planetShader;
 
         // I hate nested functions okay
         private static IModBehaviour _currentMod;
@@ -62,7 +62,7 @@ namespace NewHorizons.Builder.Body
             cubeSphere.SetActive(false);
             cubeSphere.transform.SetParent(sector?.transform ?? planetGO.transform, false);
 
-            if (PlanetShader == null) PlanetShader = AssetBundleUtilities.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/SphereTextureWrapperTriplanar.shader");
+            if (_planetShader == null) _planetShader = AssetBundleUtilities.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/SphereTextureWrapperTriplanar.shader");
 
             var stretch = module.stretch != null ? (Vector3)module.stretch : Vector3.one;
 
@@ -115,7 +115,7 @@ namespace NewHorizons.Builder.Body
                 LODCubeSphere.AddComponent<MeshFilter>().mesh = CubeSphere.Build(resolution, heightMap, module.minHeight, module.maxHeight, stretch);
 
                 var cubeSphereMR = LODCubeSphere.AddComponent<MeshRenderer>();
-                var material = new Material(PlanetShader);
+                var material = new Material(_planetShader);
                 cubeSphereMR.material = material;
                 material.name = textureMap.name;
 
