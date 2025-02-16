@@ -57,8 +57,12 @@ public static class ProfilerPatch
 	}
 }
 
+/// <summary>
+/// bundle loading causes log spam that slows loading, but only in unity dev profiler mode.
+/// patch it out so it doesnt do false-positive slowness.
+/// </summary>
 [HarmonyPatch]
-public static class EvilPatch
+public static class DisableShaderLogSpamPatch
 {
 	[HarmonyPrefix]
 	[HarmonyPatch(typeof(StackTraceUtility), "ExtractStackTrace")]
