@@ -6,6 +6,9 @@ using System.ComponentModel;
 
 namespace NewHorizons.External.Modules.Props
 {
+    /// <summary>
+    /// A lesser form of DetailInfo used for the title screen since that supports fewer features
+    /// </summary>
     [JsonObject]
     public class SimplifiedDetailInfo : GeneralPropInfo
     {

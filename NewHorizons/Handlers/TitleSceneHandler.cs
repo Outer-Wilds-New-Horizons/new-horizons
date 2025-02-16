@@ -202,15 +202,10 @@ namespace NewHorizons.Handlers
 
         private static void RemoveChildren(GameObject go, string[] paths)
         {
-            var goPath = go.transform.GetPath();
-            var transforms = go.GetComponentsInChildren<Transform>(true);
             foreach (var childPath in paths)
             {
-                // Multiple children can have the same path so we delete all that match
-                var path = $"{goPath}/{childPath}";
-
                 var flag = true;
-                foreach (var childObj in transforms.Where(x => x.GetPath() == path))
+                foreach (var childObj in go.transform.FindAll(childPath))
                 {
                     flag = false;
                     // idk why we wait here but we do
