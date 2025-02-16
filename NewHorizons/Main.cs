@@ -107,11 +107,11 @@ namespace NewHorizons
         public ShipWarpController ShipWarpController { get; private set; }
 
         // API events
-        public class StarSystemEvent : UnityEvent<string> { }
-        public StarSystemEvent OnChangeStarSystem = new();
-        public StarSystemEvent OnStarSystemLoaded = new();
-        public StarSystemEvent OnPlanetLoaded = new();
-        public UnityEvent OnTitleScreenLoaded = new();
+        public class StringEvent : UnityEvent<string> { }
+        public StringEvent OnChangeStarSystem = new();
+        public StringEvent OnStarSystemLoaded = new();
+        public StringEvent OnPlanetLoaded = new();
+        public StringEvent OnTitleScreenLoaded = new();
 
         /// <summary>
         /// Depending on platform, the AsyncOwnershipStatus might not be ready by the time we go to check it.

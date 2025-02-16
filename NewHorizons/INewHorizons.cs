@@ -75,9 +75,10 @@ namespace NewHorizons
         UnityEvent<string> GetBodyLoadedEvent();
 
         /// <summary>
-        /// An event invoked when NH has finished building the title screen.
+        /// An event invoked when NH has finished building a title screen.
+        /// Gives the unique name of the mod the title screen builder was from.
         /// </summary>
-        UnityEvent GetTitleScreenLoadedEvent();
+        UnityEvent<string> GetTitleScreenLoadedEvent();
         #endregion
 
         #region Querying configs

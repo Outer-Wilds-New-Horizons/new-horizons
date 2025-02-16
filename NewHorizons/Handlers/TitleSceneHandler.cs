@@ -91,15 +91,6 @@ namespace NewHorizons.Handlers
             // default to displaying nh planets if no title screen builders
             else
                 DisplayBodiesOnTitleScreen();
-
-            try
-            {
-                Main.Instance.OnTitleScreenLoaded?.Invoke();
-            }
-            catch (Exception e)
-            {
-                NHLogger.LogError($"Error in event handler for OnTitleScreenLoaded: {e}");
-            }
         }
 
         public static void InitSubtitles()
@@ -465,6 +456,15 @@ namespace NewHorizons.Handlers
                 {
                     NHLogger.LogError(e);
                 }
+
+                try
+                {
+                    Main.Instance.OnTitleScreenLoaded?.Invoke(mod.ModHelper.Manifest.UniqueName);
+                }
+                catch (Exception e)
+                {
+                    NHLogger.LogError($"Error in event handler for OnTitleScreenLoaded on title screen {mod.ModHelper.Manifest.UniqueName}: {e}");
+                }
             }
 
             public IModBehaviour Mod => mod;
@@ -499,6 +499,15 @@ namespace NewHorizons.Handlers
                 catch (Exception e)
                 {
                     NHLogger.LogError(e);
+                }
+
+                try
+                {
+                    Main.Instance.OnTitleScreenLoaded?.Invoke(mod.ModHelper.Manifest.UniqueName);
+                }
+                catch (Exception e)
+                {
+                    NHLogger.LogError($"Error in event handler for OnTitleScreenLoaded on title screen {mod.ModHelper.Manifest.UniqueName}: {e}");
                 }
             }
 
