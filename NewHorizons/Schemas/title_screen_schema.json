@@ -157,6 +157,7 @@
     },
     "SimplifiedDetailInfo": {
       "type": "object",
+      "description": "A lesser form of DetailInfo used for the title screen since that supports fewer features",
       "additionalProperties": false,
       "properties": {
         "rotation": {
