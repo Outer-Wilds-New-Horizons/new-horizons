@@ -1078,6 +1078,17 @@
         "dialogue": {
           "description": "The dialogue to use for this traveler. If omitted, the first CharacterDialogueTree in the object will be used.",
           "$ref": "#/definitions/DialogueInfo"
+        },
+        "afterTraveler": {
+          "description": "The name of the base game traveler to position this traveler after at the campfire, starting clockwise from Riebeck. Defaults to the end of the list (right before Riebeck).",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/TravelerName"
+            }
+          ]
         }
       }
     },
@@ -1520,6 +1531,28 @@
         "turnOff",
         "turnOffThenOn",
         "none"
+      ]
+    },
+    "TravelerName": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Riebeck",
+        "Chert",
+        "Esker",
+        "Felspar",
+        "Gabbro",
+        "Solanum",
+        "Prisoner"
+      ],
+      "enum": [
+        "Riebeck",
+        "Chert",
+        "Esker",
+        "Felspar",
+        "Gabbro",
+        "Solanum",
+        "Prisoner"
       ]
     },
     "InstrumentZoneInfo": {
