@@ -16,27 +16,27 @@ namespace NewHorizons.Handlers
             var passed = true;
             if (check.allConditionsSet != null && check.allConditionsSet.Length > 0)
             {
-                passed = passed && check.allConditionsSet.All(c => dcm.GetConditionState(c));
+                passed = passed && check.allConditionsSet.All(dcm.GetConditionState);
             }
             if (check.anyConditionsSet != null && check.anyConditionsSet.Length > 0)
             {
-                passed = passed && check.anyConditionsSet.Any(c => dcm.GetConditionState(c));
+                passed = passed && check.anyConditionsSet.Any(dcm.GetConditionState);
             }
             if (check.allPersistentConditionsSet != null && check.allPersistentConditionsSet.Length > 0)
             {
-                passed = passed && check.allPersistentConditionsSet.All(c => PlayerData.GetPersistentCondition(c));
+                passed = passed && check.allPersistentConditionsSet.All(PlayerData.GetPersistentCondition);
             }
             if (check.anyPersistentConditionsSet != null && check.anyPersistentConditionsSet.Length > 0)
             {
-                passed = passed && check.anyPersistentConditionsSet.Any(c => PlayerData.GetPersistentCondition(c));
+                passed = passed && check.anyPersistentConditionsSet.Any(PlayerData.GetPersistentCondition);
             }
             if (check.allFactsRevealed != null && check.allFactsRevealed.Length > 0)
             {
-                passed = passed && check.allFactsRevealed.All(f => ShipLogHandler.KnowsFact(f));
+                passed = passed && check.allFactsRevealed.All(ShipLogHandler.KnowsFact);
             }
             if (check.anyFactsRevealed != null && check.anyFactsRevealed.Length > 0)
             {
-                passed = passed && check.anyFactsRevealed.Any(f => ShipLogHandler.KnowsFact(f));
+                passed = passed && check.anyFactsRevealed.Any(ShipLogHandler.KnowsFact);
             }
             if (check.invert)
             {
