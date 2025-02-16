@@ -26,7 +26,7 @@ namespace NewHorizons.Builder.ShipLog
             if (_astroObjectToMapModeInfo.TryGetValue(slao, out var mapModeInfo))
             {
                 return mapModeInfo;
-            } 
+            }
             else
             {
                 return null;
@@ -147,7 +147,7 @@ namespace NewHorizons.Builder.ShipLog
 
             Rect rect = new Rect(0, 0, texture.width, texture.height);
             Vector2 pivot = new Vector2(texture.width / 2, texture.height / 2);
-            newImage.sprite = Sprite.Create(texture, rect, pivot);
+            newImage.sprite = Sprite.Create(texture, rect, pivot, 100, 0, SpriteMeshType.FullRect, Vector4.zero, false);
 
             return newImageGO;
         }
@@ -188,7 +188,7 @@ namespace NewHorizons.Builder.ShipLog
 
             Texture2D image = null;
             Texture2D outline = null;
-            
+
             string imagePath = body.Config.ShipLog?.mapMode?.revealedSprite;
             string outlinePath = body.Config.ShipLog?.mapMode?.outlineSprite;
 
@@ -589,7 +589,7 @@ namespace NewHorizons.Builder.ShipLog
             GameObject newNodeGO = CreateMapModeGameObject(node.mainBody, parent, layer, position);
             ShipLogAstroObject astroObject = AddShipLogAstroObject(newNodeGO, node.mainBody, greyScaleMaterial, layer);
             if (node.mainBody.Config.FocalPoint != null)
-            { 
+            {
                 astroObject._imageObj.GetComponent<Image>().enabled = false;
                 astroObject._outlineObj.GetComponent<Image>().enabled = false;
                 astroObject._unviewedObj.GetComponent<Image>().enabled = false;
@@ -623,7 +623,7 @@ namespace NewHorizons.Builder.ShipLog
         }
 
         private static void ReplaceExistingMapModeIcon(NewHorizonsBody body, ModBehaviour mod, MapModeInfo info)
-        { 
+        {
             var astroObject = _astroObjectToShipLog[body.Object];
             var gameObject = astroObject.gameObject;
             var layer = gameObject.layer;

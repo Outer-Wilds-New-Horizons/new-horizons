@@ -64,6 +64,11 @@ namespace NewHorizons.External.Configs
         /// </summary>
         public string[] removeChildren;
 
+        /// <summary>
+        /// optimization. turn this off if you know you're generating a new body and aren't worried about other addons editing it.
+        /// </summary>
+        [DefaultValue(true)] public bool checkForExisting = true;
+
         #endregion
 
         #region Modules
@@ -530,7 +535,7 @@ namespace NewHorizons.External.Configs
                 Spawn.shipSpawnPoints = new SpawnModule.ShipSpawnPoint[] { Spawn.shipSpawn };
             }
 
-            // Because these guys put TWO spawn points 
+            // Because these guys put TWO spawn points
             if (starSystem == "2walker2.OogaBooga" && name == "The Campground")
             {
                 Spawn.playerSpawnPoints[0].isDefault = true;

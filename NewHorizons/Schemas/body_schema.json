@@ -43,6 +43,11 @@
         "type": "string"
       }
     },
+    "checkForExisting": {
+      "type": "boolean",
+      "description": "optimization. turn this off if you know you're generating a new body and aren't worried about other addons editing it.",
+      "default": true
+    },
     "AmbientLights": {
       "type": "array",
       "description": "Add ambient lights to this body",

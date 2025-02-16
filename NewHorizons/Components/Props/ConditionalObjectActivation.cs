@@ -13,7 +13,7 @@ namespace NewHorizons.Components.Props
         public bool CloseEyes;
         public bool SetActiveWithCondition;
 
-        private PlayerCameraEffectController _playerCameraEffectController;
+        private static PlayerCameraEffectController _playerCameraEffectController;
         private bool _changeConditionOnExitConversation;
         private bool _inConversation;
 
@@ -45,7 +45,7 @@ namespace NewHorizons.Components.Props
 
         public void Awake()
         {
-            _playerCameraEffectController = GameObject.FindObjectOfType<PlayerCameraEffectController>();
+            if (_playerCameraEffectController == null) _playerCameraEffectController = GameObject.FindObjectOfType<PlayerCameraEffectController>();
             GlobalMessenger<string, bool>.AddListener("DialogueConditionChanged", OnDialogueConditionChanged);
             GlobalMessenger.AddListener("ExitConversation", OnExitConversation);
             GlobalMessenger.AddListener("EnterConversation", OnEnterConversation);
