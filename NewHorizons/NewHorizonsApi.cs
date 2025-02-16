@@ -91,6 +91,7 @@ namespace NewHorizons
         public UnityEvent<string> GetStarSystemLoadedEvent() => Main.Instance.OnStarSystemLoaded;
         public UnityEvent<string> GetBodyLoadedEvent() => Main.Instance.OnPlanetLoaded;
         public UnityEvent<string> GetTitleScreenLoadedEvent() => Main.Instance.OnTitleScreenLoaded;
+        public UnityEvent GetAllTitleScreensLoadedEvent() => Main.Instance.OnAllTitleScreensLoaded;
 
         public bool SetDefaultSystem(string name)
         {

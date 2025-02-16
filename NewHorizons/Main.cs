@@ -112,6 +112,7 @@ namespace NewHorizons
         public StringEvent OnStarSystemLoaded = new();
         public StringEvent OnPlanetLoaded = new();
         public StringEvent OnTitleScreenLoaded = new();
+        public UnityEvent OnAllTitleScreensLoaded = new();
 
         /// <summary>
         /// Depending on platform, the AsyncOwnershipStatus might not be ready by the time we go to check it.

@@ -91,6 +91,15 @@ namespace NewHorizons.Handlers
             // default to displaying nh planets if no title screen builders
             else
                 DisplayBodiesOnTitleScreen();
+
+            try
+            {
+                Main.Instance.OnAllTitleScreensLoaded?.Invoke();
+            }
+            catch (Exception e)
+            {
+                NHLogger.LogError($"Error in event handler for OnAllTitleScreensLoaded: {e}");
+            }
         }
 
         public static void InitSubtitles()
