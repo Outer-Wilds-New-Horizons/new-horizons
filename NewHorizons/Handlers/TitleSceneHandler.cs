@@ -428,9 +428,9 @@ namespace NewHorizons.Handlers
             return meshRenderer;
         }
 
-        public static void RegisterBuilder(IModBehaviour mod, Action<GameObject> builder, bool disableNHPlanets, bool shareTitleScreen, string conditionRequired, string factRequired)
+        public static void RegisterBuilder(IModBehaviour mod, Action<GameObject> builder, bool disableNHPlanets, bool shareTitleScreen, string persistentConditionRequired, string factRequired)
         {
-            TitleScreenBuilders.SafeAdd(mod, new TitleScreenBuilder(mod, builder, disableNHPlanets, shareTitleScreen, conditionRequired, factRequired));
+            TitleScreenBuilders.SafeAdd(mod, new TitleScreenBuilder(mod, builder, disableNHPlanets, shareTitleScreen, persistentConditionRequired, factRequired));
         }
 
         internal class TitleScreenBuilder : ITitleScreenBuilder
@@ -439,16 +439,16 @@ namespace NewHorizons.Handlers
             public Action<GameObject> builder;
             public bool disableNHPlanets;
             public bool shareTitleScreen;
-            public string conditionRequired;
+            public string persistentConditionRequired;
             public string factRequired;
 
-            public TitleScreenBuilder(IModBehaviour mod, Action<GameObject> builder, bool disableNHPlanets, bool shareTitleScreen, string conditionRequired, string factRequired)
+            public TitleScreenBuilder(IModBehaviour mod, Action<GameObject> builder, bool disableNHPlanets, bool shareTitleScreen, string persistentConditionRequired, string factRequired)
             {
                 this.mod = mod;
                 this.builder = builder;
                 this.disableNHPlanets = disableNHPlanets;
                 this.shareTitleScreen = shareTitleScreen;
-                this.conditionRequired = conditionRequired;
+                this.persistentConditionRequired = persistentConditionRequired;
                 this.factRequired = factRequired;
             }
 
@@ -482,7 +482,7 @@ namespace NewHorizons.Handlers
 
             public bool KnowsFact() => string.IsNullOrEmpty(factRequired) || StandaloneProfileManager.SharedInstance.currentProfile != null && ShipLogHandler.KnowsFact(factRequired);
 
-            public bool HasCondition() => string.IsNullOrEmpty(conditionRequired) || StandaloneProfileManager.SharedInstance.currentProfile != null && PlayerData.GetPersistentCondition(conditionRequired);
+            public bool HasCondition() => string.IsNullOrEmpty(persistentConditionRequired) || StandaloneProfileManager.SharedInstance.currentProfile != null && PlayerData.GetPersistentCondition(persistentConditionRequired);
         }
 
         internal class TitleScreenConfigBuilder : ITitleScreenBuilder

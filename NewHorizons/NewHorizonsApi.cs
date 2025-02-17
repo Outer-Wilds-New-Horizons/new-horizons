@@ -365,7 +365,7 @@ namespace NewHorizons
 
         public void SetNextSpawnID(string id) => PlayerSpawnHandler.TargetSpawnID = id;
 
-        public void RegisterTitleScreenBuilder(IModBehaviour mod, Action<GameObject> builder, bool disableNHPlanets = true, bool shareTitleScreen = false, string conditionRequired = null, string factRequired = null)
-             => TitleSceneHandler.RegisterBuilder(mod, builder, disableNHPlanets, shareTitleScreen, conditionRequired, factRequired);
+        public void RegisterTitleScreenBuilder(IModBehaviour mod, Action<GameObject> builder, bool disableNHPlanets = true, bool shareTitleScreen = false, string persistentConditionRequired = null, string factRequired = null)
+             => TitleSceneHandler.RegisterBuilder(mod, builder, disableNHPlanets, shareTitleScreen, persistentConditionRequired, factRequired);
     }
 }
