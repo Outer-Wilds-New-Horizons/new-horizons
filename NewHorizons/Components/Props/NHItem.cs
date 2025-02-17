@@ -90,6 +90,7 @@ namespace NewHorizons.Components.Props
 
         void PlayCustomSound(AudioType audioType)
         {
+            if (audioType == AudioType.None) return;
             if (ItemBuilder.IsCustomItemType(ItemType))
             {
                 Locator.GetPlayerAudioController()._oneShotExternalSource.PlayOneShot(audioType);
