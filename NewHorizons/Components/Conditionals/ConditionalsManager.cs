@@ -12,9 +12,10 @@ namespace NewHorizons.Components.Conditionals
 {
     public class ConditionalsManager : MonoBehaviour
     {
-        public const int MAX_RECURSION = 100;
+        public const int MAX_RECURSION = 120;
 
         List<ConditionalCheckInfo> _checks = new();
+        bool _checksScheduled;
         int _recursionCount = 0;
         bool _avoidRecursionLogSpam = false;
 
@@ -30,33 +31,42 @@ namespace NewHorizons.Components.Conditionals
 
         protected void Awake()
         {
-            GlobalMessenger.AddListener("DialogueConditionsReset", CalculateChecks);
-            GlobalMessenger<string, bool>.AddListener("DialogueConditionChanged", CalculateChecks);
-            GlobalMessenger<string, bool>.AddListener("NHPersistentConditionChanged", CalculateChecks);
-            GlobalMessenger.AddListener("ShipLogUpdated", CalculateChecks);
+            GlobalMessenger.AddListener("DialogueConditionsReset", ScheduleChecks);
+            GlobalMessenger<string, bool>.AddListener("DialogueConditionChanged", ScheduleChecks);
+            GlobalMessenger<string, bool>.AddListener("NHPersistentConditionChanged", ScheduleChecks);
+            GlobalMessenger.AddListener("ShipLogUpdated", ScheduleChecks);
         }
 
         protected void OnDestroy()
         {
-            GlobalMessenger.RemoveListener("DialogueConditionsReset", CalculateChecks);
-            GlobalMessenger<string, bool>.RemoveListener("DialogueConditionChanged", CalculateChecks);
-            GlobalMessenger<string, bool>.RemoveListener("NHPersistentConditionChanged", CalculateChecks);
-            GlobalMessenger.RemoveListener("ShipLogUpdated", CalculateChecks);
+            GlobalMessenger.RemoveListener("DialogueConditionsReset", ScheduleChecks);
+            GlobalMessenger<string, bool>.RemoveListener("DialogueConditionChanged", ScheduleChecks);
+            GlobalMessenger<string, bool>.RemoveListener("NHPersistentConditionChanged", ScheduleChecks);
+            GlobalMessenger.RemoveListener("ShipLogUpdated", ScheduleChecks);
         }
 
-        protected void Update()
+        protected void LateUpdate()
         {
-            _recursionCount = 0;
-            enabled = false;
+            if (_checksScheduled)
+            {
+                _checksScheduled = false;
+                DoChecks();
+            }
+            else
+            {
+                // We had a frame without any checks being scheduled, so reset the recursion count and disable Update() again
+                _recursionCount = 0;
+                enabled = false;
+            }
         }
 
-        void CalculateChecks()
+        void DoChecks()
         {
             if (_recursionCount >= MAX_RECURSION)
             {
                 if (!_avoidRecursionLogSpam)
                 {
-                    NHLogger.LogError($"Possible infinite loop detected while processing conditional checks. This is likely caused by a mod using conflicting conditional checks that both set and unset the same condition.");
+                    NHLogger.LogError($"Possible infinite loop detected while processing conditional checks; conditions were changed every single frame for {MAX_RECURSION} frames. This is likely caused by a mod using conflicting conditional checks that both set and unset the same condition.");
                     _avoidRecursionLogSpam = true;
                 }
                 return;
@@ -65,19 +75,25 @@ namespace NewHorizons.Components.Conditionals
             foreach (var check in _checks)
             {
                 bool checkPassed = ConditionalsHandler.Check(check.check);
-                if (checkPassed)
-                {
-                    ConditionalsHandler.ApplyEffects(check.then, checkPassed);
-                }
+                ConditionalsHandler.ApplyEffects(check.then, checkPassed);
             }
             _recursionCount++;
+            // Allow Update() to run
+            enabled = true;
+        }
+
+        // We schedule checks for the end of the frame instead of doing them immediately because GlobalMessenger doesn't support recursion and will throw an error if we update a condition that fires off another GlobalMessenger event
+        void ScheduleChecks()
+        {
+            _checksScheduled = true;
+            // Allow Update() to run
             enabled = true;
         }
 
         // We could theoretically filter checks by conditionName here and only do the checks that matter, but the performance gain is likely not significant enough to be worth the extra complexity
-        void CalculateChecks(string conditionName, bool conditionState)
+        void ScheduleChecks(string conditionName, bool conditionState)
         {
-            CalculateChecks();
+            ScheduleChecks();
         }
     }
 }
