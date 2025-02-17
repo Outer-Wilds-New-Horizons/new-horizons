@@ -14,6 +14,7 @@ const schemas = [
     "addon_manifest_schema.json",
     "dialogue_schema.xsd",
     "text_schema.xsd",
+    "title_screen_schema.json",
     "shiplog_schema.xsd"
 ];
 
