@@ -448,7 +448,7 @@ namespace NewHorizons.Handlers
 
         internal static void ResetConfigs()
         {
-            foreach (var builderList in TitleSceneHandler.TitleScreenBuilders.Values)
+            foreach (var builderList in TitleScreenBuilders.Values)
             {
                 builderList.list.RemoveAll(builder => builder is TitleScreenConfigBuilder);
             }
@@ -525,6 +525,8 @@ namespace NewHorizons.Handlers
 
             private int index = -1;
             public int Index { get => index; set => index = value; }
+
+            public override string ToString() => Mod.ModHelper.Manifest.UniqueName + " #" + Index;
         }
 
         internal class TitleScreenConfigBuilder : ITitleScreenBuilder
@@ -572,6 +574,8 @@ namespace NewHorizons.Handlers
 
             private int index = -1;
             public int Index { get => index; set => index = value; }
+
+            public override string ToString() => Mod.ModHelper.Manifest.UniqueName + " #" + Index;
         }
 
         internal interface ITitleScreenBuilder
