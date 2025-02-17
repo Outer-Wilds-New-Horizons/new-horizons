@@ -12,7 +12,7 @@
       "type": "string",
       "description": "Ship log fact required for this title screen to appear."
     },
-    "conditionRequiredForTitle": {
+    "persistentConditionRequiredForTitle": {
       "type": "string",
       "description": "Persistent condition required for this title screen to appear."
     },
