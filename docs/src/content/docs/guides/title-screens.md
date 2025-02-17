@@ -64,4 +64,88 @@ A title screen config file will look something like this:
 }
 ```
 
+## Configs
+
+### `disableNHPlanets`
+
+If set to `true`, prevents NH-generated planets from appearing on the title screen. Defaults to true.
+
+### `shareTitleScreen`
+
+If set to `true`, this title screen will merge with others that have the same setting enabled. For more info head to the [sharing section](#sharing) of this page. Defaults to false.
+
+### `menuTextTint`
+
+Defines the color of the menu text and logo. Uses RGB values, where `r`, `g`, and `b` range from `0` to `255`.
+
+### `factRequiredForTitle`
+
+Specifies a ship log fact that must be discovered for this title screen to appear.
+
+### `conditionRequiredForTitle`
+
+Specifies a persistent condition required for this title screen to appear.
+
+### `music` and `ambience`
+
+The audio for background music and ambience. Can be a path to a .wav/.ogg/.mp3 file, or taken from the [AudioClip list](/reference/audio-enum).
+
+### `Background` and `MenuPlanet`
+
+A module for the background and main menu planet that include object additions, removal, and rotation speed.
+
+## Schema
+
 To see all the different things you can put into a config file check out the [Title Screen Schema](/schemas/title-screen-schema).
+
+## API
+
+New Horizons provides an API method to register and build custom title screens dynamically:
+
+```csharp title="INewHorizons.cs"
+/// <summary>
+/// Registers a builder for the main menu.
+/// Call this once before the main menu finishes loading
+/// </summary>
+void RegisterTitleScreenBuilder(IModBehaviour mod, Action<GameObject> builder, bool disableNHPlanets = true, bool shareTitleScreen = false, string conditionRequired = null, string factRequired = null);
+```
+
+It shares a few values with the configs but also has an exclusive one.
+
+`builder`: Builder to run when this title screen is selected. The GameObject passed through it is the main scene object containing both the background and menu planet.
+
+### Example usage
+
+```csharp title="YourModBehaviour.cs"
+NewHorizons = ModHelper.Interaction.TryGetModApi<INewHorizons>("xen.NewHorizons");
+NewHorizons.RegisterTitleScreenBuilder(this, BuildTitleScreen, disableNHPlanets: true, shareTitleScreen: true);
+```
+
+```csharp title="YourModBehaviour.cs"
+public void BuildTitleScreen(GameObject scene)
+{
+    ModHelper.Console.WriteLine($"Building title screen", MessageType.Success);
+    //Add an object to the title screen or do whatever else you want
+}
+```
+
+## Events
+
+Additionally, New Horizons provides events for tracking title screen loading:
+
+```csharp title="INewHorizons.cs"
+/// <summary>
+/// An event invoked when NH has finished building a title screen.
+/// Gives the unique name of the mod the title screen builder was from.
+/// </summary>
+UnityEvent<string> GetTitleScreenLoadedEvent();
+
+/// <summary>
+/// An event invoked when NH has finished building the title screen.
+/// </summary>
+UnityEvent GetAllTitleScreensLoadedEvent();
+```
+
+## Sharing
+
+New Horizons will randomly select a valid title screen each time the user enters the main menu and then if `shareTitleScreen` is set to `true` it will build all the other shareable title screens (that also have matching `disableNHPlanets` values). If it doesn't have share set to true then it will only show the randomly selected.
