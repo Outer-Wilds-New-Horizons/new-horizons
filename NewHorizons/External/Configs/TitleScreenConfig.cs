@@ -12,7 +12,7 @@ namespace NewHorizons.External.Configs
         /// <summary>
         /// Create title screens
         /// </summary>
-        public TitleScreenInfo[] titleScreens;
+        public TitleScreenInfo[] titleScreens = new TitleScreenInfo[0];
     }
 
     [JsonObject]
