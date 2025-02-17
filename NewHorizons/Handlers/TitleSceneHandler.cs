@@ -446,6 +446,14 @@ namespace NewHorizons.Handlers
                     disableNHPlanets, shareTitleScreen,
                     persistentConditionRequired, factRequired));
 
+        internal static void ResetConfigs()
+        {
+            foreach (var builderList in TitleSceneHandler.TitleScreenBuilders.Values)
+            {
+                builderList.list.RemoveAll(builder => builder is TitleScreenConfigBuilder);
+            }
+        }
+
         internal class TitleScreenBuilderList
         {
             public List<ITitleScreenBuilder> list = new List<ITitleScreenBuilder>();

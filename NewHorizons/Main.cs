@@ -175,6 +175,9 @@ namespace NewHorizons
         {
             BodyDict.Clear();
             SystemDict.Clear();
+            TitleScreenConfigs.Clear();
+
+            TitleSceneHandler.ResetConfigs();
 
             BodyDict["SolarSystem"] = new List<NewHorizonsBody>();
             BodyDict["EyeOfTheUniverse"] = new List<NewHorizonsBody>(); // Keep this empty tho fr
