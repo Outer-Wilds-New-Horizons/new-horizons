@@ -22,7 +22,7 @@ namespace NewHorizons.External.Configs
         /// <summary>
         /// Persistent condition required for this title screen to appear.
         /// </summary>
-        public string conditionRequiredForTitle;
+        public string persistentConditionRequiredForTitle;
 
         /// <summary>
         /// If set to true, NH generated planets will not show on the title screen. If false, this title screen has the same chance as other NH planet title screens to show.

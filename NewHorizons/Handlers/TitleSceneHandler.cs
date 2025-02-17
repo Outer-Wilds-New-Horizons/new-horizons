@@ -526,7 +526,7 @@ namespace NewHorizons.Handlers
 
             public bool KnowsFact() => string.IsNullOrEmpty(config.factRequiredForTitle) || StandaloneProfileManager.SharedInstance.currentProfile != null && ShipLogHandler.KnowsFact(config.factRequiredForTitle);
 
-            public bool HasCondition() => string.IsNullOrEmpty(config.conditionRequiredForTitle) || StandaloneProfileManager.SharedInstance.currentProfile != null && PlayerData.GetPersistentCondition(config.conditionRequiredForTitle);
+            public bool HasCondition() => string.IsNullOrEmpty(config.persistentConditionRequiredForTitle) || StandaloneProfileManager.SharedInstance.currentProfile != null && PlayerData.GetPersistentCondition(config.persistentConditionRequiredForTitle);
         }
 
         internal interface ITitleScreenBuilder
