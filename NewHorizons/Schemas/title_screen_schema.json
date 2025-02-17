@@ -4,45 +4,16 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
-    "menuTextTint": {
-      "description": "Colour of the text on the main menu",
-      "$ref": "#/definitions/MColor"
+    "titleScreens": {
+      "type": "array",
+      "description": "Create title screens",
+      "items": {
+        "$ref": "#/definitions/TitleScreenInfo"
+      }
     },
-    "factRequiredForTitle": {
+    "$schema": {
       "type": "string",
-      "description": "Ship log fact required for this title screen to appear."
-    },
-    "persistentConditionRequiredForTitle": {
-      "type": "string",
-      "description": "Persistent condition required for this title screen to appear."
-    },
-    "disableNHPlanets": {
-      "type": "boolean",
-      "description": "If set to true, NH generated planets will not show on the title screen. If false, this title screen has the same chance as other NH planet title screens to show."
-    },
-    "shareTitleScreen": {
-      "type": "boolean",
-      "description": "If set to true, this custom title screen will merge with all other custom title screens with shareTitleScreen set to true. If false, NH will randomly select between this and other valid title screens that are loaded."
-    },
-    "Skybox": {
-      "description": "Customize the skybox for this title screen",
-      "$ref": "#/definitions/SkyboxModule"
-    },
-    "music": {
-      "type": "string",
-      "description": "The music audio that will play on the title screen. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
-    },
-    "ambience": {
-      "type": "string",
-      "description": "The ambience audio that will play on the title screen. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
-    },
-    "Background": {
-      "description": "Edit properties of the background",
-      "$ref": "#/definitions/BackgroundModule"
-    },
-    "MenuPlanet": {
-      "description": "Edit properties of the main menu planet",
-      "$ref": "#/definitions/MenuPlanetModule"
+      "description": "The schema to validate with"
     },
     "extras": {
       "type": "object",
@@ -50,13 +21,58 @@
       "additionalProperties": {
         "type": "object"
       }
-    },
-    "$schema": {
-      "type": "string",
-      "description": "The schema to validate with"
     }
   },
   "definitions": {
+    "TitleScreenInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "menuTextTint": {
+          "description": "Colour of the text on the main menu",
+          "$ref": "#/definitions/MColor"
+        },
+        "factRequiredForTitle": {
+          "type": "string",
+          "description": "Ship log fact required for this title screen to appear."
+        },
+        "persistentConditionRequiredForTitle": {
+          "type": "string",
+          "description": "Persistent condition required for this title screen to appear."
+        },
+        "disableNHPlanets": {
+          "type": "boolean",
+          "description": "If set to true, NH generated planets will not show on the title screen. If false, this title screen has the same chance as other NH planet title screens to show."
+        },
+        "shareTitleScreen": {
+          "type": "boolean",
+          "description": "If set to true, this custom title screen will merge with all other custom title screens with shareTitleScreen set to true. If false, NH will randomly select between this and other valid title screens that are loaded."
+        },
+        "Skybox": {
+          "description": "Customize the skybox for this title screen",
+          "$ref": "#/definitions/SkyboxModule"
+        },
+        "music": {
+          "type": "string",
+          "description": "The music audio that will play on the title screen. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+        },
+        "ambience": {
+          "type": "string",
+          "description": "The ambience audio that will play on the title screen. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+        },
+        "Background": {
+          "description": "Edit properties of the background",
+          "$ref": "#/definitions/BackgroundModule"
+        },
+        "MenuPlanet": {
+          "description": "Edit properties of the main menu planet",
+          "$ref": "#/definitions/MenuPlanetModule"
+        },
+        "extras": {
+          "description": "Extra data that may be used by extension mods"
+        }
+      }
+    },
     "MColor": {
       "type": "object",
       "additionalProperties": false,
