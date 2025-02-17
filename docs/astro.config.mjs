@@ -90,6 +90,7 @@ export default defineConfig({
                         { label: "Addon Manifest Schema", link: "schemas/addon-manifest-schema" },
                         { label: "Dialogue Schema", link: "schemas/dialogue-schema" },
                         { label: "Text Schema", link: "schemas/text-schema" },
+                        { label: "Title Screen Schema", link: "schemas/title-screen-schema" },
                         { label: "Ship Log Schema", link: "schemas/shiplog-schema" }
                     ]
                 },
