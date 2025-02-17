@@ -146,6 +146,25 @@ UnityEvent<string> GetTitleScreenLoadedEvent();
 UnityEvent GetAllTitleScreensLoadedEvent();
 ```
 
+### Example usage
+
+```csharp title="YourModBehaviour.cs"
+NewHorizons = ModHelper.Interaction.TryGetModApi<INewHorizons>("xen.NewHorizons");
+NewHorizons.GetTitleScreenLoadedEvent().AddListener(OnTitleScreenLoaded);
+NewHorizons.GetAllTitleScreensLoadedEvent().AddListener(OnAllTitleScreensLoaded);
+```
+
+```csharp title="YourModBehaviour.cs"
+public void OnTitleScreenLoaded(string modUniqueName)
+{
+    ModHelper.Console.WriteLine($"Title screen loaded: " + modUniqueName, MessageType.Success);
+}
+public void OnAllTitleScreensLoaded()
+{
+    ModHelper.Console.WriteLine($"All title screens loaded", MessageType.Success);
+}
+```
+
 ## Sharing
 
 New Horizons will randomly select a valid title screen each time the user enters the main menu and then if `shareTitleScreen` is set to `true` it will build all the other shareable title screens (that also have matching `disableNHPlanets` values). If it doesn't have share set to true then it will only show the randomly selected.
