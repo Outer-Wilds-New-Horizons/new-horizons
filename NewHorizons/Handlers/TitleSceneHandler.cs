@@ -19,7 +19,7 @@ namespace NewHorizons.Handlers
 {
     public static class TitleSceneHandler
     {
-        internal static Dictionary<IModBehaviour, TitleScreenBuilder> TitleScreenBuilders = new();
+        internal static Dictionary<IModBehaviour, TitleScreenBuilderList> TitleScreenBuilders = new();
         internal static NewHorizonsBody[] eligibleBodies => Main.BodyDict.Values.ToList().SelectMany(x => x).ToList()
             .Where(b => (b.Config.HeightMap != null || b.Config.Atmosphere?.clouds != null) && b.Config.Star == null && b.Config.canShowOnTitle).ToArray();
         internal static int eligibleCount => eligibleBodies.Count();
@@ -57,9 +57,9 @@ namespace NewHorizons.Handlers
                     profileManager.currentProfileInputJSON);
 
             // Grab configs and handlers and merge them into one list
-            var validBuilders = Main.TitleScreenConfigs.Select(kvp => (ITitleScreenBuilder)new TitleScreenConfigBuilder(kvp.Key, kvp.Value))
-                .Concat(TitleScreenBuilders.Select(kvp => (ITitleScreenBuilder)kvp.Value))
-                .Where(builder => builder.KnowsFact() && builder.HasCondition()).ToList();
+            var validBuilders = TitleScreenBuilders.Values
+                .Where(list => list.IsValid)
+                .Select(list => list.GetRelevantBuilder()).ToList();
 
             var hasNHPlanets = eligibleCount != 0;
 
@@ -428,9 +428,41 @@ namespace NewHorizons.Handlers
             return meshRenderer;
         }
 
-        public static void RegisterBuilder(IModBehaviour mod, Action<GameObject> builder, bool disableNHPlanets, bool shareTitleScreen, string persistentConditionRequired, string factRequired)
+        internal static void RegisterBuilder(IModBehaviour mod, ITitleScreenBuilder builder)
         {
-            TitleScreenBuilders.SafeAdd(mod, new TitleScreenBuilder(mod, builder, disableNHPlanets, shareTitleScreen, persistentConditionRequired, factRequired));
+            if (!TitleScreenBuilders.ContainsKey(mod))
+                TitleScreenBuilders.Add(mod, new TitleScreenBuilderList());
+
+            TitleScreenBuilders[mod].Add(builder);
+        }
+
+        public static void RegisterBuilder(IModBehaviour mod, TitleScreenConfig config)
+            => RegisterBuilder(mod,
+                new TitleScreenConfigBuilder(mod, config));
+
+        public static void RegisterBuilder(IModBehaviour mod, Action<GameObject> builder, bool disableNHPlanets, bool shareTitleScreen, string persistentConditionRequired, string factRequired)
+            => RegisterBuilder(mod,
+                new TitleScreenBuilder(mod, builder,
+                    disableNHPlanets, shareTitleScreen,
+                    persistentConditionRequired, factRequired));
+
+        internal class TitleScreenBuilderList
+        {
+            public List<ITitleScreenBuilder> list = new List<ITitleScreenBuilder>();
+
+            public void Add(ITitleScreenBuilder builder)
+            {
+                list.Add(builder);
+            }
+
+            public bool IsValid => GetRelevantBuilder() != null;
+
+            public ITitleScreenBuilder GetRelevantBuilder()
+            {
+                if (list.Count <= 1) return list.FirstOrDefault();
+
+                return list.LastOrDefault(builder => builder.KnowsFact() && builder.HasCondition());
+            }
         }
 
         internal class TitleScreenBuilder : ITitleScreenBuilder
