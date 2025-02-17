@@ -459,8 +459,6 @@ namespace NewHorizons.Handlers
 
             public ITitleScreenBuilder GetRelevantBuilder()
             {
-                if (list.Count <= 1) return list.FirstOrDefault();
-
                 return list.LastOrDefault(builder => builder.KnowsFact() && builder.HasCondition());
             }
         }
