@@ -76,8 +76,6 @@ namespace NewHorizons.Handlers
                     DisplayBodiesOnTitleScreen();
                 }
 
-                randomBuilder.Build();
-
                 // if it can share build extras
                 if (randomBuilder.CanShare)
                 {
@@ -87,6 +85,9 @@ namespace NewHorizons.Handlers
                         builder.Build();
                     }
                 }
+                
+                // Build main one last so it overrides the extras
+                randomBuilder.Build();
             }
             // default to displaying nh planets if no title screen builders
             else
