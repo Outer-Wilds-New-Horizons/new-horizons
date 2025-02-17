@@ -860,6 +860,10 @@ namespace NewHorizons
             }
 
             TitleScreenConfigs[mod] = titleScreenConfig;
+            foreach (var info in titleScreenConfig.titleScreens)
+            {
+                TitleSceneHandler.RegisterBuilder(mod, info);
+            }
         }
 
         private void LoadTranslations(string folder, IModBehaviour mod)

@@ -119,7 +119,7 @@ namespace NewHorizons.Handlers
             subtitleContainer.AddComponent<SubtitlesHandler>();
         }
 
-        public static void BuildConfig(IModBehaviour mod, TitleScreenConfig config)
+        public static void BuildConfig(IModBehaviour mod, TitleScreenInfo config)
         {
             if (config.menuTextTint != null)
             {
@@ -436,7 +436,7 @@ namespace NewHorizons.Handlers
             TitleScreenBuilders[mod].Add(builder);
         }
 
-        public static void RegisterBuilder(IModBehaviour mod, TitleScreenConfig config)
+        public static void RegisterBuilder(IModBehaviour mod, TitleScreenInfo config)
             => RegisterBuilder(mod,
                 new TitleScreenConfigBuilder(mod, config));
 
@@ -522,9 +522,9 @@ namespace NewHorizons.Handlers
         internal class TitleScreenConfigBuilder : ITitleScreenBuilder
         {
             public IModBehaviour mod;
-            public TitleScreenConfig config;
+            public TitleScreenInfo config;
 
-            public TitleScreenConfigBuilder(IModBehaviour mod, TitleScreenConfig config)
+            public TitleScreenConfigBuilder(IModBehaviour mod, TitleScreenInfo config)
             {
                 this.mod = mod;
                 this.config = config;

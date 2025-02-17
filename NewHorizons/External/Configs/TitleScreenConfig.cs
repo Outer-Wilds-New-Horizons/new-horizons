@@ -10,6 +10,15 @@ namespace NewHorizons.External.Configs
     public class TitleScreenConfig
     {
         /// <summary>
+        /// Create title screens
+        /// </summary>
+        public TitleScreenInfo[] titleScreens;
+    }
+
+    [JsonObject]
+    public class TitleScreenInfo
+    {
+        /// <summary>
         /// Colour of the text on the main menu
         /// </summary>
         public MColor menuTextTint;
