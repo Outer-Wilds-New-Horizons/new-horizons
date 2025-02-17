@@ -43,8 +43,8 @@ namespace NewHorizons.Handlers
             ambientLight.transform.SetParent(planetRoot.transform, true);
 
             InitSubtitles();
-            TitleScreenColourHandler.ResetColour();
-            AudioTypeHandler.Init();
+            TitleScreenColourHandler.ResetColour(); // reset color at the start
+            AudioTypeHandler.Init(); // init audio for custom music
 
             // Load player data for fact and persistent condition checking
             var profileManager = StandaloneProfileManager.SharedInstance;
