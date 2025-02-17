@@ -209,24 +209,6 @@ namespace NewHorizons.Builder.Props
                 }
             }
 
-            if (detail.item != null)
-            {
-                ItemBuilder.MakeItem(prop, go, sector, detail.item, mod);
-                isItem = true;
-                if (detail.hasPhysics)
-                {
-                    NHLogger.LogWarning($"An item with the path {detail.path} has both '{nameof(DetailInfo.hasPhysics)}' and '{nameof(DetailInfo.item)}' set. This will usually result in undesirable behavior.");
-                }
-            }
-
-            if (detail.itemSocket != null)
-            {
-                ItemBuilder.MakeSocket(prop, go, sector, detail.itemSocket);
-            }
-
-            // Items should always be kept loaded else they will vanish in your hand as you leave the sector
-            if (isItem) detail.keepLoaded = true;
-
             prop.transform.localScale = detail.stretch ?? (detail.scale != 0 ? Vector3.one * detail.scale : prefab.transform.localScale);
 
             if (detail.removeChildren != null)
@@ -271,11 +253,29 @@ namespace NewHorizons.Builder.Props
                 prop = newDetailGO;
             }
 
+            if (detail.item != null)
+            {
+                ItemBuilder.MakeItem(prop, go, sector, detail.item, mod);
+                isItem = true;
+                if (detail.hasPhysics)
+                {
+                    NHLogger.LogWarning($"An item with the path {detail.path} has both '{nameof(DetailInfo.hasPhysics)}' and '{nameof(DetailInfo.item)}' set. This will usually result in undesirable behavior.");
+                }
+            }
+
+            if (detail.itemSocket != null)
+            {
+                ItemBuilder.MakeSocket(prop, go, sector, detail.itemSocket);
+            }
+
             if (isItem)
             {
                 // Else when you put them down you can't pick them back up
                 var col = prop.GetComponent<OWCollider>();
                 if (col != null) col._physicsRemoved = false;
+
+                // Items should always be kept loaded else they will vanish in your hand as you leave the sector
+                detail.keepLoaded = true;
             }
 
             if (!detail.keepLoaded) GroupsBuilder.Make(prop, sector);
