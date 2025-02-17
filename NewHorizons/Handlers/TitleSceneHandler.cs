@@ -453,6 +453,7 @@ namespace NewHorizons.Handlers
             public void Add(ITitleScreenBuilder builder)
             {
                 list.Add(builder);
+                builder.Index = list.IndexOf(builder);
             }
 
             public bool IsValid => GetRelevantBuilder() != null;
@@ -484,23 +485,23 @@ namespace NewHorizons.Handlers
 
             public void Build()
             {
-                NHLogger.LogVerbose("Building handler: " + mod.ModHelper.Manifest.UniqueName);
+                NHLogger.LogVerbose($"Building handler {mod.ModHelper.Manifest.UniqueName} #{index}");
                 try
                 {
                     builder.Invoke(SearchUtilities.Find("Scene"));
                 }
                 catch (Exception e)
                 {
-                    NHLogger.LogError(e);
+                    NHLogger.LogError($"Error while building title screen handler {mod.ModHelper.Manifest.UniqueName} #{index}: {e}");
                 }
 
                 try
                 {
-                    Main.Instance.OnTitleScreenLoaded?.Invoke(mod.ModHelper.Manifest.UniqueName);
+                    Main.Instance.OnTitleScreenLoaded?.Invoke(mod.ModHelper.Manifest.UniqueName, index);
                 }
                 catch (Exception e)
                 {
-                    NHLogger.LogError($"Error in event handler for OnTitleScreenLoaded on title screen {mod.ModHelper.Manifest.UniqueName}: {e}");
+                    NHLogger.LogError($"Error in event handler for OnTitleScreenLoaded on title screen {mod.ModHelper.Manifest.UniqueName} #{index}: {e}");
                 }
             }
 
@@ -513,6 +514,9 @@ namespace NewHorizons.Handlers
             public bool KnowsFact() => string.IsNullOrEmpty(factRequired) || StandaloneProfileManager.SharedInstance.currentProfile != null && ShipLogHandler.KnowsFact(factRequired);
 
             public bool HasCondition() => string.IsNullOrEmpty(persistentConditionRequired) || StandaloneProfileManager.SharedInstance.currentProfile != null && PlayerData.GetPersistentCondition(persistentConditionRequired);
+
+            private int index = -1;
+            public int Index { get => index; set => index = value; }
         }
 
         internal class TitleScreenConfigBuilder : ITitleScreenBuilder
@@ -528,23 +532,23 @@ namespace NewHorizons.Handlers
 
             public void Build()
             {
-                NHLogger.LogVerbose("Building config: " + mod.ModHelper.Manifest.UniqueName);
+                NHLogger.LogVerbose($"Building config {mod.ModHelper.Manifest.UniqueName} #{index}");
                 try
                 {
                     BuildConfig(mod, config);
                 }
                 catch (Exception e)
                 {
-                    NHLogger.LogError(e);
+                    NHLogger.LogError($"Error while building title screen config {mod.ModHelper.Manifest.UniqueName} #{index}: {e}");
                 }
 
                 try
                 {
-                    Main.Instance.OnTitleScreenLoaded?.Invoke(mod.ModHelper.Manifest.UniqueName);
+                    Main.Instance.OnTitleScreenLoaded?.Invoke(mod.ModHelper.Manifest.UniqueName, index);
                 }
                 catch (Exception e)
                 {
-                    NHLogger.LogError($"Error in event handler for OnTitleScreenLoaded on title screen {mod.ModHelper.Manifest.UniqueName}: {e}");
+                    NHLogger.LogError($"Error in event handler for OnTitleScreenLoaded on title screen {mod.ModHelper.Manifest.UniqueName} #{index}: {e}");
                 }
             }
 
@@ -557,6 +561,9 @@ namespace NewHorizons.Handlers
             public bool KnowsFact() => string.IsNullOrEmpty(config.factRequiredForTitle) || StandaloneProfileManager.SharedInstance.currentProfile != null && ShipLogHandler.KnowsFact(config.factRequiredForTitle);
 
             public bool HasCondition() => string.IsNullOrEmpty(config.persistentConditionRequiredForTitle) || StandaloneProfileManager.SharedInstance.currentProfile != null && PlayerData.GetPersistentCondition(config.persistentConditionRequiredForTitle);
+
+            private int index = -1;
+            public int Index { get => index; set => index = value; }
         }
 
         internal interface ITitleScreenBuilder
@@ -570,6 +577,8 @@ namespace NewHorizons.Handlers
             void Build();
             bool KnowsFact();
             bool HasCondition();
+
+            int Index { get; set; }
         }
 
         /// <summary>

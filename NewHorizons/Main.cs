@@ -112,7 +112,8 @@ namespace NewHorizons
         public StringEvent OnChangeStarSystem = new();
         public StringEvent OnStarSystemLoaded = new();
         public StringEvent OnPlanetLoaded = new();
-        public StringEvent OnTitleScreenLoaded = new();
+        public class StringIndexEvent : UnityEvent<string, int> { }
+        public StringIndexEvent OnTitleScreenLoaded = new();
         public UnityEvent OnAllTitleScreensLoaded = new();
 
         /// <summary>

@@ -76,9 +76,9 @@ namespace NewHorizons
 
         /// <summary>
         /// An event invoked when NH has finished building a title screen.
-        /// Gives the unique name of the mod the title screen builder was from.
+        /// Gives the unique name of the mod the title screen builder was from and the index for when you have multiple title screens.
         /// </summary>
-        UnityEvent<string> GetTitleScreenLoadedEvent();
+        UnityEvent<string, int> GetTitleScreenLoadedEvent();
 
         /// <summary>
         /// An event invoked when NH has finished building the title screen.
