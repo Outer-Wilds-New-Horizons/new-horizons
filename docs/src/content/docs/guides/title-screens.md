@@ -105,7 +105,7 @@ To see all the different things you can put into a config file check out the [Ti
 
 ## API
 
-New Horizons provides an API method to register and build custom title screens dynamically:
+New Horizons provides an API method to register and build custom title screens dynamically. Keep in mind you can only choose configs or api not both.
 
 ```csharp title="INewHorizons.cs"
 /// <summary>
