@@ -98,9 +98,22 @@ public static class SchemaExporter
                     break;
             }
 
-            if (_title is "Star System Schema" or "Celestial Body Schema" or "Title Screen Schema")
+            if (_title is "Star System Schema" or "Celestial Body Schema")
             {
                 schema.Properties["extras"] = new JsonSchemaProperty {
+                    Type = JsonObjectType.Object,
+                    Description = "Extra data that may be used by extension mods",
+                    AllowAdditionalProperties = true,
+                    AdditionalPropertiesSchema = new JsonSchema
+                    {
+                        Type = JsonObjectType.Object
+                    }
+                };
+            }
+
+            if (_title is "Title Screen Schema")
+            {
+                schema.Definitions["TitleScreenInfo"].Properties["extras"] = new JsonSchemaProperty {
                     Type = JsonObjectType.Object,
                     Description = "Extra data that may be used by extension mods",
                     AllowAdditionalProperties = true,
