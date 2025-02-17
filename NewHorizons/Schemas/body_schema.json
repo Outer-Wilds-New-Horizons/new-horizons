@@ -1152,19 +1152,19 @@
         },
         "pickupAudio": {
           "type": "string",
-          "description": "The audio to play when this item is picked up. Only applies to custom/non-vanilla item types.\nCan be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+          "description": "The audio to play when this item is picked up. Only applies to custom/non-vanilla item types.\nCan be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list.\nDefaults to \"ToolItemWarpCorePickUp\". Set to \"None\" to disable the sound entirely."
         },
         "dropAudio": {
           "type": "string",
-          "description": "The audio to play when this item is dropped. Only applies to custom/non-vanilla item types.\nCan be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+          "description": "The audio to play when this item is dropped. Only applies to custom/non-vanilla item types.\nCan be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list.\nDefaults to \"ToolItemWarpCoreDrop\". Set to \"None\" to disable the sound entirely."
         },
         "socketAudio": {
           "type": "string",
-          "description": "The audio to play when this item is inserted into a socket. Only applies to custom/non-vanilla item types.\nCan be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+          "description": "The audio to play when this item is inserted into a socket. Only applies to custom/non-vanilla item types.\nCan be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list.\nDefaults to the pickup audio. Set to \"None\" to disable the sound entirely."
         },
         "unsocketAudio": {
           "type": "string",
-          "description": "The audio to play when this item is removed from a socket. Only applies to custom/non-vanilla item types.\nCan be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+          "description": "The audio to play when this item is removed from a socket. Only applies to custom/non-vanilla item types.\nCan be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list.\nDefaults to the drop audio. Set to \"None\" to disable the sound entirely."
         },
         "pickupCondition": {
           "type": "string",
