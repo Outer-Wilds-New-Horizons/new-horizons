@@ -14,13 +14,6 @@
     "$schema": {
       "type": "string",
       "description": "The schema to validate with"
-    },
-    "extras": {
-      "type": "object",
-      "description": "Extra data that may be used by extension mods",
-      "additionalProperties": {
-        "type": "object"
-      }
     }
   },
   "definitions": {
@@ -69,7 +62,11 @@
           "$ref": "#/definitions/MenuPlanetModule"
         },
         "extras": {
-          "description": "Extra data that may be used by extension mods"
+          "type": "object",
+          "description": "Extra data that may be used by extension mods",
+          "additionalProperties": {
+            "type": "object"
+          }
         }
       }
     },
