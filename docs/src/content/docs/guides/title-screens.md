@@ -94,6 +94,10 @@ The audio for background music and ambience. Can be a path to a .wav/.ogg/.mp3 f
 
 A module for the background and main menu planet that include object additions, removal, and rotation speed.
 
+#### `details`
+You can add objects to both the background and menu planet. The menu planet objects spin while the background objects are stationary.
+These simplified details are just like the details in planet configs except that they only have the basic features.
+
 ## Schema
 
 To see all the different things you can put into a config file check out the [Title Screen Schema](/schemas/title-screen-schema).
