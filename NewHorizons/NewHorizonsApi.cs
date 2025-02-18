@@ -90,6 +90,8 @@ namespace NewHorizons
         public UnityEvent<string> GetChangeStarSystemEvent() => Main.Instance.OnChangeStarSystem;
         public UnityEvent<string> GetStarSystemLoadedEvent() => Main.Instance.OnStarSystemLoaded;
         public UnityEvent<string> GetBodyLoadedEvent() => Main.Instance.OnPlanetLoaded;
+        public UnityEvent<string, int> GetTitleScreenLoadedEvent() => Main.Instance.OnTitleScreenLoaded;
+        public UnityEvent GetAllTitleScreensLoadedEvent() => Main.Instance.OnAllTitleScreensLoaded;
 
         public bool SetDefaultSystem(string name)
         {
@@ -171,6 +173,24 @@ namespace NewHorizons
         public T QuerySystem<T>(string jsonPath)
         {
             var data = QuerySystem(typeof(T), jsonPath);
+            if (data is T result)
+            {
+                return result;
+            }
+            return default;
+        }
+
+        public object QueryTitleScreen(Type outType, IModBehaviour mod, string jsonPath)
+        {
+            var titleScreenConfig = Main.TitleScreenConfigs[mod];
+            return titleScreenConfig == null
+                ? null
+                : QueryJson(outType, Path.Combine(mod.ModHelper.Manifest.ModFolderPath, "title-screen.json"), jsonPath);
+        }
+
+        public T QueryTitleScreen<T>(IModBehaviour mod, string jsonPath)
+        {
+            var data = QueryTitleScreen(typeof(T), mod, jsonPath);
             if (data is T result)
             {
                 return result;
@@ -344,5 +364,8 @@ namespace NewHorizons
         public void AddSubtitle(IModBehaviour mod, string filePath) => SubtitlesHandler.RegisterAdditionalSubtitle(mod, filePath);
 
         public void SetNextSpawnID(string id) => PlayerSpawnHandler.TargetSpawnID = id;
+
+        public void RegisterTitleScreenBuilder(IModBehaviour mod, Action<GameObject> builder, bool disableNHPlanets = true, bool shareTitleScreen = false, string persistentConditionRequired = null, string factRequired = null)
+             => TitleSceneHandler.RegisterBuilder(mod, builder, disableNHPlanets, shareTitleScreen, persistentConditionRequired, factRequired);
     }
 }

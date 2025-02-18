@@ -56,6 +56,7 @@ namespace NewHorizons
         public static Dictionary<string, List<NewHorizonsBody>> BodyDict = new();
         public static List<IModBehaviour> MountedAddons = new();
         public static Dictionary<IModBehaviour, AddonConfig> AddonConfigs = new();
+        public static Dictionary<IModBehaviour, TitleScreenConfig> TitleScreenConfigs = new();
 
         public static float SecondsElapsedInLoop = -1;
 
@@ -107,10 +108,13 @@ namespace NewHorizons
         public ShipWarpController ShipWarpController { get; private set; }
 
         // API events
-        public class StarSystemEvent : UnityEvent<string> { }
-        public StarSystemEvent OnChangeStarSystem = new();
-        public StarSystemEvent OnStarSystemLoaded = new();
-        public StarSystemEvent OnPlanetLoaded = new();
+        public class StringEvent : UnityEvent<string> { }
+        public StringEvent OnChangeStarSystem = new();
+        public StringEvent OnStarSystemLoaded = new();
+        public StringEvent OnPlanetLoaded = new();
+        public class StringIndexEvent : UnityEvent<string, int> { }
+        public StringIndexEvent OnTitleScreenLoaded = new();
+        public UnityEvent OnAllTitleScreensLoaded = new();
 
         /// <summary>
         /// Depending on platform, the AsyncOwnershipStatus might not be ready by the time we go to check it.
@@ -161,7 +165,10 @@ namespace NewHorizons
             if (wasUsingCustomTitleScreen != CustomTitleScreen && SceneManager.GetActiveScene().name == "TitleScreen" && _wasConfigured)
             {
                 NHLogger.LogVerbose("Reloading");
-                SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
+                TitleSceneHandler.reloaded = true;
+                // Taken and modified from SubmitActionLoadScene.ConfirmSubmit
+                LoadManager.LoadScene(OWScene.TitleScreen);
+                Locator.GetMenuInputModule().DisableInputs();
             }
 
             _wasConfigured = true;
@@ -171,6 +178,9 @@ namespace NewHorizons
         {
             BodyDict.Clear();
             SystemDict.Clear();
+            TitleScreenConfigs.Clear();
+
+            TitleSceneHandler.ResetConfigs();
 
             BodyDict["SolarSystem"] = new List<NewHorizonsBody>();
             BodyDict["EyeOfTheUniverse"] = new List<NewHorizonsBody>(); // Keep this empty tho fr
@@ -423,15 +433,7 @@ namespace NewHorizons
 
             if (isTitleScreen && CustomTitleScreen)
             {
-                try
-                {
-                    TitleSceneHandler.DisplayBodyOnTitleScreen(BodyDict.Values.ToList().SelectMany(x => x).ToList());
-                }
-                catch (Exception e)
-                {
-                    NHLogger.LogError($"Failed to make title screen bodies: {e}");
-                }
-                TitleSceneHandler.InitSubtitles();
+                TitleSceneHandler.Init();
             }
 
             // EOTU fixes
@@ -795,6 +797,10 @@ namespace NewHorizons
                 {
                     LoadAddonManifest("addon-manifest.json", mod);
                 }
+                if (File.Exists(Path.Combine(folder, "title-screen.json")))
+                {
+                    LoadTitleScreenConfig("title-screen.json", mod);
+                }
                 if (Directory.Exists(Path.Combine(folder, "translations")))
                 {
                     LoadTranslations(folder, mod);
@@ -845,6 +851,25 @@ namespace NewHorizons
             }
 
             AddonConfigs[mod] = addonConfig;
+        }
+
+        private void LoadTitleScreenConfig(string file, IModBehaviour mod)
+        {
+            NHLogger.LogVerbose($"Loading title screen config for {mod.ModHelper.Manifest.Name}");
+
+            var titleScreenConfig = mod.ModHelper.Storage.Load<TitleScreenConfig>(file, false);
+
+            if (titleScreenConfig == null)
+            {
+                NHLogger.LogError($"Title screen config for {mod.ModHelper.Manifest.Name} could not load, check your JSON");
+                return;
+            }
+
+            TitleScreenConfigs[mod] = titleScreenConfig;
+            foreach (var info in titleScreenConfig.titleScreens)
+            {
+                TitleSceneHandler.RegisterBuilder(mod, info);
+            }
         }
 
         private void LoadTranslations(string folder, IModBehaviour mod)

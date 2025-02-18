@@ -6,12 +6,15 @@ using System.ComponentModel;
 
 namespace NewHorizons.External.Modules.Props
 {
+    /// <summary>
+    /// A lesser form of DetailInfo used for the title screen since that supports fewer features
+    /// </summary>
     [JsonObject]
-    public class DetailInfo : GeneralPropInfo
+    public class SimplifiedDetailInfo : GeneralPropInfo
     {
-        public DetailInfo() { }
+        public SimplifiedDetailInfo() { }
 
-        public DetailInfo(GeneralPointPropInfo info)
+        public SimplifiedDetailInfo(GeneralPointPropInfo info)
         {
             JsonConvert.PopulateObject(JsonConvert.SerializeObject(info), this);
         }
@@ -47,6 +50,23 @@ namespace NewHorizons.External.Modules.Props
         /// Scale each axis of the prop. Overrides `scale`.
         /// </summary>
         public MVector3 stretch;
+    }
+
+    [JsonObject]
+    public class DetailInfo : SimplifiedDetailInfo
+    {
+        public DetailInfo() { }
+
+        public DetailInfo(GeneralPointPropInfo info)
+        {
+            JsonConvert.PopulateObject(JsonConvert.SerializeObject(info), this);
+        }
+
+        public DetailInfo(SimplifiedDetailInfo info)
+        {
+            keepLoaded = true;
+            JsonConvert.PopulateObject(JsonConvert.SerializeObject(info), this);
+        }
 
         [Obsolete("Use QuantumDetailInfo")]
         public string quantumGroupID;
