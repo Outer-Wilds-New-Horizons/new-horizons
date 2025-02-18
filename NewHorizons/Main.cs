@@ -165,7 +165,9 @@ namespace NewHorizons
             if (wasUsingCustomTitleScreen != CustomTitleScreen && SceneManager.GetActiveScene().name == "TitleScreen" && _wasConfigured)
             {
                 NHLogger.LogVerbose("Reloading");
-                SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
+                // Taken and modified from SubmitActionLoadScene.ConfirmSubmit
+                LoadManager.LoadScene(OWScene.TitleScreen);
+                Locator.GetMenuInputModule().DisableInputs();
             }
 
             _wasConfigured = true;

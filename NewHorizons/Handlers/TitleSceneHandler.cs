@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Color = UnityEngine.Color;
 
 namespace NewHorizons.Handlers
@@ -23,6 +24,7 @@ namespace NewHorizons.Handlers
         internal static NewHorizonsBody[] eligibleBodies => Main.BodyDict.Values.ToList().SelectMany(x => x).ToList()
             .Where(b => (b.Config.HeightMap != null || b.Config.Atmosphere?.clouds != null) && b.Config.Star == null && b.Config.canShowOnTitle).ToArray();
         internal static int eligibleCount => eligibleBodies.Count();
+        internal static bool reloaded = false;
 
         public static void Init()
         {
@@ -48,6 +50,7 @@ namespace NewHorizons.Handlers
 
             // Load player data for fact and persistent condition checking
             var profileManager = StandaloneProfileManager.SharedInstance;
+            profileManager.OnProfileSignInComplete += OnProfileSignInComplete;
             profileManager.PreInitialize();
             profileManager.Initialize();
             if (profileManager.currentProfile != null) // check if there is even a profile made yet
@@ -103,6 +106,16 @@ namespace NewHorizons.Handlers
             {
                 NHLogger.LogError($"Error in event handler for OnAllTitleScreensLoaded: {e}");
             }
+        }
+
+        private static void OnProfileSignInComplete(ProfileManagerSignInResult result)
+        {
+            NHLogger.LogError($"OnProfileSignInComplete {result}: {StandaloneProfileManager.SharedInstance.currentProfile.profileName}");
+            reloaded = true;
+
+            // Taken and modified from SubmitActionLoadScene.ConfirmSubmit
+            LoadManager.LoadScene(OWScene.TitleScreen);
+            Locator.GetMenuInputModule().DisableInputs();
         }
 
         public static void InitSubtitles()
