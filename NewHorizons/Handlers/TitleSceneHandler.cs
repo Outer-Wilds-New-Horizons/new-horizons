@@ -25,6 +25,7 @@ namespace NewHorizons.Handlers
             .Where(b => (b.Config.HeightMap != null || b.Config.Atmosphere?.clouds != null) && b.Config.Star == null && b.Config.canShowOnTitle).ToArray();
         internal static int eligibleCount => eligibleBodies.Count();
         internal static bool reloaded = false;
+        internal static bool reopenProfile = false;
 
         public static void Init()
         {
@@ -110,8 +111,9 @@ namespace NewHorizons.Handlers
 
         private static void OnProfileSignInComplete(ProfileManagerSignInResult result)
         {
-            NHLogger.LogError($"OnProfileSignInComplete {result}: {StandaloneProfileManager.SharedInstance.currentProfile.profileName}");
+            NHLogger.LogVerbose($"OnProfileSignInComplete {result}: {StandaloneProfileManager.SharedInstance.currentProfile.profileName}");
             reloaded = true;
+            reopenProfile = true;
 
             // Taken and modified from SubmitActionLoadScene.ConfirmSubmit
             LoadManager.LoadScene(OWScene.TitleScreen);
