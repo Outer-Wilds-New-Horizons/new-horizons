@@ -1,4 +1,5 @@
 using HarmonyLib;
+using NewHorizons.Utility;
 using NewHorizons.Utility.Files;
 using NewHorizons.Utility.OWML;
 using System.Linq;
@@ -23,8 +24,11 @@ namespace NewHorizons.Handlers.TitleScreen
             }
             _mainMenuColour = colour;
             var logo = ImageUtilities.TintImage(ImageUtilities.GetTexture(Main.Instance, "Assets\\textures\\MENU_OuterWildsLogo_d.png"), (Color)_mainMenuColour);
-            GameObject.FindObjectOfType<TitleAnimRenderer>()._logoMaterial.mainTexture = logo;
-            GameObject.FindObjectOfType<TitleAnimRenderer>()._logoMaterialClone.mainTexture = logo;
+            var animRenderer = GameObject.FindObjectOfType<TitleAnimRenderer>();
+            var colouredLogoMaterial = GameObject.Instantiate(animRenderer._logoMaterial).Rename("MENU_OuterWildsLogoANIM_mat_Coloured");
+            colouredLogoMaterial.mainTexture = logo;
+            animRenderer._logoMaterial = colouredLogoMaterial;
+            animRenderer.Awake();
         }
 
         public static void ResetColour()
