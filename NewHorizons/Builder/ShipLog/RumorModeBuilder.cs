@@ -246,7 +246,7 @@ namespace NewHorizons.Builder.ShipLog
                 Texture2D newTexture = ImageUtilities.GetTexture(body.Mod, relativePath);
                 Rect rect = new Rect(0, 0, newTexture.width, newTexture.height);
                 Vector2 pivot = new Vector2(newTexture.width / 2, newTexture.height / 2);
-                return Sprite.Create(newTexture, rect, pivot);
+                return Sprite.Create(newTexture, rect, pivot, 100, 0, SpriteMeshType.FullRect, Vector4.zero, false);
             }
             catch (Exception)
             {

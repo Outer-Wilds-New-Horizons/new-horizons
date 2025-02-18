@@ -162,7 +162,7 @@ namespace NewHorizons.Builder.Body
                 GameObject procGen = null;
                 if (body.Config.ProcGen != null)
                 {
-                    procGen = ProcGenBuilder.Make(proxy, null, body.Config.ProcGen);
+                    procGen = ProcGenBuilder.Make(body.Mod, proxy, null, body.Config.ProcGen);
                     if (realSize < body.Config.ProcGen.scale) realSize = body.Config.ProcGen.scale;
                 }
 
@@ -210,6 +210,7 @@ namespace NewHorizons.Builder.Body
                 {
                     foreach (var detailInfo in body.Config.Props.proxyDetails)
                     {
+                        // Thought about switching these to SimplifiedDetailInfo but we use AlignRadial with these so we can't
                         DetailBuilder.Make(proxy, null, body.Mod, detailInfo);
                     }
                 }

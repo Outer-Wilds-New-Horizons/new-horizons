@@ -16,7 +16,12 @@ A star system config file will look something like this:
 ```json title="my_star_system.json"
 {
     "$schema": "https://raw.githubusercontent.com/Outer-Wilds-New-Horizons/new-horizons/main/NewHorizons/Schemas/star_system_schema.json",
-    "travelAudio": "assets/Travel.mp3",
+    "canEnterViaWarpDrive": true,
+    "startHere": false,
+    "respawnHere": true,
+    "GlobalMusic": {
+        "travelAudio": "planets/assets/Travel Audio.mp3"
+    },
     "Vessel": {
         "coords": {
             "x": [4, 0, 3, 1],

@@ -56,6 +56,7 @@ namespace NewHorizons.Builder.Props
 
         private static void SceneManager_sceneUnloaded(Scene scene)
         {
+            // would be nice to only clear when system changes, but fixed prefabs rely on stuff in the scene
             foreach (var prefab in _fixedPrefabCache.Values)
             {
                 UnityEngine.Object.Destroy(prefab.prefab);
@@ -155,6 +156,17 @@ namespace NewHorizons.Builder.Props
                                 continue;
                             }
 
+                            /* We used to set SectorCullGroup._controllingProxy to null. Now we do not.
+                             * This may break things on copied details because it prevents SetSector from doing anything,
+                             * so that part of the detail might be culled by wrong sector.
+                             * So if you copy something from e.g. Giants Deep it might turn off the detail if you arent in 
+                             * the sector of the thing you copied from (since it's still pointing to the original proxy, 
+                             * which has the original sector at giants deep there)
+                             * 
+                             * Anyway nobody has complained about this for the year it's been like that so closing issue #831 until
+                             * this affects somebody
+                             */
+
                             FixSectoredComponent(component, sector, existingSectors);
                         }
 
@@ -197,37 +209,14 @@ namespace NewHorizons.Builder.Props
                 }
             }
 
-            if (detail.item != null)
-            {
-                ItemBuilder.MakeItem(prop, go, sector, detail.item, mod);
-                isItem = true;
-                if (detail.hasPhysics)
-                {
-                    NHLogger.LogWarning($"An item with the path {detail.path} has both '{nameof(DetailInfo.hasPhysics)}' and '{nameof(DetailInfo.item)}' set. This will usually result in undesirable behavior.");
-                }
-            }
-
-            if (detail.itemSocket != null)
-            {
-                ItemBuilder.MakeSocket(prop, go, sector, detail.itemSocket);
-            }
-
-            // Items should always be kept loaded else they will vanish in your hand as you leave the sector
-            if (isItem) detail.keepLoaded = true;
-
             prop.transform.localScale = detail.stretch ?? (detail.scale != 0 ? Vector3.one * detail.scale : prefab.transform.localScale);
 
             if (detail.removeChildren != null)
             {
-                var detailPath = prop.transform.GetPath();
-                var transforms = prop.GetComponentsInChildren<Transform>(true);
                 foreach (var childPath in detail.removeChildren)
                 {
-                    // Multiple children can have the same path so we delete all that match
-                    var path = $"{detailPath}/{childPath}";
-
                     var flag = true;
-                    foreach (var childObj in transforms.Where(x => x.GetPath() == path))
+                    foreach (var childObj in prop.transform.FindAll(childPath))
                     {
                         flag = false;
                         childObj.gameObject.SetActive(false);
@@ -263,19 +252,37 @@ namespace NewHorizons.Builder.Props
                 UnityEngine.Object.DestroyImmediate(prop);
                 prop = newDetailGO;
             }
-            
+
+            if (detail.item != null)
+            {
+                ItemBuilder.MakeItem(prop, go, sector, detail.item, mod);
+                isItem = true;
+                if (detail.hasPhysics)
+                {
+                    NHLogger.LogWarning($"An item with the path {detail.path} has both '{nameof(DetailInfo.hasPhysics)}' and '{nameof(DetailInfo.item)}' set. This will usually result in undesirable behavior.");
+                }
+            }
+
+            if (detail.itemSocket != null)
+            {
+                ItemBuilder.MakeSocket(prop, go, sector, detail.itemSocket);
+            }
+
             if (isItem)
             {
                 // Else when you put them down you can't pick them back up
                 var col = prop.GetComponent<OWCollider>();
                 if (col != null) col._physicsRemoved = false;
+
+                // Items should always be kept loaded else they will vanish in your hand as you leave the sector
+                detail.keepLoaded = true;
             }
 
             if (!detail.keepLoaded) GroupsBuilder.Make(prop, sector);
 
             // For DLC related props
             // Make sure to do this before its set active
-            if (!string.IsNullOrEmpty(detail?.path) && 
+            if (!string.IsNullOrEmpty(detail?.path) &&
                 (detail.path.ToLowerInvariant().StartsWith("ringworld") || detail.path.ToLowerInvariant().StartsWith("dreamworld")))
             {
                 prop.AddComponent<DestroyOnDLC>()._destroyOnDLCNotOwned = true;
@@ -294,7 +301,7 @@ namespace NewHorizons.Builder.Props
 
             if (!string.IsNullOrEmpty(detail.activationCondition))
             {
-                ConditionalObjectActivation.SetUp(prop, detail.activationCondition, detail.blinkWhenActiveChanged, true);   
+                ConditionalObjectActivation.SetUp(prop, detail.activationCondition, detail.blinkWhenActiveChanged, true);
             }
             if (!string.IsNullOrEmpty(detail.deactivationCondition))
             {
@@ -568,22 +575,22 @@ namespace NewHorizons.Builder.Props
 
                 // Manually copied these values from a artifact lantern so that we don't have to find it (works in Eye)
                 lantern._origLensFlareBrightness = 0f;
-                lantern._focuserPetalsBaseEulerAngles = new Vector3[] 
-                { 
-                    new Vector3(0.7f, 270.0f, 357.5f), 
-                    new Vector3(288.7f, 270.1f, 357.4f), 
+                lantern._focuserPetalsBaseEulerAngles = new Vector3[]
+                {
+                    new Vector3(0.7f, 270.0f, 357.5f),
+                    new Vector3(288.7f, 270.1f, 357.4f),
                     new Vector3(323.3f, 90.0f, 177.5f),
-                    new Vector3(35.3f, 90.0f, 177.5f), 
-                    new Vector3(72.7f, 270.1f, 357.5f) 
+                    new Vector3(35.3f, 90.0f, 177.5f),
+                    new Vector3(72.7f, 270.1f, 357.5f)
                 };
                 lantern._dirtyFlag_focus = true;
-                lantern._concealerRootsBaseScale = new Vector3[] 
+                lantern._concealerRootsBaseScale = new Vector3[]
                 {
                     Vector3.one,
                     Vector3.one,
                     Vector3.one
                 };
-                lantern._concealerCoversStartPos = new Vector3[] 
+                lantern._concealerCoversStartPos = new Vector3[]
                 {
                     new Vector3(0.0f, 0.0f, 0.0f),
                     new Vector3(0.0f, -0.1f, 0.0f),
@@ -594,7 +601,7 @@ namespace NewHorizons.Builder.Props
                 };
                 lantern._dirtyFlag_concealment = true;
                 lantern.UpdateVisuals();
-                
+
                 Destroy(this);
             }
         }

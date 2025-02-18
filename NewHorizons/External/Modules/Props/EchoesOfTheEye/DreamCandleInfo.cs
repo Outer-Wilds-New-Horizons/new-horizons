@@ -14,7 +14,7 @@ namespace NewHorizons.External.Modules.Props.EchoesOfTheEye
         /// <summary>
         /// The type of dream candle this is.
         /// </summary>
-        [DefaultValue(DreamCandleType.Ground)] public DreamCandleType type = DreamCandleType.Ground;
+        [DefaultValue("ground")] public DreamCandleType type = DreamCandleType.Ground;
 
         /// <summary>
         /// Whether the candle should start lit or extinguished.

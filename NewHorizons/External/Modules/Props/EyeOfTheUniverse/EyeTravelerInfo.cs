@@ -1,6 +1,7 @@
 using NewHorizons.External.Modules.Props.Audio;
 using NewHorizons.External.Modules.Props.Dialogue;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace NewHorizons.External.Modules.Props.EyeOfTheUniverse
 {
@@ -46,5 +47,23 @@ namespace NewHorizons.External.Modules.Props.EyeOfTheUniverse
         /// The dialogue to use for this traveler. If omitted, the first CharacterDialogueTree in the object will be used.
         /// </summary>
         public DialogueInfo dialogue;
+
+        /// <summary>
+        /// The name of the base game traveler to position this traveler after at the campfire, starting clockwise from Riebeck. Defaults to the end of the list (right before Riebeck).
+        /// </summary>
+        public TravelerName? afterTraveler;
+
+
+        [JsonConverter(typeof(StringEnumConverter))]
+        public enum TravelerName
+        {
+            Riebeck,
+            Chert,
+            Esker,
+            Felspar,
+            Gabbro,
+            Solanum,
+            Prisoner,
+        }
     }
 }

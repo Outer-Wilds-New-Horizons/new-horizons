@@ -61,7 +61,7 @@ namespace NewHorizons.External.Modules
             public float offset;
 
             /// <summary>
-            /// The path to the sprite (.png/.jpg/.exr) to show when the planet is unexplored in map mode.
+            /// The path to the sprite (.png/.jpg/.exr) to show when the planet is unexplored in map mode. If empty, a texture will be created and cached based on the revealed sprite.
             /// </summary>
             public string outlineSprite;
 

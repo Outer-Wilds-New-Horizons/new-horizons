@@ -62,21 +62,25 @@ namespace NewHorizons.External.Modules.Props.Item
         /// <summary>
         /// The audio to play when this item is picked up. Only applies to custom/non-vanilla item types.
         /// Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list.
+        /// Defaults to "ToolItemWarpCorePickUp". Set to "None" to disable the sound entirely.
         /// </summary>
         public string pickupAudio;
         /// <summary>
         /// The audio to play when this item is dropped. Only applies to custom/non-vanilla item types.
         /// Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list.
+        /// Defaults to "ToolItemWarpCoreDrop". Set to "None" to disable the sound entirely.
         /// </summary>
         public string dropAudio;
         /// <summary>
         /// The audio to play when this item is inserted into a socket. Only applies to custom/non-vanilla item types.
         /// Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list.
+        /// Defaults to the pickup audio. Set to "None" to disable the sound entirely.
         /// </summary>
         public string socketAudio;
         /// <summary>
         /// The audio to play when this item is removed from a socket. Only applies to custom/non-vanilla item types.
         /// Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list.
+        /// Defaults to the drop audio. Set to "None" to disable the sound entirely.
         /// </summary>
         public string unsocketAudio;
         /// <summary>

@@ -20,6 +20,8 @@ namespace NewHorizons.Components.Props
         public bool ClearPickupConditionOnDrop;
         public string PickupFact;
 
+        string _translatedName;
+
         public ItemType ItemType
         {
             get => _type;
@@ -28,7 +30,11 @@ namespace NewHorizons.Components.Props
 
         public override string GetDisplayName()
         {
-            return TranslationHandler.GetTranslation(DisplayName, TranslationHandler.TextType.UI);
+            if (_translatedName == null)
+            {
+                _translatedName = TranslationHandler.GetTranslation(DisplayName, TranslationHandler.TextType.UI);
+            }
+            return _translatedName;
         }
 
         public override bool CheckIsDroppable()
@@ -90,6 +96,7 @@ namespace NewHorizons.Components.Props
 
         void PlayCustomSound(AudioType audioType)
         {
+            if (audioType == AudioType.None) return;
             if (ItemBuilder.IsCustomItemType(ItemType))
             {
                 Locator.GetPlayerAudioController()._oneShotExternalSource.PlayOneShot(audioType);

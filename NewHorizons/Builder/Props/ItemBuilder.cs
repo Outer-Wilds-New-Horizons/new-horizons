@@ -59,9 +59,17 @@ namespace NewHorizons.Builder.Props
             {
                 item.PickupAudio = AudioTypeHandler.GetAudioType(info.pickupAudio, mod);
             }
+            else
+            {
+                item.PickupAudio = AudioType.ToolItemWarpCorePickUp;
+            }
             if (!string.IsNullOrEmpty(info.dropAudio))
             {
                 item.DropAudio = AudioTypeHandler.GetAudioType(info.dropAudio, mod);
+            }
+            else
+            {
+                item.DropAudio = AudioType.ToolItemWarpCoreDrop;
             }
             if (!string.IsNullOrEmpty(info.socketAudio))
             {

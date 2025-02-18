@@ -1,14 +1,12 @@
 using NewHorizons.Components.ShipLog;
 using NewHorizons.External;
 using NewHorizons.External.Modules;
-using NewHorizons.External.Modules.VariableSize;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using NewHorizons.Utility.Files;
 using NewHorizons.Utility.OuterWilds;
 using NewHorizons.Utility.OWML;
 using OWML.ModHelper;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -28,7 +26,7 @@ namespace NewHorizons.Builder.ShipLog
             if (_astroObjectToMapModeInfo.TryGetValue(slao, out var mapModeInfo))
             {
                 return mapModeInfo;
-            } 
+            }
             else
             {
                 return null;
@@ -149,7 +147,7 @@ namespace NewHorizons.Builder.ShipLog
 
             Rect rect = new Rect(0, 0, texture.width, texture.height);
             Vector2 pivot = new Vector2(texture.width / 2, texture.height / 2);
-            newImage.sprite = Sprite.Create(texture, rect, pivot);
+            newImage.sprite = Sprite.Create(texture, rect, pivot, 100, 0, SpriteMeshType.FullRect, Vector4.zero, false);
 
             return newImageGO;
         }
@@ -190,15 +188,15 @@ namespace NewHorizons.Builder.ShipLog
 
             Texture2D image = null;
             Texture2D outline = null;
-            
+
             string imagePath = body.Config.ShipLog?.mapMode?.revealedSprite;
             string outlinePath = body.Config.ShipLog?.mapMode?.outlineSprite;
 
             if (imagePath != null) image = ImageUtilities.GetTexture(body.Mod, imagePath);
-            if (image == null) image = AutoGenerateMapModePicture(body);
+            if (image == null) image = ImageUtilities.AutoGenerateMapModePicture(body);
 
             if (outlinePath != null) outline = ImageUtilities.GetTexture(body.Mod, outlinePath);
-            if (outline == null) outline = ImageUtilities.MakeOutline(image, Color.white, 10);
+            if (outline == null) outline = ImageUtilities.GetCachedOutlineOrCreate(body, image, imagePath);
 
             astroObject._imageObj = CreateImage(gameObject, image, body.Config.name + " Revealed", layer);
             astroObject._outlineObj = CreateImage(gameObject, outline, body.Config.name + " Outline", layer);
@@ -246,10 +244,10 @@ namespace NewHorizons.Builder.ShipLog
             string outlinePath = info.outlineSprite;
 
             if (imagePath != null) image = ImageUtilities.GetTexture(body.Mod, imagePath);
-            else image = AutoGenerateMapModePicture(body);
+            else image = ImageUtilities.AutoGenerateMapModePicture(body);
 
             if (outlinePath != null) outline = ImageUtilities.GetTexture(body.Mod, outlinePath);
-            else outline = ImageUtilities.MakeOutline(image, Color.white, 10);
+            else outline = ImageUtilities.GetCachedOutlineOrCreate(body, image, imagePath);
 
             Image revealedImage = CreateImage(detailGameObject, image, "Detail Revealed", parent.gameObject.layer).GetComponent<Image>();
             Image outlineImage = CreateImage(detailGameObject, outline, "Detail Outline", parent.gameObject.layer).GetComponent<Image>();
@@ -591,7 +589,7 @@ namespace NewHorizons.Builder.ShipLog
             GameObject newNodeGO = CreateMapModeGameObject(node.mainBody, parent, layer, position);
             ShipLogAstroObject astroObject = AddShipLogAstroObject(newNodeGO, node.mainBody, greyScaleMaterial, layer);
             if (node.mainBody.Config.FocalPoint != null)
-            { 
+            {
                 astroObject._imageObj.GetComponent<Image>().enabled = false;
                 astroObject._outlineObj.GetComponent<Image>().enabled = false;
                 astroObject._unviewedObj.GetComponent<Image>().enabled = false;
@@ -604,68 +602,6 @@ namespace NewHorizons.Builder.ShipLog
             MakeDetails(node.mainBody, newNodeGO.transform, greyScaleMaterial);
         }
         #endregion
-
-        private static Texture2D AutoGenerateMapModePicture(NewHorizonsBody body)
-        {
-            Texture2D texture;
-
-            if (body.Config.Star != null) texture = ImageUtilities.GetTexture(Main.Instance, "Assets/DefaultMapModeStar.png");
-            else if (body.Config.Atmosphere != null) texture = ImageUtilities.GetTexture(Main.Instance, "Assets/DefaultMapModNoAtmo.png");
-            else texture = ImageUtilities.GetTexture(Main.Instance, "Assets/DefaultMapModePlanet.png");
-
-            var color = GetDominantPlanetColor(body);
-            var darkColor = new Color(color.r / 3f, color.g / 3f, color.b / 3f);
-
-            texture = ImageUtilities.LerpGreyscaleImage(texture, color, darkColor);
-
-            return texture;
-        }
-
-        private static Color GetDominantPlanetColor(NewHorizonsBody body)
-        {
-            try
-            {
-                var starColor = body.Config?.Star?.tint;
-                if (starColor != null) return starColor.ToColor();
-
-                var atmoColor = body.Config.Atmosphere?.atmosphereTint;
-                if (body.Config.Atmosphere?.clouds != null && atmoColor != null) return atmoColor.ToColor();
-
-                if (body.Config?.HeightMap?.textureMap != null)
-                {
-                    try
-                    {
-                        var texture = ImageUtilities.GetTexture(body.Mod, body.Config.HeightMap.textureMap);
-                        var landColor = ImageUtilities.GetAverageColor(texture);
-                        if (landColor != null) return landColor;
-                    }
-                    catch (Exception) { }
-                }
-
-                var waterColor = body.Config.Water?.tint;
-                if (waterColor != null) return waterColor.ToColor();
-
-                var lavaColor = body.Config.Lava?.tint;
-                if (lavaColor != null) return lavaColor.ToColor();
-
-                var sandColor = body.Config.Sand?.tint;
-                if (sandColor != null) return sandColor.ToColor();
-
-                switch (body.Config?.Props?.singularities?.FirstOrDefault()?.type)
-                {
-                    case SingularityModule.SingularityType.BlackHole:
-                        return Color.black;
-                    case SingularityModule.SingularityType.WhiteHole:
-                        return Color.white;
-                }
-            }
-            catch (Exception)
-            {
-                NHLogger.LogWarning($"Something went wrong trying to pick the colour for {body.Config.name} but I'm too lazy to fix it.");
-            }
-
-            return Color.white;
-        }
 
         #region Replacement
         private static List<(NewHorizonsBody, ModBehaviour, MapModeInfo)> _mapModIconsToUpdate = new();
@@ -687,7 +623,7 @@ namespace NewHorizons.Builder.ShipLog
         }
 
         private static void ReplaceExistingMapModeIcon(NewHorizonsBody body, ModBehaviour mod, MapModeInfo info)
-        { 
+        {
             var astroObject = _astroObjectToShipLog[body.Object];
             var gameObject = astroObject.gameObject;
             var layer = gameObject.layer;

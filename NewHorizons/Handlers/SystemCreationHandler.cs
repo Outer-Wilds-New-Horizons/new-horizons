@@ -9,7 +9,7 @@ using UnityEngine;
 using Object = UnityEngine.Object;
 using NewHorizons.OtherMods;
 using NewHorizons.Components.EOTE;
-using Epic.OnlineServices.Presence;
+using NewHorizons.Components.Conditionals;
 
 namespace NewHorizons.Handlers
 {
@@ -30,6 +30,15 @@ namespace NewHorizons.Handlers
                 system.Config.Skybox?.bottomPath != null)
             {
                 SkyboxBuilder.Make(system.Config.Skybox, system.Mod);
+            }
+
+            if (system.Config.conditionalChecks != null)
+            {
+                var conditionalsManager = new GameObject("ConditionalsManager").AddComponent<ConditionalsManager>();
+                foreach (var check in system.Config.conditionalChecks)
+                {
+                    conditionalsManager.AddCheck(check);
+                }
             }
 
             // No time loop or travel audio at the eye

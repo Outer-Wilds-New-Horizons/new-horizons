@@ -14,6 +14,7 @@ const schemas = [
     "addon_manifest_schema.json",
     "dialogue_schema.xsd",
     "text_schema.xsd",
+    "title_screen_schema.json",
     "shiplog_schema.xsd"
 ];
 
@@ -90,6 +91,7 @@ export default defineConfig({
                         { label: "Addon Manifest Schema", link: "schemas/addon-manifest-schema" },
                         { label: "Dialogue Schema", link: "schemas/dialogue-schema" },
                         { label: "Text Schema", link: "schemas/text-schema" },
+                        { label: "Title Screen Schema", link: "schemas/title-screen-schema" },
                         { label: "Ship Log Schema", link: "schemas/shiplog-schema" }
                     ]
                 },

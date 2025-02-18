@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Xml;
 using NewHorizons.External.Modules;
+using NewHorizons.External.Modules.Conditionals;
 using NewHorizons.External.SerializableData;
 using Newtonsoft.Json;
 using static NewHorizons.External.Modules.ShipLogModule;
@@ -156,6 +157,11 @@ namespace NewHorizons.External.Configs
         public CuriosityColorInfo[] curiosities;
 
         /// <summary>
+        /// A list of conditional checks to be performed while in this star system.
+        /// </summary>
+        public ConditionalCheckInfo[] conditionalChecks;
+
+        /// <summary>
         /// Extra data that may be used by extension mods
         /// </summary>
         public object extras;
@@ -173,51 +179,6 @@ namespace NewHorizons.External.Configs
             [MinLength(2)]
             [MaxLength(6)]
             public int[] z;
-        }
-
-        [JsonObject]
-        public class SkyboxModule
-        {
-
-            /// <summary>
-            /// Whether to destroy the star field around the player
-            /// </summary>
-            public bool destroyStarField;
-
-            /// <summary>
-            /// Whether to use a cube for the skybox instead of a smooth sphere
-            /// </summary>
-            public bool useCube;
-
-            /// <summary>
-            /// Relative filepath to the texture to use for the skybox's positive X direction
-            /// </summary>
-            public string rightPath;
-
-            /// <summary>
-            /// Relative filepath to the texture to use for the skybox's negative X direction
-            /// </summary>
-            public string leftPath;
-
-            /// <summary>
-            /// Relative filepath to the texture to use for the skybox's positive Y direction
-            /// </summary>
-            public string topPath;
-
-            /// <summary>
-            /// Relative filepath to the texture to use for the skybox's negative Y direction
-            /// </summary>
-            public string bottomPath;
-
-            /// <summary>
-            /// Relative filepath to the texture to use for the skybox's positive Z direction
-            /// </summary>
-            public string frontPath;
-
-            /// <summary>
-            /// Relative filepath to the texture to use for the skybox's negative Z direction
-            /// </summary>
-            public string backPath;
         }
 
         [JsonObject]
@@ -381,6 +342,15 @@ namespace NewHorizons.External.Configs
             else
             {
                 GlobalMusic ??= otherConfig.GlobalMusic;
+            }
+
+            if (conditionalChecks != null && otherConfig.conditionalChecks != null)
+            {
+                conditionalChecks = Concatenate(conditionalChecks, otherConfig.conditionalChecks);
+            }
+            else
+            {
+                conditionalChecks ??= otherConfig.conditionalChecks;
             }
 
             entryPositions = Concatenate(entryPositions, otherConfig.entryPositions);
