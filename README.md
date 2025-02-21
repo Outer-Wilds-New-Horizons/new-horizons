@@ -8,7 +8,7 @@
 ![Latest release date](https://img.shields.io/github/release-date/xen-42/outer-wilds-new-horizons)
 [![Build](https://github.com/xen-42/outer-wilds-new-horizons/actions/workflows/build.yaml/badge.svg)](https://github.com/xen-42/outer-wilds-new-horizons/actions/workflows/build.yaml)
 
-_Do you want to create planets using New Horizons?_ Then check out our [website](https://nh.outerwildsmods.com/) for all our documentation!
+_Do you want to create your own story mod using New Horizons?_ Then check out our [website](https://nh.outerwildsmods.com/) for all our documentation!
 
 If you want to see examples of what NH can do check out the [examples add-on](https://github.com/xen-42/ow-new-horizons-examples) or [real solar system add-on](https://github.com/xen-42/outer-wilds-real-solar-system).
 
@@ -26,7 +26,7 @@ Check the ship's log for how to use your warp drive to travel between star syste
 
 ## Incompatible mods
 
-New Horizons conflicts with the mod Common Resources. This mod is a requirement for other mods such as Cheats Mod (we recommend you use the [Cheat and Debug Menu](https://outerwildsmods.com/mods/cheatanddebugmenu/) mod instead) and OW Randomizer.
+New Horizons conflicts with the mod Common Resources. This mod is a requirement for other mods such as OW Randomizer (not to be confused with Archipelago Randomizer) and Difficulty Mod.
 
 Why do these two mods conflict? Common Resources is a mod which reimplements many of the game's features underneath the hood, for one reason or another. For instance, it completely overhauls how the orbits of planets work, as this is a requirement for it to support OW Randomizer. It does this even when you are only using Cheats Mod. In particular, having CR installed seems to, for whatever reason, break character dialogue introduced by New Horizons. As CR is no longer actively maintained, it is unlikely this issue will be resolved any time soon. 
 
@@ -40,25 +40,27 @@ New Horizons has optional support for a few other mods:
 
 ## Features
 
--   Load planet meshes or details from asset bundles
--   Use our [template Unity project](https://github.com/ow-mods/outer-wilds-unity-template) to create assets for use in NH, including all game scripts recovered using UtinyRipper
--   Separate solar system scenes accessible via wormhole OR via the ship's new warp drive feature found in the ship's log
--   Remove or edit existing planets, including their orbits
--   Create custom planets from heightmaps/texturemaps with support for triplanar mapping
--   Create stars (and supernovae), comets, asteroid belts, satellites, quantum planets/moons, and custom Dark Bramble dimensions.
--   Add stock planet features to custom ones, such as geysers, cloaking fields, meteor-launching volcanoes, rafts, tornados, and Dark Bramble seeds/nodes.
--   Binary orbits
--   Signalscope signals and custom frequencies
--   Surface scatter: rocks, trees, etc, using in-game models, or custom ones
--   Black hole / white hole pairs
--   Custom dialogue, slide-reel projections, translatable text, and custom ship log entries for rumour mode and map mode
--   Funnels and variable surface height (can be made of sand/water/lava/star)
+NH allows you to create planets:
+- Load planet meshes or details from asset bundles made in Unity
+- Create custom planets from heightmaps/texturemaps with support for triplanar mapping
+- Add stock planet features: dialogue, Nomai text, geysers, cloaking fields, meteor-launching volcanoes, rafts, tornados, Dark Bramble seeds/nodes, black/white holes, funnels, lava/oceans/sand, signalscope signals/frequencies and others.
+- Edit existing planets: Remove them, alter their orbits, add/delete objects from them.
+- All these features work in both the main solar system and the Eye of the Universe scene
+
+Even if the majority of your story mod is going to be done in Unity, NH still offers useful features which will improve mod-compatibility and stop you reinventing the wheel:
+- NH allows you to separate your story mod into its own solar system scene accessible via wormhole OR via the ship's new warp drive feature found in the ship's log.
+- NH allows you to create custom ship log entries.
+- NH allows you to create Inhabitant slide reels with asynchronous loading optimization.
+- NH has a localization system to translate ship logs, dialogue, Nomai text, and custom UI elements.
+- NH allows you to add new characters to the cosmic-jam-session at the Eye of the Universe while ensuring mod compatibility
+
+Use our [template Unity project](https://github.com/ow-mods/outer-wilds-unity-template) to create assets for use in NH, including all game scripts recovered using UtinyRipper
 
 ## Development
 
-If you want to help (please dear god help us) then check out the [contact](#contact) info below or the [contributing](https://github.com/xen-42/outer-wilds-new-horizons/blob/master/CONTRIBUTING.md) page.
+If you want to help (please dear god help us) then check out the [contact](#contact) info below or the [contributing](https://github.com/Outer-Wilds-New-Horizons/new-horizons/blob/master/CONTRIBUTING.md) page.
 
-The Unity project we use to make asset bundles for this mod is [here](https://github.com/xen-42/new-horizons-unity).
+The Unity project we use to make asset bundles for this mod is [here](https://github.com/Outer-Wilds-New-Horizons/nh-unity).
 
 ## Contact
 
@@ -70,11 +72,10 @@ Main authors:
 
 -   [xen](https://github.com/xen-42)
 -   [Bwc9876](https://github.com/Bwc9876) (New Horizons v0.9.0 onwards)
-
-New Horizons was made with help from:
-
 -   [JohnCorby](https://github.com/JohnCorby)
 -   [MegaPiggy](https://github.com/MegaPiggy)
+  
+New Horizons was made with help from:
 -   [FreezeDriedMangos](https://github.com/FreezeDriedMangos)
 -   [Trifid](https://github.com/TerrificTrifid)
 -   [Hawkbar](https://github.com/Hawkbat)
@@ -89,7 +90,7 @@ Translation credits:
 -   Japanese: TRSasasusu
 -   Portuguese: avengerx, loco-choco
 
-New Horizons was based off [Marshmallow](https://github.com/misternebula/Marshmallow) was made by:
+New Horizons was based off [Marshmallow](https://github.com/misternebula/Marshmallow) made by:
 
 -   [\_nebula](https://github.com/misternebula)
 
