@@ -11,7 +11,7 @@
         <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
         <NoWarn>1701;1702;1591</NoWarn>
 
-<!--        <DefineConstants>ENABLE_PROFILER</DefineConstants>-->
+        <DefineConstants>ENABLE_PROFILER</DefineConstants>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
         <DebugType>none</DebugType>

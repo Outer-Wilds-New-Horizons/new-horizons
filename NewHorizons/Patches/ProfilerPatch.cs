@@ -31,6 +31,7 @@ public static class ProfilerPatch
 			foreach (var method in type.GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
 			{
 				if (method.ContainsGenericParameters) continue;
+				if (!method.HasMethodBody()) continue;
 
 				// Main.Instance.ModHelper.Console.WriteLine($"[profiler] profiling {method.FriendlyName()}");
 				yield return method;
