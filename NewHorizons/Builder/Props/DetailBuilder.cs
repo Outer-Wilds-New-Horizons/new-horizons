@@ -356,7 +356,10 @@ namespace NewHorizons.Builder.Props
                     singleLightSensor._sector.OnSectorOccupantsUpdated -= singleLightSensor.OnSectorOccupantsUpdated;
                 }
                 singleLightSensor._sector = sector;
-                singleLightSensor._sector.OnSectorOccupantsUpdated += singleLightSensor.OnSectorOccupantsUpdated;
+                if (singleLightSensor._sector != null)
+                {
+                    singleLightSensor._sector.OnSectorOccupantsUpdated += singleLightSensor.OnSectorOccupantsUpdated;
+                }
             }
         }
 
