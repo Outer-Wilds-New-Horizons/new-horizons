@@ -11,6 +11,31 @@ namespace NewHorizons.Builder.Props
 {
     public static class ShapeBuilder
     {
+        public static OWTriggerVolume AddTriggerVolume(GameObject go, ShapeInfo info, float defaultRadius)
+        {
+            var owTriggerVolume = go.AddComponent<OWTriggerVolume>();
+
+            if (info != null)
+            {
+                var shapeOrCol = AddShapeOrCollider(go, info);
+                if (shapeOrCol is Shape shape)
+                    owTriggerVolume._shape = shape;
+                else if (shapeOrCol is Collider col)
+                    owTriggerVolume._owCollider = col.GetComponent<OWCollider>();
+            }
+            else
+            {
+                var col = go.AddComponent<SphereCollider>();
+                col.radius = defaultRadius;
+                col.isTrigger = true;
+                var owCollider = go.GetAddComponent<OWCollider>();
+
+                owTriggerVolume._owCollider = owCollider;
+            }
+
+            return owTriggerVolume;
+        }
+
         public static Component AddShapeOrCollider(GameObject go, ShapeInfo info)
         {
             if (info.useShape.HasValue)

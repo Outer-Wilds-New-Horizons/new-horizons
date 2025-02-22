@@ -14,6 +14,8 @@ namespace NewHorizons.Builder.Volumes
             volume.gameOver = info.gameOver;
             volume.deathType = info.deathType == null ? null : EnumUtils.Parse(info.deathType.ToString(), DeathType.Default);
 
+            volume.gameObject.SetActive(true);
+
             return volume;
         }
     }

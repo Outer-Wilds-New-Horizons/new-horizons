@@ -13,11 +13,6 @@ namespace NewHorizons.External.Modules.Volumes.VolumeInfos
     public class ForceVolumeInfo : PriorityVolumeInfo
     {
         /// <summary>
-        /// The shape of this volume. Defaults to a sphere shape with a radius of `radius`.
-        /// </summary>
-        public ShapeInfo shape;
-
-        /// <summary>
         /// The force applied by this volume. Can be negative to reverse the direction.
         /// </summary>
         public float force;

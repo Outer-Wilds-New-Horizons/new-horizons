@@ -12,6 +12,8 @@ namespace NewHorizons.Builder.Volumes.Rulesets
             volume.minImpactSpeed = info.minImpactSpeed;
             volume.maxImpactSpeed = info.maxImpactSpeed;
 
+            volume.gameObject.SetActive(true);
+
             return volume;
         }
     }

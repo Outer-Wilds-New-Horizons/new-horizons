@@ -60,28 +60,28 @@ namespace NewHorizons.Builder.Volumes
             {
                 foreach (var mapRestrictionVolume in config.Volumes.mapRestrictionVolumes)
                 {
-                    VolumeBuilder.Make<MapRestrictionVolume>(go, sector, mapRestrictionVolume);
+                    VolumeBuilder.MakeAndEnable<MapRestrictionVolume>(go, sector, mapRestrictionVolume);
                 }
             }
             if (config.Volumes.interferenceVolumes != null)
             {
                 foreach (var interferenceVolume in config.Volumes.interferenceVolumes)
                 {
-                    VolumeBuilder.Make<Components.Volumes.InterferenceVolume>(go, sector, interferenceVolume);
+                    VolumeBuilder.MakeAndEnable<Components.Volumes.InterferenceVolume>(go, sector, interferenceVolume);
                 }
             }
             if (config.Volumes.reverbVolumes != null)
             {
                 foreach (var reverbVolume in config.Volumes.reverbVolumes)
                 {
-                    VolumeBuilder.Make<ReverbTriggerVolume>(go, sector, reverbVolume);
+                    VolumeBuilder.MakeAndEnable<ReverbTriggerVolume>(go, sector, reverbVolume);
                 }
             }
             if (config.Volumes.insulatingVolumes != null)
             {
                 foreach (var insulatingVolume in config.Volumes.insulatingVolumes)
                 {
-                    VolumeBuilder.Make<InsulatingVolume>(go, sector, insulatingVolume);
+                    VolumeBuilder.MakeAndEnable<InsulatingVolume>(go, sector, insulatingVolume);
                 }
             }
             if (config.Volumes.zeroGravityVolumes != null)
@@ -156,14 +156,14 @@ namespace NewHorizons.Builder.Volumes
                 {
                     foreach (var destructionVolume in config.Volumes.probe.destructionVolumes)
                     {
-                        VolumeBuilder.Make<ProbeDestructionVolume>(go, sector, destructionVolume);
+                        VolumeBuilder.MakeAndEnable<ProbeDestructionVolume>(go, sector, destructionVolume);
                     }
                 }
                 if (config.Volumes.probe.safetyVolumes != null)
                 {
                     foreach (var safetyVolume in config.Volumes.probe.safetyVolumes)
                     {
-                        VolumeBuilder.Make<ProbeSafetyVolume>(go, sector, safetyVolume);
+                        VolumeBuilder.MakeAndEnable<ProbeSafetyVolume>(go, sector, safetyVolume);
                     }
                 }
             }
@@ -190,7 +190,7 @@ namespace NewHorizons.Builder.Volumes
                 {
                     foreach (var antiTravelMusicRuleset in config.Volumes.rulesets.antiTravelMusicRulesets)
                     {
-                        VolumeBuilder.Make<AntiTravelMusicRuleset>(go, sector, antiTravelMusicRuleset);
+                        VolumeBuilder.MakeAndEnable<AntiTravelMusicRuleset>(go, sector, antiTravelMusicRuleset);
                     }
                 }
                 if (config.Volumes.rulesets.playerImpactRulesets != null)
@@ -219,7 +219,7 @@ namespace NewHorizons.Builder.Volumes
             {
                 foreach (var referenceFrameBlockerVolume in config.Volumes.referenceFrameBlockerVolumes)
                 {
-                    VolumeBuilder.Make<ReferenceFrameBlockerVolume>(go, sector, referenceFrameBlockerVolume);
+                    VolumeBuilder.MakeAndEnable<ReferenceFrameBlockerVolume>(go, sector, referenceFrameBlockerVolume);
                 }
             }
             if (config.Volumes.speedTrapVolumes != null)
@@ -233,7 +233,7 @@ namespace NewHorizons.Builder.Volumes
             {
                 foreach (var lightSourceVolume in config.Volumes.lightSourceVolumes)
                 {
-                    VolumeBuilder.Make<LightlessLightSourceVolume>(go, sector, lightSourceVolume);
+                    VolumeBuilder.MakeAndEnable<LightlessLightSourceVolume>(go, sector, lightSourceVolume);
                 }
             }
             if (config.Volumes.solarSystemVolume != null)

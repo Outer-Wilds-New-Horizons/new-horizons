@@ -18,28 +18,35 @@ namespace NewHorizons.Builder.Volumes
         public static CylindricalForceVolume Make(GameObject planetGO, Sector sector, CylindricalForceVolumeInfo info)
         {
             var forceVolume = Make<CylindricalForceVolume>(planetGO, sector, info);
+
             forceVolume._acceleration = info.force;
             forceVolume._localAxis = info.normal ?? Vector3.up;
             forceVolume._playGravityCrystalAudio = info.playGravityCrystalAudio;
+
             forceVolume.gameObject.SetActive(true);
+
             return forceVolume;
         }
 
         public static DirectionalForceVolume Make(GameObject planetGO, Sector sector, DirectionalForceVolumeInfo info)
         {
             var forceVolume = Make<DirectionalForceVolume>(planetGO, sector, info);
+
             forceVolume._fieldDirection = info.normal ?? Vector3.up;
             forceVolume._fieldMagnitude = info.force;
             forceVolume._affectsAlignment = info.affectsAlignment;
             forceVolume._offsetCentripetalForce = info.offsetCentripetalForce;
             forceVolume._playGravityCrystalAudio = info.playGravityCrystalAudio;
+
             forceVolume.gameObject.SetActive(true);
+
             return forceVolume;
         }
 
         public static GravityVolume Make(GameObject planetGO, Sector sector, GravityVolumeInfo info)
         {
             var forceVolume = Make<GravityVolume>(planetGO, sector, info);
+
             forceVolume._isPlanetGravityVolume = false;
             forceVolume._setMass = false;
             forceVolume._surfaceAcceleration = info.force;
@@ -54,23 +61,29 @@ namespace NewHorizons.Builder.Volumes
                 GravityFallOff.InverseSquared => GravityVolume.FalloffType.inverseSquared,
                 _ => throw new NotImplementedException(),
             };
+
             forceVolume.gameObject.SetActive(true);
+
             return forceVolume;
         }
 
         public static PolarForceVolume Make(GameObject planetGO, Sector sector, PolarForceVolumeInfo info)
         {
             var forceVolume = Make<PolarForceVolume>(planetGO, sector, info);
+
             forceVolume._acceleration = info.force;
             forceVolume._localAxis = info.normal ?? Vector3.up;
             forceVolume._fieldMode = info.tangential ? PolarForceVolume.ForceMode.Tangential : PolarForceVolume.ForceMode.Polar;
+
             forceVolume.gameObject.SetActive(true);
+
             return forceVolume;
         }
 
         public static RadialForceVolume Make(GameObject planetGO, Sector sector, RadialForceVolumeInfo info)
         {
             var forceVolume = Make<RadialForceVolume>(planetGO, sector, info);
+
             forceVolume._acceleration = info.force;
             forceVolume._falloff = info.fallOff switch
             {
@@ -79,37 +92,16 @@ namespace NewHorizons.Builder.Volumes
                 RadialForceVolumeInfo.FallOff.InverseSquared => RadialForceVolume.Falloff.InvSqr,
                 _ => throw new NotImplementedException(),
             };
+
             forceVolume.gameObject.SetActive(true);
+
             return forceVolume;
         }
 
-        public static T Make<T>(GameObject planetGO, Sector sector, ForceVolumeInfo info) where T : ForceVolume
+        public static TVolume Make<TVolume>(GameObject planetGO, Sector sector, ForceVolumeInfo info) where TVolume : ForceVolume
         {
-            var go = GeneralPropBuilder.MakeNew(typeof(T).Name, planetGO, sector, info);
-            go.layer = Layer.BasicEffectVolume;
+            var forceVolume = PriorityVolumeBuilder.Make<TVolume>(planetGO, sector, info);
 
-            var owTriggerVolume = go.AddComponent<OWTriggerVolume>();
-
-            if (info.shape != null)
-            {
-                var shapeOrCol = ShapeBuilder.AddShapeOrCollider(go, info.shape);
-                if (shapeOrCol is Shape shape)
-                    owTriggerVolume._shape = shape;
-                else if (shapeOrCol is Collider col)
-                    owTriggerVolume._owCollider = col.GetComponent<OWCollider>();
-            }
-            else
-            {
-                var col = go.AddComponent<SphereCollider>();
-                col.radius = info.radius;
-                col.isTrigger = true;
-                var owCollider = go.GetAddComponent<OWCollider>();
-
-                owTriggerVolume._owCollider = owCollider;
-            }
-
-            var forceVolume = go.AddComponent<T>();
-            forceVolume._priority = info.priority;
             forceVolume._alignmentPriority = info.alignmentPriority;
             forceVolume._inheritable = info.inheritable;
 
