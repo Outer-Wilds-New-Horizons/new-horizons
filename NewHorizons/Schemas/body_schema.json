@@ -5472,9 +5472,13 @@
         },
         "radius": {
           "type": "number",
-          "description": "The radius of this volume.",
+          "description": "The radius of this volume, if a shape is not specified.",
           "format": "float",
           "default": 1.0
+        },
+        "shape": {
+          "description": "The shape of this volume. Defaults to a sphere with a radius of `radius` if not specified.",
+          "$ref": "#/definitions/ShapeInfo"
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -5546,388 +5550,6 @@
         "pauseOnFadeOut": {
           "type": "boolean",
           "description": "Pause the music when exiting the volume."
-        }
-      }
-    },
-    "NHClipSelectionType": {
-      "type": "string",
-      "description": "",
-      "x-enumNames": [
-        "RANDOM",
-        "SEQUENTIAL",
-        "MANUAL"
-      ],
-      "enum": [
-        "random",
-        "sequential",
-        "manual"
-      ]
-    },
-    "DayNightAudioVolumeInfo": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "layer": {
-          "type": "integer",
-          "description": "The layer of this volume.\n\nLayers separate the priority system. The priority of volumes in one layer will not affect or override volumes in another. The highest priority volume in each layer will stack like normal.\nThe exception is layer 0. A higher-priority volume in layer 0 will override lower-priority volumes in ALL other layers. A lower-priority volume in layer 0 will stack with other layers like normal.\n            \nEx: A player could be affected by the sun on layer 9 priority 0 and planet gravity on layer 3 priority 2. They would experience the gravity of both volumes since they are on different layers.\nIf there was a zero-g volume on layer 0 priority 1, since it is on layer 0 it will override the gravity from the sun (priority 0 which is less than 1) but they will still feel the \ngravity of the planet (priority 2 is greater than 1). The zero-g volume will also still be applied because it is on a different layer.\n            \nDefault value here is 0 which means this volume's priority will be evaluated against all other priority volumes regardless of their layer.",
-          "format": "int32",
-          "default": 0
-        },
-        "priority": {
-          "type": "integer",
-          "description": "The priority of this volume.\n\nVolumes of higher priority will override volumes of lower priority. Volumes of the same priority will stack like normal.\nEx: A player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.\n            \nDefault value here is 1 instead of 0 so it automatically overrides planet gravity, which is 0 by default. ",
-          "format": "int32",
-          "default": 1
-        },
-        "radius": {
-          "type": "number",
-          "description": "The radius of this volume.",
-          "format": "float",
-          "default": 1.0
-        },
-        "rotation": {
-          "description": "Rotation of the object",
-          "$ref": "#/definitions/MVector3"
-        },
-        "alignRadial": {
-          "type": [
-            "boolean",
-            "null"
-          ],
-          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
-        },
-        "position": {
-          "description": "Position of the object",
-          "$ref": "#/definitions/MVector3"
-        },
-        "isRelativeToParent": {
-          "type": "boolean",
-          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
-        },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
-        "rename": {
-          "type": "string",
-          "description": "An optional rename of this object"
-        },
-        "dayAudio": {
-          "type": "string",
-          "description": "The audio to use during the day. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list. Leave empty for no daytime audio."
-        },
-        "nightAudio": {
-          "type": "string",
-          "description": "The audio to use during the day. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list. Leave empty for no nightime audio."
-        },
-        "sun": {
-          "type": "string",
-          "description": "The name of the astro object used to determine if it is day or night."
-        },
-        "dayWindow": {
-          "type": "number",
-          "description": "Angle in degrees defining daytime. Inside this window it will be day and outside it will be night.",
-          "format": "float",
-          "default": 180.0,
-          "maximum": 360.0,
-          "minimum": 0.0
-        },
-        "volume": {
-          "type": "number",
-          "description": "The loudness of the audio",
-          "format": "float",
-          "default": 1.0,
-          "maximum": 1.0,
-          "minimum": 0.0
-        },
-        "track": {
-          "description": "The audio track of this audio volume.\nMost of the time you'll use environment (the default) for sound effects and music for music. ",
-          "default": "environment",
-          "$ref": "#/definitions/NHAudioMixerTrackName"
-        }
-      }
-    },
-    "DestructionVolumeInfo": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "shrinkBodies": {
-          "type": "boolean",
-          "description": "Whether the bodies will shrink when they enter this volume or just disappear instantly.",
-          "default": true
-        },
-        "onlyAffectsPlayerRelatedBodies": {
-          "type": "boolean",
-          "description": "Whether this volume only affects the player, ship, probe/scout, model rocket ship, and nomai shuttle."
-        },
-        "radius": {
-          "type": "number",
-          "description": "The radius of this volume.",
-          "format": "float",
-          "default": 1.0
-        },
-        "rotation": {
-          "description": "Rotation of the object",
-          "$ref": "#/definitions/MVector3"
-        },
-        "alignRadial": {
-          "type": [
-            "boolean",
-            "null"
-          ],
-          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
-        },
-        "position": {
-          "description": "Position of the object",
-          "$ref": "#/definitions/MVector3"
-        },
-        "isRelativeToParent": {
-          "type": "boolean",
-          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
-        },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
-        "rename": {
-          "type": "string",
-          "description": "An optional rename of this object"
-        },
-        "deathType": {
-          "description": "The type of death the player will have if they enter this volume.",
-          "default": "default",
-          "$ref": "#/definitions/NHDeathType"
-        }
-      }
-    },
-    "NHDeathType": {
-      "type": "string",
-      "description": "Some special death types are:\n\nSupernova: Special death type used when the supernova hits you. You will not wake up if in the Dreamworld. \n\nDigestion: Death type used by anglerfish (and cut-content ghosts and water monster)\n\nBig bang: Special death type used at the end of the game\n\nMeditation: Special death type used when skipping to the next loop. You will not wake up if in the Dreamworld. \n\nTimeloop: Special death type used when the time loop ends. You will not wake up if in the Dreamworld. \n\nBlackhole: Special death type used by the ATP blackhole (and custom NH blackholes without whitehole destinations)\n\nDream: Special DLC death type used to kill a player in the real world while in the Dreamworld (i.e., you will loop not wake up)\n\nDreamExplosion: Special DLC death type used by the prototype artifact to kill a player in the real world while in the Dreamworld (i.e., you will loop not wake up)\n\nCrushedByElevator: Similar to the Crushed death type, but much faster",
-      "x-enumNames": [
-        "Default",
-        "Impact",
-        "Asphyxiation",
-        "Energy",
-        "Supernova",
-        "Digestion",
-        "BigBang",
-        "Crushed",
-        "Meditation",
-        "TimeLoop",
-        "Lava",
-        "BlackHole",
-        "Dream",
-        "DreamExplosion",
-        "CrushedByElevator"
-      ],
-      "enum": [
-        "default",
-        "impact",
-        "asphyxiation",
-        "energy",
-        "supernova",
-        "digestion",
-        "bigBang",
-        "crushed",
-        "meditation",
-        "timeLoop",
-        "lava",
-        "blackHole",
-        "dream",
-        "dreamExplosion",
-        "crushedByElevator"
-      ]
-    },
-    "FluidVolumeInfo": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "layer": {
-          "type": "integer",
-          "description": "The layer of this volume.\n\nLayers separate the priority system. The priority of volumes in one layer will not affect or override volumes in another. The highest priority volume in each layer will stack like normal.\nThe exception is layer 0. A higher-priority volume in layer 0 will override lower-priority volumes in ALL other layers. A lower-priority volume in layer 0 will stack with other layers like normal.\n            \nEx: A player could be affected by the sun on layer 9 priority 0 and planet gravity on layer 3 priority 2. They would experience the gravity of both volumes since they are on different layers.\nIf there was a zero-g volume on layer 0 priority 1, since it is on layer 0 it will override the gravity from the sun (priority 0 which is less than 1) but they will still feel the \ngravity of the planet (priority 2 is greater than 1). The zero-g volume will also still be applied because it is on a different layer.\n            \nDefault value here is 0 which means this volume's priority will be evaluated against all other priority volumes regardless of their layer.",
-          "format": "int32",
-          "default": 0
-        },
-        "priority": {
-          "type": "integer",
-          "description": "The priority of this volume.\n\nVolumes of higher priority will override volumes of lower priority. Volumes of the same priority will stack like normal.\nEx: A player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.\n            \nDefault value here is 1 instead of 0 so it automatically overrides planet gravity, which is 0 by default. ",
-          "format": "int32",
-          "default": 1
-        },
-        "radius": {
-          "type": "number",
-          "description": "The radius of this volume.",
-          "format": "float",
-          "default": 1.0
-        },
-        "rotation": {
-          "description": "Rotation of the object",
-          "$ref": "#/definitions/MVector3"
-        },
-        "alignRadial": {
-          "type": [
-            "boolean",
-            "null"
-          ],
-          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
-        },
-        "position": {
-          "description": "Position of the object",
-          "$ref": "#/definitions/MVector3"
-        },
-        "isRelativeToParent": {
-          "type": "boolean",
-          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
-        },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
-        "rename": {
-          "type": "string",
-          "description": "An optional rename of this object"
-        },
-        "density": {
-          "type": "number",
-          "description": "Density of the fluid. The higher the density, the harder it is to go through this fluid.",
-          "format": "float",
-          "default": 1.2
-        },
-        "type": {
-          "description": "The type of fluid for this volume.",
-          "$ref": "#/definitions/NHFluidType"
-        },
-        "alignmentFluid": {
-          "type": "boolean",
-          "description": "Should the player and rafts align to this fluid.",
-          "default": true
-        },
-        "allowShipAutoroll": {
-          "type": "boolean",
-          "description": "Should the ship align to the fluid by rolling."
-        },
-        "disableOnStart": {
-          "type": "boolean",
-          "description": "Disable this fluid volume immediately?"
-        }
-      }
-    },
-    "ForceModule": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "cylindricalVolumes": {
-          "type": "array",
-          "description": "Applies a constant force along the volume's XZ plane towards the volume's center. Affects alignment.",
-          "items": {
-            "$ref": "#/definitions/CylindricalForceVolumeInfo"
-          }
-        },
-        "directionalVolumes": {
-          "type": "array",
-          "description": "Applies a constant force in the direction of the volume's Y axis. May affect alignment.",
-          "items": {
-            "$ref": "#/definitions/DirectionalForceVolumeInfo"
-          }
-        },
-        "gravityVolumes": {
-          "type": "array",
-          "description": "Applies planet-like gravity towards the volume's center with falloff by distance. May affect alignment.\nFor actual planetary body gravity, use the properties in the Base module.",
-          "items": {
-            "$ref": "#/definitions/GravityVolumeInfo"
-          }
-        },
-        "polarVolumes": {
-          "type": "array",
-          "description": "Applies a constant force towards the volume's center. Affects alignment.",
-          "items": {
-            "$ref": "#/definitions/PolarForceVolumeInfo"
-          }
-        },
-        "radialVolumes": {
-          "type": "array",
-          "description": "Applies a force towards the volume's center with falloff by distance. Affects alignment.",
-          "items": {
-            "$ref": "#/definitions/RadialForceVolumeInfo"
-          }
-        }
-      }
-    },
-    "CylindricalForceVolumeInfo": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "shape": {
-          "description": "The shape of this volume. Defaults to a sphere shape with a radius of `radius`.",
-          "$ref": "#/definitions/ShapeInfo"
-        },
-        "force": {
-          "type": "number",
-          "description": "The force applied by this volume. Can be negative to reverse the direction.",
-          "format": "float"
-        },
-        "alignmentPriority": {
-          "type": "integer",
-          "description": "The priority of this force volume for the purposes of alignment.\n\nVolumes of higher priority will override volumes of lower priority. Volumes of the same priority will stack like normal.\nEx: A player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.\n            \nDefault value here is 1 instead of 0 so it automatically overrides planet gravity, which is 0 by default. ",
-          "format": "int32",
-          "default": 1
-        },
-        "inheritable": {
-          "type": "boolean",
-          "description": "Whether this force volume is inheritable. The most recently activated inheritable force volume will stack with other force volumes even if their priorities differ."
-        },
-        "layer": {
-          "type": "integer",
-          "description": "The layer of this volume.\n\nLayers separate the priority system. The priority of volumes in one layer will not affect or override volumes in another. The highest priority volume in each layer will stack like normal.\nThe exception is layer 0. A higher-priority volume in layer 0 will override lower-priority volumes in ALL other layers. A lower-priority volume in layer 0 will stack with other layers like normal.\n            \nEx: A player could be affected by the sun on layer 9 priority 0 and planet gravity on layer 3 priority 2. They would experience the gravity of both volumes since they are on different layers.\nIf there was a zero-g volume on layer 0 priority 1, since it is on layer 0 it will override the gravity from the sun (priority 0 which is less than 1) but they will still feel the \ngravity of the planet (priority 2 is greater than 1). The zero-g volume will also still be applied because it is on a different layer.\n            \nDefault value here is 0 which means this volume's priority will be evaluated against all other priority volumes regardless of their layer.",
-          "format": "int32",
-          "default": 0
-        },
-        "priority": {
-          "type": "integer",
-          "description": "The priority of this volume.\n\nVolumes of higher priority will override volumes of lower priority. Volumes of the same priority will stack like normal.\nEx: A player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.\n            \nDefault value here is 1 instead of 0 so it automatically overrides planet gravity, which is 0 by default. ",
-          "format": "int32",
-          "default": 1
-        },
-        "radius": {
-          "type": "number",
-          "description": "The radius of this volume.",
-          "format": "float",
-          "default": 1.0
-        },
-        "rotation": {
-          "description": "Rotation of the object",
-          "$ref": "#/definitions/MVector3"
-        },
-        "alignRadial": {
-          "type": [
-            "boolean",
-            "null"
-          ],
-          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
-        },
-        "position": {
-          "description": "Position of the object",
-          "$ref": "#/definitions/MVector3"
-        },
-        "isRelativeToParent": {
-          "type": "boolean",
-          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
-        },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
-        "rename": {
-          "type": "string",
-          "description": "An optional rename of this object"
-        },
-        "normal": {
-          "description": "The direction that the force applied by this volume will be perpendicular to. Defaults to up (0, 1, 0).",
-          "$ref": "#/definitions/MVector3"
-        },
-        "playGravityCrystalAudio": {
-          "type": "boolean",
-          "description": "Whether to play the gravity crystal audio when the player is in this volume."
         }
       }
     },
@@ -6026,14 +5648,326 @@
         "z"
       ]
     },
-    "DirectionalForceVolumeInfo": {
+    "NHClipSelectionType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "RANDOM",
+        "SEQUENTIAL",
+        "MANUAL"
+      ],
+      "enum": [
+        "random",
+        "sequential",
+        "manual"
+      ]
+    },
+    "DayNightAudioVolumeInfo": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "layer": {
+          "type": "integer",
+          "description": "The layer of this volume.\n\nLayers separate the priority system. The priority of volumes in one layer will not affect or override volumes in another. The highest priority volume in each layer will stack like normal.\nThe exception is layer 0. A higher-priority volume in layer 0 will override lower-priority volumes in ALL other layers. A lower-priority volume in layer 0 will stack with other layers like normal.\n            \nEx: A player could be affected by the sun on layer 9 priority 0 and planet gravity on layer 3 priority 2. They would experience the gravity of both volumes since they are on different layers.\nIf there was a zero-g volume on layer 0 priority 1, since it is on layer 0 it will override the gravity from the sun (priority 0 which is less than 1) but they will still feel the \ngravity of the planet (priority 2 is greater than 1). The zero-g volume will also still be applied because it is on a different layer.\n            \nDefault value here is 0 which means this volume's priority will be evaluated against all other priority volumes regardless of their layer.",
+          "format": "int32",
+          "default": 0
+        },
+        "priority": {
+          "type": "integer",
+          "description": "The priority of this volume.\n\nVolumes of higher priority will override volumes of lower priority. Volumes of the same priority will stack like normal.\nEx: A player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.\n            \nDefault value here is 1 instead of 0 so it automatically overrides planet gravity, which is 0 by default. ",
+          "format": "int32",
+          "default": 1
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume, if a shape is not specified.",
+          "format": "float",
+          "default": 1.0
+        },
         "shape": {
-          "description": "The shape of this volume. Defaults to a sphere shape with a radius of `radius`.",
+          "description": "The shape of this volume. Defaults to a sphere with a radius of `radius` if not specified.",
           "$ref": "#/definitions/ShapeInfo"
         },
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "dayAudio": {
+          "type": "string",
+          "description": "The audio to use during the day. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list. Leave empty for no daytime audio."
+        },
+        "nightAudio": {
+          "type": "string",
+          "description": "The audio to use during the day. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list. Leave empty for no nightime audio."
+        },
+        "sun": {
+          "type": "string",
+          "description": "The name of the astro object used to determine if it is day or night."
+        },
+        "dayWindow": {
+          "type": "number",
+          "description": "Angle in degrees defining daytime. Inside this window it will be day and outside it will be night.",
+          "format": "float",
+          "default": 180.0,
+          "maximum": 360.0,
+          "minimum": 0.0
+        },
+        "volume": {
+          "type": "number",
+          "description": "The loudness of the audio",
+          "format": "float",
+          "default": 1.0,
+          "maximum": 1.0,
+          "minimum": 0.0
+        },
+        "track": {
+          "description": "The audio track of this audio volume.\nMost of the time you'll use environment (the default) for sound effects and music for music. ",
+          "default": "environment",
+          "$ref": "#/definitions/NHAudioMixerTrackName"
+        }
+      }
+    },
+    "DestructionVolumeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "shrinkBodies": {
+          "type": "boolean",
+          "description": "Whether the bodies will shrink when they enter this volume or just disappear instantly.",
+          "default": true
+        },
+        "onlyAffectsPlayerRelatedBodies": {
+          "type": "boolean",
+          "description": "Whether this volume only affects the player, ship, probe/scout, model rocket ship, and nomai shuttle."
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume, if a shape is not specified.",
+          "format": "float",
+          "default": 1.0
+        },
+        "shape": {
+          "description": "The shape of this volume. Defaults to a sphere with a radius of `radius` if not specified.",
+          "$ref": "#/definitions/ShapeInfo"
+        },
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "deathType": {
+          "description": "The type of death the player will have if they enter this volume.",
+          "default": "default",
+          "$ref": "#/definitions/NHDeathType"
+        }
+      }
+    },
+    "NHDeathType": {
+      "type": "string",
+      "description": "Some special death types are:\n\nSupernova: Special death type used when the supernova hits you. You will not wake up if in the Dreamworld. \n\nDigestion: Death type used by anglerfish (and cut-content ghosts and water monster)\n\nBig bang: Special death type used at the end of the game\n\nMeditation: Special death type used when skipping to the next loop. You will not wake up if in the Dreamworld. \n\nTimeloop: Special death type used when the time loop ends. You will not wake up if in the Dreamworld. \n\nBlackhole: Special death type used by the ATP blackhole (and custom NH blackholes without whitehole destinations)\n\nDream: Special DLC death type used to kill a player in the real world while in the Dreamworld (i.e., you will loop not wake up)\n\nDreamExplosion: Special DLC death type used by the prototype artifact to kill a player in the real world while in the Dreamworld (i.e., you will loop not wake up)\n\nCrushedByElevator: Similar to the Crushed death type, but much faster",
+      "x-enumNames": [
+        "Default",
+        "Impact",
+        "Asphyxiation",
+        "Energy",
+        "Supernova",
+        "Digestion",
+        "BigBang",
+        "Crushed",
+        "Meditation",
+        "TimeLoop",
+        "Lava",
+        "BlackHole",
+        "Dream",
+        "DreamExplosion",
+        "CrushedByElevator"
+      ],
+      "enum": [
+        "default",
+        "impact",
+        "asphyxiation",
+        "energy",
+        "supernova",
+        "digestion",
+        "bigBang",
+        "crushed",
+        "meditation",
+        "timeLoop",
+        "lava",
+        "blackHole",
+        "dream",
+        "dreamExplosion",
+        "crushedByElevator"
+      ]
+    },
+    "FluidVolumeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "layer": {
+          "type": "integer",
+          "description": "The layer of this volume.\n\nLayers separate the priority system. The priority of volumes in one layer will not affect or override volumes in another. The highest priority volume in each layer will stack like normal.\nThe exception is layer 0. A higher-priority volume in layer 0 will override lower-priority volumes in ALL other layers. A lower-priority volume in layer 0 will stack with other layers like normal.\n            \nEx: A player could be affected by the sun on layer 9 priority 0 and planet gravity on layer 3 priority 2. They would experience the gravity of both volumes since they are on different layers.\nIf there was a zero-g volume on layer 0 priority 1, since it is on layer 0 it will override the gravity from the sun (priority 0 which is less than 1) but they will still feel the \ngravity of the planet (priority 2 is greater than 1). The zero-g volume will also still be applied because it is on a different layer.\n            \nDefault value here is 0 which means this volume's priority will be evaluated against all other priority volumes regardless of their layer.",
+          "format": "int32",
+          "default": 0
+        },
+        "priority": {
+          "type": "integer",
+          "description": "The priority of this volume.\n\nVolumes of higher priority will override volumes of lower priority. Volumes of the same priority will stack like normal.\nEx: A player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.\n            \nDefault value here is 1 instead of 0 so it automatically overrides planet gravity, which is 0 by default. ",
+          "format": "int32",
+          "default": 1
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume, if a shape is not specified.",
+          "format": "float",
+          "default": 1.0
+        },
+        "shape": {
+          "description": "The shape of this volume. Defaults to a sphere with a radius of `radius` if not specified.",
+          "$ref": "#/definitions/ShapeInfo"
+        },
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "density": {
+          "type": "number",
+          "description": "Density of the fluid. The higher the density, the harder it is to go through this fluid.",
+          "format": "float",
+          "default": 1.2
+        },
+        "type": {
+          "description": "The type of fluid for this volume.",
+          "$ref": "#/definitions/NHFluidType"
+        },
+        "alignmentFluid": {
+          "type": "boolean",
+          "description": "Should the player and rafts align to this fluid.",
+          "default": true
+        },
+        "allowShipAutoroll": {
+          "type": "boolean",
+          "description": "Should the ship align to the fluid by rolling."
+        },
+        "disableOnStart": {
+          "type": "boolean",
+          "description": "Disable this fluid volume immediately?"
+        }
+      }
+    },
+    "ForceModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "cylindricalVolumes": {
+          "type": "array",
+          "description": "Applies a constant force along the volume's XZ plane towards the volume's center. Affects alignment.",
+          "items": {
+            "$ref": "#/definitions/CylindricalForceVolumeInfo"
+          }
+        },
+        "directionalVolumes": {
+          "type": "array",
+          "description": "Applies a constant force in the direction of the volume's Y axis. May affect alignment.",
+          "items": {
+            "$ref": "#/definitions/DirectionalForceVolumeInfo"
+          }
+        },
+        "gravityVolumes": {
+          "type": "array",
+          "description": "Applies planet-like gravity towards the volume's center with falloff by distance. May affect alignment.\nFor actual planetary body gravity, use the properties in the Base module.",
+          "items": {
+            "$ref": "#/definitions/GravityVolumeInfo"
+          }
+        },
+        "polarVolumes": {
+          "type": "array",
+          "description": "Applies a constant force towards the volume's center. Affects alignment.",
+          "items": {
+            "$ref": "#/definitions/PolarForceVolumeInfo"
+          }
+        },
+        "radialVolumes": {
+          "type": "array",
+          "description": "Applies a force towards the volume's center with falloff by distance. Affects alignment.",
+          "items": {
+            "$ref": "#/definitions/RadialForceVolumeInfo"
+          }
+        }
+      }
+    },
+    "CylindricalForceVolumeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
         "force": {
           "type": "number",
           "description": "The force applied by this volume. Can be negative to reverse the direction.",
@@ -6063,9 +5997,91 @@
         },
         "radius": {
           "type": "number",
-          "description": "The radius of this volume.",
+          "description": "The radius of this volume, if a shape is not specified.",
           "format": "float",
           "default": 1.0
+        },
+        "shape": {
+          "description": "The shape of this volume. Defaults to a sphere with a radius of `radius` if not specified.",
+          "$ref": "#/definitions/ShapeInfo"
+        },
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "normal": {
+          "description": "The direction that the force applied by this volume will be perpendicular to. Defaults to up (0, 1, 0).",
+          "$ref": "#/definitions/MVector3"
+        },
+        "playGravityCrystalAudio": {
+          "type": "boolean",
+          "description": "Whether to play the gravity crystal audio when the player is in this volume."
+        }
+      }
+    },
+    "DirectionalForceVolumeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "force": {
+          "type": "number",
+          "description": "The force applied by this volume. Can be negative to reverse the direction.",
+          "format": "float"
+        },
+        "alignmentPriority": {
+          "type": "integer",
+          "description": "The priority of this force volume for the purposes of alignment.\n\nVolumes of higher priority will override volumes of lower priority. Volumes of the same priority will stack like normal.\nEx: A player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.\n            \nDefault value here is 1 instead of 0 so it automatically overrides planet gravity, which is 0 by default. ",
+          "format": "int32",
+          "default": 1
+        },
+        "inheritable": {
+          "type": "boolean",
+          "description": "Whether this force volume is inheritable. The most recently activated inheritable force volume will stack with other force volumes even if their priorities differ."
+        },
+        "layer": {
+          "type": "integer",
+          "description": "The layer of this volume.\n\nLayers separate the priority system. The priority of volumes in one layer will not affect or override volumes in another. The highest priority volume in each layer will stack like normal.\nThe exception is layer 0. A higher-priority volume in layer 0 will override lower-priority volumes in ALL other layers. A lower-priority volume in layer 0 will stack with other layers like normal.\n            \nEx: A player could be affected by the sun on layer 9 priority 0 and planet gravity on layer 3 priority 2. They would experience the gravity of both volumes since they are on different layers.\nIf there was a zero-g volume on layer 0 priority 1, since it is on layer 0 it will override the gravity from the sun (priority 0 which is less than 1) but they will still feel the \ngravity of the planet (priority 2 is greater than 1). The zero-g volume will also still be applied because it is on a different layer.\n            \nDefault value here is 0 which means this volume's priority will be evaluated against all other priority volumes regardless of their layer.",
+          "format": "int32",
+          "default": 0
+        },
+        "priority": {
+          "type": "integer",
+          "description": "The priority of this volume.\n\nVolumes of higher priority will override volumes of lower priority. Volumes of the same priority will stack like normal.\nEx: A player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.\n            \nDefault value here is 1 instead of 0 so it automatically overrides planet gravity, which is 0 by default. ",
+          "format": "int32",
+          "default": 1
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume, if a shape is not specified.",
+          "format": "float",
+          "default": 1.0
+        },
+        "shape": {
+          "description": "The shape of this volume. Defaults to a sphere with a radius of `radius` if not specified.",
+          "$ref": "#/definitions/ShapeInfo"
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -6117,10 +6133,6 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "shape": {
-          "description": "The shape of this volume. Defaults to a sphere shape with a radius of `radius`.",
-          "$ref": "#/definitions/ShapeInfo"
-        },
         "force": {
           "type": "number",
           "description": "The force applied by this volume. Can be negative to reverse the direction.",
@@ -6150,9 +6162,13 @@
         },
         "radius": {
           "type": "number",
-          "description": "The radius of this volume.",
+          "description": "The radius of this volume, if a shape is not specified.",
           "format": "float",
           "default": 1.0
+        },
+        "shape": {
+          "description": "The shape of this volume. Defaults to a sphere with a radius of `radius` if not specified.",
+          "$ref": "#/definitions/ShapeInfo"
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -6223,10 +6239,6 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "shape": {
-          "description": "The shape of this volume. Defaults to a sphere shape with a radius of `radius`.",
-          "$ref": "#/definitions/ShapeInfo"
-        },
         "force": {
           "type": "number",
           "description": "The force applied by this volume. Can be negative to reverse the direction.",
@@ -6256,9 +6268,13 @@
         },
         "radius": {
           "type": "number",
-          "description": "The radius of this volume.",
+          "description": "The radius of this volume, if a shape is not specified.",
           "format": "float",
           "default": 1.0
+        },
+        "shape": {
+          "description": "The shape of this volume. Defaults to a sphere with a radius of `radius` if not specified.",
+          "$ref": "#/definitions/ShapeInfo"
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -6301,10 +6317,6 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "shape": {
-          "description": "The shape of this volume. Defaults to a sphere shape with a radius of `radius`.",
-          "$ref": "#/definitions/ShapeInfo"
-        },
         "force": {
           "type": "number",
           "description": "The force applied by this volume. Can be negative to reverse the direction.",
@@ -6334,9 +6346,13 @@
         },
         "radius": {
           "type": "number",
-          "description": "The radius of this volume.",
+          "description": "The radius of this volume, if a shape is not specified.",
           "format": "float",
           "default": 1.0
+        },
+        "shape": {
+          "description": "The shape of this volume. Defaults to a sphere with a radius of `radius` if not specified.",
+          "$ref": "#/definitions/ShapeInfo"
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -6392,9 +6408,13 @@
       "properties": {
         "radius": {
           "type": "number",
-          "description": "The radius of this volume.",
+          "description": "The radius of this volume, if a shape is not specified.",
           "format": "float",
           "default": 1.0
+        },
+        "shape": {
+          "description": "The shape of this volume. Defaults to a sphere with a radius of `radius` if not specified.",
+          "$ref": "#/definitions/ShapeInfo"
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -6479,9 +6499,13 @@
         },
         "radius": {
           "type": "number",
-          "description": "The radius of this volume.",
+          "description": "The radius of this volume, if a shape is not specified.",
           "format": "float",
           "default": 1.0
+        },
+        "shape": {
+          "description": "The shape of this volume. Defaults to a sphere with a radius of `radius` if not specified.",
+          "$ref": "#/definitions/ShapeInfo"
         }
       }
     },
@@ -6491,9 +6515,13 @@
       "properties": {
         "radius": {
           "type": "number",
-          "description": "The radius of this volume.",
+          "description": "The radius of this volume, if a shape is not specified.",
           "format": "float",
           "default": 1.0
+        },
+        "shape": {
+          "description": "The shape of this volume. Defaults to a sphere with a radius of `radius` if not specified.",
+          "$ref": "#/definitions/ShapeInfo"
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -6573,9 +6601,13 @@
       "properties": {
         "radius": {
           "type": "number",
-          "description": "The radius of this volume.",
+          "description": "The radius of this volume, if a shape is not specified.",
           "format": "float",
           "default": 1.0
+        },
+        "shape": {
+          "description": "The shape of this volume. Defaults to a sphere with a radius of `radius` if not specified.",
+          "$ref": "#/definitions/ShapeInfo"
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -6641,9 +6673,13 @@
       "properties": {
         "radius": {
           "type": "number",
-          "description": "The radius of this volume.",
+          "description": "The radius of this volume, if a shape is not specified.",
           "format": "float",
           "default": 1.0
+        },
+        "shape": {
+          "description": "The shape of this volume. Defaults to a sphere with a radius of `radius` if not specified.",
+          "$ref": "#/definitions/ShapeInfo"
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -6775,9 +6811,13 @@
       "properties": {
         "radius": {
           "type": "number",
-          "description": "The radius of this volume.",
+          "description": "The radius of this volume, if a shape is not specified.",
           "format": "float",
           "default": 1.0
+        },
+        "shape": {
+          "description": "The shape of this volume. Defaults to a sphere with a radius of `radius` if not specified.",
+          "$ref": "#/definitions/ShapeInfo"
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -6826,9 +6866,13 @@
       "properties": {
         "radius": {
           "type": "number",
-          "description": "The radius of this volume.",
+          "description": "The radius of this volume, if a shape is not specified.",
           "format": "float",
           "default": 1.0
+        },
+        "shape": {
+          "description": "The shape of this volume. Defaults to a sphere with a radius of `radius` if not specified.",
+          "$ref": "#/definitions/ShapeInfo"
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -6887,9 +6931,13 @@
       "properties": {
         "radius": {
           "type": "number",
-          "description": "The radius of this volume.",
+          "description": "The radius of this volume, if a shape is not specified.",
           "format": "float",
           "default": 1.0
+        },
+        "shape": {
+          "description": "The shape of this volume. Defaults to a sphere with a radius of `radius` if not specified.",
+          "$ref": "#/definitions/ShapeInfo"
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -6942,9 +6990,13 @@
       "properties": {
         "radius": {
           "type": "number",
-          "description": "The radius of this volume.",
+          "description": "The radius of this volume, if a shape is not specified.",
           "format": "float",
           "default": 1.0
+        },
+        "shape": {
+          "description": "The shape of this volume. Defaults to a sphere with a radius of `radius` if not specified.",
+          "$ref": "#/definitions/ShapeInfo"
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -7025,9 +7077,13 @@
         },
         "radius": {
           "type": "number",
-          "description": "The radius of this volume.",
+          "description": "The radius of this volume, if a shape is not specified.",
           "format": "float",
           "default": 1.0
+        },
+        "shape": {
+          "description": "The shape of this volume. Defaults to a sphere with a radius of `radius` if not specified.",
+          "$ref": "#/definitions/ShapeInfo"
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -7090,9 +7146,13 @@
         },
         "radius": {
           "type": "number",
-          "description": "The radius of this volume.",
+          "description": "The radius of this volume, if a shape is not specified.",
           "format": "float",
           "default": 1.0
+        },
+        "shape": {
+          "description": "The shape of this volume. Defaults to a sphere with a radius of `radius` if not specified.",
+          "$ref": "#/definitions/ShapeInfo"
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -7141,9 +7201,13 @@
       "properties": {
         "radius": {
           "type": "number",
-          "description": "The radius of this volume.",
+          "description": "The radius of this volume, if a shape is not specified.",
           "format": "float",
           "default": 1.0
+        },
+        "shape": {
+          "description": "The shape of this volume. Defaults to a sphere with a radius of `radius` if not specified.",
+          "$ref": "#/definitions/ShapeInfo"
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -7192,9 +7256,13 @@
       "properties": {
         "radius": {
           "type": "number",
-          "description": "The radius of this volume.",
+          "description": "The radius of this volume, if a shape is not specified.",
           "format": "float",
           "default": 1.0
+        },
+        "shape": {
+          "description": "The shape of this volume. Defaults to a sphere with a radius of `radius` if not specified.",
+          "$ref": "#/definitions/ShapeInfo"
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -7240,9 +7308,13 @@
       "properties": {
         "radius": {
           "type": "number",
-          "description": "The radius of this volume.",
+          "description": "The radius of this volume, if a shape is not specified.",
           "format": "float",
           "default": 1.0
+        },
+        "shape": {
+          "description": "The shape of this volume. Defaults to a sphere with a radius of `radius` if not specified.",
+          "$ref": "#/definitions/ShapeInfo"
         },
         "rotation": {
           "description": "Rotation of the object",
