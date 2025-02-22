@@ -32,6 +32,10 @@ namespace NewHorizons.External.Modules.Props.Item
         /// </summary>
         [DefaultValue(0.5f)] public float colliderRadius = 0.5f;
         /// <summary>
+        /// Whether the added sphere collider will be a trigger (interactible but does not collide). Defaults to true.
+        /// </summary>
+        [DefaultValue(true)] public bool colliderIsTrigger = true;
+        /// <summary>
         /// Whether the item can be dropped. Defaults to true.
         /// </summary>
         [DefaultValue(true)] public bool droppable = true;

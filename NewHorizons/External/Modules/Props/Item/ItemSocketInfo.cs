@@ -19,6 +19,15 @@ namespace NewHorizons.External.Modules.Props.Item
         /// </summary>
         [DefaultValue(2f)] public float interactRange = 2f;
         /// <summary>
+        /// Default collider radius when interacting with the socket
+        /// </summary>
+        [DefaultValue(0f)]
+        public float colliderRadius = 0f;
+        /// <summary>
+        /// Whether the added sphere collider will be a trigger (interactible but does not collide). Defaults to true.
+        /// </summary>
+        [DefaultValue(true)] public bool colliderIsTrigger = true;
+        /// <summary>
         /// Whether to use "Give Item" / "Take Item" prompts instead of "Insert Item" / "Remove Item".
         /// </summary>
         public bool useGiveTakePrompts;
@@ -46,10 +55,5 @@ namespace NewHorizons.External.Modules.Props.Item
         /// A ship log fact to reveal when removing an item from this socket, or when the socket is empty.
         /// </summary>
         public string removalFact;
-        /// <summary>
-        /// Default collider radius when interacting with the socket
-        /// </summary>
-        [DefaultValue(0f)]
-        public float colliderRadius = 0f;
     }
 }
