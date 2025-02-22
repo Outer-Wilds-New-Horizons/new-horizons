@@ -185,6 +185,12 @@ namespace NewHorizons.Handlers
             starLightController.Awake();
             SunLightEffectsController.AddStar(starController);
             SunLightEffectsController.AddStarLight(sunLight);
+
+            // The player starts out already added to the eye sector, so we need to inform the sectored components that the sector isn't empty
+            Delay.FireOnNextUpdate(() =>
+            {
+                eyeSector.OnSectorOccupantsUpdated.Invoke();
+            });
         }
 
         public static void SetUpEyeCampfireSequence()
