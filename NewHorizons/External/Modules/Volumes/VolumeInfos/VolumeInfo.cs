@@ -4,7 +4,7 @@ using System.ComponentModel;
 namespace NewHorizons.External.Modules.Volumes.VolumeInfos
 {
     [JsonObject]
-    public class VolumeInfo : GeneralPointPropInfo
+    public class VolumeInfo : GeneralPropInfo
     {
         /// <summary>
         /// The radius of this volume.

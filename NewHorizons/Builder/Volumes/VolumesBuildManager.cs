@@ -112,6 +112,44 @@ namespace NewHorizons.Builder.Volumes
                     FluidVolumeBuilder.Make(go, sector, fluidVolume);
                 }
             }
+            if (config.Volumes.forces != null)
+            {
+                if (config.Volumes.forces.cylindricalVolumes != null)
+                {
+                    foreach (var cylindricalVolume in config.Volumes.forces.cylindricalVolumes)
+                    {
+                        ForceVolumeBuilder.Make(go, sector, cylindricalVolume);
+                    }
+                }
+                if (config.Volumes.forces.directionalVolumes != null)
+                {
+                    foreach (var directionalVolume in config.Volumes.forces.directionalVolumes)
+                    {
+                        ForceVolumeBuilder.Make(go, sector, directionalVolume);
+                    }
+                }
+                if (config.Volumes.forces.gravityVolumes != null)
+                {
+                    foreach (var gravityVolume in config.Volumes.forces.gravityVolumes)
+                    {
+                        ForceVolumeBuilder.Make(go, sector, gravityVolume);
+                    }
+                }
+                if (config.Volumes.forces.polarVolumes != null)
+                {
+                    foreach (var polarVolume in config.Volumes.forces.polarVolumes)
+                    {
+                        ForceVolumeBuilder.Make(go, sector, polarVolume);
+                    }
+                }
+                if (config.Volumes.forces.radialVolumes != null)
+                {
+                    foreach (var radialVolume in config.Volumes.forces.radialVolumes)
+                    {
+                        ForceVolumeBuilder.Make(go, sector, radialVolume);
+                    }
+                }
+            }
             if (config.Volumes.probe != null)
             {
                 if (config.Volumes.probe.destructionVolumes != null)
