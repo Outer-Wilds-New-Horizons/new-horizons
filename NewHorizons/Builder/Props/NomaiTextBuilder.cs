@@ -312,7 +312,7 @@ namespace NewHorizons.Builder.Props
                                 scrollItem._nomaiWallText = nomaiWallText;
                                 scrollItem.SetSector(sector);
                                 customScroll.transform.Find("Props_NOM_Scroll/Props_NOM_Scroll_Geo").GetComponent<MeshRenderer>().enabled = true;
-                                customScroll.transform.Find("Props_NOM_Scroll/Props_NOM_Scroll_Collider").gameObject.SetActive(true);
+                                customScroll.transform.Find("Props_NOM_Scroll/Props_NOM_Scroll_Collider").gameObject.SetActive(false);
                                 nomaiWallText.gameObject.GetComponent<Collider>().enabled = false;
                                 customScroll.GetComponent<CapsuleCollider>().enabled = true;
                             }
