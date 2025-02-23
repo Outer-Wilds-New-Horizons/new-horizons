@@ -53,10 +53,16 @@ namespace NewHorizons.Handlers
                 {
                     return AddCustomAudioType(audio, mod);
                 }
-                else
+                else if (EnumUtils.TryParse<AudioType>(audio, out var type))
                 {
-                    return EnumUtils.Parse<AudioType>(audio);
+                    return type;
                 }
+                else // Log if cannot parse
+                {
+                    NHLogger.LogError($"Couldn't load AudioType \"{audio}\"");
+                    return AudioType.None;
+                }
+
             }
             catch (Exception e)
             {
