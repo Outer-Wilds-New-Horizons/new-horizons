@@ -71,6 +71,30 @@ namespace NewHorizons.External.Configs
         public string factRequiredToExitViaWarpDrive;
 
         /// <summary>
+        /// Whether this system can be warped to via the warp drive. If you set `factRequiredToEnterViaVessel`, this will be true.
+        /// Does NOT effect the base SolarSystem. For that, see `canExitViaVessel` and `factRequiredToExitViaVessel`
+        /// </summary>
+        [DefaultValue(true)] public bool canEnterViaVessel = true;
+
+        /// <summary>
+        /// The FactID that must be revealed before it can be warped to via the Vessel. Don't set `canEnterViaVessel` to `false` if
+        /// you're using this, because it will be overwritten.
+        /// </summary>
+        public string factRequiredToEnterViaVessel;
+
+        /// <summary>
+        /// Can you use the warp drive to leave this system? If you set `factRequiredToExitViaVessel`
+        /// this will be true.
+        /// </summary>
+        [DefaultValue(true)] public bool canExitViaVessel = true;
+
+        /// <summary>
+        /// The FactID that must be revealed for you to warp to any star system from here via the warp drive. Don't set `canExitViaVessel`
+        /// to `false` if you're using this, because it will be overwritten.
+        /// </summary>
+        public string factRequiredToExitViaVessel;
+
+        /// <summary>
         /// Do you want a clean slate for this star system? Or will it be a modified version of the original.
         /// </summary>
         [DefaultValue(true)] public bool destroyStockPlanets = true;
@@ -308,6 +332,8 @@ namespace NewHorizons.External.Configs
             // True by default so if one is false go false
             canEnterViaWarpDrive = canEnterViaWarpDrive && otherConfig.canEnterViaWarpDrive;
             canExitViaWarpDrive = canExitViaWarpDrive && otherConfig.canExitViaWarpDrive;
+            canEnterViaVessel = canEnterViaVessel && otherConfig.canEnterViaVessel;
+            canExitViaVessel = canExitViaVessel && otherConfig.canExitViaVessel;
             destroyStockPlanets = destroyStockPlanets && otherConfig.destroyStockPlanets;
             enableTimeLoop = enableTimeLoop && otherConfig.enableTimeLoop;
             loopDuration = loopDuration == 22f ? otherConfig.loopDuration : loopDuration;
@@ -315,6 +341,8 @@ namespace NewHorizons.External.Configs
             // If current one is null take the other
             factRequiredToEnterViaWarpDrive = string.IsNullOrEmpty(factRequiredToEnterViaWarpDrive) ? otherConfig.factRequiredToEnterViaWarpDrive : factRequiredToEnterViaWarpDrive;
             factRequiredToExitViaWarpDrive = string.IsNullOrEmpty(factRequiredToExitViaWarpDrive) ? otherConfig.factRequiredToExitViaWarpDrive : factRequiredToExitViaWarpDrive;
+            factRequiredToEnterViaVessel = string.IsNullOrEmpty(factRequiredToEnterViaVessel) ? otherConfig.factRequiredToEnterViaVessel : factRequiredToEnterViaVessel;
+            factRequiredToExitViaVessel = string.IsNullOrEmpty(factRequiredToExitViaVessel) ? otherConfig.factRequiredToExitViaVessel : factRequiredToExitViaVessel;
             Skybox = Skybox == null ? otherConfig.Skybox : Skybox;
 
             // False by default so if one is true go true
@@ -415,9 +443,17 @@ namespace NewHorizons.External.Configs
                     Vessel.warpExit.attachToVessel = true;
                 }
             }
+        }
+
+        public void Validate()
+        {
             if (!string.IsNullOrEmpty(factRequiredToExitViaWarpDrive))
             {
                 canExitViaWarpDrive = true;
+            }
+            if (!string.IsNullOrEmpty(factRequiredToExitViaVessel))
+            {
+                canExitViaVessel = true;
             }
         }
     }

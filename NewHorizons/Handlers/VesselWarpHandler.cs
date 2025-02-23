@@ -399,5 +399,26 @@ namespace NewHorizons.Handlers
             vesselWarpController._audioSource.spatialBlend = 1f;
             vesselWarpController._audioSource.rolloffMode = AudioRolloffMode.Linear;
         }
+
+        public static bool CanEnterViaVessel(string targetSystem)
+        {
+            if (targetSystem is "SolarSystem" or "EyeOfTheUniverse") return true;
+
+            var currentSystemConfig = Main.SystemDict[targetSystem].Config;
+            return currentSystemConfig.canEnterViaVessel
+                && (string.IsNullOrEmpty(currentSystemConfig.factRequiredToEnterViaVessel)
+                || ShipLogHandler.KnowsFact(currentSystemConfig.factRequiredToEnterViaVessel));
+        }
+
+        public static bool CanExitViaVessel()
+        {
+            if (Main.Instance.CurrentStarSystem is "SolarSystem") return true;
+            if (Main.Instance.CurrentStarSystem is "EyeOfTheUniverse") return false;
+
+            var currentSystemConfig = Main.SystemDict[Main.Instance.CurrentStarSystem].Config;
+            return currentSystemConfig.canExitViaVessel
+                && (string.IsNullOrEmpty(currentSystemConfig.factRequiredToExitViaVessel)
+                || ShipLogHandler.KnowsFact(currentSystemConfig.factRequiredToExitViaVessel));
+        }
     }
 }

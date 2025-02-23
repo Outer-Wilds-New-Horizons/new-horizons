@@ -61,7 +61,11 @@ namespace NewHorizons.Patches.WarpPatches
         {
             bool canWarpToEye = __instance._coordinateInterface.CheckEyeCoordinates();
             bool canWarpToStarSystem = __instance._coordinateInterface.CheckAllCoordinates(out string targetSystem);
-            if (slot == __instance._warpVesselSlot && __instance._hasPower && (canWarpToEye && Main.Instance.CurrentStarSystem != "EyeOfTheUniverse" || canWarpToStarSystem && targetSystem != Main.Instance.CurrentStarSystem) && __instance._blackHole.GetState() == SingularityController.State.Collapsed)
+            if (slot == __instance._warpVesselSlot && __instance._hasPower && 
+                (canWarpToEye && Main.Instance.CurrentStarSystem != "EyeOfTheUniverse" 
+                || canWarpToStarSystem && targetSystem != Main.Instance.CurrentStarSystem 
+                    && VesselWarpHandler.CanExitViaVessel() && VesselWarpHandler.CanEnterViaVessel(targetSystem)) 
+                && __instance._blackHole.GetState() == SingularityController.State.Collapsed)
             {
                 __instance._blackHole.Create();
                 RumbleManager.StartVesselWarp();

@@ -215,7 +215,8 @@ namespace NewHorizons
                             z = new int[6] { 1, 2, 3, 0, 5, 4 }
                         }
                     },
-                    canEnterViaWarpDrive = false
+                    canEnterViaWarpDrive = false,
+                    canExitViaVessel = false
                 }
             };
 
@@ -684,6 +685,7 @@ namespace NewHorizons
             var starSystemName = starSystemConfig.name;
 
             starSystemConfig.Migrate();
+            starSystemConfig.Validate();
             starSystemConfig.FixCoordinates();
 
             if (starSystemConfig.startHere)
@@ -932,6 +934,7 @@ namespace NewHorizons
             {
                 var starSystemConfig = new StarSystemConfig() { name = config.starSystem };
                 starSystemConfig.Migrate();
+                starSystemConfig.Validate();
                 starSystemConfig.FixCoordinates();
 
                 var system = new NewHorizonsSystem(config.starSystem, starSystemConfig, $"", mod);
