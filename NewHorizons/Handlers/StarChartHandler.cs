@@ -63,9 +63,9 @@ namespace NewHorizons.Handlers
 
             foreach (NewHorizonsSystem system in _systems)
             {
-                if (system.Config.factRequiredForWarp != default && system.UniqueID != "SolarSystem")
+                if (system.Config.factRequiredToEnterViaWarpDrive != default && system.UniqueID != "SolarSystem")
                 {
-                    RegisterFactForSystem(system.Config.factRequiredForWarp, system.UniqueID);
+                    RegisterFactForSystem(system.Config.factRequiredToEnterViaWarpDrive, system.UniqueID);
                 }
 
                 if (system.UniqueID == Main.Instance.CurrentStarSystem)

@@ -205,7 +205,7 @@ namespace NewHorizons
                 Config =
                 {
                     destroyStockPlanets = false,
-                    //factRequiredForWarp = "OPC_EYE_COORDINATES_X1",
+                    //factRequiredToEnterViaWarpDrive = "OPC_EYE_COORDINATES_X1",
                     Vessel = new StarSystemConfig.VesselModule()
                     {
                         coords = new StarSystemConfig.NomaiCoordinates

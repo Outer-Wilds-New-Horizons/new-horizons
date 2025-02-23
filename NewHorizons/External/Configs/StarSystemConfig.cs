@@ -44,16 +44,19 @@ namespace NewHorizons.External.Configs
         public float farClipPlaneOverride;
 
         /// <summary>
-        /// Whether this system can be warped to via the warp drive. If you set `factRequiredForWarp`, this will be true.
+        /// Whether this system can be warped to via the warp drive. If you set `factRequiredToEnterViaWarpDrive`, this will be true.
         /// Does NOT effect the base SolarSystem. For that, see `canExitViaWarpDrive` and `factRequiredToExitViaWarpDrive`
         /// </summary>
         [DefaultValue(true)] public bool canEnterViaWarpDrive = true;
 
+        [Obsolete("factRequiredForWarp is deprecated, please use factRequiredToEnterViaWarpDrive instead")]
+        public string factRequiredForWarp;
+
         /// <summary>
-        /// The FactID that must be revealed before it can be warped to. Don't set `canEnterViaWarpDrive` to `false` if
+        /// The FactID that must be revealed before it can be warped to via the warp drive. Don't set `canEnterViaWarpDrive` to `false` if
         /// you're using this, because it will be overwritten.
         /// </summary>
-        public string factRequiredForWarp;
+        public string factRequiredToEnterViaWarpDrive;
 
         /// <summary>
         /// Can you use the warp drive to leave this system? If you set `factRequiredToExitViaWarpDrive`
@@ -62,7 +65,7 @@ namespace NewHorizons.External.Configs
         [DefaultValue(true)] public bool canExitViaWarpDrive = true;
 
         /// <summary>
-        /// The FactID that must be revealed for you to warp back to the main solar system from here. Don't set `canWarpHome`
+        /// The FactID that must be revealed for you to warp to any star system from here via the warp drive. Don't set `canExitViaWarpDrive`
         /// to `false` if you're using this, because it will be overwritten.
         /// </summary>
         public string factRequiredToExitViaWarpDrive;
@@ -304,12 +307,14 @@ namespace NewHorizons.External.Configs
 
             // True by default so if one is false go false
             canEnterViaWarpDrive = canEnterViaWarpDrive && otherConfig.canEnterViaWarpDrive;
+            canExitViaWarpDrive = canExitViaWarpDrive && otherConfig.canExitViaWarpDrive;
             destroyStockPlanets = destroyStockPlanets && otherConfig.destroyStockPlanets;
             enableTimeLoop = enableTimeLoop && otherConfig.enableTimeLoop;
             loopDuration = loopDuration == 22f ? otherConfig.loopDuration : loopDuration;
 
             // If current one is null take the other
-            factRequiredForWarp = string.IsNullOrEmpty(factRequiredForWarp) ? otherConfig.factRequiredForWarp : factRequiredForWarp;
+            factRequiredToEnterViaWarpDrive = string.IsNullOrEmpty(factRequiredToEnterViaWarpDrive) ? otherConfig.factRequiredToEnterViaWarpDrive : factRequiredToEnterViaWarpDrive;
+            factRequiredToExitViaWarpDrive = string.IsNullOrEmpty(factRequiredToExitViaWarpDrive) ? otherConfig.factRequiredToExitViaWarpDrive : factRequiredToExitViaWarpDrive;
             Skybox = Skybox == null ? otherConfig.Skybox : Skybox;
 
             // False by default so if one is true go true
@@ -368,6 +373,7 @@ namespace NewHorizons.External.Configs
             // Backwards compatibility
             // Should be the only place that obsolete things are referenced
 #pragma warning disable 612, 618
+            if (!string.IsNullOrEmpty(factRequiredForWarp)) factRequiredToEnterViaWarpDrive = factRequiredForWarp;
             if (!string.IsNullOrEmpty(travelAudioClip)) travelAudio = travelAudioClip;
             if (!string.IsNullOrEmpty(travelAudioFilePath)) travelAudio = travelAudioFilePath;
             if (!string.IsNullOrEmpty(travelAudio))
