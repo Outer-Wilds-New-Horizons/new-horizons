@@ -25,5 +25,8 @@ public static class GroupsBuilder
         go.GetAddComponent<SectorCullGroup>()._sector = sector;
         go.GetAddComponent<SectorCollisionGroup>()._sector = sector;
         go.GetAddComponent<SectorLightsCullGroup>()._sector = sector;
+
+        // SectorCollisionGroup is unique among the sector groups because it only attaches its event listener on Start() instead of Awake(), so if the detail gets immediately deactivated then it never gets attached. To avoid this, we'll attach the event listener manually (even if it means getting attached twice).
+        sector.OnSectorOccupantsUpdated += go.GetComponent<SectorCollisionGroup>().OnSectorOccupantsUpdated;
     }
 }
