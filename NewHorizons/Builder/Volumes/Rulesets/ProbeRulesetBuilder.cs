@@ -15,6 +15,8 @@ namespace NewHorizons.Builder.Volumes.Rulesets
             volume._lanternRange = info.lanternRange;
             volume._ignoreAnchor = info.ignoreAnchor;
 
+            volume.gameObject.SetActive(true);
+
             return volume;
         }
     }

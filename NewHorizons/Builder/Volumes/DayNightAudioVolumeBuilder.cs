@@ -15,7 +15,8 @@ namespace NewHorizons.Builder.Volumes
             var go = GeneralPropBuilder.MakeNew("DayNightAudioVolume", planetGO, sector, info);
             go.layer = Layer.AdvancedEffectVolume;
 
-            var audioVolume = go.AddComponent<NHDayNightAudioVolume>();
+            var audioVolume = PriorityVolumeBuilder.MakeExisting<NHDayNightAudioVolume>(go, planetGO, sector, info);
+
             audioVolume.sunName = info.sun;
             audioVolume.dayWindow = info.dayWindow;
             audioVolume.dayAudio = info.dayAudio;
@@ -24,13 +25,7 @@ namespace NewHorizons.Builder.Volumes
             audioVolume.volume = info.volume;
             audioVolume.SetTrack(info.track.ConvertToOW());
 
-            var shape = go.AddComponent<SphereShape>();
-            shape.radius = info.radius;
-
-            var owTriggerVolume = go.AddComponent<OWTriggerVolume>();
-            owTriggerVolume._shape = shape;
-
-            go.SetActive(true);
+            audioVolume.gameObject.SetActive(true);
 
             return audioVolume;
         }
