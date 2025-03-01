@@ -2,11 +2,12 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "title": "Title Screen Schema",
   "type": "object",
+  "description": "Allows you to configure the title screen with custom music, skyboxes, and loading props from asset bundles.\nYou can define a list of title screen configurations, with different persistent condition/ship log facts required to display them.",
   "additionalProperties": false,
   "properties": {
     "titleScreens": {
       "type": "array",
-      "description": "Create title screens",
+      "description": "Create title screens.\nThe last title screen in the list with its display conditions (persistent condition and/or ship log) met will be displayed if this mod\nis chosen to be shown on the main menu.",
       "items": {
         "$ref": "#/definitions/TitleScreenInfo"
       }
@@ -19,6 +20,7 @@
   "definitions": {
     "TitleScreenInfo": {
       "type": "object",
+      "description": "A single title screen configuration",
       "additionalProperties": false,
       "properties": {
         "menuTextTint": {
