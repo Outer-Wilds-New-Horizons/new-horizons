@@ -96,7 +96,7 @@ namespace NewHorizons.Handlers
             vesselAO._type = AstroObject.Type.SpaceStation;
             vesselAO.Register();
             vesselMapMarker._markerType = MapMarker.MarkerType.Moon;
-            vesselMapMarker._labelID = (UITextType)TranslationHandler.AddUI("Vessel");
+            vesselMapMarker._labelID = (UITextType)TranslationHandler.AddUI("VESSEL");
             RFVolumeBuilder.Make(vessel, vesselBody, 600, new External.Modules.ReferenceFrameModule { localPosition = new MVector3(0, 0, -207.375f) });
 
             // Resize vessel sector so that the vessel is fully collidable.
