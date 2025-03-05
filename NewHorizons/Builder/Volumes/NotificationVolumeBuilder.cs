@@ -11,21 +11,16 @@ namespace NewHorizons.Builder.Volumes
     {
         public static NHNotificationVolume Make(GameObject planetGO, Sector sector, NotificationVolumeInfo info, IModBehaviour mod)
         {
-            var go = GeneralPropBuilder.MakeNew("NotificationVolume", planetGO, sector, info);
-            go.layer = Layer.BasicEffectVolume;
+            var notificationVolume = VolumeBuilder.Make<NHNotificationVolume>(planetGO, sector, info);
 
-            var shape = go.AddComponent<SphereShape>();
-            shape.radius = info.radius;
+            // Preserving name for backwards compatibility
+            notificationVolume.gameObject.name = string.IsNullOrEmpty(info.rename) ? "NotificationVolume" : info.rename;
 
-            var owTriggerVolume = go.AddComponent<OWTriggerVolume>();
-            owTriggerVolume._shape = shape;
-
-            var notificationVolume = go.AddComponent<NHNotificationVolume>();
             notificationVolume.SetTarget(info.target);
             if (info.entryNotification != null) notificationVolume.SetEntryNotification(info.entryNotification.displayMessage, info.entryNotification.duration);
             if (info.exitNotification != null) notificationVolume.SetExitNotification(info.exitNotification.displayMessage, info.exitNotification.duration);
 
-            go.SetActive(true);
+            notificationVolume.gameObject.SetActive(true);
 
             return notificationVolume;
         }

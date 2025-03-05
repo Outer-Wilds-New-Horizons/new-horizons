@@ -12,6 +12,8 @@ namespace NewHorizons.Builder.Volumes
             volume._speedLimit = info.speedLimit;
             volume._acceleration = info.acceleration;
 
+            volume.gameObject.SetActive(true);
+
             return volume;
         }
     }

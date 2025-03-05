@@ -35,6 +35,8 @@ namespace NewHorizons.Builder.Volumes
             volume._allowShipAutoroll = info.allowShipAutoroll;
             volume._disableOnStart = info.disableOnStart;
 
+            volume.gameObject.SetActive(true);
+
             return volume;
         }
     }

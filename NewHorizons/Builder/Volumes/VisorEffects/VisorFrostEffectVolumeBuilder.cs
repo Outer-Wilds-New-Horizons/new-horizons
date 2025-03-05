@@ -12,6 +12,8 @@ namespace NewHorizons.Builder.Volumes.VisorEffects
             volume._frostRate = info.frostRate;
             volume._maxFrost = info.maxFrost;
 
+            volume.gameObject.SetActive(true);
+
             return volume;
         }
     }

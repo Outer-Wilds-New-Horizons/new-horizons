@@ -29,7 +29,7 @@ namespace NewHorizons.External.Modules.Volumes.VolumeInfos
         }
 
         /// <summary>
-        /// The max view angle (in degrees) the player can see the volume with to unlock the fact (`observe` only)
+        /// The max view angle (in degrees) the player can see the volume with to unlock the fact (`observe` only). This will effectively be a cone extending from the volume's center forwards (along the Z axis) based on the volume's rotation.
         /// </summary>
         [DefaultValue(180f)]
         public float maxAngle = 180f; // Observe Only
