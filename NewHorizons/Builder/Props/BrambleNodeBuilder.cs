@@ -4,6 +4,7 @@ using NewHorizons.External.Configs;
 using NewHorizons.External.Modules.Props.Audio;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
+using NewHorizons.Utility.DebugTools;
 using NewHorizons.Utility.OuterWilds;
 using NewHorizons.Utility.OWML;
 using Newtonsoft.Json;
@@ -204,6 +205,10 @@ namespace NewHorizons.Builder.Props
             foreach (var fogWarpVolume in brambleNode.GetComponentsInChildren<FogWarpVolume>(true).Append(brambleNode.GetComponent<FogWarpVolume>()))
             {
                 _nhFogWarpVolumes.Add(fogWarpVolume);
+                if (fogWarpVolume is SphericalFogWarpVolume sphericalFogWarpVolume)
+                {
+                    fogWarpVolume.gameObject.GetAddComponent<DebugFogWarp>().fogWarpVolume = sphericalFogWarpVolume;
+                }
             }
 
             var innerFogWarpVolume = brambleNode.GetComponent<InnerFogWarpVolume>();

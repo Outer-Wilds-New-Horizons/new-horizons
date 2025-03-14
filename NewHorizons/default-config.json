@@ -22,6 +22,12 @@
       "value": false,
       "tooltip": "Draws boundaries around quantum objects when Debug mode is on."
     },
+    "VisualizeBrambleVolumeNames": {
+      "title": "Visualize Bramble Volume Names",
+      "type": "toggle",
+      "value": false,
+      "tooltip": "Adds a label to all custom spherical fog warp volumes and entrances/exits when Debug mode is on."
+    },
     "VerboseLogs": {
       "title": "Verbose Logs",
       "type": "toggle",

@@ -5,6 +5,7 @@ using NewHorizons.External;
 using NewHorizons.External.Modules;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.Utility;
+using NewHorizons.Utility.DebugTools;
 using NewHorizons.Utility.Files;
 using NewHorizons.Utility.OWML;
 using OWML.Common;
@@ -189,6 +190,7 @@ namespace NewHorizons.Builder.Body
             outerFogWarpVolume._linkedInnerWarpVolume = null;
             outerFogWarpVolume._name = OuterFogWarpVolume.Name.None;
             outerFogWarpVolume._sector = sector;
+            exitWarps.GetAddComponent<DebugFogWarp>().fogWarpVolume = outerFogWarpVolume;
 
             PairExit(config.linksTo, outerFogWarpVolume);
 
