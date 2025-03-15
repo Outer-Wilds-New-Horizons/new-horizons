@@ -445,6 +445,11 @@ namespace NewHorizons.Utility
             return globalMusicController._endTimesSource.clip.length;
         }
 
+        public static string GetKey(this AstroObject ao)
+        {
+            return ao._name == AstroObject.Name.CustomString ? ao.GetCustomName() : ao._name.ToString();
+        }
+
         public static CodeMatcher LogInstructions(this CodeMatcher matcher, string prefix)
         {
             matcher.InstructionEnumeration().LogInstructions(prefix);

@@ -65,7 +65,7 @@ namespace NewHorizons.Utility.OuterWilds
 
         public static void RegisterCustomAstroObject(AstroObject ao)
         {
-            var key = ao._name == AstroObject.Name.CustomString ? ao.GetCustomName() : ao._name.ToString();
+            var key = ao.GetKey();
 
             if (_customAstroObjectDictionary.ContainsKey(key))
             {
@@ -81,7 +81,7 @@ namespace NewHorizons.Utility.OuterWilds
 
         public static void DeregisterCustomAstroObject(AstroObject ao)
         {
-            var key = ao._name == AstroObject.Name.CustomString ? ao.GetCustomName() : ao._name.ToString();
+            var key = ao.GetKey();
             _customAstroObjectDictionary.Remove(key);
         }
 

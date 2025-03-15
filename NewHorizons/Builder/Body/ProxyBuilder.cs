@@ -203,7 +203,7 @@ namespace NewHorizons.Builder.Body
 
                 if (body.Config.CometTail != null)
                 {
-                    CometTailBuilder.Make(proxy, null, body.Config.CometTail, body.Config);
+                    CometTailBuilder.Make(proxy, null, body.Config.CometTail, body.Config, planetGO.GetComponent<AstroObject>());
                 }
 
                 if (body.Config.Props?.proxyDetails != null)
