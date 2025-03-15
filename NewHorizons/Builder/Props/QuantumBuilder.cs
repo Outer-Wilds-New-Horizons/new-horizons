@@ -69,13 +69,17 @@ namespace NewHorizons.Builder.Props
         {
             (GameObject go, QuantumDetailInfo detail)[] propsInGroup = quantumGroup.details.Select(x => (DetailBuilder.GetGameObjectFromDetailInfo(x), x)).ToArray();
 
-            GameObject specialProp = null;
             QuantumDetailInfo specialInfo = null;
             if (propsInGroup.Length == quantumGroup.sockets.Length)
             {
                 // Special case!
-                specialProp = propsInGroup.Last().go;
+                propsInGroup.Last().go.SetActive(false);
+                
+                // Will be manually positioned on the sockets anyway
                 specialInfo = propsInGroup.Last().detail;
+                specialInfo.parentPath = string.Empty;
+                specialInfo.isRelativeToParent = false;
+
                 var propsInGroupList = propsInGroup.ToList();
                 propsInGroupList.RemoveAt(propsInGroup.Length - 1);
                 propsInGroup = propsInGroupList.ToArray();
@@ -117,13 +121,13 @@ namespace NewHorizons.Builder.Props
                 prop.go.SetActive(true);
             }
 
-            if (specialProp != null)
+            if (specialInfo != null)
             {
                 // Can't have 4 objects in 4 slots
                 // Instead we have a duplicate of the final object for each slot, which appears when that slot is "empty"
                 for (int i = 0; i < sockets.Length; i++)
-                {
-                    var emptySocketObject = DetailBuilder.Make(planetGO, sector, mod, specialProp, new DetailInfo());
+                {                    
+                    var emptySocketObject = DetailBuilder.Make(planetGO, sector, mod, new DetailInfo(specialInfo));
                     var socket = sockets[i];
                     socket._emptySocketObject = emptySocketObject;
                     emptySocketObject.SetActive(socket._quantumObject == null);

@@ -1,10 +1,10 @@
 {
   "$schema": "https://raw.githubusercontent.com/amazingalek/owml/master/schemas/manifest_schema.json",
   "filename": "NewHorizons.dll",
-  "author": "xen, Bwc9876, JohnCorby, MegaPiggy, Trifid, and friends",
+  "author": "xen, Bwc9876, JohnCorby, MegaPiggy, and friends",
   "name": "New Horizons",
   "uniqueName": "xen.NewHorizons",
-  "version": "1.27.0",
+  "version": "1.27.3",
   "owmlVersion": "2.12.1",
   "dependencies": [ "JohnCorby.VanillaFix", "xen.CommonCameraUtility", "dgarro.CustomShipLogModes" ],
   "conflicts": [ "PacificEngine.OW_CommonResources" ],

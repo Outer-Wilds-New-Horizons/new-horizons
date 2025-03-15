@@ -6,15 +6,24 @@ using Newtonsoft.Json;
 
 namespace NewHorizons.External.Configs
 {
+    /// <summary>
+    /// Allows you to configure the title screen with custom music, skyboxes, and loading props from asset bundles.
+    /// You can define a list of title screen configurations, with different persistent condition/ship log facts required to display them.
+    /// </summary>
     [JsonObject]
     public class TitleScreenConfig
     {
         /// <summary>
-        /// Create title screens
+        /// Create title screens.
+        /// The last title screen in the list with its display conditions (persistent condition and/or ship log) met will be displayed if this mod
+        /// is chosen to be shown on the main menu.
         /// </summary>
         public TitleScreenInfo[] titleScreens = new TitleScreenInfo[0];
     }
 
+    /// <summary>
+    /// A single title screen configuration
+    /// </summary>
     [JsonObject]
     public class TitleScreenInfo
     {
