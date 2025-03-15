@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using NewHorizons.External.SerializableData;
 using Newtonsoft.Json;
+using NJsonSchema.Annotations;
 
 namespace NewHorizons.External.Modules
 {
@@ -30,7 +31,8 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// The relative path to the xml file to load ship log entries from.
         /// </summary>
-        public string xmlFile;
+        [JsonSchemaExtensionData("x-filePath", "true")]
+        public string xmlFile { get; set; }
 
         [JsonObject]
         public class MapModeInfo

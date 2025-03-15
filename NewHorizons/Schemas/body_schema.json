@@ -4760,7 +4760,8 @@
         },
         "xmlFile": {
           "type": "string",
-          "description": "The relative path to the xml file to load ship log entries from."
+          "description": "The relative path to the xml file to load ship log entries from.",
+          "x-filePath": "true"
         }
       }
     },
