@@ -13,6 +13,8 @@ namespace NewHorizons.Builder.Volumes
             volume.TargetSolarSystem = info.targetStarSystem;
             volume.TargetSpawnID = info.spawnPointID;
 
+            volume.gameObject.SetActive(true);
+
             return volume;
         }
     }
