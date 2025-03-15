@@ -74,7 +74,7 @@ namespace NewHorizons.Builder.Body
 
             if (string.IsNullOrEmpty(cometTailModule.primaryBody))
                 cometTailModule.primaryBody = !string.IsNullOrEmpty(config.Orbit.primaryBody) ? config.Orbit.primaryBody
-                    : (primaryBody._name == AstroObject.Name.CustomString ? primaryBody.GetCustomName() : primaryBody._name.ToString());
+                    : primaryBody.GetKey();
 
             var rootObj = new GameObject("CometRoot");
             rootObj.SetActive(false);
