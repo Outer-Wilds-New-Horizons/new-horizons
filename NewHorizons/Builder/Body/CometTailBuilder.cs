@@ -60,13 +60,21 @@ namespace NewHorizons.Builder.Body
             }
         }
 
-        public static void Make(GameObject planetGO, Sector sector, CometTailModule cometTailModule, PlanetConfig config)
+        public static void Make(GameObject planetGO, Sector sector, CometTailModule cometTailModule, PlanetConfig config, AstroObject ao)
         {
-            if (config.Orbit.primaryBody == null)
+            var primaryBody = ao.GetPrimaryBody();
+
+            if (!string.IsNullOrEmpty(config.Orbit.primaryBody)) primaryBody = AstroObjectLocator.GetAstroObject(config.Orbit.primaryBody);
+
+            if (primaryBody == null)
             {
                 NHLogger.LogError($"Comet {planetGO.name} does not orbit anything. That makes no sense");
                 return;
             }
+
+            if (string.IsNullOrEmpty(cometTailModule.primaryBody))
+                cometTailModule.primaryBody = !string.IsNullOrEmpty(config.Orbit.primaryBody) ? config.Orbit.primaryBody
+                    : (primaryBody._name == AstroObject.Name.CustomString ? primaryBody.GetCustomName() : primaryBody._name.ToString());
 
             var rootObj = new GameObject("CometRoot");
             rootObj.SetActive(false);
@@ -79,13 +87,11 @@ namespace NewHorizons.Builder.Body
 
             if (cometTailModule.rotationOverride != null) controller.SetRotationOverride(cometTailModule.rotationOverride);
 
-            if (string.IsNullOrEmpty(cometTailModule.primaryBody)) cometTailModule.primaryBody = config.Orbit.primaryBody;
-
             Delay.FireOnNextUpdate(() =>
             {
                 controller.SetPrimaryBody(
-                    AstroObjectLocator.GetAstroObject(cometTailModule.primaryBody).transform, 
-                    AstroObjectLocator.GetAstroObject(config.Orbit.primaryBody).GetAttachedOWRigidbody()
+                    AstroObjectLocator.GetAstroObject(cometTailModule.primaryBody).transform,
+                    primaryBody.GetAttachedOWRigidbody()
                 );
             });
 
