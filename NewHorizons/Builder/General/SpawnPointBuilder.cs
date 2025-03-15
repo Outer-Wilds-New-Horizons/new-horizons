@@ -69,6 +69,8 @@ namespace NewHorizons.Builder.General
                         PlayerSpawn = playerSpawn;
                         PlayerSpawnInfo = point;
                     }
+
+                    spawnGO.SetActive(true);
                 }
             }
 
@@ -77,7 +79,6 @@ namespace NewHorizons.Builder.General
                 foreach (var point in module.shipSpawnPoints)
                 {
                     var spawnGO = GeneralPropBuilder.MakeNew("ShipSpawnPoint", planetGO, null, point);
-                    spawnGO.SetActive(false);
                     spawnGO.layer = Layer.PlayerSafetyCollider;
 
                     var shipSpawn = spawnGO.AddComponent<SpawnPoint>();
