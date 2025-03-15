@@ -65,4 +65,4 @@ jobs:
       - name: Check Changed Schemas
         id: changed_files
         run: |
-          echo "files_changed=$(git diff --exit-code NewHorizons/Schemas 2>&1>$null && echo false || echo true)" >> $GITHUB_OUTPUT
+          echo "files_changed=$(git diff --exit-code NewHorizons/Schemas 2>&1>$null && echo false || echo true)" >> $Env:GITHUB_OUTPUT
