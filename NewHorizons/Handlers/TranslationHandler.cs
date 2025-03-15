@@ -205,11 +205,14 @@ namespace NewHorizons.Handlers
             TextTranslation.Get().m_table.theShipLogTable[key] = value;
         }
 
-        public static int AddUI(string rawText)
+        public static int AddUI(string rawText) => AddUI(rawText, false);
+
+        public static int AddUI(string rawText, bool upper)
         {
             var uiTable = TextTranslation.Get().m_table.theUITable;
 
             var text = GetTranslation(rawText, TextType.UI);
+            if (upper) text = text.ToUpperFixed();
 
             var key = uiTable.Keys.Max() + 1;
             try

@@ -3,7 +3,6 @@
 using NewHorizons.Components;
 using NewHorizons.External.Configs;
 using NewHorizons.Handlers;
-using NewHorizons.Utility;
 using UnityEngine;
 
 #endregion
@@ -16,7 +15,7 @@ namespace NewHorizons.Builder.General
         {
             var module = config.MapMarker;
             NHMapMarker mapMarker = body.AddComponent<NHMapMarker>();
-            mapMarker._labelID = (UITextType)TranslationHandler.AddUI(config.name.ToUpperFixed());
+            mapMarker._labelID = (UITextType)TranslationHandler.AddUI(config.name, true);
 
             var markerType = MapMarker.MarkerType.Planet;
 
