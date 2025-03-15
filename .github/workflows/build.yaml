@@ -62,8 +62,7 @@ jobs:
           name: NewHorizons-Schemas-${{ inputs.build_type }}
           path: .\NewHorizons\Schemas
 
-      - name: Verify Changed Schemas
-        uses: tj-actions/verify-changed-files@v20
+      - name: Check Changed Schemas
         id: changed_files
-        with:
-          files: NewHorizons/Schemas/**
+        run: |
+          echo "files_changed=$(git diff --exit-code NewHorizons/Schemas 2>&1>$null && echo false || echo true)" >> $Env:GITHUB_OUTPUT
