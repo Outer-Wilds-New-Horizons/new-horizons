@@ -19,5 +19,5 @@ which interact poorly with the fluid detector and can mess up the movement of th
 Either clear the .nhcache files or enable Debug mode to always regenerate the text cache.
 
 ## Prop placer is gone!
-It has been moved to a [separate mod](https://outerwildsmods.com/mods/propplacer/)
+It has been moved to a [separate mod](https://outerwildsmods.com/mods/propplacer/).
 Use it in addition to the debug raycast button and Unity Explorer to place your props, or otherwise work in unity editor.
