@@ -20,12 +20,12 @@ You can use [Unity Explorer](https://outerwildsmods.com/mods/unityexplorer) to t
 
 ## Asset Bundles
 
-There is an [old unity template](https://github.com/xen-42/outer-wilds-unity-template) and a [new one](https://github.com/ow-mods/outer-wilds-unity-wiki/wiki#outer-wilds-unity-assets)
+There is an [old unity template](https://github.com/xen-42/outer-wilds-unity-template) and a [new one](https://github.com/ow-mods/outer-wilds-unity-wiki/wiki/Tools-%E2%80%90-Outer-Wilds-Unity-Assets-repository)
 
 The project contains ripped versions of all the game scripts, meaning you can put things like DirectionalForceVolumes in your Unity project to have artificial gravity volumes loaded right into the game.\
 Either one works, but the new one has more tools and better versions of the scripts (in exchange for being invite-only).
 
-Read [this guide](https://github.com/ow-mods/outer-wilds-unity-wiki/wiki/Tutorials-%E2%80%90-Using-asset-bundles) on how to work with asset bundles in editor.
+Read [this guide](https://github.com/ow-mods/outer-wilds-unity-wiki/wiki/Tutorials-%E2%80%90-Using-AssetBundles) on how to work with asset bundles in editor.
 
 ## Importing a planet's surface from Unity
 

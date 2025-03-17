@@ -657,7 +657,7 @@ namespace NewHorizons.Handlers
 
             if (body.Config.CometTail != null)
             {
-                CometTailBuilder.Make(go, sector, body.Config.CometTail, body.Config);
+                CometTailBuilder.Make(go, sector, body.Config.CometTail, body.Config, go.GetComponent<AstroObject>());
             }
 
             if (body.Config.Lava != null)
