@@ -34,7 +34,11 @@ namespace NewHorizons.Components.Quantum
             }
         }
 
+        public int LastIndex { get; private set; }
         public int CurrentIndex { get; private set; }
+
+        public State LastState => states[LastIndex];
+        public State CurrentState => states[CurrentIndex];
 
         public override void Awake()
         {
@@ -104,6 +108,7 @@ namespace NewHorizons.Components.Quantum
             // This will all get set in the for loop
             State newState = oldState;
             int newIndex = CurrentIndex;
+            int oldIndex = CurrentIndex;
             AstroObject primaryBody = null;
             OrbitalParameters orbitalParams = null;
 
@@ -143,6 +148,7 @@ namespace NewHorizons.Components.Quantum
                 if (newState.sector != null && newState.sector != oldState.sector) SetNewSector(newState);
                 if (newState.orbit != null && newState.orbit != oldState.orbit) SetNewOrbit(primaryBody, orbitalParams);
 
+                LastIndex = oldIndex;
                 CurrentIndex = newIndex;
 
                 GlobalMessenger<OWRigidbody>.FireEvent("QuantumMoonChangeState", _rb);
