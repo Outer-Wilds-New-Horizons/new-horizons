@@ -21,6 +21,8 @@ namespace NewHorizons.Components.Quantum
         private AlignWithTargetBody _alignment;
         private OWRigidbody _rb;
         private OrbitLine _orbitLine;
+        private QuantumShrine[] _shrines;
+        private QuantumDarkTrigger[] _darkTriggers;
 
         public NHAstroObject astroObject
         {
@@ -46,6 +48,7 @@ namespace NewHorizons.Components.Quantum
 
             GlobalMessenger.AddListener("PlayerBlink", OnPlayerBlink);
 
+            _checkIllumination = true;
             _maxSnapshotLockRange = 300000f;
         }
 
@@ -59,6 +62,9 @@ namespace NewHorizons.Components.Quantum
             }
 
             ChangeQuantumState(true);
+
+            _shrines = GetComponentsInChildren<QuantumShrine>(true); // finds all quantum shrines
+            _darkTriggers = GetComponentsInChildren<QuantumDarkTrigger>(true); // finds all quantum dark triggers
         }
 
         public override void OnDestroy()
@@ -192,6 +198,23 @@ namespace NewHorizons.Components.Quantum
 
             return states[CurrentIndex].sector.ContainsAnyOccupants(DynamicOccupant.Player);
         }
+
+        public bool IsPlayerInDarkness()
+        {
+            foreach (var darkTrigger in _darkTriggers)
+            {
+                if (darkTrigger.IsPlayerInDarkness())
+                    return true;
+            }
+            foreach (var shrine in _shrines)
+            {
+                if (shrine.IsPlayerInDarkness())
+                    return true;
+            }
+            return false;
+        }
+
+        public override bool CheckIllumination() => !IsPlayerInDarkness();
 
         public class State
         {
