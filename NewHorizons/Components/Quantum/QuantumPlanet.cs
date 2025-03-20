@@ -209,11 +209,35 @@ namespace NewHorizons.Components.Quantum
             }
         }
 
-        public override bool IsPlayerEntangled()
+        public bool IsPlayerInside()
         {
             if (CurrentIndex >= states.Count) return true;
 
             return states[CurrentIndex].sector.ContainsAnyOccupants(DynamicOccupant.Player);
+        }
+
+        public bool IsProbeInside()
+        {
+            if (CurrentIndex >= states.Count) return true;
+
+            return states[CurrentIndex].sector.ContainsAnyOccupants(DynamicOccupant.Probe);
+        }
+
+        public bool IsShipInside()
+        {
+            if (CurrentIndex >= states.Count) return true;
+
+            return states[CurrentIndex].sector.ContainsAnyOccupants(DynamicOccupant.Ship);
+        }
+
+        public bool IsPlayerInsideShrine()
+        {
+            foreach (var shrine in _shrines)
+            {
+                if (shrine.IsPlayerInside())
+                    return true;
+            }
+            return false;
         }
 
         public bool IsPlayerInDarkness()
@@ -232,6 +256,8 @@ namespace NewHorizons.Components.Quantum
         }
 
         public override bool CheckIllumination() => !IsPlayerInDarkness();
+
+        public override bool IsPlayerEntangled() => IsPlayerInside();
 
         internal void AddState(State state)
         {
