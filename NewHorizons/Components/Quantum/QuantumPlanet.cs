@@ -98,8 +98,8 @@ namespace NewHorizons.Components.Quantum
 
             if (states.Count <= 1) return false;
 
-            // Don't move if we have a picture or if we're on it
-            if (IsLockedByProbeSnapshot() || IsPlayerEntangled()) return false;
+            // Don't move if we have a picture
+            if (!skipInstantVisibilityCheck && IsLockedByProbeSnapshot()) return false;
 
             var canChange = false;
 
@@ -133,8 +133,8 @@ namespace NewHorizons.Components.Quantum
                 // See if we can switch, so we move the visibility tracker to the new position
                 _visibilityTrackers[0].transform.position = pos;
 
-                // Only if not seen
-                if (!CheckVisibilityInstantly())
+                // Only if entangled or not seen
+                if (skipInstantVisibilityCheck || IsPlayerEntangled() || !CheckVisibilityInstantly())
                 {
                     canChange = true;
 
