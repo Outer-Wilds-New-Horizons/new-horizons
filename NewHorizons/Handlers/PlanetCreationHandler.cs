@@ -284,6 +284,8 @@ namespace NewHorizons.Handlers
                 {
                     // If the ground state object isn't made yet do it later
                     _nextPassBodies.Add(body);
+                    body.UnloadCache();
+                    return false;
                 }
                 else if (body.Config.isStellarRemnant)
                 {
