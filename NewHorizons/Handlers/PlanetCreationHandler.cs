@@ -480,7 +480,7 @@ namespace NewHorizons.Handlers
             var owRigidBody = RigidBodyBuilder.Make(go, sphereOfInfluence, body.Config);
             var ao = AstroObjectBuilder.Make(go, primaryBody, body, false);
 
-            var sector = SectorBuilder.Make(go, owRigidBody, sphereOfInfluence * 2f);
+            var sector = SectorBuilder.Make(go, owRigidBody, sphereOfInfluence);
             sector._idString = body.Config.name;
             ao._rootSector = sector;
 
