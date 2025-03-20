@@ -133,7 +133,7 @@ namespace NewHorizons.Components.Quantum
 
             if (canChange)
             {
-                if (newState.sector != null && newState.sector != oldState.sector) SetNewSector(oldState, newState);
+                if (newState.sector != null && newState.sector != oldState.sector) SetNewSector(newState);
                 if (newState.orbit != null && newState.orbit != oldState.orbit) SetNewOrbit(primaryBody, orbitalParams);
 
                 CurrentIndex = newIndex;
@@ -147,9 +147,13 @@ namespace NewHorizons.Components.Quantum
             return true;
         }
 
-        private void SetNewSector(State oldState, State newState)
+        private void SetNewSector(State newState)
         {
-            oldState.sector.gameObject.SetActive(false);
+            foreach (var state in states)
+            {
+                state.sector?.gameObject?.SetActive(false);
+            }
+
             newState.sector.gameObject.SetActive(true);
         }
 
