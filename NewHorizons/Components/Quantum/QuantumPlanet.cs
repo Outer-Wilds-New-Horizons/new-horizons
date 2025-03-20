@@ -56,12 +56,19 @@ namespace NewHorizons.Components.Quantum
         {
             base.Start();
 
-            foreach (var state in states)
-            {
-                state.sector?.gameObject?.SetActive(false);
-            }
+            ResetStates(true);
+        }
 
-            ChangeQuantumState(true);
+        public void ResetStates(bool changeState)
+        {
+            if (changeState)
+            {
+                ChangeQuantumState(true);
+            }
+            else
+            {
+                SetNewSector(states[CurrentIndex]);
+            }
 
             _shrines = GetComponentsInChildren<QuantumShrine>(true); // finds all quantum shrines
             _darkTriggers = GetComponentsInChildren<QuantumDarkTrigger>(true); // finds all quantum dark triggers
@@ -219,6 +226,12 @@ namespace NewHorizons.Components.Quantum
         }
 
         public override bool CheckIllumination() => !IsPlayerInDarkness();
+
+        internal void AddState(State state)
+        {
+            states.Add(state);
+            ResetStates(false);
+        }
 
         public class State
         {

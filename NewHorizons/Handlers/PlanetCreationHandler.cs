@@ -228,7 +228,7 @@ namespace NewHorizons.Handlers
                                 var groundOrbit = _customBodyDict[ao].Config.Orbit;
 
                                 quantumPlanet.groundState = new QuantumPlanet.State(rootSector, groundOrbit);
-                                quantumPlanet.states.Add(quantumPlanet.groundState);
+                                quantumPlanet.AddState(quantumPlanet.groundState);
 
                                 var visibilityTracker = new GameObject("VisibilityTracker_Sphere");
                                 visibilityTracker.transform.parent = existingPlanet.transform;
@@ -243,7 +243,7 @@ namespace NewHorizons.Handlers
 
                             var sector = SectorBuilder.Make(existingPlanet, rb, GetSphereOfInfluence(body));
                             sector._idString = body.Config.name;
-                            sector.name = $"Sector-{existingPlanet.GetComponentsInChildren<Sector>().Count()}";
+                            sector.name = $"Sector-{quantumPlanet.states.Count()}";
 
                             SharedGenerateBody(body, existingPlanet, sector, rb);
 
@@ -253,7 +253,7 @@ namespace NewHorizons.Handlers
                             // If semimajor axis is 0 then forget the orbit
                             var orbit = body.Config.Orbit.semiMajorAxis == 0 ? quantumPlanet.groundState.orbit : body.Config.Orbit;
 
-                            quantumPlanet.states.Add(new QuantumPlanet.State(sector, orbit));
+                            quantumPlanet.AddState(new QuantumPlanet.State(sector, orbit));
                         }
                         catch (Exception ex)
                         {
