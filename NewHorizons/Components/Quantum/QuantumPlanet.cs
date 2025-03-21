@@ -199,6 +199,11 @@ namespace NewHorizons.Components.Quantum
             {
                 trackingOrbitLine.Reset();
             }
+
+            foreach (var shrine in _shrines)
+            {
+                shrine.OnQuantumMoonSurfaceStateChanged(CurrentIndex);
+            }
         }
 
         private void OnPlayerBlink()
