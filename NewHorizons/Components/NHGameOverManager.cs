@@ -7,6 +7,7 @@ using OWML.Common;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace NewHorizons.Components
@@ -115,8 +116,6 @@ namespace NewHorizons.Components
         {
             NHLogger.LogVerbose($"Load credits {gameOver.creditsType}");
 
-            
-
             switch (gameOver.creditsType)
             {
                 case NHCreditsType.Fast:
@@ -132,28 +131,10 @@ namespace NewHorizons.Components
                 case NHCreditsType.Custom:
                     // We can't load in custom music if an IModBehaviour cannot be provided. This should only happen if called via TryHijackDeathSequence().
                     if (mod is null)
-                        NHLogger.LogWarning("Credits called using TryHijackDeathSequence(), custom credits audio cannot not be loaded.");
-
-                    LoadManager.LoadScene(OWScene.Credits_Fast, LoadManager.FadeType.ToBlack);
-
-                    // Patch new music
-                    var musicSource = Locator.FindObjectsOfType<OWAudioSource>().Where(x => x.name == "AudioSource").Single();
-                    musicSource.Stop();
-                    if (mod is not null)
                     {
-                        AudioUtilities.SetAudioClip(musicSource, gameOver.audio, mod);
+                        NHLogger.LogWarning("Credits called using TryHijackDeathSequence(), custom credits audio cannot not be loaded.");
                     }
-                    musicSource.SetMaxVolume(gameOver.audioVolume);
-                    musicSource.loop = gameOver.audioLooping;
-
-                    // Patch scroll duration
-                    var creditsScroll = Locator.FindObjectOfType<CreditsScrollSection>();
-                    creditsScroll._scrollDuration = gameOver.scrollDuration;
-
-                    // Restart credits scroll
-                    creditsScroll.Start();
-                    musicSource.FadeIn(gameOver.audioFadeInLength);
-
+                    LoadCustomCreditsScene(gameOver, mod);
                     break;
                 default:
                     // GameOverController disables post processing
@@ -163,6 +144,52 @@ namespace NewHorizons.Components
                     GlobalMessenger.FireEvent("TriggerFlashback");
                     break;
             }
+        }
+
+        private void LoadCustomCreditsScene(GameOverModule gameOver, IModBehaviour mod)
+        {
+            var fromScene = LoadManager.GetCurrentScene();
+            var toScene = OWScene.Credits_Fast;
+
+            LoadManager.LoadScene(toScene, LoadManager.FadeType.ToBlack);
+
+            // We need to do this so we can unsubscribe from within the lambda.
+            LoadManager.SceneLoadEvent completeCreditsLoad = null;
+
+            completeCreditsLoad = (fromScene, toScene) =>
+            {
+                // Patch new music
+                var musicSource = Locator.FindObjectsOfType<OWAudioSource>().Where(x => x.name == "AudioSource").Single();
+                musicSource.Stop();
+                if (mod is not null)
+                {
+                    AudioUtilities.SetAudioClip(musicSource, gameOver.audio, mod);
+                }
+                musicSource.SetMaxVolume(gameOver.audioVolume);
+                musicSource.loop = gameOver.audioLooping;
+                musicSource.FadeIn(gameOver.audioFadeInLength);
+
+                // Janky wait until credits are built
+                Task.Run( () =>
+                {
+                    var startTime = Time.time;
+                    while (Locator.FindObjectsOfType<CreditsScrollSection>().Length == 0) {
+                        if (Time.time > startTime + 0.1f)
+                        {
+                            NHLogger.LogError("Timeout while waiting for credits to be built. Scroll duration couldn't be changed.");
+                            return;
+                        }
+                    }
+                    
+                    // Patch scroll duration
+                    var creditsScroll = Locator.FindObjectOfType<CreditsScrollSection>();
+                    creditsScroll._scrollDuration = gameOver.scrollDuration;
+                });
+
+                LoadManager.OnCompleteSceneLoad -= completeCreditsLoad;
+            };
+
+            LoadManager.OnCompleteSceneLoad += completeCreditsLoad;
         }
     }
 }
