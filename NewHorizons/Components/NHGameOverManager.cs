@@ -1,7 +1,9 @@
 using NewHorizons.External.Modules;
 using NewHorizons.External.SerializableEnums;
 using NewHorizons.Handlers;
+using NewHorizons.Utility.Files;
 using NewHorizons.Utility.OWML;
+using OWML.Common;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,13 +50,13 @@ namespace NewHorizons.Components
             }
         }
 
-        public void StartGameOverSequence(GameOverModule gameOver, DeathType? deathType)
+        public void StartGameOverSequence(GameOverModule gameOver, DeathType? deathType, IModBehaviour mod = null)
         {
             _gameOverSequenceStarted = true;
-            Delay.StartCoroutine(GameOver(gameOver, deathType));
+            Delay.StartCoroutine(GameOver(gameOver, deathType, mod));
         }
 
-        private IEnumerator GameOver(GameOverModule gameOver, DeathType? deathType)
+        private IEnumerator GameOver(GameOverModule gameOver, DeathType? deathType, IModBehaviour mod)
         {
             OWInput.ChangeInputMode(InputMode.None);
             ReticleController.Hide();
@@ -104,14 +106,16 @@ namespace NewHorizons.Components
                 yield return new WaitUntil(ReadytoLoadCreditsScene);
             }
 
-            LoadCreditsScene(gameOver);
+            LoadCreditsScene(gameOver, mod);
         }
 
         private bool ReadytoLoadCreditsScene() => _gameOverController._fadedOutText && _gameOverController._textAnimator.IsComplete();
 
-        private void LoadCreditsScene(GameOverModule gameOver)
+        private void LoadCreditsScene(GameOverModule gameOver, IModBehaviour mod)
         {
             NHLogger.LogVerbose($"Load credits {gameOver.creditsType}");
+
+            
 
             switch (gameOver.creditsType)
             {
@@ -124,6 +128,32 @@ namespace NewHorizons.Components
                 case NHCreditsType.Kazoo:
                     TimelineObliterationController.s_hasRealityEnded = true;
                     LoadManager.LoadScene(OWScene.Credits_Fast, LoadManager.FadeType.ToBlack);
+                    break;
+                case NHCreditsType.Custom:
+                    // We can't load in custom music if an IModBehaviour cannot be provided. This should only happen if called via TryHijackDeathSequence().
+                    if (mod is null)
+                        NHLogger.LogWarning("Credits called using TryHijackDeathSequence(), custom credits audio cannot not be loaded.");
+
+                    LoadManager.LoadScene(OWScene.Credits_Fast, LoadManager.FadeType.ToBlack);
+
+                    // Patch new music
+                    var musicSource = Locator.FindObjectsOfType<OWAudioSource>().Where(x => x.name == "AudioSource").Single();
+                    musicSource.Stop();
+                    if (mod is not null)
+                    {
+                        AudioUtilities.SetAudioClip(musicSource, gameOver.audio, mod);
+                    }
+                    musicSource.SetMaxVolume(gameOver.audioVolume);
+                    musicSource.loop = gameOver.audioLooping;
+
+                    // Patch scroll duration
+                    var creditsScroll = Locator.FindObjectOfType<CreditsScrollSection>();
+                    creditsScroll._scrollDuration = gameOver.scrollDuration;
+
+                    // Restart credits scroll
+                    creditsScroll.Start();
+                    musicSource.FadeIn(gameOver.audioFadeInLength);
+
                     break;
                 default:
                     // GameOverController disables post processing

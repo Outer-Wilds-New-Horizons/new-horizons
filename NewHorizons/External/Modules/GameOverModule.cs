@@ -2,6 +2,7 @@ using NewHorizons.External.SerializableData;
 using NewHorizons.External.SerializableEnums;
 using Newtonsoft.Json;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace NewHorizons.External.Modules
 {
@@ -23,6 +24,40 @@ namespace NewHorizons.External.Modules
         /// Note this is a regular dialogue condition, not a persistent condition.
         /// </summary>
         public string condition;
+
+        /// <summary>
+        /// Path to the audio file to use as custom music for the credits.
+        /// Note: only applies when creditsType is set to "custom".
+        /// </summary>
+        public string audio;
+
+        /// <summary>
+        /// The length of the fade in and out for the credits music.
+        /// Note: only applies when creditsType is set to "custom".
+        /// </summary>
+        [DefaultValue(1f)]
+        public float audioVolume;
+
+        /// <summary>
+        /// Determines if the credits music should loop.
+        /// Note: only applies when creditsType is set to "custom".
+        /// </summary>
+        [DefaultValue(false)]
+        public bool audioLooping;
+
+        /// <summary>
+        /// The length of the fade in for the credits music.
+        /// Note: only applies when creditsType is set to "custom".
+        /// </summary>
+        [DefaultValue(0f)]
+        public float audioFadeInLength;
+
+        /// <summary>
+        /// Duration of the credits scroll in seconds.
+        /// Note: only applies when creditsType is set to "custom".
+        /// </summary>
+        [DefaultValue(120f)]
+        public float scrollDuration;
 
         /// <summary>
         /// The type of credits that will run after the game over message is shown
