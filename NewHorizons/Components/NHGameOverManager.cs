@@ -129,11 +129,6 @@ namespace NewHorizons.Components
                     LoadManager.LoadScene(OWScene.Credits_Fast, LoadManager.FadeType.ToBlack);
                     break;
                 case NHCreditsType.Custom:
-                    // We can't load in custom music if an IModBehaviour cannot be provided. This should only happen if called via TryHijackDeathSequence().
-                    if (mod is null)
-                    {
-                        NHLogger.LogWarning("Credits called using TryHijackDeathSequence(), custom credits audio cannot not be loaded.");
-                    }
                     LoadCustomCreditsScene(gameOver, mod);
                     break;
                 default:
@@ -164,6 +159,11 @@ namespace NewHorizons.Components
                 if (mod is not null)
                 {
                     AudioUtilities.SetAudioClip(musicSource, gameOver.audio, mod);
+                }
+                else
+                {
+                    // We can't load in custom music if an IModBehaviour cannot be provided. This should only happen if called via TryHijackDeathSequence().
+                    NHLogger.LogWarning("Credits called using TryHijackDeathSequence(), custom credits audio cannot not be loaded.");
                 }
                 musicSource.SetMaxVolume(gameOver.audioVolume);
                 musicSource.loop = gameOver.audioLooping;
