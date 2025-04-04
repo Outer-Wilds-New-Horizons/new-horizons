@@ -47,11 +47,11 @@ namespace NewHorizons.Components
             var gameOver = _gameOvers.FirstOrDefault(x => !string.IsNullOrEmpty(x.condition) && DialogueConditionManager.SharedInstance.GetConditionState(x.condition));
             if (!_gameOverSequenceStarted && gameOver != null && !Locator.GetDeathManager()._finishedDLC)
             {
-                StartGameOverSequence(gameOver, null);
+                StartGameOverSequence(gameOver, null, null);
             }
         }
 
-        public void StartGameOverSequence(GameOverModule gameOver, DeathType? deathType, IModBehaviour mod = null)
+        public void StartGameOverSequence(GameOverModule gameOver, DeathType? deathType, IModBehaviour mod)
         {
             _gameOverSequenceStarted = true;
             Delay.StartCoroutine(GameOver(gameOver, deathType, mod));
