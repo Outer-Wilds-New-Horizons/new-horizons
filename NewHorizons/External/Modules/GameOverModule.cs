@@ -46,13 +46,6 @@ namespace NewHorizons.External.Modules
         public bool audioLooping;
 
         /// <summary>
-        /// Length of the credits music fade in.
-        /// Note: only applies when creditsType is set to "custom".
-        /// </summary>
-        [DefaultValue(0f)]
-        public float audioFadeInLength;
-
-        /// <summary>
         /// Duration of the credits scroll in seconds.
         /// Note: only applies when creditsType is set to "custom".
         /// </summary>

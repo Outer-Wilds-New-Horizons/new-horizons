@@ -153,9 +153,8 @@ namespace NewHorizons.Components
 
             completeCreditsLoad = (fromScene, toScene) =>
             {
-                // Patch new music
+                // Patch new music clip
                 var musicSource = Locator.FindObjectsOfType<OWAudioSource>().Where(x => x.name == "AudioSource").Single();
-                musicSource.Stop();
                 if (mod is not null)
                 {
                     AudioUtilities.SetAudioClip(musicSource, gameOver.audio, mod);
@@ -164,10 +163,10 @@ namespace NewHorizons.Components
                 {
                     // We can't load in custom music if an IModBehaviour cannot be provided. This should only happen if called via TryHijackDeathSequence().
                     NHLogger.LogWarning("Credits called using TryHijackDeathSequence(), custom credits audio cannot not be loaded.");
+                    return;
                 }
-                musicSource.SetMaxVolume(gameOver.audioVolume);
                 musicSource.loop = gameOver.audioLooping;
-                musicSource.FadeIn(gameOver.audioFadeInLength);
+                musicSource._maxSourceVolume = gameOver.audioVolume;
 
                 // Janky wait until credits are built
                 Task.Run( () =>
@@ -176,11 +175,11 @@ namespace NewHorizons.Components
                     while (Locator.FindObjectsOfType<CreditsScrollSection>().Length == 0) {
                         if (Time.time > startTime + 0.1f)
                         {
-                            NHLogger.LogError("Timeout while waiting for credits to be built. Scroll duration couldn't be changed.");
+                            NHLogger.LogError("Timeout while waiting for credits to be built. Scroll duration won't be changed.");
                             return;
                         }
                     }
-                    
+
                     // Patch scroll duration
                     var creditsScroll = Locator.FindObjectOfType<CreditsScrollSection>();
                     creditsScroll._scrollDuration = gameOver.length;
