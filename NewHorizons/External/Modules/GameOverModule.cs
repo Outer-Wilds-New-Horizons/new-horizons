@@ -46,7 +46,7 @@ namespace NewHorizons.External.Modules
         public bool audioLooping;
 
         /// <summary>
-        /// Whether the credits music should fade in.
+        /// Length of the credits music fade in.
         /// Note: only applies when creditsType is set to "custom".
         /// </summary>
         [DefaultValue(0f)]
@@ -57,7 +57,7 @@ namespace NewHorizons.External.Modules
         /// Note: only applies when creditsType is set to "custom".
         /// </summary>
         [DefaultValue(120f)]
-        public float scrollDuration;
+        public float length;
 
         /// <summary>
         /// The type of credits that will run after the game over message is shown

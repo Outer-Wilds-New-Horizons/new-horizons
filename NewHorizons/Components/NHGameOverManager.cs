@@ -183,7 +183,7 @@ namespace NewHorizons.Components
                     
                     // Patch scroll duration
                     var creditsScroll = Locator.FindObjectOfType<CreditsScrollSection>();
-                    creditsScroll._scrollDuration = gameOver.scrollDuration;
+                    creditsScroll._scrollDuration = gameOver.length;
                 });
 
                 LoadManager.OnCompleteSceneLoad -= completeCreditsLoad;
