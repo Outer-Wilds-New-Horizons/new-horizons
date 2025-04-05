@@ -180,6 +180,10 @@ namespace NewHorizons.Components
                         }
                     }
 
+                    // Override fade in
+                    musicSource.Stop();
+                    musicSource.Play();
+
                     // Patch scroll duration
                     var creditsScroll = Locator.FindObjectOfType<CreditsScrollSection>();
                     creditsScroll._scrollDuration = gameOver.length;
