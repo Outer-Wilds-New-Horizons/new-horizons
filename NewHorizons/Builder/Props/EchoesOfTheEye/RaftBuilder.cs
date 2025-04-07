@@ -5,7 +5,7 @@ using NewHorizons.Utility;
 using NewHorizons.Utility.OWML;
 using UnityEngine;
 
-namespace NewHorizons.Builder.Props
+namespace NewHorizons.Builder.Props.EchoesOfTheEye
 {
     public static class RaftBuilder
     {
@@ -90,6 +90,21 @@ namespace NewHorizons.Builder.Props
             achievementObject.AddComponent<OtherMods.AchievementsPlus.NH.RaftingAchievement>();
 
             raftObject.SetActive(true);
+
+            if (planetGO != null && !string.IsNullOrEmpty(info.dockPath))
+            {
+                var dockTransform = planetGO.transform.Find(info.dockPath);
+                if (dockTransform != null && dockTransform.TryGetComponent(out RaftDock raftDock))
+                {
+                    raftController.SkipSuspendOnStart();
+                    raftDock._startRaft = raftController;
+                    raftDock._raft = raftController;
+                }
+                else
+                {
+                    NHLogger.LogError($"Cannot find raft dock object at path: {planetGO.name}/{info.dockPath}");
+                }
+            }
 
             return raftObject;
         }
