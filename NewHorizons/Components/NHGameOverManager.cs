@@ -9,7 +9,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace NewHorizons.Components
@@ -20,14 +19,14 @@ namespace NewHorizons.Components
         /// Mod unique id to game over module list
         /// Done as a dictionary so that Reload Configs can overwrite entries per mod
         /// </summary>
-        public static Dictionary<string, GameOverModule[]> gameOvers = new();
+        public static Dictionary<IModBehaviour, GameOverModule[]> gameOvers = new();
 
         public static NHGameOverManager Instance { get; private set; }
 
         private GameOverController _gameOverController;
         private PlayerCameraEffectController _playerCameraEffectController;
 
-        private GameOverModule[] _gameOvers;
+        private (IModBehaviour mod, GameOverModule gameOver)[] _gameOvers;
 
         private bool _gameOverSequenceStarted;
 
@@ -41,15 +40,25 @@ namespace NewHorizons.Components
             _gameOverController = FindObjectOfType<GameOverController>();
             _playerCameraEffectController = FindObjectOfType<PlayerCameraEffectController>();
 
-            _gameOvers = gameOvers.SelectMany(x => x.Value).ToArray();
+            var gameOverList = new List<(IModBehaviour, GameOverModule)>();
+            foreach (var gameOverPair in gameOvers)
+            {
+                var mod = gameOverPair.Key;
+                foreach (var gameOver in gameOverPair.Value)
+                {
+                    gameOverList.Add((mod, gameOver));
+                }
+            }
+            _gameOvers = gameOverList.ToArray();
         }
 
         public void TryHijackDeathSequence()
         {
-            var gameOver = _gameOvers.FirstOrDefault(x => !string.IsNullOrEmpty(x.condition) && DialogueConditionManager.SharedInstance.GetConditionState(x.condition));
-            if (!_gameOverSequenceStarted && gameOver != null && !Locator.GetDeathManager()._finishedDLC)
+            var gameOver = _gameOvers.FirstOrDefault(x => !string.IsNullOrEmpty(x.gameOver.condition) 
+                && DialogueConditionManager.SharedInstance.GetConditionState(x.gameOver.condition));
+            if (!_gameOverSequenceStarted && gameOver != default && !Locator.GetDeathManager()._finishedDLC)
             {
-                StartGameOverSequence(gameOver, null, null);
+                StartGameOverSequence(gameOver.gameOver, null, gameOver.mod);
             }
         }
 
@@ -151,19 +160,13 @@ namespace NewHorizons.Components
             EventHandler onCreditsBuilt = null; // needs to be done so we can unsubscribe from within the lambda.
             onCreditsBuilt = (sender, e) =>
             {
-                
+                // Unsubscribe first, playing it safe in case it NREs 
+                CreditsPatches.CreditsBuilt -= onCreditsBuilt;
+
                 // Patch new music clip
                 var musicSource = Locator.FindObjectsOfType<OWAudioSource>().Where(x => x.name == "AudioSource").Single(); // AudioSource that plays the credits music is literally called "AudioSource", luckily it's the only one called that. Lazy OW devs do be lazy.
-                if (mod is not null)
-                {
-                    AudioUtilities.SetAudioClip(musicSource, gameOver.audio, mod);
-                }
-                else
-                {
-                    // We can't load in custom music if an IModBehaviour cannot be provided. This should only happen if called via TryHijackDeathSequence().
-                    NHLogger.Log("Credits called using TryHijackDeathSequence(), custom credits audio cannot not be loaded.");
-                    return;
-                }
+                AudioUtilities.SetAudioClip(musicSource, gameOver.audio, mod);
+
                 musicSource.loop = gameOver.audioLooping;
                 musicSource._maxSourceVolume = gameOver.audioVolume;
 
@@ -174,8 +177,6 @@ namespace NewHorizons.Components
                 // Patch scroll duration
                 var creditsScroll = Locator.FindObjectOfType<CreditsScrollSection>();
                 creditsScroll._scrollDuration = gameOver.length;
-
-                CreditsPatches.CreditsBuilt -= onCreditsBuilt;
             };
 
             CreditsPatches.CreditsBuilt += onCreditsBuilt;

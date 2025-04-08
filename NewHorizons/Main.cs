@@ -849,7 +849,7 @@ namespace NewHorizons
             }
             if (addonConfig.gameOver != null)
             {
-                NHGameOverManager.gameOvers[mod.ModHelper.Manifest.UniqueName] = addonConfig.gameOver;
+                NHGameOverManager.gameOvers[mod] = addonConfig.gameOver;
             }
 
             AddonConfigs[mod] = addonConfig;
