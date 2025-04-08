@@ -1,9 +1,11 @@
 using NewHorizons.External.Modules;
 using NewHorizons.External.SerializableEnums;
 using NewHorizons.Handlers;
+using NewHorizons.Patches.CreditsScenePatches;
 using NewHorizons.Utility.Files;
 using NewHorizons.Utility.OWML;
 using OWML.Common;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -143,15 +145,13 @@ namespace NewHorizons.Components
 
         private void LoadCustomCreditsScene(GameOverModule gameOver, IModBehaviour mod)
         {
-            var fromScene = LoadManager.GetCurrentScene();
-            var toScene = OWScene.Credits_Fast;
+            LoadManager.LoadScene(OWScene.Credits_Fast, LoadManager.FadeType.ToBlack);
 
-            LoadManager.LoadScene(toScene, LoadManager.FadeType.ToBlack);
-
-            // Unfortunately we can't make this a private method, as LoadManager.SceneLoadEvent enforces the (fromScene, toScene) parameters, which prevents us from passing in gameOver and mod, which we need.
-            LoadManager.SceneLoadEvent completeCreditsLoad = null; // needs to be done so we can unsubscribe from within the lambda.
-            completeCreditsLoad = (fromScene, toScene) =>
+            // Unfortunately we can't make this a private method, as EventArgs/EventHandler enforces the (sender, e) parameters, which prevents us from passing in gameOver and mod, which we need.
+            EventHandler onCreditsBuilt = null; // needs to be done so we can unsubscribe from within the lambda.
+            onCreditsBuilt = (sender, e) =>
             {
+                
                 // Patch new music clip
                 var musicSource = Locator.FindObjectsOfType<OWAudioSource>().Where(x => x.name == "AudioSource").Single(); // AudioSource that plays the credits music is literally called "AudioSource", luckily it's the only one called that. Lazy OW devs do be lazy.
                 if (mod is not null)
@@ -167,31 +167,18 @@ namespace NewHorizons.Components
                 musicSource.loop = gameOver.audioLooping;
                 musicSource._maxSourceVolume = gameOver.audioVolume;
 
-                // Janky wait until credits are built
-                Task.Run( () =>
-                {
-                    var startTime = Time.time;
-                    while (Locator.FindObjectsOfType<CreditsScrollSection>().Length == 0) {
-                        if (Time.time > startTime + 0.1f)
-                        {
-                            NHLogger.LogError("Timeout while waiting for credits to be built. Scroll duration won't be changed.");
-                            return;
-                        }
-                    }
+                // Override fade in
+                musicSource.Stop();
+                musicSource.Play();
 
-                    // Override fade in
-                    musicSource.Stop();
-                    musicSource.Play();
+                // Patch scroll duration
+                var creditsScroll = Locator.FindObjectOfType<CreditsScrollSection>();
+                creditsScroll._scrollDuration = gameOver.length;
 
-                    // Patch scroll duration
-                    var creditsScroll = Locator.FindObjectOfType<CreditsScrollSection>();
-                    creditsScroll._scrollDuration = gameOver.length;
-                });
-
-                LoadManager.OnCompleteSceneLoad -= completeCreditsLoad;
+                CreditsPatches.CreditsBuilt -= onCreditsBuilt;
             };
 
-            LoadManager.OnCompleteSceneLoad += completeCreditsLoad;
+            CreditsPatches.CreditsBuilt += onCreditsBuilt;
         }
     }
 }
