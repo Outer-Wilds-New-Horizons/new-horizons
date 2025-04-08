@@ -29,6 +29,10 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
                     var raftDock = _prefab.GetComponent<RaftDock>();
                     raftDock._startRaft = null;
                     raftDock._floodSensor = null;
+                    foreach (var floodToggle in _prefab.GetComponents<FloodToggle>())
+                    {
+                        Component.DestroyImmediate(floodToggle);
+                    }
                     Object.DestroyImmediate(_prefab.FindChild("FloodSensor"));
                     Object.DestroyImmediate(_prefab.FindChild("FloodSensor_RaftHouseArrivalPatio_NoDelay"));
                 }
