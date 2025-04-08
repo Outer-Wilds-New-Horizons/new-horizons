@@ -92,11 +92,14 @@ namespace NewHorizons.Builder.Props
 
             if (_standingVisionTorchPrefab == null)
             {
-                _standingVisionTorchPrefab = SearchUtilities.Find("RingWorld_Body/Sector_RingWorld/Sector_SecretEntrance/Interactibles_SecretEntrance/Experiment_1/VisionTorchApparatus/VisionTorchRoot/Prefab_IP_VisionTorchProjector")?.gameObject?.InstantiateInactive()?.Rename("Prefab_IP_VisionTorchProjector")?.DontDestroyOnLoad();
+                _standingVisionTorchPrefab = SearchUtilities.Find("DreamWorld_Body/Sector_DreamWorld/Sector_DreamZone_4/Interactibles_DreamZone_4_Upper/Prefab_IP_VisionTorchProjector")?.gameObject?.InstantiateInactive()?.Rename("Prefab_IP_VisionTorchProjector")?.DontDestroyOnLoad();
                 if (_standingVisionTorchPrefab == null)
                     NHLogger.LogWarning($"Tried to make standing vision torch prefab but couldn't. Do you have the DLC installed?");
                 else
+                {
                     _standingVisionTorchPrefab.AddComponent<DestroyOnDLC>()._destroyOnDLCNotOwned = true;
+                    GameObject.DestroyImmediate(_standingVisionTorchPrefab.FindChild("Prefab_IP_Reel_PrisonPeephole_Vision"));
+                }
             }
         }
 
