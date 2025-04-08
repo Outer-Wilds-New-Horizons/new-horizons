@@ -25,7 +25,7 @@ namespace NewHorizons.External.Modules
         public string condition;    
 
         /// <summary>
-        /// Path to the audio file to use as custom music for the credits.
+        /// Path to the audio file to use as custom music for the credits. Also supports AudioClips and AudioType like other audio settings.
         /// Note: only applies when creditsType is set to "custom".
         /// </summary>
         public string audio;
