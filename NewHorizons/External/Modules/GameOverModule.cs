@@ -2,7 +2,6 @@ using NewHorizons.External.SerializableData;
 using NewHorizons.External.SerializableEnums;
 using Newtonsoft.Json;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 
 namespace NewHorizons.External.Modules
 {
