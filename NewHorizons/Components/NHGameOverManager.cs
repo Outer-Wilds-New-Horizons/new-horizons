@@ -162,7 +162,7 @@ namespace NewHorizons.Components
                 else
                 {
                     // We can't load in custom music if an IModBehaviour cannot be provided. This should only happen if called via TryHijackDeathSequence().
-                    NHLogger.LogWarning("Credits called using TryHijackDeathSequence(), custom credits audio cannot not be loaded.");
+                    NHLogger.Log("Credits called using TryHijackDeathSequence(), custom credits audio cannot not be loaded.");
                     return;
                 }
                 musicSource.loop = gameOver.audioLooping;
