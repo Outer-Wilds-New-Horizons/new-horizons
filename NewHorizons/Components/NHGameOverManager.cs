@@ -148,13 +148,12 @@ namespace NewHorizons.Components
 
             LoadManager.LoadScene(toScene, LoadManager.FadeType.ToBlack);
 
-            // We need to do this so we can unsubscribe from within the lambda.
-            LoadManager.SceneLoadEvent completeCreditsLoad = null;
-
+            // Unfortunately we can't make this a private method, as LoadManager.SceneLoadEvent enforces the (fromScene, toScene) parameters, which prevents us from passing in gameOver and mod, which we need.
+            LoadManager.SceneLoadEvent completeCreditsLoad = null; // needs to be done so we can unsubscribe from within the lambda.
             completeCreditsLoad = (fromScene, toScene) =>
             {
                 // Patch new music clip
-                var musicSource = Locator.FindObjectsOfType<OWAudioSource>().Where(x => x.name == "AudioSource").Single();
+                var musicSource = Locator.FindObjectsOfType<OWAudioSource>().Where(x => x.name == "AudioSource").Single(); // AudioSource that plays the credits music is literally called "AudioSource", luckily it's the only one called that. Lazy OW devs do be lazy.
                 if (mod is not null)
                 {
                     AudioUtilities.SetAudioClip(musicSource, gameOver.audio, mod);
