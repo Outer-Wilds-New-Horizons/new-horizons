@@ -40,6 +40,10 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
                             lightSensor._sector.OnSectorOccupantsUpdated -= lightSensor.OnSectorOccupantsUpdated;
                             lightSensor._sector = null;
                         }
+                        lightSensor._detectDreamLanterns = true;
+                        lightSensor._lanternFocusThreshold = 0.9f;
+                        lightSensor._illuminatingDreamLanternList = new List<DreamLanternController>();
+                        lightSensor._lightSourceMask |= LightSourceType.DREAM_LANTERN;
                     }
                 }
             }
