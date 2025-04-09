@@ -45,6 +45,15 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
                         lightSensor._illuminatingDreamLanternList = new List<DreamLanternController>();
                         lightSensor._lightSourceMask |= LightSourceType.DREAM_LANTERN;
                     }
+
+                    // TODO: Change to one mesh
+                    var twRaftRoot = new GameObject("Effects_IP_SIM_Raft");
+                    twRaftRoot.transform.SetParent(_prefab.transform, false);
+                    var twRaft = SearchUtilities.Find("DreamWorld_Body/Sector_DreamWorld/Interactibles_Dreamworld/DreamRaft_Body/Effects_IP_SIM_Raft_1Way")
+                        .Instantiate(Vector3.zero, Quaternion.identity, twRaftRoot.transform).Rename("Effects_IP_SIM_Raft_1Way");
+                    twRaft.Instantiate(Vector3.zero, Quaternion.Euler(0, 180, 0), twRaftRoot.transform).Rename(twRaft.name);
+                    twRaft.Instantiate(Vector3.zero, Quaternion.Euler(0, 90, 0), twRaftRoot.transform).Rename(twRaft.name);
+                    twRaft.Instantiate(Vector3.zero, Quaternion.Euler(0, -90, 0), twRaftRoot.transform).Rename(twRaft.name);
                 }
             }
         }
