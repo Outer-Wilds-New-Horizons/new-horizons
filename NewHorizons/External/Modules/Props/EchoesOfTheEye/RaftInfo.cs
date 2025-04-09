@@ -15,6 +15,11 @@ namespace NewHorizons.External.Modules.Props.EchoesOfTheEye
         /// Path to the dock this raft will start attached to.
         /// </summary>
         public string dockPath;
+
+        /// <summary>
+        /// Uses the raft model from the dreamworld
+        /// </summary>
+        public bool clean;
     }
 
 }

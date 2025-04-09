@@ -3,6 +3,7 @@ using NewHorizons.External.Modules.Props.EchoesOfTheEye;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OWML;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace NewHorizons.Builder.Props.EchoesOfTheEye
@@ -10,6 +11,7 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
     public static class RaftBuilder
     {
         private static GameObject _prefab;
+        private static GameObject _cleanPrefab;
 
         internal static void InitPrefab()
         {
@@ -56,15 +58,68 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
                     twRaft.Instantiate(Vector3.zero, Quaternion.Euler(0, -90, 0), twRaftRoot.transform).Rename(twRaft.name);
                 }
             }
+            if (_cleanPrefab == null && _prefab != null)
+            {
+                _cleanPrefab = _prefab?.InstantiateInactive()?.Rename("Raft_Body_Prefab_Clean")?.DontDestroyOnLoad();
+                if (_cleanPrefab == null)
+                {
+                    NHLogger.LogWarning($"Tried to make a raft but couldn't. Do you have the DLC installed?");
+                    return;
+                }
+                else
+                {
+                    var raftController = _cleanPrefab.GetComponent<RaftController>();
+                    var rwRaft = _cleanPrefab.FindChild("Structure_IP_Raft");
+                    var rwRaftAnimator = rwRaft.GetComponent<Animator>();
+                    var rac = rwRaftAnimator.runtimeAnimatorController;
+                    Object.DestroyImmediate(rwRaft);
+
+                    var dwRaft = SearchUtilities.Find("DreamWorld_Body/Sector_DreamWorld/Interactibles_Dreamworld/DreamRaft_Body/Structure_IP_Raft")
+                        .Instantiate(Vector3.zero, Quaternion.identity, _cleanPrefab.transform).Rename("Structure_IP_DreamRaft");
+                    dwRaft.transform.SetSiblingIndex(3);
+                    foreach (var child in dwRaft.GetAllChildren())
+                    {
+                        child.SetActive(true);
+                    }
+
+                    var dwRaftAnimator = dwRaft.AddComponent<Animator>();
+                    dwRaftAnimator.runtimeAnimatorController = rac;
+                    raftController._railingAnimator = dwRaftAnimator;
+
+                    var dwLightSensorForward = SearchUtilities.Find("DreamWorld_Body/Sector_DreamWorld/Interactibles_Dreamworld/DreamRaft_Body/LightSensor_Forward");
+                    var dwLightSensorOrigMaterial = dwLightSensorForward.GetComponent<LightSensorEffects>()._origMaterial;
+                    var dwLightSensor = dwLightSensorForward.FindChild("Structure_IP_Raft_Sensor");
+                    ChangeSensor(_cleanPrefab.FindChild("LightSensorRoot/LightSensor_Forward"), dwLightSensorOrigMaterial, dwLightSensor);
+                    ChangeSensor(_cleanPrefab.FindChild("LightSensorRoot/LightSensor_Right"), dwLightSensorOrigMaterial, dwLightSensor);
+                    ChangeSensor(_cleanPrefab.FindChild("LightSensorRoot/LightSensor_Rear"), dwLightSensorOrigMaterial, dwLightSensor, true);
+                    ChangeSensor(_cleanPrefab.FindChild("LightSensorRoot/LightSensor_Left"), dwLightSensorOrigMaterial, dwLightSensor);
+                }
+            }
+        }
+
+        private static void ChangeSensor(GameObject lightSensor, Material origMaterial, GameObject newLightSensor, bool reverse = false)
+        {
+            var singleLightSensor = lightSensor.GetComponent<SingleLightSensor>();
+            var lightSensorEffects = lightSensor.GetComponent<LightSensorEffects>();
+            lightSensorEffects._lightSensor = singleLightSensor;
+            Object.DestroyImmediate(lightSensor.FindChild("Structure_IP_Raft_Sensor"));
+            lightSensorEffects._origMaterial = origMaterial;
+            var copiedLightSensor = newLightSensor
+                .Instantiate(reverse ? new Vector3(0, -1.5f, -0.1303f) : new Vector3(0, -1.5f, -0.0297f),
+                             reverse ? Quaternion.identity : Quaternion.Euler(0, 180, 0),
+                             lightSensor.transform).Rename("Structure_IP_DreamRaft_Sensor");
+            var bulb = copiedLightSensor.FindChild("Props_IP_Raft_Lamp_geoBulb");
+            lightSensorEffects._renderer = bulb.GetComponent<MeshRenderer>();
+            lightSensorEffects._lightRenderer = bulb.GetComponent<OWRenderer>();
         }
 
         public static GameObject Make(GameObject planetGO, Sector sector, RaftInfo info, OWRigidbody planetBody)
         {
             InitPrefab();
 
-            if (_prefab == null || sector == null) return null;
+            if (_prefab == null || _cleanPrefab == null || sector == null) return null;
 
-            GameObject raftObject = GeneralPropBuilder.MakeFromPrefab(_prefab, "Raft_Body", planetGO, sector, info);
+            GameObject raftObject = GeneralPropBuilder.MakeFromPrefab(info.clean ? _cleanPrefab : _prefab, "Raft_Body", planetGO, sector, info);
 
             StreamingHandler.SetUpStreaming(raftObject, sector);
 
