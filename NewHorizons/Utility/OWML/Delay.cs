@@ -31,7 +31,7 @@ namespace NewHorizons.Utility.OWML
         {
             while (!predicate.Invoke())
             {
-                yield return new WaitForEndOfFrame();
+                yield return new WaitForFixedUpdate();
             }
 
             action.Invoke();
@@ -41,7 +41,7 @@ namespace NewHorizons.Utility.OWML
         {
             for (int i = 0; i < n; i++)
             {
-                yield return new WaitForEndOfFrame();
+                yield return new WaitForFixedUpdate();
             }
             action?.Invoke();
         }
@@ -50,11 +50,11 @@ namespace NewHorizons.Utility.OWML
         {
             for (int i = 0; i < n; i++)
             {
-                yield return new WaitForEndOfFrame();
+                yield return new WaitForFixedUpdate();
             }
             while (!predicate.Invoke())
             {
-                yield return new WaitForEndOfFrame();
+                yield return new WaitForFixedUpdate();
             }
 
             action.Invoke();
@@ -64,11 +64,11 @@ namespace NewHorizons.Utility.OWML
         {
             while (!predicate.Invoke())
             {
-                yield return new WaitForEndOfFrame();
+                yield return new WaitForFixedUpdate();
             }
             for (int i = 0; i < n; i++)
             {
-                yield return new WaitForEndOfFrame();
+                yield return new WaitForFixedUpdate();
             }
 
             action.Invoke();
