@@ -165,7 +165,7 @@ namespace NewHorizons.Components
 
                 // Patch new music clip
                 var musicSource = Locator.FindObjectsOfType<OWAudioSource>().Where(x => x.name == "AudioSource").Single(); // AudioSource that plays the credits music is literally called "AudioSource", luckily it's the only one called that. Lazy OW devs do be lazy.
-                if (string.IsNullOrEmpty(gameOver.audio)) // string.Empty is default value for "audio" in GameOverModule, means no audio is specified.
+                if (!string.IsNullOrEmpty(gameOver.audio)) // string.Empty is default value for "audio" in GameOverModule, means no audio is specified.
                 {
                     AudioUtilities.SetAudioClip(musicSource, gameOver.audio, mod); // Load audio if specified
                 }
