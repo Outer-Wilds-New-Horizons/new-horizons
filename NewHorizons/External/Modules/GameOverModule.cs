@@ -22,34 +22,31 @@ namespace NewHorizons.External.Modules
         /// Condition that must be true for this game over to trigger. If this is on a LoadCreditsVolume, leave empty to always trigger this game over.
         /// Note this is a regular dialogue condition, not a persistent condition.
         /// </summary>
-        public string condition;    
+        public string condition;
 
         /// <summary>
         /// Path to the audio file to use as custom music for the credits.
         /// Note: only applies when creditsType is set to "custom".
         /// </summary>
-        public string audio;
+        public string audio = string.Empty; // Explicitly declaring this for condition in NHGameOverManager
 
         /// <summary>
         /// The length of the fade in and out for the credits music.
         /// Note: only applies when creditsType is set to "custom".
         /// </summary>
-        [DefaultValue(1f)]
-        public float audioVolume;
+        [DefaultValue(1f)] public float audioVolume = 1f;
 
         /// <summary>
         /// Determines if the credits music should loop.
         /// Note: only applies when creditsType is set to "custom".
         /// </summary>
-        [DefaultValue(false)]
-        public bool audioLooping;
+        [DefaultValue(false)] public bool audioLooping = false;
 
         /// <summary>
         /// Duration of the credits scroll in seconds.
         /// Note: only applies when creditsType is set to "custom".
         /// </summary>
-        [DefaultValue(120f)]
-        public float length;
+        [DefaultValue(120f)] public float length = 120f;
 
         /// <summary>
         /// The type of credits that will run after the game over message is shown
