@@ -25,7 +25,7 @@ namespace NewHorizons.External.Modules
         public string condition;
 
         /// <summary>
-        /// Path to the audio file to use as custom music for the credits.
+        /// Path to the audio file to use as custom music for the credits. When creditsType is set to "custom", credits will be silent unless this is specified.
         /// Note: only applies when creditsType is set to "custom".
         /// </summary>
         public string audio = string.Empty; // Explicitly declaring this for condition in NHGameOverManager
@@ -37,7 +37,7 @@ namespace NewHorizons.External.Modules
         [DefaultValue(1f)] public float audioVolume = 1f;
 
         /// <summary>
-        /// Determines if the credits music should loop.
+        /// Determines if the credits music should loop ()
         /// Note: only applies when creditsType is set to "custom".
         /// </summary>
         [DefaultValue(false)] public bool audioLooping = false;
