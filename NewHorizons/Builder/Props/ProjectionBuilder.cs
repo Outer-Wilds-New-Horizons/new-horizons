@@ -43,6 +43,7 @@ namespace NewHorizons.Builder.Props
         private static GameObject _autoPrefab;
         private static GameObject _visionTorchDetectorPrefab;
         private static GameObject _standingVisionTorchPrefab;
+        private static GameObject _standingVisionTorchCleanPrefab;
         private static readonly int EmissionMap = Shader.PropertyToID("_EmissionMap");
 
         private static bool _isInit;
@@ -90,13 +91,28 @@ namespace NewHorizons.Builder.Props
                     _visionTorchDetectorPrefab.AddComponent<DestroyOnDLC>()._destroyOnDLCNotOwned = true;
             }
 
+            if (_standingVisionTorchCleanPrefab == null)
+            {
+                _standingVisionTorchCleanPrefab = SearchUtilities.Find("DreamWorld_Body/Sector_DreamWorld/Sector_DreamZone_4/Interactibles_DreamZone_4_Upper/Prefab_IP_VisionTorchProjector")?.gameObject?.InstantiateInactive()?.Rename("Prefab_DW_VisionTorchProjector")?.DontDestroyOnLoad();
+                if (_standingVisionTorchCleanPrefab == null)
+                    NHLogger.LogWarning($"Tried to make standing vision torch prefab but couldn't. Do you have the DLC installed?");
+                else
+                {
+                    _standingVisionTorchCleanPrefab.AddComponent<DestroyOnDLC>()._destroyOnDLCNotOwned = true;
+                    GameObject.DestroyImmediate(_standingVisionTorchCleanPrefab.FindChild("Prefab_IP_Reel_PrisonPeephole_Vision"));
+                }
+            }
+
             if (_standingVisionTorchPrefab == null)
             {
                 _standingVisionTorchPrefab = SearchUtilities.Find("RingWorld_Body/Sector_RingWorld/Sector_SecretEntrance/Interactibles_SecretEntrance/Experiment_1/VisionTorchApparatus/VisionTorchRoot/Prefab_IP_VisionTorchProjector")?.gameObject?.InstantiateInactive()?.Rename("Prefab_IP_VisionTorchProjector")?.DontDestroyOnLoad();
                 if (_standingVisionTorchPrefab == null)
                     NHLogger.LogWarning($"Tried to make standing vision torch prefab but couldn't. Do you have the DLC installed?");
                 else
+                {
                     _standingVisionTorchPrefab.AddComponent<DestroyOnDLC>()._destroyOnDLCNotOwned = true;
+                    GameObject.Instantiate(_standingVisionTorchCleanPrefab.FindChild("Effects_IP_SIM_VisionTorch"), _standingVisionTorchPrefab.transform, false).Rename("Effects_IP_SIM_VisionTorch");
+                }
             }
         }
 
@@ -446,10 +462,11 @@ namespace NewHorizons.Builder.Props
         {
             InitPrefabs();
 
-            if (_standingVisionTorchPrefab == null) return null;
+            if (_standingVisionTorchPrefab == null || _standingVisionTorchCleanPrefab == null) return null;
 
             // Spawn the torch itself
-            var standingTorch = DetailBuilder.Make(planetGO, sector, mod, _standingVisionTorchPrefab, new DetailInfo(info));
+            var prefab = info.reelCondition == ProjectionInfo.SlideReelCondition.Pristine ? _standingVisionTorchCleanPrefab : _standingVisionTorchPrefab;
+            var standingTorch = DetailBuilder.Make(planetGO, sector, mod, prefab, new DetailInfo(info));
 
             if (standingTorch == null)
             {

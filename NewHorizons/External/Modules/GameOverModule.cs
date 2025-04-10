@@ -25,10 +25,11 @@ namespace NewHorizons.External.Modules
         public string condition;
 
         /// <summary>
-        /// Path to the audio file to use as custom music for the credits. When creditsType is set to "custom", credits will be silent unless this attribute is specified.
+        /// The audio to use for the credits music. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list.
+        /// Credits will be silent unless this attribute is specified.
         /// Note: only applies when creditsType is set to "custom".
         /// </summary>
-        public string audio = string.Empty; // Explicitly declaring this for condition in NHGameOverManager
+        public string audio;
 
         /// <summary>
         /// The length of the fade in and out for the credits music.
