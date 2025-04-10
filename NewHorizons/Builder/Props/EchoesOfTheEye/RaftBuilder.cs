@@ -119,7 +119,7 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
 
             if (_prefab == null || _cleanPrefab == null || sector == null) return null;
 
-            GameObject raftObject = GeneralPropBuilder.MakeFromPrefab(info.clean ? _cleanPrefab : _prefab, "Raft_Body", planetGO, sector, info);
+            GameObject raftObject = GeneralPropBuilder.MakeFromPrefab(info.pristine ? _cleanPrefab : _prefab, "Raft_Body", planetGO, sector, info);
 
             StreamingHandler.SetUpStreaming(raftObject, sector);
 

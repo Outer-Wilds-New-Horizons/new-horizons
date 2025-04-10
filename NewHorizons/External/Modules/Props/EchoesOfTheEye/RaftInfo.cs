@@ -19,7 +19,7 @@ namespace NewHorizons.External.Modules.Props.EchoesOfTheEye
         /// <summary>
         /// Uses the raft model from the dreamworld
         /// </summary>
-        public bool clean;
+        public bool pristine;
     }
 
 }
