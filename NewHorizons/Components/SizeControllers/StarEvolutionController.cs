@@ -10,6 +10,7 @@ using System;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
+using NewHorizons.Utility.Files;
 
 
 namespace NewHorizons.Components.SizeControllers
@@ -22,6 +23,7 @@ namespace NewHorizons.Components.SizeControllers
         public GameObject atmosphere;
         public StarController controller;
         public StellarDeathController supernova;
+        public StellarDeathController[] planetaryNebula;
         public bool willExplode;
         public MColor startColour;
         public MColor endColour;
@@ -98,6 +100,8 @@ namespace NewHorizons.Components.SizeControllers
 
         private TessellatedSphereRenderer _surface;
 
+        public static Material WhiteDwarfCollapseMaterial;
+
         public static void Init()
         {
             var sun = SearchUtilities.Find("Sun_Body").GetComponent<SunController>();
@@ -109,12 +113,20 @@ namespace NewHorizons.Components.SizeControllers
             if (_defaultCollapseEndSurfaceMaterial == null) _defaultCollapseEndSurfaceMaterial = new Material(sun._collapseEndSurfaceMaterial).DontDestroyOnLoad();
             if (_defaultStartSurfaceMaterial == null) _defaultStartSurfaceMaterial = new Material(sun._startSurfaceMaterial).DontDestroyOnLoad();
             if (_defaultEndSurfaceMaterial == null) _defaultEndSurfaceMaterial = new Material(sun._endSurfaceMaterial).DontDestroyOnLoad();
+            if (_defaultEndSurfaceMaterial == null) _defaultEndSurfaceMaterial = new Material(sun._endSurfaceMaterial).DontDestroyOnLoad();
 
             if (_defaultNormalRamp == null) _defaultNormalRamp = sun._startSurfaceMaterial.GetTexture(ColorRamp).DontDestroyOnLoad();
             if (_defaultCollapseRamp == null) _defaultCollapseRamp = sun._collapseStartSurfaceMaterial.GetTexture(ColorRamp).DontDestroyOnLoad();
+
+            if (WhiteDwarfCollapseMaterial == null)
+            {
+                WhiteDwarfCollapseMaterial = new Material(_defaultStartSurfaceMaterial).DontDestroyOnLoad();
+                WhiteDwarfCollapseMaterial.SetTexture(ColorRamp, ImageUtilities.MakeSolidColorTexture(1, 1, Color.white));
+                WhiteDwarfCollapseMaterial.color = Color.white;
+            }
         }
 
-        private void Start()
+        public void Start()
         {
             _surface = GetComponentInChildren<TessellatedSphereRenderer>(true);
             _surfaceMaterial = _surface._materials[0];
@@ -204,11 +216,17 @@ namespace NewHorizons.Components.SizeControllers
             {
                 var timeAfter = secondsElapsed - lifespanInSeconds;
                 if (timeAfter <= collapseTime)
+                {
                     Delay.RunWhen(() => Main.IsSystemReady, StartCollapse);
+                }
                 else if (timeAfter <= collapseTime + supernovaTime)
+                {
                     Delay.RunWhen(() => Main.IsSystemReady, StartSupernova);
+                }
                 else
+                {
                     Delay.RunWhen(() => Main.IsSystemReady, () => Delay.FireOnNextUpdate(() => DisableStar(true)));
+                }
             }
         }
 
@@ -258,6 +276,7 @@ namespace NewHorizons.Components.SizeControllers
             }
         }
 
+        private float _nextPlanetaryNebulaPulse = 0f;
         private void UpdateCollapse()
         {
             // When its collapsing we directly take over the scale
@@ -268,11 +287,41 @@ namespace NewHorizons.Components.SizeControllers
 
             _currentColour = Color.Lerp(_endColour, Color.white, t);
 
-            _surface._materials[0].Lerp(_collapseStartSurfaceMaterial, _collapseEndSurfaceMaterial, t);
+            if (deathType != StellarDeathType.PlanetaryNebula)
+            {
+                _surface._materials[0].Lerp(_collapseStartSurfaceMaterial, _collapseEndSurfaceMaterial, t);
+            }
+            else
+            {
+                if (_collapseTimer > _nextPlanetaryNebulaPulse)
+                {
+                    var interval = collapseTime / this.planetaryNebula.Length;
+                    _nextPlanetaryNebulaPulse += interval;
+                    var nextLayer = this.planetaryNebula.FirstOrDefault(x => !x.enabled);
+                    nextLayer?.Activate();
+                    if (oneShotSource != null && !PlayerState.IsSleepingAtCampfire() && !PlayerState.InDreamWorld())
+                    {
+                        oneShotSource.PlayOneShot(AudioType.Sun_Explosion);
+                    }
+                }
+
+                _surface._materials[0].Lerp(_collapseStartSurfaceMaterial, WhiteDwarfCollapseMaterial, t);
+                _surface._materials[0].SetFloat(ColorTime, t);
+            }
 
             // After the collapse is done we go supernova
             // Main star will call this on the proxy
-            if (!isProxy && _collapseTimer > collapseTime) StartSupernova();
+            if (_collapseTimer > collapseTime)
+            {
+                if (deathType == StellarDeathType.PlanetaryNebula)
+                {
+                    this.enabled = false;
+                }
+                else if (!isProxy)
+                {
+                    StartSupernova();
+                }
+            }
         }
 
         private void UpdateSupernova()
@@ -292,11 +341,7 @@ namespace NewHorizons.Components.SizeControllers
 
             if (_stellarRemnant != null && Time.time > _supernovaStartTime + 15)
             {
-                _stellarRemnant.SetActive(true);
-                var remnantStarController = _stellarRemnant.GetComponentInChildren<StarController>();
-                if (remnantStarController != null) SunLightEffectsController.AddStar(remnantStarController);
-                var remnantStarLight = _stellarRemnant.FindChild("StarLight");
-                if (remnantStarLight != null) SunLightEffectsController.AddStarLight(remnantStarLight.GetComponent<Light>());
+                EnableRemnant();
             }
 
             if (Time.time > _supernovaStartTime + supernovaTime)
@@ -304,6 +349,21 @@ namespace NewHorizons.Components.SizeControllers
                 if (destructionVolume != null && destructionVolume._shrinkingBodies.Count > 0) return;
                 if (planetDestructionVolume != null && planetDestructionVolume._shrinkingBodies.Count > 0) return;
                 DisableStar();
+            }
+        }
+
+        public void EnableRemnant()
+        {
+            _stellarRemnant.SetActive(true);
+            var remnantStarController = _stellarRemnant.GetComponentInChildren<StarController>();
+            if (remnantStarController != null)
+            {
+                SunLightEffectsController.AddStar(remnantStarController);
+            }
+            var remnantStarLight = _stellarRemnant.FindChild("StarLight");
+            if (remnantStarLight != null)
+            {
+                SunLightEffectsController.AddStarLight(remnantStarLight.GetComponent<Light>());
             }
         }
 
@@ -343,7 +403,9 @@ namespace NewHorizons.Components.SizeControllers
                         {
                             // Vanish anything unrelated to player
                             if (!(rb.CompareTag("Player") || rb.CompareTag("Ship") || rb.CompareTag("ShipCockpit") || rb.CompareTag("Probe")))
+                            {
                                 planetDestructionVolume.Vanish(body, new RelativeLocationData(body, _rigidbody, planetDestructionVolume.transform));
+                            }
                         }
                     }
                 }
@@ -363,7 +425,16 @@ namespace NewHorizons.Components.SizeControllers
             _collapseStartSize = CurrentScale;
             _collapseTimer = 0f;
             _surface._materials[0].CopyPropertiesFromMaterial(_collapseStartSurfaceMaterial);
-            if (oneShotSource != null && !PlayerState.IsSleepingAtCampfire() && !PlayerState.InDreamWorld()) oneShotSource.PlayOneShot(AudioType.Sun_Collapse);
+
+            if (deathType == StellarDeathType.PlanetaryNebula)
+            {
+                EnableRemnant();
+            }
+
+            if (oneShotSource != null && !PlayerState.IsSleepingAtCampfire() && !PlayerState.InDreamWorld())
+            {
+                oneShotSource.PlayOneShot(AudioType.Sun_Collapse);
+            }
 
             _proxy?.StartCollapse();
         }

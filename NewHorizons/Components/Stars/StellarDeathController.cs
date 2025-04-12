@@ -29,7 +29,9 @@ namespace NewHorizons.Components.Stars
         {
             _cachedParticleRenderers = new ParticleSystemRenderer[explosionParticles.Length];
             for (int index = 0; index < explosionParticles.Length; ++index)
+            {
                 _cachedParticleRenderers[index] = explosionParticles[index].GetComponent<ParticleSystemRenderer>();
+            }
         }
 
         public void Activate()
@@ -51,7 +53,10 @@ namespace NewHorizons.Components.Stars
             _time = 0.0f;
             _currentSupernovaScale = supernovaScale.Evaluate(0.0f);
             _localSupernovaMat = new Material(supernovaMaterial);
-            surface.sharedMaterial = _localSupernovaMat;
+            if (surface != null)
+            {
+                surface.sharedMaterial = _localSupernovaMat;
+            }
 
             if (audioSource == null) return;
 
@@ -80,7 +85,10 @@ namespace NewHorizons.Components.Stars
             shockwave.transform.localScale = Vector3.one * shockwaveScale.Evaluate(shockwaveTime);
             shockwave.material.color = Color.Lerp(Color.black, shockwave.sharedMaterial.color, shockwaveAlpha.Evaluate(shockwaveTime));
             _currentSupernovaScale = supernovaScale.Evaluate(_time);
-            surface.transform.localScale = Vector3.one * _currentSupernovaScale;
+            if (surface != null)
+            {
+                surface.transform.localScale = Vector3.one * _currentSupernovaScale;
+            }
             _localSupernovaMat.color = Color.Lerp(Color.black, supernovaMaterial.color, supernovaAlpha.Evaluate(_time));
 
             float distanceToPlayer = PlayerState.InDreamWorld() ? 20000f : Vector3.Distance(transform.position, Locator.GetPlayerCamera().transform.position) - GetSupernovaRadius();
