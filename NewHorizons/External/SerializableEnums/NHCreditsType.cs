@@ -13,6 +13,8 @@ namespace NewHorizons.External.SerializableEnums
 
         [EnumMember(Value = @"kazoo")] Kazoo = 2,
 
-        [EnumMember(Value = @"none")] None = 3
+        [EnumMember(Value = @"custom")] Custom = 3,
+
+        [EnumMember(Value = @"none")] None = 4
     }
 }

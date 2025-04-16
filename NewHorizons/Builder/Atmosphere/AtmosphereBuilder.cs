@@ -100,6 +100,15 @@ namespace NewHorizons.Builder.Atmosphere
             atmoGO.transform.position = planetGO.transform.TransformPoint(Vector3.zero);
             atmoGO.SetActive(true);
 
+            // CullGroups have already set up their renderers when this is done so we need to add ourself to it
+            // TODO: There are probably other builders where this is relevant
+            // This in particular was a bug affecting hazy dreams
+            if (sector != null && sector.gameObject.GetComponent<CullGroup>() is CullGroup cullGroup)
+            {
+                cullGroup.RecursivelyAddRenderers(atmoGO.transform, true);
+                cullGroup.SetVisible(cullGroup.IsVisible());
+            }
+
             return atmoGO;
         }
     }
