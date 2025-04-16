@@ -60,7 +60,7 @@ namespace NewHorizons.Builder.Props
         {
             if (info.hasCollision)
             {
-                throw new NotSupportedException($"Shapes do not support collision; set {info.hasCollision} to false and use a supported collider type (sphere, box, or capsule).");
+                throw new NotSupportedException($"Shapes do not support collision; set {nameof(info.hasCollision)} to false or use a supported collider type (sphere, box, or capsule).");
             }
             if (info.useShape.HasValue && !info.useShape.Value)
             {
