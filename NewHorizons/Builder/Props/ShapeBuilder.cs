@@ -90,6 +90,7 @@ namespace NewHorizons.Builder.Props
                     cylinderShape._radius = info.radius;
                     cylinderShape._height = info.height;
                     cylinderShape._center = info.offset ?? Vector3.zero;
+                    cylinderShape._pointChecksOnly = true;
                     return cylinderShape;
                 case ShapeType.Cone:
                     var coneShape = go.AddComponent<ConeShape>();
@@ -98,6 +99,7 @@ namespace NewHorizons.Builder.Props
                     coneShape._direction = (int)info.direction;
                     coneShape._height = info.height;
                     coneShape._center = info.offset ?? Vector3.zero;
+                    coneShape._pointChecksOnly = true;
                     return coneShape;
                 case ShapeType.Hemisphere:
                     var hemisphereShape = go.AddComponent<HemisphereShape>();
@@ -105,6 +107,7 @@ namespace NewHorizons.Builder.Props
                     hemisphereShape._direction = (int)info.direction;
                     hemisphereShape._cap = info.cap;
                     hemisphereShape._center = info.offset ?? Vector3.zero;
+                    hemisphereShape._pointChecksOnly = true;
                     return hemisphereShape;
                 case ShapeType.Hemicapsule:
                     var hemicapsuleShape = go.AddComponent<HemicapsuleShape>();
@@ -113,6 +116,7 @@ namespace NewHorizons.Builder.Props
                     hemicapsuleShape._height = info.height;
                     hemicapsuleShape._cap = info.cap;
                     hemicapsuleShape._center = info.offset ?? Vector3.zero;
+                    hemicapsuleShape._pointChecksOnly = true;
                     return hemicapsuleShape;
                 case ShapeType.Ring:
                     var ringShape = go.AddComponent<RingShape>();
@@ -120,6 +124,7 @@ namespace NewHorizons.Builder.Props
                     ringShape.outerRadius = info.outerRadius;
                     ringShape.height = info.height;
                     ringShape.center = info.offset ?? Vector3.zero;
+                    ringShape._pointChecksOnly = true;
                     return ringShape;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(info.type), info.type, $"Unsupported shape type");
