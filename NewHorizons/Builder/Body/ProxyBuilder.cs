@@ -4,6 +4,7 @@ using NewHorizons.Components;
 using NewHorizons.Components.Props;
 using NewHorizons.Components.SizeControllers;
 using NewHorizons.External;
+using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.VariableSize;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
@@ -208,10 +209,9 @@ namespace NewHorizons.Builder.Body
 
                 if (body.Config.Props?.proxyDetails != null)
                 {
-                    foreach (var detailInfo in body.Config.Props.proxyDetails)
+                    foreach (var simplifiedDetailInfo in body.Config.Props.proxyDetails)
                     {
-                        // Thought about switching these to SimplifiedDetailInfo but we use AlignRadial with these so we can't
-                        DetailBuilder.Make(proxy, null, body.Mod, detailInfo);
+                        DetailBuilder.Make(proxy, null, body.Mod, new DetailInfo(simplifiedDetailInfo));
                     }
                 }
 
