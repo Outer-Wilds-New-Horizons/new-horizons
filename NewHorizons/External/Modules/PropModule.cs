@@ -51,7 +51,7 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// Details which will be shown from 50km away. Meant to be lower resolution.
         /// </summary>
-        public DetailInfo[] proxyDetails;
+        public SimplifiedDetailInfo[] proxyDetails;
 
         /// <summary>
         /// Add rafts to this planet (requires Echoes of the Eye DLC)
