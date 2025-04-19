@@ -274,6 +274,14 @@ namespace NewHorizons.Utility
             return UnityEngine.Object.Instantiate(original);
         }
 
+        public static GameObject Instantiate(this GameObject original, Vector3 localPosition, Quaternion localRotation, Transform parent)
+        {
+            var copy = UnityEngine.Object.Instantiate(original, parent, false);
+            copy.transform.localPosition = localPosition;
+            copy.transform.localRotation = localRotation;
+            return copy;
+        }
+
         public static T DontDestroyOnLoad<T>(this T target) where T : UnityEngine.Object
         {
             UnityEngine.Object.DontDestroyOnLoad(target);
@@ -443,6 +451,11 @@ namespace NewHorizons.Utility
             if (clip == AudioType.EndOfTime || clip == AudioType.EndOfTime_Dream)
                 return GlobalMusicController.secondsBeforeSupernovaPlayTime;
             return globalMusicController._endTimesSource.clip.length;
+        }
+
+        public static string GetKey(this AstroObject ao)
+        {
+            return ao._name == AstroObject.Name.CustomString ? ao.GetCustomName() : ao._name.ToString();
         }
 
         public static CodeMatcher LogInstructions(this CodeMatcher matcher, string prefix)

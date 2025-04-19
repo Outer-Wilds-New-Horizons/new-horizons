@@ -13,6 +13,8 @@ namespace NewHorizons.Builder.Volumes.VisorEffects
             volume._dropletRate = info.dropletRate;
             volume._streakRate = info.streakRate;
 
+            volume.gameObject.SetActive(true);
+
             return volume;
         }
     }

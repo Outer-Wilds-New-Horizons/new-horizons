@@ -60,28 +60,28 @@ namespace NewHorizons.Builder.Volumes
             {
                 foreach (var mapRestrictionVolume in config.Volumes.mapRestrictionVolumes)
                 {
-                    VolumeBuilder.Make<MapRestrictionVolume>(go, sector, mapRestrictionVolume);
+                    VolumeBuilder.MakeAndEnable<MapRestrictionVolume>(go, sector, mapRestrictionVolume);
                 }
             }
             if (config.Volumes.interferenceVolumes != null)
             {
                 foreach (var interferenceVolume in config.Volumes.interferenceVolumes)
                 {
-                    VolumeBuilder.Make<Components.Volumes.InterferenceVolume>(go, sector, interferenceVolume);
+                    VolumeBuilder.MakeAndEnable<Components.Volumes.InterferenceVolume>(go, sector, interferenceVolume);
                 }
             }
             if (config.Volumes.reverbVolumes != null)
             {
                 foreach (var reverbVolume in config.Volumes.reverbVolumes)
                 {
-                    VolumeBuilder.Make<ReverbTriggerVolume>(go, sector, reverbVolume);
+                    VolumeBuilder.MakeAndEnable<ReverbTriggerVolume>(go, sector, reverbVolume);
                 }
             }
             if (config.Volumes.insulatingVolumes != null)
             {
                 foreach (var insulatingVolume in config.Volumes.insulatingVolumes)
                 {
-                    VolumeBuilder.Make<InsulatingVolume>(go, sector, insulatingVolume);
+                    VolumeBuilder.MakeAndEnable<InsulatingVolume>(go, sector, insulatingVolume);
                 }
             }
             if (config.Volumes.zeroGravityVolumes != null)
@@ -112,20 +112,58 @@ namespace NewHorizons.Builder.Volumes
                     FluidVolumeBuilder.Make(go, sector, fluidVolume);
                 }
             }
+            if (config.Volumes.forces != null)
+            {
+                if (config.Volumes.forces.cylindricalVolumes != null)
+                {
+                    foreach (var cylindricalVolume in config.Volumes.forces.cylindricalVolumes)
+                    {
+                        ForceVolumeBuilder.Make(go, sector, cylindricalVolume);
+                    }
+                }
+                if (config.Volumes.forces.directionalVolumes != null)
+                {
+                    foreach (var directionalVolume in config.Volumes.forces.directionalVolumes)
+                    {
+                        ForceVolumeBuilder.Make(go, sector, directionalVolume);
+                    }
+                }
+                if (config.Volumes.forces.gravityVolumes != null)
+                {
+                    foreach (var gravityVolume in config.Volumes.forces.gravityVolumes)
+                    {
+                        ForceVolumeBuilder.Make(go, sector, gravityVolume);
+                    }
+                }
+                if (config.Volumes.forces.polarVolumes != null)
+                {
+                    foreach (var polarVolume in config.Volumes.forces.polarVolumes)
+                    {
+                        ForceVolumeBuilder.Make(go, sector, polarVolume);
+                    }
+                }
+                if (config.Volumes.forces.radialVolumes != null)
+                {
+                    foreach (var radialVolume in config.Volumes.forces.radialVolumes)
+                    {
+                        ForceVolumeBuilder.Make(go, sector, radialVolume);
+                    }
+                }
+            }
             if (config.Volumes.probe != null)
             {
                 if (config.Volumes.probe.destructionVolumes != null)
                 {
                     foreach (var destructionVolume in config.Volumes.probe.destructionVolumes)
                     {
-                        VolumeBuilder.Make<ProbeDestructionVolume>(go, sector, destructionVolume);
+                        VolumeBuilder.MakeAndEnable<ProbeDestructionVolume>(go, sector, destructionVolume);
                     }
                 }
                 if (config.Volumes.probe.safetyVolumes != null)
                 {
                     foreach (var safetyVolume in config.Volumes.probe.safetyVolumes)
                     {
-                        VolumeBuilder.Make<ProbeSafetyVolume>(go, sector, safetyVolume);
+                        VolumeBuilder.MakeAndEnable<ProbeSafetyVolume>(go, sector, safetyVolume);
                     }
                 }
             }
@@ -152,7 +190,7 @@ namespace NewHorizons.Builder.Volumes
                 {
                     foreach (var antiTravelMusicRuleset in config.Volumes.rulesets.antiTravelMusicRulesets)
                     {
-                        VolumeBuilder.Make<AntiTravelMusicRuleset>(go, sector, antiTravelMusicRuleset);
+                        VolumeBuilder.MakeAndEnable<AntiTravelMusicRuleset>(go, sector, antiTravelMusicRuleset);
                     }
                 }
                 if (config.Volumes.rulesets.playerImpactRulesets != null)
@@ -181,7 +219,7 @@ namespace NewHorizons.Builder.Volumes
             {
                 foreach (var referenceFrameBlockerVolume in config.Volumes.referenceFrameBlockerVolumes)
                 {
-                    VolumeBuilder.Make<ReferenceFrameBlockerVolume>(go, sector, referenceFrameBlockerVolume);
+                    VolumeBuilder.MakeAndEnable<ReferenceFrameBlockerVolume>(go, sector, referenceFrameBlockerVolume);
                 }
             }
             if (config.Volumes.speedTrapVolumes != null)
@@ -191,11 +229,18 @@ namespace NewHorizons.Builder.Volumes
                     SpeedTrapVolumeBuilder.Make(go, sector, speedTrapVolume);
                 }
             }
+            if (config.Volumes.speedLimiterVolumes != null)
+            {
+                foreach (var speedLimiterVolume in config.Volumes.speedLimiterVolumes)
+                {
+                    SpeedLimiterVolumeBuilder.Make(go, sector, speedLimiterVolume);
+                }
+            }
             if (config.Volumes.lightSourceVolumes != null)
             {
                 foreach (var lightSourceVolume in config.Volumes.lightSourceVolumes)
                 {
-                    VolumeBuilder.Make<LightlessLightSourceVolume>(go, sector, lightSourceVolume);
+                    VolumeBuilder.MakeAndEnable<LightlessLightSourceVolume>(go, sector, lightSourceVolume);
                 }
             }
             if (config.Volumes.solarSystemVolume != null)
@@ -209,7 +254,7 @@ namespace NewHorizons.Builder.Volumes
             {
                 foreach (var creditsVolume in config.Volumes.creditsVolume)
                 {
-                    CreditsVolumeBuilder.Make(go, sector, creditsVolume);
+                    CreditsVolumeBuilder.Make(go, sector, creditsVolume, mod);
                 }
             }
         }
