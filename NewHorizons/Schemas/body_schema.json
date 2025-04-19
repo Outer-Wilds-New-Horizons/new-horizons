@@ -7100,9 +7100,24 @@
       "properties": {
         "radius": {
           "type": "number",
-          "description": "The radius of this volume.",
+          "description": "The radius of this volume, if a shape is not specified.",
           "format": "float",
           "default": 1.0
+        },
+        "shape": {
+          "description": "The shape of this volume. Defaults to a sphere with a radius of `radius` if not specified.",
+          "$ref": "#/definitions/ShapeInfo"
+        },
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
         },
         "position": {
           "description": "Position of the object",
