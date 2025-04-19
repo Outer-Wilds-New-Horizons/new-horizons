@@ -56,6 +56,7 @@ namespace NewHorizons.Builder.Props
                 // This is required for backwards compat (previously it defaulted to shapes)
                 // A common-ish puzzle is to put an insulating volume on a held item. Held items disabled all colliders when held, but don't disable shapes.
                 // Changing the default from shapes to colliders broke these puzzles
+                // The reason OWItem disables all colliders (even those that are just triggers) is presumably for scrolls which have nomai text as a trigger collider
                 if (info.hasCollision)
                 {
                     return AddCollider(go, info);
