@@ -42,17 +42,28 @@ namespace NewHorizons.Builder.Props
             {
                 // Explicitly add either a shape or collider if specified
                 if (info.useShape.Value)
+                {
                     return AddShape(go, info);
+                }
                 else
+                {
                     return AddCollider(go, info);
+                }
             }
             else
             {
-                // Prefer colliders over shapes if no preference is specified
-                if (info.type is ShapeType.Sphere or ShapeType.Box or ShapeType.Capsule)
+                // Prefer shapes over colliders if no preference is specified and not using collision
+                // This is required for backwards compat (previously it defaulted to shapes)
+                // A common-ish puzzle is to put an insulating volume on a held item. Held items disabled all colliders when held, but don't disable shapes.
+                // Changing the default from shapes to colliders broke these puzzles
+                if (info.hasCollision)
+                {
                     return AddCollider(go, info);
+                }
                 else
+                {
                     return AddShape(go, info);
+                }
             }
         }
 

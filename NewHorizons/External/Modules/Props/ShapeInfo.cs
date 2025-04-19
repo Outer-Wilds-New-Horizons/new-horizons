@@ -64,7 +64,8 @@ namespace NewHorizons.External.Modules.Props
         public bool hasCollision = false;
 
         /// <summary>
-        /// Whether to explicitly use a shape instead of a collider. Shapes do not support collision and are less performant, but support a wider set of shapes and are required by some components. Omit this unless you explicitly want to use a sphere, box, or capsule shape instead of a collider.
+        /// Whether to explicitly use a shape instead of a collider. Shapes do not support collision and are less performant, but support a wider set of shapes and are required by some components. 
+        /// Defaults to using a shape, unless hasCollision is true where it defaults to using a collider.
         /// </summary>
         public bool? useShape;
     }
