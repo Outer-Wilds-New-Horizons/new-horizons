@@ -28,6 +28,11 @@ namespace NewHorizons.External.Modules.Volumes
         public FluidVolumeInfo[] fluidVolumes;
 
         /// <summary>
+        /// Add force volumes to this planet.
+        /// </summary>
+        public ForceModule forces;
+
+        /// <summary>
         /// Add hazard volumes to this planet.
         /// Causes damage to player when inside this volume.
         /// </summary>

@@ -14,6 +14,8 @@ namespace NewHorizons.Builder.Volumes
             volume.stoppingDistance = info.stoppingDistance;
             volume.maxEntryAngle = info.maxEntryAngle;
 
+            volume.gameObject.SetActive(true);
+
             return volume;
         }
     }
