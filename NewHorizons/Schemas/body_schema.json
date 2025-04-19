@@ -2231,6 +2231,13 @@
             "$ref": "#/definitions/RaftInfo"
           }
         },
+        "raftDocks": {
+          "type": "array",
+          "description": "Add raft docks to this planet (requires Echoes of the Eye DLC)",
+          "items": {
+            "$ref": "#/definitions/RaftDockInfo"
+          }
+        },
         "scatter": {
           "type": "array",
           "description": "Scatter props around this planet's surface",
@@ -2813,6 +2820,47 @@
           "description": "Acceleration of the raft. Default acceleration is 5.",
           "format": "float",
           "default": 5.0
+        },
+        "dockPath": {
+          "type": "string",
+          "description": "Path to the dock this raft will start attached to."
+        },
+        "pristine": {
+          "type": "boolean",
+          "description": "Uses the raft model from the dreamworld"
+        }
+      }
+    },
+    "RaftDockInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
         }
       }
     },
@@ -5427,6 +5475,13 @@
             "$ref": "#/definitions/SpeedTrapVolumeInfo"
           }
         },
+        "speedLimiterVolumes": {
+          "type": "array",
+          "description": "Add speed limiter volumes to this planet.\nSlows down the player, ship, and probe when they enter this volume.\nUsed on the Stranger in DLC.",
+          "items": {
+            "$ref": "#/definitions/SpeedLimiterVolumeInfo"
+          }
+        },
         "visorEffects": {
           "description": "Add visor effect volumes to this planet.",
           "$ref": "#/definitions/VisorEffectModule"
@@ -7036,6 +7091,52 @@
           "description": "How fast it will slow down the player to the speed limit.",
           "format": "float",
           "default": 3.0
+        }
+      }
+    },
+    "SpeedLimiterVolumeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume.",
+          "format": "float",
+          "default": 1.0
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "maxSpeed": {
+          "type": "number",
+          "description": "The speed the volume will slow you down to when you enter it.",
+          "format": "float",
+          "default": 10.0
+        },
+        "stoppingDistance": {
+          "type": "number",
+          "description": "The distance from the outside of the volume that the limiter slows you down to max speed at.",
+          "format": "float",
+          "default": 100.0
+        },
+        "maxEntryAngle": {
+          "type": "number",
+          "description": "The maximum angle (in degrees) between the direction the incoming object is moving relative to the volume's center and the line from the object toward the center of the volume, within which the speed limiter will activate.",
+          "format": "float",
+          "default": 60.0
         }
       }
     },

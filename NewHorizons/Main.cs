@@ -382,6 +382,7 @@ namespace NewHorizons
                         ProjectionBuilder.InitPrefabs();
                         CloakBuilder.InitPrefab();
                         RaftBuilder.InitPrefab();
+                        RaftDockBuilder.InitPrefab();
                         DreamCampfireBuilder.InitPrefab();
                         DreamArrivalPointBuilder.InitPrefab();
                     }

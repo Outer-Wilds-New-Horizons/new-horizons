@@ -229,6 +229,13 @@ namespace NewHorizons.Builder.Volumes
                     SpeedTrapVolumeBuilder.Make(go, sector, speedTrapVolume);
                 }
             }
+            if (config.Volumes.speedLimiterVolumes != null)
+            {
+                foreach (var speedLimiterVolume in config.Volumes.speedLimiterVolumes)
+                {
+                    SpeedLimiterVolumeBuilder.Make(go, sector, speedLimiterVolume);
+                }
+            }
             if (config.Volumes.lightSourceVolumes != null)
             {
                 foreach (var lightSourceVolume in config.Volumes.lightSourceVolumes)

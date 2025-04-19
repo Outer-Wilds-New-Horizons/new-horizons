@@ -75,30 +75,41 @@ namespace NewHorizons.Patches.EchoesOfTheEyePatches
             return false;
         }
 
-        [HarmonyPostfix]
+        [HarmonyPrefix]
         [HarmonyPatch(nameof(RaftController.UpdateMoveToTarget))]
-        public static void UpdateMoveToTarget(RaftController __instance)
+        public static bool UpdateMoveToTarget(RaftController __instance)
         {
+            OWRigidbody raftBody = __instance._raftBody;
+            OWRigidbody origParentBody = raftBody.GetOrigParentBody();
+            Transform transform = origParentBody.transform;
+            Vector3 position = transform.TransformPoint(__instance._targetLocalPosition);
+            Vector3 distance = position - raftBody.GetPosition();
+            float speed = Mathf.Min(__instance._targetSpeed, distance.magnitude / Time.deltaTime);
+            Vector3 pointVelocity = raftBody.GetOrigParentBody().GetPointVelocity(raftBody.GetPosition());
+            raftBody.SetVelocity(pointVelocity + (distance.normalized * speed));
+            float t = (__instance.currentDistanceLerp = Mathf.InverseLerp(__instance._startDistance, 0.001f, distance.magnitude));
+            var st = Mathf.SmoothStep(0f, 1f, t);
             // If it has a riverFluid volume then its a regular stranger one
-            if (__instance._movingToTarget && __instance._riverFluid == null)
+            var isStranger = __instance._riverFluid != null;
+            // Base game threshold has this at 1f (after doing smoothstep on it)
+            // For whatever reason it never hits that for NH planets (probably since they're moving so much compared to the steady velocity of the Stranger)
+            // Might break for somebody with a wacky spinning planet in which case we can adjust this or add some kind of fallback (i.e., wait x seconds and then just say its there)
+            // Fixes #1005
+            if (isStranger ? (st >= 1f) : (t > 0.999f))
             {
-                OWRigidbody raftBody = __instance._raftBody;
-                OWRigidbody origParentBody = __instance._raftBody.GetOrigParentBody();
-                Transform transform = origParentBody.transform;
-                Vector3 vector = transform.TransformPoint(__instance._targetLocalPosition);
-
-                // Base game threshold has this at 1f (after doing smoothstep on it)
-                // For whatever reason it never hits that for NH planets (probably since they're moving so much compared to the steady velocity of the Stranger)
-                // Might break for somebody with a wacky spinning planet in which case we can adjust this or add some kind of fallback (i.e., wait x seconds and then just say its there)
-                // Fixes #1005
-                if (__instance.currentDistanceLerp > 0.999f)
-                {
-                    raftBody.SetPosition(vector);
-                    raftBody.SetRotation(transform.rotation * __instance._targetLocalRotation);
-                    __instance.StopMovingToTarget();
-                    __instance.OnArriveAtTarget.Invoke();
-                }
+                raftBody.SetPosition(position);
+                raftBody.SetRotation(transform.rotation * __instance._targetLocalRotation);
+                __instance.StopMovingToTarget();
+                __instance.OnArriveAtTarget.Invoke();
             }
+            else
+            {
+                Quaternion quaternion = Quaternion.Slerp(__instance._startLocalRotation, __instance._targetLocalRotation, st);
+                Quaternion toRotation = transform.rotation * quaternion;
+                Vector3 vector4 = OWPhysics.FromToAngularVelocity(raftBody.GetRotation(), toRotation);
+                raftBody.SetAngularVelocity(origParentBody.GetAngularVelocity() + vector4);
+            }
+            return false;
         }
     }
 }
