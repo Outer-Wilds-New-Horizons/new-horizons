@@ -6355,11 +6355,13 @@
         },
         "stoppingDistance": {
           "type": "number",
+          "description": "The distance from the outside of the volume that the limiter slows you down to max speed at.",
           "format": "float",
           "default": 100.0
         },
         "maxEntryAngle": {
           "type": "number",
+          "description": "The maximum angle (in degrees) between the direction the incoming object is moving relative to the volume's center and the line from the object toward the center of the volume, within which the speed limiter will activate.",
           "format": "float",
           "default": 60.0
         }
