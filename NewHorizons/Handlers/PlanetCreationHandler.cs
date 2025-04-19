@@ -20,8 +20,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using NewHorizons.Streaming;
-using Newtonsoft.Json;
 using NewHorizons.External.Modules.VariableSize;
 using NewHorizons.Components;
 
