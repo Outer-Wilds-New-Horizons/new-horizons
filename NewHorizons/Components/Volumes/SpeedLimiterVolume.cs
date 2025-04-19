@@ -142,8 +142,6 @@ namespace NewHorizons.Components.Volumes
 
             public float deceleration;
 
-            public bool decelerated;
-
             public TrackedBody(OWRigidbody body, Detector.Name name, float deceleration)
             {
                 this.body = body;
