@@ -473,11 +473,11 @@ namespace NewHorizons.Builder.Props
             {
                 // These flood toggles are to disable flooded docks on the Stranger
                 // Presumably the user isn't making one of those
-                foreach (var toggle in dock.GetComponents<FloodToggle>().Concat(dock.GetComponentsInChildren<FloodToggle>()))
+                foreach (var toggle in dock.GetComponentsInChildren<FloodToggle>())
                 {
                     Component.DestroyImmediate(toggle);
                 }
-                foreach (var floodSensor in dock.GetComponents<RingRiverFloodSensor>().Concat(dock.GetComponentsInChildren<RingRiverFloodSensor>()))
+                foreach (var floodSensor in dock.GetComponentsInChildren<RingRiverFloodSensor>())
                 {
                     Component.DestroyImmediate(floodSensor);
                 }
