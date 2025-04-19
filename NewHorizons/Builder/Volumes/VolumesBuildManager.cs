@@ -216,7 +216,7 @@ namespace NewHorizons.Builder.Volumes
             {
                 foreach (var creditsVolume in config.Volumes.creditsVolume)
                 {
-                    CreditsVolumeBuilder.Make(go, sector, creditsVolume);
+                    CreditsVolumeBuilder.Make(go, sector, creditsVolume, mod);
                 }
             }
         }
