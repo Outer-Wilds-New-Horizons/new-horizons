@@ -5,6 +5,7 @@ using NewHorizons.Builder.Orbital;
 using NewHorizons.Builder.Props;
 using NewHorizons.Builder.ShipLog;
 using NewHorizons.Builder.Volumes;
+using NewHorizons.Components;
 using NewHorizons.Components.Orbital;
 using NewHorizons.Components.Quantum;
 using NewHorizons.Components.Stars;
@@ -20,8 +21,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using NewHorizons.External.Modules.VariableSize;
-using NewHorizons.Components;
 
 namespace NewHorizons.Handlers
 {
