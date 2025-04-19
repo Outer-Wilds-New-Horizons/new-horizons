@@ -102,6 +102,13 @@ namespace NewHorizons.External.Modules.Volumes
         public SpeedTrapVolumeInfo[] speedTrapVolumes;
 
         /// <summary>
+        /// Add speed limiter volumes to this planet.
+        /// Slows down the player, ship, and probe when they enter this volume.
+        /// Used on the Stranger in DLC.
+        /// </summary>
+        public SpeedLimiterVolumeInfo[] speedLimiterVolumes;
+
+        /// <summary>
         /// Add visor effect volumes to this planet.
         /// </summary>
         public VisorEffectModule visorEffects;
