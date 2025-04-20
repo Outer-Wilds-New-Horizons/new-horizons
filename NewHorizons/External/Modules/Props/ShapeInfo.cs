@@ -19,9 +19,9 @@ namespace NewHorizons.External.Modules.Props
         public ShapeType type = ShapeType.Sphere;
 
         /// <summary>
-        /// The radius of the shape or collider. Defaults to 0.5 meters. Only used by spheres, capsules, cylinders, hemispheres, hemicapsules, and rings.
+        /// The radius of the shape or collider. Defaults to 1 meter. Only used by spheres, capsules, cylinders, hemispheres, hemicapsules, and rings.
         /// </summary>
-        public float radius = 0.5f;
+        public float radius = 1f;
 
         /// <summary>
         /// The height of the shape or collider. Defaults to 1 meter. Only used by capsules, cylinders, cones, hemicapsules, and rings.
@@ -64,8 +64,9 @@ namespace NewHorizons.External.Modules.Props
         public bool hasCollision = false;
 
         /// <summary>
-        /// Whether to explicitly use a shape instead of a collider. Shapes do not support collision and are less performant, but support a wider set of shapes and are required by some components. 
-        /// Defaults to using a shape, unless hasCollision is true where it defaults to using a collider.
+        /// Setting this to false will force it to use a collider, and setting to true will force it to use a shape.
+        /// Shapes do not support collision and are less performant, but support a wider set of shapes and are required by some components. 
+        /// If left empty it will defaults to using a shape, unless hasCollision is true in which case it defaults to using a collider.
         /// </summary>
         public bool? useShape;
     }
