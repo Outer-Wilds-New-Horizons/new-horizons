@@ -19,18 +19,19 @@ namespace NewHorizons.Builder.Props
             {
                 var shapeOrCol = AddShapeOrCollider(go, info);
                 if (shapeOrCol is Shape shape)
+                {
                     owTriggerVolume._shape = shape;
+                }
                 else if (shapeOrCol is Collider col)
+                {
                     owTriggerVolume._owCollider = col.GetComponent<OWCollider>();
+                }
             }
             else
             {
-                var col = go.AddComponent<SphereCollider>();
-                col.radius = defaultRadius;
-                col.isTrigger = true;
-                var owCollider = go.GetAddComponent<OWCollider>();
-
-                owTriggerVolume._owCollider = owCollider;
+                var shape = go.AddComponent<SphereShape>();
+                shape.radius = defaultRadius;
+                owTriggerVolume._shape = shape;
             }
 
             return owTriggerVolume;
@@ -42,17 +43,29 @@ namespace NewHorizons.Builder.Props
             {
                 // Explicitly add either a shape or collider if specified
                 if (info.useShape.Value)
+                {
                     return AddShape(go, info);
+                }
                 else
+                {
                     return AddCollider(go, info);
+                }
             }
             else
             {
-                // Prefer colliders over shapes if no preference is specified
-                if (info.type is ShapeType.Sphere or ShapeType.Box or ShapeType.Capsule)
+                // Prefer shapes over colliders if no preference is specified and not using collision
+                // This is required for backwards compat (previously it defaulted to shapes)
+                // A common-ish puzzle is to put an insulating volume on a held item. Held items disabled all colliders when held, but don't disable shapes.
+                // Changing the default from shapes to colliders broke these puzzles
+                // The reason OWItem disables all colliders (even those that are just triggers) is presumably for scrolls which have nomai text as a trigger collider
+                if (info.hasCollision)
+                {
                     return AddCollider(go, info);
+                }
                 else
+                {
                     return AddShape(go, info);
+                }
             }
         }
 
