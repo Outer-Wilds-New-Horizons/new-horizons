@@ -5618,7 +5618,7 @@
         },
         "radius": {
           "type": "number",
-          "description": "The radius of the shape or collider. Defaults to 0.5 meters. Only used by spheres, capsules, cylinders, hemispheres, hemicapsules, and rings.",
+          "description": "The radius of the shape or collider. Defaults to 1 meter. Only used by spheres, capsules, cylinders, hemispheres, hemicapsules, and rings.",
           "format": "float"
         },
         "height": {
@@ -5661,7 +5661,7 @@
             "boolean",
             "null"
           ],
-          "description": "Whether to explicitly use a shape instead of a collider. Shapes do not support collision and are less performant, but support a wider set of shapes and are required by some components. \nDefaults to using a shape, unless hasCollision is true where it defaults to using a collider."
+          "description": "Setting this to false will force it to use a collider, and setting to true will force it to use a shape.\nShapes do not support collision and are less performant, but support a wider set of shapes and are required by some components. \nIf left empty it will defaults to using a shape, unless hasCollision is true in which case it defaults to using a collider."
         }
       }
     },
