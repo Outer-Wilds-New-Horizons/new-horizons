@@ -19,18 +19,19 @@ namespace NewHorizons.Builder.Props
             {
                 var shapeOrCol = AddShapeOrCollider(go, info);
                 if (shapeOrCol is Shape shape)
+                {
                     owTriggerVolume._shape = shape;
+                }
                 else if (shapeOrCol is Collider col)
+                {
                     owTriggerVolume._owCollider = col.GetComponent<OWCollider>();
+                }
             }
             else
             {
-                var col = go.AddComponent<SphereCollider>();
-                col.radius = defaultRadius;
-                col.isTrigger = true;
-                var owCollider = go.GetAddComponent<OWCollider>();
-
-                owTriggerVolume._owCollider = owCollider;
+                var shape = go.AddComponent<SphereShape>();
+                shape.radius = defaultRadius;
+                owTriggerVolume._shape = shape;
             }
 
             return owTriggerVolume;
