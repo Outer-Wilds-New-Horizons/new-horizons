@@ -222,6 +222,13 @@ namespace NewHorizons.Builder.Volumes
                     VolumeBuilder.MakeAndEnable<ReferenceFrameBlockerVolume>(go, sector, referenceFrameBlockerVolume);
                 }
             }
+            if (config.Volumes.repairVolumes != null)
+            {
+                foreach (var repairVolume in config.Volumes.repairVolumes)
+                {
+                    RepairVolumeBuilder.Make(go, sector, repairVolume);
+                }
+            }
             if (config.Volumes.speedTrapVolumes != null)
             {
                 foreach (var speedTrapVolume in config.Volumes.speedTrapVolumes)

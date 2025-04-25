@@ -459,11 +459,6 @@ namespace NewHorizons.Builder.ShipLog
 
         private static MapModeObject ConstructPrimaryNode(List<NewHorizonsBody> bodies)
         {
-            float DistanceFromPrimary(NewHorizonsBody body)
-            {
-                return Mathf.Max(body.Config.Orbit.semiMajorAxis, body.Config.Orbit.staticPosition?.Length() ?? 0f);
-            }
-
             foreach (NewHorizonsBody body in bodies.Where(b => b.Config.Base.centerOfSolarSystem))
             {
                 bodies.Sort((b, o) => b.Config.Orbit.semiMajorAxis.CompareTo(o.Config.Orbit.semiMajorAxis));

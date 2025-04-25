@@ -5450,6 +5450,13 @@
             "$ref": "#/definitions/VolumeInfo"
           }
         },
+        "repairVolumes": {
+          "type": "array",
+          "description": "Add repair volumes to this planet.",
+          "items": {
+            "$ref": "#/definitions/RepairVolumeInfo"
+          }
+        },
         "revealVolumes": {
           "type": "array",
           "description": "Add triggers that reveal parts of the ship log on this planet.",
@@ -6719,6 +6726,83 @@
           "items": {
             "$ref": "#/definitions/VolumeInfo"
           }
+        }
+      }
+    },
+    "RepairVolumeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume, if a shape is not specified.",
+          "format": "float",
+          "default": 1.0
+        },
+        "shape": {
+          "description": "The shape of this volume. Defaults to a sphere with a radius of `radius` if not specified.",
+          "$ref": "#/definitions/ShapeInfo"
+        },
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "name": {
+          "type": "string",
+          "description": "The name displayed in the UI when the player is repairing this object. If not set, the name of the object will be used."
+        },
+        "repairFraction": {
+          "type": "number",
+          "description": "How much of the object is initially repaired. 0 = not repaired, 1 = fully repaired.",
+          "format": "float",
+          "default": 0.0
+        },
+        "repairTime": {
+          "type": "number",
+          "description": "The time it takes to repair the object. Defaults to 3 seconds.",
+          "format": "float",
+          "default": 3.0
+        },
+        "repairDistance": {
+          "type": "number",
+          "description": "The distance from the object that the player can be to repair it. Defaults to 3 meters.",
+          "format": "float",
+          "default": 3.0
+        },
+        "damagedCondition": {
+          "type": "string",
+          "description": "A dialogue condition that will be set while the object is damaged. It will be unset when the object is repaired."
+        },
+        "repairedCondition": {
+          "type": "string",
+          "description": "A dialogue condition that will be set when the object is repaired. It will be unset if the object is damaged again."
+        },
+        "revealFact": {
+          "type": "string",
+          "description": "A ship log fact that will be revealed when the object is repaired."
         }
       }
     },

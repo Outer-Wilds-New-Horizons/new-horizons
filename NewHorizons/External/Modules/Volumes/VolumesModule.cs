@@ -86,6 +86,11 @@ namespace NewHorizons.External.Modules.Volumes
         public VolumeInfo[] referenceFrameBlockerVolumes;
 
         /// <summary>
+        /// Add repair volumes to this planet.
+        /// </summary>
+        public RepairVolumeInfo[] repairVolumes;
+
+        /// <summary>
         /// Add triggers that reveal parts of the ship log on this planet.
         /// </summary>
         public RevealVolumeInfo[] revealVolumes;
