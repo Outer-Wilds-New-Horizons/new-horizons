@@ -5,7 +5,7 @@ using System.ComponentModel;
 namespace NewHorizons.External.Modules.Volumes.VolumeInfos
 {
     /// <summary>
-    /// Note: Only sphere colliders work on vanish volumes!
+    /// Note: Only colliders work on vanish volumes!
     /// </summary>
     [JsonObject]
     public class VanishVolumeInfo : VolumeInfo
