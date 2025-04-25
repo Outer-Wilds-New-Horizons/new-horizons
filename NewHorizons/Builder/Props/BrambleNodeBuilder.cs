@@ -13,7 +13,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using static NewHorizons.External.Modules.BrambleModule;
-using static NewHorizons.External.Modules.SignalModule;
 
 namespace NewHorizons.Builder.Props
 {
