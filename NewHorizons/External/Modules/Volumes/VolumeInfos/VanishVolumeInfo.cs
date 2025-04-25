@@ -4,6 +4,9 @@ using System.ComponentModel;
 
 namespace NewHorizons.External.Modules.Volumes.VolumeInfos
 {
+    /// <summary>
+    /// Note: Only colliders work on vanish volumes!
+    /// </summary>
     [JsonObject]
     public class VanishVolumeInfo : VolumeInfo
     {
