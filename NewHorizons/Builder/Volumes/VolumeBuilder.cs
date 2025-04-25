@@ -45,7 +45,7 @@ namespace NewHorizons.Builder.Volumes
             return volume;
         }
 
-        public static TVolume Make<TVolume>(GameObject planetGO, Sector sector, VolumeInfo info) where TVolume : MonoBehaviour //Could be BaseVolume but I need to create vanilla volumes too.
+        public static TVolume Make<TVolume>(GameObject planetGO, Sector sector, VolumeInfo info) where TVolume : MonoBehaviour // Could be BaseVolume but I need to create vanilla volumes too.
         {
             var go = GeneralPropBuilder.MakeNew(typeof(TVolume).Name, planetGO, sector, info);
             return MakeExisting<TVolume>(go, planetGO, sector, info);
