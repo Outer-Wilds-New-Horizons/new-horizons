@@ -1,4 +1,5 @@
 using HarmonyLib;
+using NewHorizons.Components.Quantum;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules.VariableSize;
 using NewHorizons.External.SerializableData;
@@ -463,6 +464,14 @@ namespace NewHorizons.Utility
                 message += $"\n{instruction}";
             Debug.LogError(message);
             return instructions;
+        }
+
+        public static void OnQuantumPlanetChangeOrbit(this ReferenceFrameTracker referenceFrameTracker, QuantumPlanet quantumPlanet)
+        {
+            if (referenceFrameTracker._hasTarget && referenceFrameTracker._currentReferenceFrame.GetOWRigidBody() == quantumPlanet.rb)
+            {
+                referenceFrameTracker.UntargetReferenceFrame();
+            }
         }
     }
 }

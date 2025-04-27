@@ -34,6 +34,16 @@ namespace NewHorizons.Components.Quantum
             }
         }
 
+        public OWRigidbody rb
+        {
+            get
+            {
+                if (_rb == null)
+                    _rb = GetComponent<OWRigidbody>();
+                return _rb;
+            }
+        }
+
         public int LastIndex { get; private set; }
         public int CurrentIndex { get; private set; }
 
@@ -145,13 +155,16 @@ namespace NewHorizons.Components.Quantum
 
             if (canChange)
             {
-                if (newState.sector != null && newState.sector != oldState.sector) SetNewSector(newState);
-                if (newState.orbit != null && newState.orbit != oldState.orbit) SetNewOrbit(primaryBody, orbitalParams);
+                var changeSector = newState.sector != null && newState.sector != oldState.sector;
+                if (changeSector) SetNewSector(newState);
+                var changeOrbit = newState.orbit != null && newState.orbit != oldState.orbit;
+                if (changeOrbit) SetNewOrbit(primaryBody, orbitalParams);
 
                 LastIndex = oldIndex;
                 CurrentIndex = newIndex;
 
-                GlobalMessenger<OWRigidbody>.FireEvent("QuantumMoonChangeState", _rb);
+                if (changeSector) GlobalMessenger<QuantumPlanet>.FireEvent("QuantumPlanetChangeState", this);
+                if (changeOrbit) GlobalMessenger<QuantumPlanet>.FireEvent("QuantumPlanetChangeOrbit", this);
             }
 
             // Be completely sure we move the visibility tracker back to our planet
