@@ -6,6 +6,7 @@
     "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_3": "Then just buckle up and engage the autopilot to warp there!"
   },
   "UIDictionary": {
+    "INSTALL_OUTER_WILDS_CHINESE_FONT_FIX": "What why is this message being shown when the language is not set to Chinese go report this bug!",
     "INTERSTELLAR_MODE": "Interstellar Mode",
     "FREQ_STATUE": "Nomai Statue",
     "FREQ_WARP_CORE": "Anti-Graviton Flux",

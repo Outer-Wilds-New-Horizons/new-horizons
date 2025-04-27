@@ -35,6 +35,8 @@ using System.Reflection;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+using static TextTranslation;
+using static UnityEngine.InputSystem.InputRemoting;
 
 namespace NewHorizons
 {
@@ -437,6 +439,11 @@ namespace NewHorizons
             if (isTitleScreen && CustomTitleScreen)
             {
                 TitleSceneHandler.Init();
+            }
+
+            if (isTitleScreen)
+            {
+                MenuHandler.TitleScreen();
             }
 
             // EOTU fixes
