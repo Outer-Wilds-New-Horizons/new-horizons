@@ -21,8 +21,8 @@ namespace NewHorizons.Components.Quantum
         private AlignWithTargetBody _alignment;
         private OWRigidbody _rb;
         private OrbitLine _orbitLine;
-        private QuantumShrine[] _shrines;
-        private QuantumDarkTrigger[] _darkTriggers;
+        private QuantumStructure[] _structures = new QuantumStructure[0];
+        private QuantumDarkTrigger[] _darkTriggers = new QuantumDarkTrigger[0];
 
         public NHAstroObject astroObject
         {
@@ -65,6 +65,9 @@ namespace NewHorizons.Components.Quantum
 
         public void ResetStates(bool changeState)
         {
+            _structures = GetComponentsInChildren<QuantumStructure>(true); // finds all quantum structures
+            _darkTriggers = GetComponentsInChildren<QuantumDarkTrigger>(true); // finds all quantum dark triggers
+
             if (changeState)
             {
                 ChangeQuantumState(true);
@@ -73,9 +76,6 @@ namespace NewHorizons.Components.Quantum
             {
                 SetNewSector(states[CurrentIndex]);
             }
-
-            _shrines = GetComponentsInChildren<QuantumShrine>(true); // finds all quantum shrines
-            _darkTriggers = GetComponentsInChildren<QuantumDarkTrigger>(true); // finds all quantum dark triggers
         }
 
         public override void OnDestroy()
@@ -168,6 +168,11 @@ namespace NewHorizons.Components.Quantum
             }
 
             newState.sector.gameObject.SetActive(true);
+
+            foreach (var structure in _structures)
+            {
+                structure.OnQuantumPlanetStateChanged(CurrentIndex);
+            }
         }
 
         private void SetNewOrbit(AstroObject primaryBody, OrbitalParameters orbitalParameters)
@@ -200,9 +205,9 @@ namespace NewHorizons.Components.Quantum
                 trackingOrbitLine.Reset();
             }
 
-            foreach (var shrine in _shrines)
+            foreach (var structure in _structures)
             {
-                shrine.OnQuantumMoonSurfaceStateChanged(CurrentIndex);
+                structure.OnQuantumPlanetOrbitChanged(CurrentIndex);
             }
         }
 
@@ -235,11 +240,11 @@ namespace NewHorizons.Components.Quantum
             return states[CurrentIndex].sector.ContainsAnyOccupants(DynamicOccupant.Ship);
         }
 
-        public bool IsPlayerInsideShrine()
+        public bool IsPlayerInsideStructure()
         {
-            foreach (var shrine in _shrines)
+            foreach (var structure in _structures)
             {
-                if (shrine.IsPlayerInside())
+                if (structure.IsPlayerInside())
                     return true;
             }
             return false;
@@ -252,9 +257,9 @@ namespace NewHorizons.Components.Quantum
                 if (darkTrigger.IsPlayerInDarkness())
                     return true;
             }
-            foreach (var shrine in _shrines)
+            foreach (var structure in _structures)
             {
-                if (shrine.IsPlayerInDarkness())
+                if (structure.IsPlayerInDarkness())
                     return true;
             }
             return false;
