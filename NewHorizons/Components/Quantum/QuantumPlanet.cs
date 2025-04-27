@@ -21,7 +21,8 @@ namespace NewHorizons.Components.Quantum
         private ConstantForceDetector _detector;
         private AlignWithTargetBody _alignment;
         private OWRigidbody _rb;
-        private OrbitLine _orbitLine;
+        private NHOrbitLine _nhOrbitLine;
+        private TrackingOrbitLine _trackingOrbitLine;
         private QuantumStructure[] _structures = new QuantumStructure[0];
         private QuantumDarkTrigger[] _darkTriggers = new QuantumDarkTrigger[0];
         private int _collapseToState = -1;
@@ -60,7 +61,6 @@ namespace NewHorizons.Components.Quantum
             _detector = GetComponentInChildren<ConstantForceDetector>();
             _alignment = GetComponent<AlignWithTargetBody>();
             _rb = GetComponent<OWRigidbody>();
-            _orbitLine = GetComponent<OrbitLine>();
 
             GlobalMessenger.AddListener("PlayerBlink", OnPlayerBlink);
 
@@ -70,9 +70,17 @@ namespace NewHorizons.Components.Quantum
 
         public override void Start()
         {
+            Delay.FireOnNextUpdate(PostStart);
+
             base.Start();
 
             ResetStates(true);
+        }
+
+        private void PostStart()
+        {
+            _nhOrbitLine = GetComponentInChildren<NHOrbitLine>();
+            _trackingOrbitLine = GetComponentInChildren<TrackingOrbitLine>();
         }
 
         public void ResetStates(bool changeState)
@@ -220,14 +228,14 @@ namespace NewHorizons.Components.Quantum
 
             _rb.SetVelocity(orbitalParameters.InitialVelocity + primaryBody.GetAttachedOWRigidbody().GetVelocity());
 
-            if (_orbitLine is NHOrbitLine nhOrbitLine)
+            if (_nhOrbitLine != null)
             {
-                nhOrbitLine.SetFromParameters(orbitalParameters);
+                _nhOrbitLine.SetFromParameters(orbitalParameters);
             }
 
-            if (_orbitLine is TrackingOrbitLine trackingOrbitLine)
+            if (_trackingOrbitLine != null)
             {
-                trackingOrbitLine.Reset();
+                _trackingOrbitLine.Reset();
             }
 
             foreach (var structure in _structures)
