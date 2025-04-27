@@ -82,7 +82,7 @@ namespace NewHorizons.External.Modules.Props.EchoesOfTheEye
         [DefaultValue("sevenSlides")] public SlideReelType reelModel = SlideReelType.SevenSlides;
 
         /// <summary>
-        /// Exclusive to the slide reel type. Condition/material of the reel. Antique is the Stranger, Pristine is the Dreamworld, Rusted is a burned reel.
+        /// Exclusive to the slide reel and standing vision torch type. Condition/material of the reel. Antique is the Stranger, Pristine is the Dreamworld, Rusted (exclusive to slide reels) is a burned reel.
         /// </summary>
         [DefaultValue("antique")] public SlideReelCondition reelCondition = SlideReelCondition.Antique;
 

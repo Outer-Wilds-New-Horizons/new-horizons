@@ -382,6 +382,7 @@ namespace NewHorizons
                         ProjectionBuilder.InitPrefabs();
                         CloakBuilder.InitPrefab();
                         RaftBuilder.InitPrefab();
+                        RaftDockBuilder.InitPrefab();
                         DreamCampfireBuilder.InitPrefab();
                         DreamArrivalPointBuilder.InitPrefab();
                     }
@@ -849,7 +850,7 @@ namespace NewHorizons
             }
             if (addonConfig.gameOver != null)
             {
-                NHGameOverManager.gameOvers[mod.ModHelper.Manifest.UniqueName] = addonConfig.gameOver;
+                NHGameOverManager.gameOvers[mod] = addonConfig.gameOver;
             }
 
             AddonConfigs[mod] = addonConfig;

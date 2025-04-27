@@ -12,6 +12,8 @@ namespace NewHorizons.Builder.Volumes
             volume._treeVolume = info.treeVolume;
             volume._playRefillAudio = info.playRefillAudio;
 
+            volume.gameObject.SetActive(true);
+
             return volume;
         }
     }

@@ -275,6 +275,14 @@ namespace NewHorizons.Utility
             return UnityEngine.Object.Instantiate(original);
         }
 
+        public static GameObject Instantiate(this GameObject original, Vector3 localPosition, Quaternion localRotation, Transform parent)
+        {
+            var copy = UnityEngine.Object.Instantiate(original, parent, false);
+            copy.transform.localPosition = localPosition;
+            copy.transform.localRotation = localRotation;
+            return copy;
+        }
+
         public static T DontDestroyOnLoad<T>(this T target) where T : UnityEngine.Object
         {
             UnityEngine.Object.DontDestroyOnLoad(target);

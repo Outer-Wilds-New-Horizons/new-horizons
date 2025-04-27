@@ -12,6 +12,8 @@ namespace NewHorizons.Builder.Volumes
 
             volume._deathType = EnumUtils.Parse<DeathType>(info.deathType.ToString(), DeathType.Default);
 
+            volume.gameObject.SetActive(true);
+
             return volume;
         }
     }
