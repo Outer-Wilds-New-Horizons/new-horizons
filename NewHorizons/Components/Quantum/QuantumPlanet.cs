@@ -4,6 +4,7 @@ using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility.OuterWilds;
 using NewHorizons.Utility.OWML;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -23,6 +24,7 @@ namespace NewHorizons.Components.Quantum
         private OrbitLine _orbitLine;
         private QuantumStructure[] _structures = new QuantumStructure[0];
         private QuantumDarkTrigger[] _darkTriggers = new QuantumDarkTrigger[0];
+        private int _collapseToState = -1;
 
         public NHAstroObject astroObject
         {
@@ -102,6 +104,15 @@ namespace NewHorizons.Components.Quantum
             return range.ElementAt(index);
         }
 
+        public bool ChangeQuantumState(State state, bool skipInstantVisibilityCheck)
+            => ChangeQuantumState(states.IndexOf(state), skipInstantVisibilityCheck);
+
+        public bool ChangeQuantumState(int index, bool skipInstantVisibilityCheck)
+        {
+            _collapseToState = index;
+            return ChangeQuantumState(skipInstantVisibilityCheck);
+        }
+
         public override bool ChangeQuantumState(bool skipInstantVisibilityCheck)
         {
             NHLogger.LogVerbose($"QuantumPlanet - Trying to change quantum state");
@@ -125,7 +136,7 @@ namespace NewHorizons.Components.Quantum
             // The QM tries to switch 10 times so we'll do that too
             for (int i = 0; i < 10; i++)
             {
-                newIndex = GetRandomNewState();
+                newIndex = ((_collapseToState != -1) ? _collapseToState : GetRandomNewState());
 
                 newState = states[newIndex];
 
@@ -162,6 +173,7 @@ namespace NewHorizons.Components.Quantum
 
                 LastIndex = oldIndex;
                 CurrentIndex = newIndex;
+                _collapseToState = -1;
 
                 if (changeSector) GlobalMessenger<QuantumPlanet>.FireEvent("QuantumPlanetChangeState", this);
                 if (changeOrbit) GlobalMessenger<QuantumPlanet>.FireEvent("QuantumPlanetChangeOrbit", this);
@@ -285,11 +297,13 @@ namespace NewHorizons.Components.Quantum
         internal void AddState(State state)
         {
             states.Add(state);
+            state.index = states.IndexOf(state);
             ResetStates(false);
         }
 
         public class State
         {
+            public int index { get; set; } = -1;
             public Sector sector { get; set; }
             public OrbitModule orbit { get; set; }
 
@@ -298,6 +312,32 @@ namespace NewHorizons.Components.Quantum
                 this.sector = sector;
                 this.orbit = orbit;
             }
+
+            public override string ToString()
+            {
+                return index.ToString();
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (obj is State state)
+                {
+                    return state == this;
+                }
+                return base.Equals(obj);
+            }
+
+            public static bool operator ==(State left, State right)
+            {
+                return left.sector == right.sector && left.orbit == right.orbit && left.index == right.index;
+            }
+
+            public static bool operator !=(State left, State right)
+            {
+                return !(left == right);
+            }
+
+            public override int GetHashCode() => sector.GetHashCode();
         }
     }
 }
