@@ -262,7 +262,7 @@ namespace NewHorizons.Components.Quantum
                 if (structure.IsPlayerInDarkness())
                     return true;
             }
-            return false;
+            return PlayerState.InDarkZone();
         }
 
         public override bool CheckIllumination() => !IsPlayerInDarkness();
