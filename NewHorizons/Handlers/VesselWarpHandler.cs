@@ -113,7 +113,7 @@ namespace NewHorizons.Handlers
             {
                 vesselSpawn.WarpPlayer();
                 frameCount++;
-                yield return new WaitForFixedUpdate; // Wait for the next frame
+                yield return new WaitForFixedUpdate(); // Wait for the next frame
             }
 
             InvulnerabilityHandler.MakeInvulnerable(false);
