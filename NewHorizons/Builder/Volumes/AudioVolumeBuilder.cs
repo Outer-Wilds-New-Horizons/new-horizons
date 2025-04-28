@@ -25,7 +25,8 @@ namespace NewHorizons.Builder.Volumes
             owAudioSource.SetTrack(info.track.ConvertToOW());
             AudioUtilities.SetAudioClip(owAudioSource, info.audio, mod);
 
-            var audioVolume = go.AddComponent<AudioVolume>();
+            var audioVolume = PriorityVolumeBuilder.MakeExisting<AudioVolume>(go, planetGO, sector, info);
+
             audioVolume._layer = info.layer;
             audioVolume.SetPriority(info.priority);
             audioVolume._fadeSeconds = info.fadeSeconds;
@@ -33,11 +34,7 @@ namespace NewHorizons.Builder.Volumes
             audioVolume._randomizePlayhead = info.randomizePlayhead;
             audioVolume._pauseOnFadeOut = info.pauseOnFadeOut;
 
-            var shape = go.AddComponent<SphereShape>();
-            shape.radius = info.radius;
-
-            var owTriggerVolume = go.AddComponent<OWTriggerVolume>();
-            owTriggerVolume._shape = shape;
+            var owTriggerVolume = go.GetComponent<OWTriggerVolume>();
             audioVolume._triggerVolumeOverride = owTriggerVolume;
 
             go.SetActive(true);

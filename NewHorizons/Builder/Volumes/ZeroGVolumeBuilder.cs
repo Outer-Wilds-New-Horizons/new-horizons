@@ -11,6 +11,8 @@ namespace NewHorizons.Builder.Volumes
 
             volume._inheritable = true;
 
+            volume.gameObject.SetActive(true);
+
             return volume;
         }
     }

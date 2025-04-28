@@ -59,6 +59,11 @@ namespace NewHorizons.External.Modules
         public RaftInfo[] rafts;
 
         /// <summary>
+        /// Add raft docks to this planet (requires Echoes of the Eye DLC)
+        /// </summary>
+        public RaftDockInfo[] raftDocks;
+
+        /// <summary>
         /// Scatter props around this planet's surface
         /// </summary>
         public ScatterInfo[] scatter;
