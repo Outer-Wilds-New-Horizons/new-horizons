@@ -35,8 +35,6 @@ using System.Reflection;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
-using static TextTranslation;
-using static UnityEngine.InputSystem.InputRemoting;
 
 namespace NewHorizons
 {
