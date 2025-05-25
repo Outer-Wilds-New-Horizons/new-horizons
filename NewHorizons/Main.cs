@@ -439,6 +439,11 @@ namespace NewHorizons
                 TitleSceneHandler.Init();
             }
 
+            if (isTitleScreen)
+            {
+                MenuHandler.TitleScreen();
+            }
+
             // EOTU fixes
             if (isEyeOfTheUniverse)
             {
