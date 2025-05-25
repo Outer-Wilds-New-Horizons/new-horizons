@@ -255,5 +255,12 @@ namespace NewHorizons
         /// <param name="persistentConditionRequired">Persistent condition required for this title screen to appear.</param>
         /// <param name="factRequired">Ship log fact required for this title screen to appear.</param>
         void RegisterTitleScreenBuilder(IModBehaviour mod, Action<GameObject> builder, bool disableNHPlanets = true, bool shareTitleScreen = false, string persistentConditionRequired = null, string factRequired = null);
+
+        /// <summary>
+        /// Clears all loaded configs for the given system.
+        /// This exists solely for Nomai Sky to use :bleh:
+        /// </summary>
+        /// <param name="name"></param>
+        void ClearSystem(string name);
     }
 }
