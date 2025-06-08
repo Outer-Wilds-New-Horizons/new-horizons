@@ -304,12 +304,18 @@ namespace NewHorizons.External.Configs
 
             // True by default so if one is false go false
             canEnterViaWarpDrive = canEnterViaWarpDrive && otherConfig.canEnterViaWarpDrive;
+            canExitViaWarpDrive = canExitViaWarpDrive && otherConfig.canExitViaWarpDrive;
             destroyStockPlanets = destroyStockPlanets && otherConfig.destroyStockPlanets;
             enableTimeLoop = enableTimeLoop && otherConfig.enableTimeLoop;
+
+            // False by default
+            returnToSolarSystemWhenTooFar = returnToSolarSystemWhenTooFar || otherConfig.returnToSolarSystemWhenTooFar;
+
             loopDuration = loopDuration == 22f ? otherConfig.loopDuration : loopDuration;
 
             // If current one is null take the other
             factRequiredForWarp = string.IsNullOrEmpty(factRequiredForWarp) ? otherConfig.factRequiredForWarp : factRequiredForWarp;
+            factRequiredToExitViaWarpDrive = string.IsNullOrEmpty(factRequiredToExitViaWarpDrive) ? otherConfig.factRequiredToExitViaWarpDrive : factRequiredToExitViaWarpDrive;
             Skybox = Skybox == null ? otherConfig.Skybox : Skybox;
 
             // False by default so if one is true go true
