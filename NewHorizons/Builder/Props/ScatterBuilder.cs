@@ -80,6 +80,15 @@ namespace NewHorizons.Builder.Props
                 };
                 var scatterPrefab = DetailBuilder.Make(go, sector, mod, prefab, detailInfo);
 
+                bool reasonableHeightConstraints = true;
+                if (!propInfo.preventOverlap && (heightMapTexture != null) && (propInfo.minHeight != null || propInfo.maxHeight != null)) // If caution is relevant
+                {
+                    var maxHeight = (propInfo.minHeight != null ? Math.Min(propInfo.maxHeight, heightMap.maxHeight) : heightMap.maxHeight);
+                    var minHeight = (propInfo.minHeight != null ? Math.Max(propInfo.minHeight, heightMap.minHeight) : heightMap.minHeight);
+                    if ((maxHeight - minHeight) / (heightMap.maxHeight - heightMap.minHeight) < 0.001) // If height roll has less than 0.1% chance of being valid
+                        reasonableHeightConstraints = false; // Ignore propInfo.min/maxHeight to prevent infinite rerolls
+                    // That way, even if often not valid, it still won't loop much more than propInfo.count * 1000 per prop
+                }
                 for (int i = 0; i < propInfo.count; i++)
                 {
                     Vector3 point;
@@ -113,7 +122,7 @@ namespace NewHorizons.Builder.Props
                         float relativeHeight = heightMapTexture.GetPixel((int)sampleX, (int)sampleY).r;
                         height = (relativeHeight * (heightMap.maxHeight - heightMap.minHeight) + heightMap.minHeight);
 
-                        if ((propInfo.minHeight != null && height < propInfo.minHeight) || (propInfo.maxHeight != null && height > propInfo.maxHeight))
+                        if (reasonableHeightConstraints && ((propInfo.minHeight != null && height < propInfo.minHeight) || (propInfo.maxHeight != null && height > propInfo.maxHeight)))
                         {
                             // Try this point again
                             i--;
