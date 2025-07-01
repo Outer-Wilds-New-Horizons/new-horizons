@@ -4571,6 +4571,10 @@
         "startLit": {
           "type": "boolean",
           "description": "Whether the candle should start lit or extinguished."
+        },
+        "condition": {
+          "description": "A condition to set when the candle is lit.",
+          "$ref": "#/definitions/DreamLightConditionInfo"
         }
       }
     },
@@ -4599,6 +4603,28 @@
         "standing",
         "pile"
       ]
+    },
+    "DreamLightConditionInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "condition": {
+          "type": "string",
+          "description": "The name of the dialogue condition or persistent condition to set when the light is lit."
+        },
+        "persistent": {
+          "type": "boolean",
+          "description": "If true, the condition will persist across all future loops until unset."
+        },
+        "reversible": {
+          "type": "boolean",
+          "description": "Whether to unset the condition when the light is extinguished again."
+        },
+        "onExtinguish": {
+          "type": "boolean",
+          "description": "Whether to set the condition when the light is extinguished instead. If `reversible` is true, the condition will be unset when the light is lit again."
+        }
+      }
     },
     "ProjectionTotemInfo": {
       "type": "object",
@@ -4667,6 +4693,10 @@
         "toggleProjectedObjectsActive": {
           "type": "boolean",
           "description": "If set, projected objects will be set to fully active or fully disabled instantly instead of smoothly fading lights/renderers/colliders. Use this if the normal behavior is insufficient for the objects you're using."
+        },
+        "condition": {
+          "description": "A condition to set when the totem is lit.",
+          "$ref": "#/definitions/DreamLightConditionInfo"
         }
       }
     },
