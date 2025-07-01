@@ -12,6 +12,11 @@ namespace NewHorizons.External.Modules.Volumes
         public AudioVolumeInfo[] audioVolumes;
 
         /// <summary>
+        /// Add condition trigger volumes to this planet. Sets a condition when the player, scout, or ship enters this volume.
+        /// </summary>
+        public ConditionTriggerVolumeInfo[] conditionTriggerVolumes;
+
+        /// <summary>
         /// Add day night audio volumes to this planet. These volumes play a different clip depending on the time of day.
         /// </summary>
         public DayNightAudioVolumeInfo[] dayNightAudioVolumes;
