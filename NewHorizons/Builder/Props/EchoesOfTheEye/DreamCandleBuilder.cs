@@ -1,3 +1,4 @@
+using NewHorizons.Components.EOTE;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.Props.EchoesOfTheEye;
 using NewHorizons.Handlers;
@@ -9,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TerrainBaker;
 using UnityEngine;
 
 namespace NewHorizons.Builder.Props.EchoesOfTheEye
@@ -69,6 +71,12 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
 
             dreamCandle._startLit = info.startLit;
             dreamCandle.SetLit(info.startLit, false, true);
+
+            if (info.condition != null)
+            {
+                var conditionController = dreamCandle.gameObject.AddComponent<DreamLightConditionController>();
+                conditionController.SetFromInfo(info.condition);
+            }
 
             return candleObj;
         }
