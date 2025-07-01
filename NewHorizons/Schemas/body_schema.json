@@ -5365,6 +5365,13 @@
             "$ref": "#/definitions/AudioVolumeInfo"
           }
         },
+        "conditionTriggerVolumes": {
+          "type": "array",
+          "description": "Add condition trigger volumes to this planet. Sets a condition when the player, scout, or ship enters this volume.",
+          "items": {
+            "$ref": "#/definitions/ConditionTriggerVolumeInfo"
+          }
+        },
         "dayNightAudioVolumes": {
           "type": "array",
           "description": "Add day night audio volumes to this planet. These volumes play a different clip depending on the time of day.",
@@ -5716,6 +5723,74 @@
         "sequential",
         "manual"
       ]
+    },
+    "ConditionTriggerVolumeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume, if a shape is not specified.",
+          "format": "float",
+          "default": 1.0
+        },
+        "shape": {
+          "description": "The shape of this volume. Defaults to a sphere with a radius of `radius` if not specified.",
+          "$ref": "#/definitions/ShapeInfo"
+        },
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "condition": {
+          "type": "string",
+          "description": "The name of the dialogue condition or persistent condition to set when entering the volume."
+        },
+        "persistent": {
+          "type": "boolean",
+          "description": "If true, the condition will persist across all future loops until unset."
+        },
+        "reversible": {
+          "type": "boolean",
+          "description": "Whether to unset the condition when existing the volume."
+        },
+        "player": {
+          "type": "boolean",
+          "description": "Whether to set the condition when the player enters this volume. Defaults to true.",
+          "default": true
+        },
+        "probe": {
+          "type": "boolean",
+          "description": "Whether to set the condition when the scout probe enters this volume."
+        },
+        "ship": {
+          "type": "boolean",
+          "description": "Whether to set the condition when the ship enters this volume."
+        }
+      }
     },
     "DayNightAudioVolumeInfo": {
       "type": "object",
