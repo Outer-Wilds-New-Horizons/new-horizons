@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TerrainBaker;
 using UnityEngine;
 
 namespace NewHorizons.Builder.Props.EchoesOfTheEye
