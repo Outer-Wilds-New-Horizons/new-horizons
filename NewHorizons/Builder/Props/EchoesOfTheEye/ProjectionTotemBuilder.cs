@@ -1,3 +1,4 @@
+using NewHorizons.Components.EOTE;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.Props.EchoesOfTheEye;
 using NewHorizons.Handlers;
@@ -116,6 +117,13 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
             projector._lit = info.startLit;
             projector._startLit = info.startLit;
             projector._extinguishOnly = info.extinguishOnly;
+
+            if (info.condition != null)
+            {
+                var conditionController = projector.gameObject.AddComponent<DreamLightConditionController>();
+                conditionController.SetFromInfo(info.condition);
+            }
+
             /*
             Delay.FireOnNextUpdate(() =>
             {
