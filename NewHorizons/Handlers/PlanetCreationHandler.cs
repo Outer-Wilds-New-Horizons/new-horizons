@@ -42,6 +42,15 @@ namespace NewHorizons.Handlers
 
         public static void Init(List<NewHorizonsBody> bodies)
         {
+            // TH gets preloaded in title screen. custom systems dont need this
+            if (Main.Instance.CurrentStarSystem is not ("SolarSystem" or "EyeOfTheUniverse"))
+            {
+                foreach (var bundle in StreamingManager.s_activeBundles)
+                {
+                    StreamingManager.UnloadStreamingAssets(bundle.assetBundleName);
+                }
+            }
+            
             // Start by destroying all planets if need be
             if (Main.SystemDict[Main.Instance.CurrentStarSystem].Config.destroyStockPlanets)
             {
