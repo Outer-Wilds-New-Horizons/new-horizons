@@ -47,7 +47,8 @@ namespace NewHorizons.Handlers
             {
                 foreach (var bundle in StreamingManager.s_activeBundles)
                 {
-                    StreamingManager.UnloadStreamingAssets(bundle.assetBundleName);
+                    // save memory NOW instead of next frame when other stuff has loaded and taken memory
+                    bundle.UnloadImmediate();
                 }
             }
             
