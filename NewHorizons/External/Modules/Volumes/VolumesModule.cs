@@ -12,6 +12,11 @@ namespace NewHorizons.External.Modules.Volumes
         public AudioVolumeInfo[] audioVolumes;
 
         /// <summary>
+        /// Add condition trigger volumes to this planet. Sets a condition when the player, scout, or ship enters this volume.
+        /// </summary>
+        public ConditionTriggerVolumeInfo[] conditionTriggerVolumes;
+
+        /// <summary>
         /// Add day night audio volumes to this planet. These volumes play a different clip depending on the time of day.
         /// </summary>
         public DayNightAudioVolumeInfo[] dayNightAudioVolumes;
@@ -28,10 +33,21 @@ namespace NewHorizons.External.Modules.Volumes
         public FluidVolumeInfo[] fluidVolumes;
 
         /// <summary>
+        /// Add force volumes to this planet.
+        /// </summary>
+        public ForceModule forces;
+
+        /// <summary>
         /// Add hazard volumes to this planet.
         /// Causes damage to player when inside this volume.
         /// </summary>
         public HazardVolumeInfo[] hazardVolumes;
+
+        /// <summary>
+        /// Add interaction volumes to this planet.
+        /// They can be interacted with by the player to trigger various effects.
+        /// </summary>
+        public InteractionVolumeInfo[] interactionVolumes;
 
         /// <summary>
         /// Add interference volumes to this planet.
@@ -81,6 +97,11 @@ namespace NewHorizons.External.Modules.Volumes
         public VolumeInfo[] referenceFrameBlockerVolumes;
 
         /// <summary>
+        /// Add repair volumes to this planet.
+        /// </summary>
+        public RepairVolumeInfo[] repairVolumes;
+
+        /// <summary>
         /// Add triggers that reveal parts of the ship log on this planet.
         /// </summary>
         public RevealVolumeInfo[] revealVolumes;
@@ -100,6 +121,13 @@ namespace NewHorizons.External.Modules.Volumes
         /// Slows down the player when they enter this volume.
         /// </summary>
         public SpeedTrapVolumeInfo[] speedTrapVolumes;
+
+        /// <summary>
+        /// Add speed limiter volumes to this planet.
+        /// Slows down the player, ship, and probe when they enter this volume.
+        /// Used on the Stranger in DLC.
+        /// </summary>
+        public SpeedLimiterVolumeInfo[] speedLimiterVolumes;
 
         /// <summary>
         /// Add visor effect volumes to this planet.

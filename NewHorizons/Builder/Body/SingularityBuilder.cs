@@ -150,6 +150,7 @@ namespace NewHorizons.Builder.Body
                         streamingVolume.streamingGroup = streamingGroup;
                         streamingVolume.transform.parent = blackHoleVolume.transform;
                         streamingVolume.transform.localPosition = Vector3.zero;
+                        streamingVolume.gameObject.SetActive(true);
                     }
                 }
                 catch (Exception e)

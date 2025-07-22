@@ -356,7 +356,10 @@ namespace NewHorizons.Builder.Props
                     singleLightSensor._sector.OnSectorOccupantsUpdated -= singleLightSensor.OnSectorOccupantsUpdated;
                 }
                 singleLightSensor._sector = sector;
-                singleLightSensor._sector.OnSectorOccupantsUpdated += singleLightSensor.OnSectorOccupantsUpdated;
+                if (singleLightSensor._sector != null)
+                {
+                    singleLightSensor._sector.OnSectorOccupantsUpdated += singleLightSensor.OnSectorOccupantsUpdated;
+                }
             }
         }
 
@@ -470,9 +473,13 @@ namespace NewHorizons.Builder.Props
             {
                 // These flood toggles are to disable flooded docks on the Stranger
                 // Presumably the user isn't making one of those
-                foreach (var toggle in dock.GetComponents<FloodToggle>())
+                foreach (var toggle in dock.GetComponentsInChildren<FloodToggle>())
                 {
                     Component.DestroyImmediate(toggle);
+                }
+                foreach (var floodSensor in dock.GetComponentsInChildren<RingRiverFloodSensor>())
+                {
+                    Component.DestroyImmediate(floodSensor);
                 }
             }
         }

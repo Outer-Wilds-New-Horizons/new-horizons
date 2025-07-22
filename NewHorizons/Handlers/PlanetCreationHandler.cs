@@ -5,6 +5,7 @@ using NewHorizons.Builder.Orbital;
 using NewHorizons.Builder.Props;
 using NewHorizons.Builder.ShipLog;
 using NewHorizons.Builder.Volumes;
+using NewHorizons.Components;
 using NewHorizons.Components.Orbital;
 using NewHorizons.Components.Quantum;
 using NewHorizons.Components.Stars;
@@ -20,10 +21,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using NewHorizons.Streaming;
-using Newtonsoft.Json;
-using NewHorizons.External.Modules.VariableSize;
-using NewHorizons.Components;
 
 namespace NewHorizons.Handlers
 {
@@ -45,6 +42,16 @@ namespace NewHorizons.Handlers
 
         public static void Init(List<NewHorizonsBody> bodies)
         {
+            // TH gets preloaded in title screen. custom systems dont need this
+            if (Main.Instance.CurrentStarSystem is not ("SolarSystem" or "EyeOfTheUniverse"))
+            {
+                foreach (var bundle in StreamingManager.s_activeBundles)
+                {
+                    // save memory NOW instead of next frame when other stuff has loaded and taken memory
+                    bundle.UnloadImmediate();
+                }
+            }
+            
             // Start by destroying all planets if need be
             if (Main.SystemDict[Main.Instance.CurrentStarSystem].Config.destroyStockPlanets)
             {
@@ -657,7 +664,7 @@ namespace NewHorizons.Handlers
 
             if (body.Config.CometTail != null)
             {
-                CometTailBuilder.Make(go, sector, body.Config.CometTail, body.Config);
+                CometTailBuilder.Make(go, sector, body.Config.CometTail, body.Config, go.GetComponent<AstroObject>());
             }
 
             if (body.Config.Lava != null)

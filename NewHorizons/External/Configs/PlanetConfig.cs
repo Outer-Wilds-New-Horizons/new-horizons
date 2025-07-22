@@ -669,14 +669,12 @@ namespace NewHorizons.External.Configs
                 {
                     if (!string.IsNullOrEmpty(volume.gameOverText))
                     {
-                        if (volume.gameOver == null)
-                        {
-                            volume.gameOver = new();
-                        }
+                        volume.gameOver ??= new();
                         volume.gameOver.text = volume.gameOverText;
                     }
                     if (volume.creditsType != null)
                     {
+                        volume.gameOver ??= new();
                         volume.gameOver.creditsType = (SerializableEnums.NHCreditsType)volume.creditsType;
                     }
                 }

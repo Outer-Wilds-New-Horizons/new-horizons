@@ -3,6 +3,7 @@ using NewHorizons.External.Modules.Volumes.VolumeInfos;
 using NewHorizons.Utility.OuterWilds;
 using OWML.Common;
 using OWML.Utils;
+using System;
 using System.Linq;
 using UnityEngine;
 
@@ -13,35 +14,28 @@ namespace NewHorizons.Builder.Volumes
         public static HazardVolume Make(GameObject planetGO, Sector sector, OWRigidbody owrb, HazardVolumeInfo info, IModBehaviour mod)
         {
             var go = GeneralPropBuilder.MakeNew("HazardVolume", planetGO, sector, info);
-            go.layer = Layer.BasicEffectVolume;
-
-            var shape = go.AddComponent<SphereShape>();
-            shape.radius = info.radius;
-
-            var owTriggerVolume = go.AddComponent<OWTriggerVolume>();
-            owTriggerVolume._shape = shape;
-
-            var volume = AddHazardVolume(go, sector, owrb, info.type, info.firstContactDamageType, info.firstContactDamage, info.damagePerSecond);
+            
+            var volume = MakeExisting(go, planetGO, sector, owrb, info);
 
             go.SetActive(true);
 
             return volume;
         }
 
-        public static HazardVolume AddHazardVolume(GameObject go, Sector sector, OWRigidbody owrb, HazardVolumeInfo.HazardType? type, HazardVolumeInfo.InstantDamageType? firstContactDamageType, float firstContactDamage, float damagePerSecond)
+        public static HazardVolume MakeExisting(GameObject go, GameObject planetGO, Sector sector, OWRigidbody owrb, HazardVolumeInfo info)
         { 
             HazardVolume hazardVolume = null;
-            if (type == HazardVolumeInfo.HazardType.RIVERHEAT)
+            if (info.type == HazardVolumeInfo.HazardType.RIVERHEAT)
             {
-                hazardVolume = go.AddComponent<RiverHeatHazardVolume>();
+                hazardVolume = VolumeBuilder.MakeExisting<RiverHeatHazardVolume>(go, planetGO, sector, info);
             }
-            else if (type == HazardVolumeInfo.HazardType.HEAT)
+            else if (info.type == HazardVolumeInfo.HazardType.HEAT)
             {
-                hazardVolume = go.AddComponent<HeatHazardVolume>();
+                hazardVolume = VolumeBuilder.MakeExisting<HeatHazardVolume>(go, planetGO, sector, info);
             }
-            else if (type == HazardVolumeInfo.HazardType.DARKMATTER)
+            else if (info.type == HazardVolumeInfo.HazardType.DARKMATTER)
             {
-                hazardVolume = go.AddComponent<DarkMatterVolume>();
+                hazardVolume = VolumeBuilder.MakeExisting<DarkMatterVolume>(go, planetGO, sector, info);
                 var visorFrostEffectVolume = go.AddComponent<VisorFrostEffectVolume>();
                 visorFrostEffectVolume._frostRate = 0.5f;
                 visorFrostEffectVolume._maxFrost = 0.91f;
@@ -67,28 +61,38 @@ namespace NewHorizons.Builder.Volumes
                     submerge._fluidDetector = detector;
                 }
             }
-            else if (type == HazardVolumeInfo.HazardType.ELECTRICITY)
+            else if (info.type == HazardVolumeInfo.HazardType.ELECTRICITY)
             {
-                var electricityVolume = go.AddComponent<ElectricityVolume>();
+                var electricityVolume = VolumeBuilder.MakeExisting<ElectricityVolume>(go, planetGO, sector, info);
                 electricityVolume._shockAudioPool = new OWAudioSource[0];
                 hazardVolume = electricityVolume;
             }
             else
             {
                 var simpleHazardVolume = go.AddComponent<SimpleHazardVolume>();
-                simpleHazardVolume._type = EnumUtils.Parse(type.ToString(), HazardVolume.HazardType.GENERAL);
+                simpleHazardVolume._type = EnumUtils.Parse(info.type.ToString(), HazardVolume.HazardType.GENERAL);
                 hazardVolume = simpleHazardVolume;
             }
             hazardVolume._attachedBody = owrb;
-            hazardVolume._damagePerSecond = type == null ? 0f : damagePerSecond;
+            hazardVolume._damagePerSecond = info.type == HazardVolumeInfo.HazardType.NONE ? 0f : info.damagePerSecond;
 
-            if (firstContactDamageType != null)
-            {
-                hazardVolume._firstContactDamageType = EnumUtils.Parse(firstContactDamageType.ToString(), InstantDamageType.Impact);
-                hazardVolume._firstContactDamage = firstContactDamage;
-            }
+            hazardVolume._firstContactDamageType = EnumUtils.Parse(info.firstContactDamageType.ToString(), InstantDamageType.Impact);
+            hazardVolume._firstContactDamage = info.firstContactDamage;
 
             return hazardVolume;
+        }
+
+        public static HazardVolume AddHazardVolume(GameObject go, Sector sector, OWRigidbody owrb, HazardVolumeInfo.HazardType? type, HazardVolumeInfo.InstantDamageType? firstContactDamageType, float firstContactDamage, float damagePerSecond)
+        {
+            var planetGO = sector.transform.root.gameObject;
+            return MakeExisting(go, planetGO, sector, owrb, new HazardVolumeInfo
+            {
+                radius = 0f, // Volume builder should skip creating an extra trigger volume and collider if radius is 0
+                type = type ?? HazardVolumeInfo.HazardType.NONE,
+                firstContactDamageType = firstContactDamageType ?? HazardVolumeInfo.InstantDamageType.Impact,
+                firstContactDamage = firstContactDamage,
+                damagePerSecond = damagePerSecond
+            });
         }
     }
 }

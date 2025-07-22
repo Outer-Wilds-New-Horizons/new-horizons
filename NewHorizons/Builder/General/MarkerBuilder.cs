@@ -15,7 +15,7 @@ namespace NewHorizons.Builder.General
         {
             var module = config.MapMarker;
             NHMapMarker mapMarker = body.AddComponent<NHMapMarker>();
-            mapMarker._labelID = (UITextType)TranslationHandler.AddUI(config.name);
+            mapMarker._labelID = (UITextType)TranslationHandler.AddUI(config.name, true);
 
             var markerType = MapMarker.MarkerType.Planet;
 

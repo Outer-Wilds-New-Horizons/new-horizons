@@ -46,6 +46,7 @@ namespace NewHorizons
         // Settings
         public static bool Debug { get; private set; }
         public static bool VisualizeQuantumObjects { get; private set; }
+        public static bool VisualizeBrambleVolumeNames { get; private set; }
         public static bool VerboseLogs { get; private set; }
         public static bool SequentialPreCaching { get; private set; }
         public static bool CustomTitleScreen { get; private set; }
@@ -138,6 +139,7 @@ namespace NewHorizons
 
             Debug = config.GetSettingsValue<bool>(nameof(Debug));
             VisualizeQuantumObjects = config.GetSettingsValue<bool>(nameof(VisualizeQuantumObjects));
+            VisualizeBrambleVolumeNames = config.GetSettingsValue<bool>(nameof(VisualizeBrambleVolumeNames));
             VerboseLogs = config.GetSettingsValue<bool>(nameof(VerboseLogs));
             SequentialPreCaching = config.GetSettingsValue<bool>(nameof(SequentialPreCaching));
 
@@ -380,6 +382,7 @@ namespace NewHorizons
                         ProjectionBuilder.InitPrefabs();
                         CloakBuilder.InitPrefab();
                         RaftBuilder.InitPrefab();
+                        RaftDockBuilder.InitPrefab();
                         DreamCampfireBuilder.InitPrefab();
                         DreamArrivalPointBuilder.InitPrefab();
                     }
@@ -434,6 +437,11 @@ namespace NewHorizons
             if (isTitleScreen && CustomTitleScreen)
             {
                 TitleSceneHandler.Init();
+            }
+
+            if (isTitleScreen)
+            {
+                MenuHandler.TitleScreen();
             }
 
             // EOTU fixes
@@ -847,7 +855,7 @@ namespace NewHorizons
             }
             if (addonConfig.gameOver != null)
             {
-                NHGameOverManager.gameOvers[mod.ModHelper.Manifest.UniqueName] = addonConfig.gameOver;
+                NHGameOverManager.gameOvers[mod] = addonConfig.gameOver;
             }
 
             AddonConfigs[mod] = addonConfig;

@@ -1,6 +1,5 @@
-using NewHorizons.Builder.Props;
 using NewHorizons.External.Modules.Volumes.VolumeInfos;
-using NewHorizons.Utility.OuterWilds;
+using NewHorizons.Utility.OWML;
 using UnityEngine;
 
 namespace NewHorizons.Builder.Volumes
@@ -9,26 +8,22 @@ namespace NewHorizons.Builder.Volumes
     {
         public static TVolume Make<TVolume>(GameObject planetGO, Sector sector, VanishVolumeInfo info) where TVolume : VanishVolume
         {
-            var go = GeneralPropBuilder.MakeNew(typeof(TVolume).Name, planetGO, sector, info);
-            go.layer = Layer.BasicEffectVolume;
+            if (info.shape != null && info.shape?.useShape == false)
+            {
+                NHLogger.LogError($"Destruction/VanishVolumes only support colliders. Affects planet [{planetGO.name}]. Set useShape to false.");
+            }
 
-            var collider = go.AddComponent<SphereCollider>();
-            collider.isTrigger = true;
-            collider.radius = info.radius;
+            // VanishVolume is only compatible with sphere colliders
+            // If info.shape was null, it will still default to using a sphere with info.radius, just make sure it does so with a collider
+            info.shape ??= new();
+            info.shape.useShape = false;
 
-            var owCollider = go.AddComponent<OWCollider>();
-            owCollider._collider = collider;
+            var volume = VolumeBuilder.Make<TVolume>(planetGO, sector, info);
 
-            var owTriggerVolume = go.AddComponent<OWTriggerVolume>();
-            owTriggerVolume._owCollider = owCollider;
-
-            var volume = go.AddComponent<TVolume>();
-
+            var collider = volume.gameObject.GetComponent<Collider>();
             volume._collider = collider;
             volume._shrinkBodies = info.shrinkBodies;
             volume._onlyAffectsPlayerAndShip = info.onlyAffectsPlayerRelatedBodies;
-
-            go.SetActive(true);
 
             return volume;
         }

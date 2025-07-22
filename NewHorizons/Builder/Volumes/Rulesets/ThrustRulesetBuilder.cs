@@ -13,6 +13,8 @@ namespace NewHorizons.Builder.Volumes.Rulesets
             volume._nerfJetpackBooster = info.nerfJetpackBooster;
             volume._nerfDuration = info.nerfDuration;
 
+            volume.gameObject.SetActive(true);
+
             return volume;
         }
     }

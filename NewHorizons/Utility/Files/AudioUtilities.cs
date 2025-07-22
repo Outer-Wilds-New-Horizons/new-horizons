@@ -27,23 +27,34 @@ namespace NewHorizons.Utility.Files
                     source._clipArrayLength = 0;
                     source._clipSelectionOnPlay = OWAudioSource.ClipSelectionOnPlay.MANUAL;
                     source.clip = clip;
+                    NHLogger.LogVerbose($"[{nameof(AudioUtilities)}] : Audio {audio} was loaded from a file");
                     return;
                 }
                 catch
                 {
-                    NHLogger.LogError($"Could not load file {audio}");
+                    NHLogger.LogError($"[{nameof(AudioUtilities)}] : Could not load file {audio}");
                 }
             }
 
             if (EnumUtils.TryParse(audio, out AudioType type))
             {
                 source._audioLibraryClip = type;
+                NHLogger.LogVerbose($"[{nameof(AudioUtilities)}] : Audio {audio} was an AudioType enum");
             }
             else
             {
                 var audioClip = SearchUtilities.FindResourceOfTypeAndName<AudioClip>(audio);
-                if (audioClip == null) NHLogger.Log($"Couldn't find audio clip {audio}");
-                else source.clip = audioClip;
+                if (audioClip == null)
+                {
+                    NHLogger.LogError($"[{nameof(AudioUtilities)}] : Couldn't find audio clip {audio}");
+                }
+                else
+                {
+                    NHLogger.LogVerbose($"[{nameof(AudioUtilities)}] : Audio {audio} was an AudioClip resource");
+                    // Else if this is set it will try to change the clip back when it starts playing
+                    source._audioLibraryClip = AudioType.None;
+                    source.clip = audioClip;
+                }
             }
         }
 

@@ -1,6 +1,7 @@
 using NewHorizons.Components.Props;
 using NewHorizons.External.Modules.Props.Item;
 using NewHorizons.Handlers;
+using NewHorizons.Utility.OuterWilds;
 using NewHorizons.Utility.OWML;
 using OWML.Common;
 using OWML.Utils;
@@ -15,18 +16,13 @@ namespace NewHorizons.Builder.Props
 
         internal static void Init()
         {
-            if (_itemTypes != null)
-            {
-                foreach (var value in _itemTypes.Values)
-                {
-                    EnumUtils.Remove<ItemType>(value);
-                }
-            }
             _itemTypes = new Dictionary<string, ItemType>();
         }
 
         public static NHItem MakeItem(GameObject go, GameObject planetGO, Sector sector, ItemInfo info, IModBehaviour mod)
         {
+            go.layer = Layer.Interactible;
+
             var itemName = info.name;
             if (string.IsNullOrEmpty(itemName))
             {
@@ -93,10 +89,13 @@ namespace NewHorizons.Builder.Props
 
             if (info.colliderRadius > 0f)
             {
-                go.AddComponent<SphereCollider>().radius = info.colliderRadius;
+                var col = go.AddComponent<SphereCollider>();
+                col.radius = info.colliderRadius;
+                col.isTrigger = info.colliderIsTrigger;
                 go.GetAddComponent<OWCollider>();
             }
 
+            // Wait until next frame when all objects are built before trying to socket the item if it has an initial socket
             Delay.FireOnNextUpdate(() =>
             {
                 if (item != null && !string.IsNullOrEmpty(info.pathToInitialSocket))
@@ -133,11 +132,9 @@ namespace NewHorizons.Builder.Props
 
         public static NHItemSocket MakeSocket(GameObject go, GameObject planetGO, Sector sector, ItemSocketInfo info)
         {
-            var itemType = EnumUtils.TryParse(info.itemType, true, out ItemType result) ? result : ItemType.Invalid;
-            if (itemType == ItemType.Invalid && !string.IsNullOrEmpty(info.itemType))
-            {
-                itemType = EnumUtilities.Create<ItemType>(info.itemType);
-            }
+            go.layer = Layer.Interactible;
+
+            var itemType = GetOrCreateItemType(info.itemType);
 
             var socket = go.GetAddComponent<NHItemSocket>();
             socket._sector = sector;
@@ -151,13 +148,16 @@ namespace NewHorizons.Builder.Props
             if (socket._socketTransform == null)
             {
                 var socketGO = GeneralPropBuilder.MakeNew("Socket", planetGO, sector, info, defaultParent: go.transform);
-                if (info.colliderRadius > 0f)
-                {
-                    go.AddComponent<SphereCollider>().radius = info.colliderRadius;
-                    go.GetAddComponent<OWCollider>();
-                }
                 socketGO.SetActive(true);
                 socket._socketTransform = socketGO.transform;
+            }
+
+            if (info.colliderRadius > 0f)
+            {
+                var col = go.AddComponent<SphereCollider>();
+                col.radius = info.colliderRadius;
+                col.isTrigger = info.colliderIsTrigger;
+                go.GetAddComponent<OWCollider>();
             }
 
             socket.ItemType = itemType;
@@ -169,6 +169,7 @@ namespace NewHorizons.Builder.Props
             socket.ClearRemovalConditionOnInsert = info.clearRemovalConditionOnInsert;
             socket.RemovalFact = info.removalFact;
 
+            // Wait until initial item socketing is done before considering the socket empty
             Delay.FireInNUpdates(() =>
             {
                 if (socket != null && !socket._socketedItem)
@@ -193,7 +194,7 @@ namespace NewHorizons.Builder.Props
             }
             else if (!string.IsNullOrEmpty(name))
             {
-                itemType = EnumUtils.Create<ItemType>(name);
+                itemType = EnumUtilities.Create<ItemType>(name);
                 _itemTypes.Add(name, itemType);
             }
             return itemType;

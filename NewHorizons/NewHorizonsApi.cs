@@ -367,5 +367,17 @@ namespace NewHorizons
 
         public void RegisterTitleScreenBuilder(IModBehaviour mod, Action<GameObject> builder, bool disableNHPlanets = true, bool shareTitleScreen = false, string persistentConditionRequired = null, string factRequired = null)
              => TitleSceneHandler.RegisterBuilder(mod, builder, disableNHPlanets, shareTitleScreen, persistentConditionRequired, factRequired);
+
+        public void ClearSystem(string name)
+        {
+            if (Main.SystemDict.ContainsKey(name))
+            {
+                Main.SystemDict.Remove(name);
+            }
+            if (Main.BodyDict.ContainsKey(name))
+            {
+                Main.BodyDict.Remove(name);
+            }
+        }
     }
 }

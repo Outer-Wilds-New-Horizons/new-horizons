@@ -210,7 +210,7 @@ namespace NewHorizons.Handlers
             vesselWarpController._whiteHoleOneShot = vesselWarpController._whiteHole.transform.parent.Find("WhiteHoleAudio_OneShot").GetComponent<OWAudioSource>();
             vesselWarpController._whiteHole._startActive = true;
 
-            vesselObject.GetComponent<MapMarker>()._labelID = (UITextType)TranslationHandler.AddUI("Vessel");
+            vesselObject.GetComponent<MapMarker>()._labelID = (UITextType)TranslationHandler.AddUI("Vessel", true);
 
             var hasParentBody = !string.IsNullOrEmpty(system.Config.Vessel?.vesselSpawn?.parentBody);
             var hasPhysics = system.Config.Vessel?.hasPhysics ?? !hasParentBody;
