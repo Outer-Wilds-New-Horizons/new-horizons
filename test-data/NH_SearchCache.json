@@ -1,0 +1,7 @@
+{
+  "Player_Body": "MockScene/Player_Body",
+  "Ship_Body": "MockScene/Ship_Body",
+  "Probe_Body": "MockScene/Probe_Body",
+  "CameraController": "MockScene/CameraController",
+  "Sun_Body": "MockScene/Sun_Body"
+}

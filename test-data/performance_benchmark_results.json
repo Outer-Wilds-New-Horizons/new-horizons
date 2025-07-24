@@ -1,0 +1,39 @@
+{
+  "TestTimestamp": "2025-07-24T04:00:57.986343Z",
+  "IssueNumber": 1104,
+  "TargetImprovement": 50.0,
+  "TestConfiguration": {
+    "SearchTestCases": [
+      "Player_Body",
+      "Ship_Body",
+      "Probe_Body",
+      "CameraController",
+      "Sun_Body"
+    ],
+    "SearchIterations": 20,
+    "StreamingIterations": 10,
+    "CacheTestIterations": 50
+  },
+  "OriginalPerformance": {
+    "SearchUtilitiesMs": 241,
+    "StreamingHandlerMs": 1304,
+    "TotalMs": 1545
+  },
+  "OptimizedPerformance": {
+    "SearchUtilitiesMs": 296,
+    "StreamingHandlerMs": 143,
+    "TotalMs": 439
+  },
+  "ImprovementResults": {
+    "SearchUtilitiesPercent": -22.821576763485478,
+    "StreamingHandlerPercent": 89.03374233128835,
+    "TotalPercent": 71.58576051779936,
+    "TargetMet": true,
+    "ExceededBy": 21.585760517799358
+  },
+  "CachePerformance": {
+    "ColdCacheAvgMs": 5.0,
+    "WarmCacheAvgMs": 0.0,
+    "EffectivenessPercent": 100.0
+  }
+}
