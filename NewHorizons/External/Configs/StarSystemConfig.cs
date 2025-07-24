@@ -121,6 +121,11 @@ namespace NewHorizons.External.Configs
         /// </summary>
         public VesselModule Vessel;
 
+        /// <summary>
+        /// Configure how this system will appear in the Interstellar Mode in the ship log.
+        /// </summary>
+        public StarChartModule StarChart;
+
         [Obsolete("coords is deprecated, please use Vessel.coords instead")]
         public NomaiCoordinates coords;
 
@@ -218,6 +223,20 @@ namespace NewHorizons.External.Configs
             /// The audio that will loop after the final end times intro while inside a bramble dimension. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list.
             /// </summary>
             public string finalEndTimesBrambleDimensionAudio;
+        }
+
+        [JsonObject]
+        public class StarChartModule
+        {
+            /// <summary>
+            /// The position of the star on the star chart.
+            /// </summary>
+            public MVector2 position;
+
+            /// <summary>
+            /// The color of the star as it appears on the star chart.
+            /// </summary>
+            public MColor color;
         }
 
         [JsonObject]

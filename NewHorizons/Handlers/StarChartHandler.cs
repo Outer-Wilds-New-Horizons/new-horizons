@@ -162,7 +162,7 @@ namespace NewHorizons.Handlers
                     {
                         if (CanWarpToSystem(starSystem))
                         {
-                            ShipLogStarChartMode.AddSystemCard(starSystem);
+                            //ShipLogStarChartMode.AddSystemCard(starSystem);
                             flagActuallyAddedACard = true;
                         }
                     }
@@ -186,7 +186,7 @@ namespace NewHorizons.Handlers
                 {
                     Main.Instance.EnableWarpDrive();
                 }
-                ShipLogStarChartMode?.AddSystemCard(systemUnlocked);
+                //ShipLogStarChartMode?.AddSystemCard(systemUnlocked);
             }
         }
 

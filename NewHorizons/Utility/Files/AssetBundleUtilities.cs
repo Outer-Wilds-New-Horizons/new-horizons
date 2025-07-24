@@ -16,11 +16,13 @@ namespace NewHorizons.Utility.Files
 
         private static readonly List<AssetBundleCreateRequest> _loadingBundles = new();
 
+        public static AssetBundle NHWarpDriveBundle { get; private set; }
         public static AssetBundle NHAssetBundle { get; private set; }
         public static AssetBundle NHPrivateAssetBundle { get; private set; }
 
         static AssetBundleUtilities()
         {
+            NHWarpDriveBundle = LoadRequiredBundle("Assets/bundles/lezzlebit_fancystarmap");
             NHAssetBundle = LoadRequiredBundle("Assets/bundles/newhorizons_public");
             NHPrivateAssetBundle = LoadRequiredBundle("Assets/bundles/newhorizons_private");
         }
