@@ -307,6 +307,7 @@ namespace NewHorizons
             // Caches of GameObjects must always be cleared
             SearchUtilities.ClearCache();
             ProxyHandler.ClearCache();
+            StreamingHandler.Init(); // Clear streaming caches including material tables
 
             // Enum cache, if not cleared every time, breaks signals
             // I don't know why, but it's probably the least expensive cache there is, so let's just clear it every time
@@ -330,6 +331,9 @@ namespace NewHorizons
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
             NHLogger.Log($"Scene Loaded: {scene.name} {mode} OWScene.{LoadManager.NameToScene(scene.name)}");
+            
+            // Start profiling scene load performance
+            PerformanceProfiler.StartTimer($"SceneLoad.{scene.name}");
 
             PlayerSpawned = false;
 
@@ -614,6 +618,14 @@ namespace NewHorizons
             else
             {
                 IsSystemReady = true;
+                
+                // Stop scene load profiling and generate performance report
+                var sceneName = SceneManager.GetActiveScene().name;
+                PerformanceProfiler.StopTimer($"SceneLoad.{sceneName}");
+                
+                // Generate performance report for analysis
+                PerformanceProfiler.GeneratePerformanceReport();
+                PerformanceProfiler.CompareWithBaseline();
 
                 // ShipWarpController or VesselWarpHandler will handle the invulnerability otherwise
                 if (!shouldWarpInFromShip && !shouldWarpInFromVessel)

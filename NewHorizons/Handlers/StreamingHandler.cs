@@ -14,12 +14,28 @@ namespace NewHorizons.Handlers
         private static readonly Dictionary<Material, string> _materialCache = new();
         private static readonly Dictionary<GameObject, string[]> _objectCache = new();
         private static readonly Dictionary<string, List<Sector>> _sectorCache = new();
+        
+        // Cache for StreamingMaterialTable to avoid repeated expensive lookups
+        private static StreamingMaterialTable[] _cachedMaterialTables = null;
 
         public static void Init()
         {
             _materialCache.Clear();
             _objectCache.Clear();
             _sectorCache.Clear();
+            _cachedMaterialTables = null;
+        }
+        
+        /// <summary>
+        /// Get cached material tables to avoid expensive Resources.FindObjectsOfTypeAll calls
+        /// </summary>
+        private static StreamingMaterialTable[] GetMaterialTables()
+        {
+            if (_cachedMaterialTables == null)
+            {
+                _cachedMaterialTables = Resources.FindObjectsOfTypeAll<StreamingMaterialTable>();
+            }
+            return _cachedMaterialTables;
         }
 
         public static void SetUpStreaming(AstroObject.Name name, Sector sector)
@@ -52,52 +68,43 @@ namespace NewHorizons.Handlers
         /// </summary>
         public static void SetUpStreaming(GameObject obj, Sector sector)
         {
-            // TODO: used OFTEN by detail builder. 20-40ms adds up to seconds. speed up!
-
+            PerformanceProfiler.StartTimer("StreamingHandler.SetUpStreaming");
+            
             Profiler.BeginSample("get bundles");
+            PerformanceProfiler.StartTimer("StreamingHandler.GetBundles");
             // find the asset bundles to load
             // tries the cache first, then builds
             if (!_objectCache.TryGetValue(obj, out var assetBundles))
             {
                 var assetBundlesList = new List<string>();
 
-                var tables = Resources.FindObjectsOfTypeAll<StreamingMaterialTable>();
-                foreach (var streamingHandle in obj.GetComponentsInChildren<StreamingMeshHandle>())
+                // Use cached tables to avoid expensive repeated lookups
+                var tables = GetMaterialTables();
+                var streamingHandles = obj.GetComponentsInChildren<StreamingMeshHandle>();
+                
+                // Process all streaming handles
+                foreach (var streamingHandle in streamingHandles)
                 {
                     var assetBundle = streamingHandle.assetBundle;
                     assetBundlesList.SafeAdd(assetBundle);
 
                     if (streamingHandle is StreamingRenderMeshHandle or StreamingSkinnedMeshHandle)
                     {
-                        var materials = streamingHandle.GetComponent<Renderer>().sharedMaterials;
-
+                        var renderer = streamingHandle.GetComponent<Renderer>();
+                        if (renderer == null) continue;
+                        
+                        var materials = renderer.sharedMaterials;
                         if (materials.Length == 0) continue;
 
-                        // Gonna assume that if theres more than one material its probably in the same asset bundle anyway right
-                        if (_materialCache.TryGetValue(materials[0], out assetBundle))
-                        {
-                            assetBundlesList.SafeAdd(assetBundle);
-                        }
-                        else
-                        {
-                            foreach (var table in tables)
-                            {
-                                foreach (var lookup in table._materialPropertyLookups)
-                                {
-                                    if (materials.Contains(lookup.material))
-                                    {
-                                        _materialCache.SafeAdd(lookup.material, table.assetBundle);
-                                        assetBundlesList.SafeAdd(table.assetBundle);
-                                    }
-                                }
-                            }
-                        }
+                        // Process materials more efficiently
+                        ProcessMaterials(materials, tables, assetBundlesList);
                     }
                 }
 
                 assetBundles = assetBundlesList.ToArray();
                 _objectCache[obj] = assetBundles;
             }
+            PerformanceProfiler.StopTimer("StreamingHandler.GetBundles");
             Profiler.EndSample();
 
             Profiler.BeginSample("get sectors");
@@ -137,6 +144,8 @@ namespace NewHorizons.Handlers
                     StreamingManager.LoadStreamingAssets(assetBundle);
             }
             Profiler.EndSample();
+            
+            PerformanceProfiler.StopTimer("StreamingHandler.SetUpStreaming");
         }
 
         public static bool IsBundleInUse(string assetBundle)
@@ -148,16 +157,52 @@ namespace NewHorizons.Handlers
                         return true;
             return false;
         }
+        
+        /// <summary>
+        /// Efficiently process materials to find their asset bundles
+        /// </summary>
+        private static void ProcessMaterials(Material[] materials, StreamingMaterialTable[] tables, List<string> assetBundlesList)
+        {
+            // Check cache first for all materials
+            foreach (var material in materials)
+            {
+                if (material == null) continue;
+                
+                if (_materialCache.TryGetValue(material, out var cachedBundle))
+                {
+                    assetBundlesList.SafeAdd(cachedBundle);
+                }
+                else
+                {
+                    // Find in tables and cache the result
+                    foreach (var table in tables)
+                    {
+                        foreach (var lookup in table._materialPropertyLookups)
+                        {
+                            if (lookup.material == material)
+                            {
+                                _materialCache.SafeAdd(material, table.assetBundle);
+                                assetBundlesList.SafeAdd(table.assetBundle);
+                                goto NextMaterial; // Break out of both loops
+                            }
+                        }
+                    }
+                    NextMaterial:;
+                }
+            }
+        }
 
         public static StreamingGroup GetStreamingGroup(AstroObject.Name name)
         {
             if (name is AstroObject.Name.CaveTwin or AstroObject.Name.TowerTwin)
             {
-                return SearchUtilities.Find("FocalBody/StreamingGroup_HGT").GetComponent<StreamingGroup>();
+                var streamingGroupGO = SearchUtilities.Find("FocalBody/StreamingGroup_HGT");
+                return streamingGroupGO?.GetComponent<StreamingGroup>();
             }
             else
             {
-                return Locator.GetAstroObject(name).GetComponentInChildren<StreamingGroup>();
+                var astroObject = Locator.GetAstroObject(name);
+                return astroObject?.GetComponentInChildren<StreamingGroup>();
             }
         }
     }
