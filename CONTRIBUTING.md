@@ -68,3 +68,7 @@ These will automatically be converted from strings to the proper enum type.
 ## Contributing to Documentation
 
 If you wish to contribute to the documentation, take a look at [CONTRIBUTING.md](docs/CONTRIBUTING.md) in the docs folder.
+
+## Disclaimer
+
+This should go without saying, but we will not accept PRs that are obviously AI generated, nor will we accept PRs from people who have not actually played the game or any mods.
