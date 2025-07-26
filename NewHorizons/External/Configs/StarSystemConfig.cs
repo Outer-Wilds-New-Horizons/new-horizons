@@ -236,7 +236,19 @@ namespace NewHorizons.External.Configs
             /// <summary>
             /// The color of the star as it appears on the star chart.
             /// </summary>
-            public MColor color;
+            public MColor color = MColor.white;
+
+            /// <summary>
+            /// Filepath to a texture that will replace the default texture used to display this star in the star map.
+            /// If you use this, it's probably best to leave the color field blank, unless you have a white texture that you'd like to tint a different color.
+            /// </summary>
+            public string starTexturePath;
+
+            /// <summary>
+            /// Time in the loop (in minutes) that this star will disappear.
+            /// The default time (30) means that players can warp to your star at any point in the loop. A 22 minute disappearance time would make the star unavailable to be warped to as soon as the sun explodes.
+            /// </summary>
+            public float disappearanceTime = 30;
         }
 
         [JsonObject]

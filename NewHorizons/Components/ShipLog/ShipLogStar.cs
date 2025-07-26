@@ -27,13 +27,14 @@ namespace NewHorizons.Components.ShipLog
             mode = m;
         }
 
-        public void OnEnable()
-        {
-        }
-
         public void Update()
         {
             if ((TimeLoop.GetSecondsElapsed() / 60) > _starTimeLoopEnd) gameObject.SetActive(false);
+        }
+
+        // Update the position in lateupdate so that the position isn't calculated from the previous frame if the mode was just enabled
+        public void LateUpdate()
+        {
             Vector3 representPosition = new Vector3(_starPosition.x - mode.cameraPosition.x, _starPosition.y - mode.cameraPosition.y, _starPosition.z) * mode.cameraZoom;
             representPosition = mode.cameraPivot.InverseTransformPoint(mode.transform.TransformPoint(representPosition));
             float Depth = (representPosition.z + 60) / 50;

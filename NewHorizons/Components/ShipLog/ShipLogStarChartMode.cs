@@ -3,6 +3,7 @@ using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using NewHorizons.Utility.Files;
 using NewHorizons.Utility.OWML;
+using OWML.Common;
 using OWML.ModHelper;
 using System;
 using System.Collections.Generic;
@@ -51,7 +52,6 @@ namespace NewHorizons.Components.ShipLog
 
         private Texture2D _starTexture;
         private Texture2D _cursorTexture;
-        private Sprite _starCircle;
 
         private GameObject _enableOnWarpVisuals;
         private GameObject _disableOnWarpVisuals;
@@ -59,14 +59,12 @@ namespace NewHorizons.Components.ShipLog
         private ShipLogEntryCard _card;
         private GameObject _cardTemplate = null;
 
-        private List<Vector3> _galaxyStarPoints;
+        Vector3[] _galaxyStarPoints;
 
 
         private void SetCard(string uniqueID)
         {
             _card.transform.localScale = new Vector3(1, 0, 1);
-
-            Main.Instance.ModHelper.Console.WriteLine(uniqueID);
 
             Texture texture = null;
             try
@@ -81,8 +79,7 @@ namespace NewHorizons.Components.ShipLog
                 }
                 else
                 {
-                    Main.Instance.ModHelper.Console.WriteLine("Got mod? " + Main.SystemDict[uniqueID].Mod.ToString());
-                    OWML.Common.IModBehaviour mod = Main.SystemDict[uniqueID].Mod;
+                    IModBehaviour mod = Main.SystemDict[uniqueID].Mod;
 
                     var path = Path.Combine("systems", uniqueID + ".png");
 
@@ -92,7 +89,6 @@ namespace NewHorizons.Components.ShipLog
                         path = Path.Combine("planets", uniqueID + ".png");
                     }
 
-                    NHLogger.LogVerbose($"ShipLogStarChartManager - Trying to load {path}");
                     texture = ImageUtilities.GetTexture(mod, path);
                 }
             }
@@ -120,21 +116,15 @@ namespace NewHorizons.Components.ShipLog
                 _cardTemplate = Instantiate(panRoot.GetComponentInChildren<ShipLogEntryCard>(true).gameObject);
                 _cardTemplate.SetActive(false);
             }
+
             GameObject newCard = Instantiate(_cardTemplate, this.transform);
             newCard.name = "Card";
             newCard.SetActive(true);
             newCard.transform.localPosition = new Vector3(360, -150, 0);
+
             _card = newCard.GetAddComponent<ShipLogEntryCard>();
             _card._moreToExploreIcon.gameObject.SetActive(false);
             _card._unreadIcon.gameObject.SetActive(false);
-
-
-            //CanvasRenderer[] renderers = newCard.GetComponentsInChildren<CanvasRenderer>();
-            //foreach(CanvasRenderer r in renderers)
-            //{
-
-            //}
-
         }
         public void InitializeStars()
         {
@@ -175,34 +165,19 @@ namespace NewHorizons.Components.ShipLog
         private void LoadAssets()
         {
 
-            _onOpenClip = NHWarpDriveBundle.LoadAsset<AudioClip>("Assets/!Assets/FancyStar/Audio/open star map.ogg");
-            _onSelectClip = NHWarpDriveBundle.LoadAsset<AudioClip>("Assets/!Assets/FancyStar/Audio/select star.ogg");
-            _onDeselectClip = NHWarpDriveBundle.LoadAsset<AudioClip>("Assets/!Assets/FancyStar/Audio/deselect star.ogg");
+            _onOpenClip = NHPrivateAssetBundle.LoadAsset<AudioClip>("Assets/StarChart/Audio/open star map.ogg");
+            _onSelectClip = NHPrivateAssetBundle.LoadAsset<AudioClip>("Assets/StarChart/Audio/select star.ogg");
+            _onDeselectClip = NHPrivateAssetBundle.LoadAsset<AudioClip>("Assets/StarChart/Audio/deselect star.ogg");
 
-            _cursorTexture = NHWarpDriveBundle.LoadAsset<Texture2D>("Assets/!Assets/FancyStar/arrow.png");
-            _starTexture = NHWarpDriveBundle.LoadAsset<Texture2D>("Assets/!Assets/FancyStar/star.png");
-            _starCircle = NHWarpDriveBundle.LoadAsset<Sprite>("Assets/!Assets/FancyStar/star circle.png");
+            _cursorTexture = NHPrivateAssetBundle.LoadAsset<Texture2D>("Assets/StarChart/arrow.png");
+            _starTexture = NHPrivateAssetBundle.LoadAsset<Texture2D>("Assets/StarChart/star.png");
 
-            GameObject shipObject = NHWarpDriveBundle.LoadAsset<GameObject>("Assets/!Assets/FancyStar/FancyShipParts.prefab");
+            GameObject shipObject = NHPrivateAssetBundle.LoadAsset<GameObject>("Assets/StarChart/WarpDrive.prefab");
             GameObject shipWarpDrive = Instantiate(shipObject, GameObject.Find("Ship_Body").transform);
             shipWarpDrive.name = "WarpDrive";
             AssetBundleUtilities.ReplaceShaders(shipWarpDrive);
         }
 
-        private void AddStar(string customName, bool isThisSystem)
-        {
-            AddStar(customName, isThisSystem, false, Vector3.zero);
-        }
-
-        private void AddStar(Vector3 customPosition)
-        {
-            AddStar("", false, true, customPosition);
-        }
-
-        private void AddStar()
-        {
-            AddStar("", false);
-        }
 
         private void SwitchWarpDriveVisuals(bool canWarp)
         {
@@ -222,6 +197,22 @@ namespace NewHorizons.Components.ShipLog
             return image;
         }
 
+
+
+        private void AddStar()
+        {
+            AddStar("", false);
+        }
+        private void AddStar(string customName, bool isThisSystem)
+        {
+            AddStar(customName, isThisSystem, false, Vector3.zero);
+        }
+
+        private void AddStar(Vector3 customPosition)
+        {
+            AddStar("", false, true, customPosition);
+        }
+
         private void AddStar(string customName, bool isThisSystem, bool hasInputPosition,  Vector3 inputPosition)
         {
 
@@ -236,21 +227,49 @@ namespace NewHorizons.Components.ShipLog
 
             if (!string.IsNullOrEmpty(customName))
             {
-
+                // The seed for any default (random) fields of a custom star is based on the hash of their unique name (plus ten, bc why not).
                 UnityEngine.Random.InitState(customName.GetHashCode() + 10);
 
 
-                if (Main.SystemDict[customName].Config.StarChart != null)
+                External.Configs.StarSystemConfig.StarChartModule config = Main.SystemDict[customName].Config.StarChart;
+
+                //Null check config on each so that we don't have to repeat each else statement
+                //(Basically if we null check the config only once, then we have to provide the "else" statement both when the field is null and when the whole config is null)
+                if (config != null && config.position != null)
                 {
-                    External.Configs.StarSystemConfig.StarChartModule config = Main.SystemDict[customName].Config.StarChart;
-
-                    if (config.position != null) newStar._starPosition = new Vector3(config.position.x, config.position.y, 0);
-                    if (config.color != null) starImage.color = new Color(config.color.r, config.color.g, config.color.b, config.color.a);
-
+                    newStar._starPosition = new Vector3(config.position.x, config.position.y, 0);
                 } else
                 {
                     newStar._starPosition = new Vector3(UnityEngine.Random.Range(-100f, 100f), UnityEngine.Random.Range(-100f, 100f), 0);
                 }
+
+                if (config != null && config.color != null)
+                {
+                    starImage.color = new Color(config.color.r, config.color.g, config.color.b, config.color.a);
+                }
+                else
+                {
+                    starImage.color = Color.white;
+                }
+
+                if (config != null && config.starTexturePath != null)
+                {
+                    IModBehaviour mod = Main.SystemDict[customName].Mod;
+                    string path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, config.starTexturePath);
+                    if (File.Exists(path)) starImage.texture = ImageUtilities.GetTexture(mod, path);
+                }
+
+                if (config != null)
+                {
+                    newStar._starTimeLoopEnd = config.disappearanceTime;
+                } else
+                {
+                    newStar._starTimeLoopEnd = 30;
+                }
+
+                newStar._starScale = 0.6f;
+                newStar._starName = customName;
+
                 newStarObject.name = customName;
                 if (!isThisSystem)
                 {
@@ -260,10 +279,8 @@ namespace NewHorizons.Components.ShipLog
                     _thisStar = newStar;
                     cameraPosition = new Vector2(newStar._starPosition.x, newStar._starPosition.y);
                 }
+
                 AddTextLabel(newStarObject.transform, UniqueIDToName(customName));
-                newStar._starScale = 0.6f;
-                newStar._starName = customName;
-                newStar._starTimeLoopEnd = 30;
             } else
             {
                 starImage.color = RandomStarColor();
@@ -324,9 +341,9 @@ namespace NewHorizons.Components.ShipLog
         {
             if (Main.HasWarpDrive)
             {
+                _galaxyStarPoints = CreateGalaxy();
                 CreateCard();
                 LoadAssets();
-                CreateGalaxy();
             }
             _oneShotSource = oneShotSource;
             _centerPromptList = centerPromptList;
@@ -358,7 +375,7 @@ namespace NewHorizons.Components.ShipLog
 
             gameObject.SetActive(true);
             _oneShotSource.PlayOneShot(_onOpenClip, _volumeScale);
-            Locator.GetPromptManager().AddScreenPrompt(_targetSystemPrompt, _centerPromptList, TextAnchor.MiddleCenter, -1, true);
+            Locator.GetPromptManager().AddScreenPrompt(_targetSystemPrompt, _centerPromptList, TextAnchor.MiddleCenter, -1, false);
         }
 
         public override void ExitMode()
@@ -416,12 +433,13 @@ namespace NewHorizons.Components.ShipLog
 
         private void UpdateSelection()
         {
+
             float minimumDistance = Mathf.Infinity;
             ShipLogStar highlightedStar = null;
             foreach(ShipLogStar s in shipLogStars)
             {
                 float distance = Vector3.Distance(s.transform.localPosition, Vector3.zero);
-                if (distance < minimumDistance && distance < 200)
+                if (distance < minimumDistance && distance < 200 && s.gameObject.activeSelf)
                 {
                     minimumDistance = distance;
                     highlightedStar = s;
@@ -472,6 +490,8 @@ namespace NewHorizons.Components.ShipLog
                     SetWarpLinePositions(_thisStar.transform.localPosition, Vector3.zero);
                 }
             }
+
+            if (_target != null && !_target.gameObject.activeSelf) RemoveWarpTarget(false);
         }
 
         private void SetWarpLinePositions(Vector3 pos1, Vector3 pos2)
@@ -569,15 +589,16 @@ namespace NewHorizons.Components.ShipLog
 
 
         // Galaxy Visuals
-        private void CreateGalaxy()
+        private Vector3[] CreateGalaxy()
         {
-            _galaxyStarPoints = new List<Vector3>();
+            List<Vector3> galaxyStarPoints = new List<Vector3>();
 
             UnityEngine.Random.InitState(1);
             int arms = 7;
             for (int i = 0; i < arms; i++)
             {
                CreateGalaxyArm(
+                   galaxyStarPoints,
                    360*((float)i/(float)arms),
                    12, 1,
                    60, 200,
@@ -585,9 +606,11 @@ namespace NewHorizons.Components.ShipLog
                    24
                    );
             }
+
+            return galaxyStarPoints.ToArray();
         }
 
-        private void CreateGalaxyArm(float startingAngle, float startDensity, float endDensity, float startScatter, float endScatter, float armLength, int bunchCount)
+        private void CreateGalaxyArm(List<Vector3> list, float startingAngle, float startDensity, float endDensity, float startScatter, float endScatter, float armLength, int bunchCount)
         {
             Vector3 moveDirection = Quaternion.AngleAxis(startingAngle, Vector3.forward) * Vector3.up;
             Vector3 point = moveDirection * 5;
@@ -603,7 +626,7 @@ namespace NewHorizons.Components.ShipLog
                 for (int s = 0; s < (int)density; s++)
                 {
                     Vector3 scatterOffset = RandomStarOffsetVector(scatter);
-                    _galaxyStarPoints.Add(point + scatterOffset);
+                    list.Add(point + scatterOffset);
                 }
 
                 point += moveDirection * 30 * armLength;
