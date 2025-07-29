@@ -338,6 +338,7 @@ namespace NewHorizons.External.Configs
             canExitViaWarpDrive = canExitViaWarpDrive && otherConfig.canExitViaWarpDrive;
             destroyStockPlanets = destroyStockPlanets && otherConfig.destroyStockPlanets;
             enableTimeLoop = enableTimeLoop && otherConfig.enableTimeLoop;
+            allowOutsideItems = allowOutsideItems && otherConfig.allowOutsideItems;
 
             // False by default
             returnToSolarSystemWhenTooFar = returnToSolarSystemWhenTooFar || otherConfig.returnToSolarSystemWhenTooFar;
@@ -345,6 +346,7 @@ namespace NewHorizons.External.Configs
             loopDuration = loopDuration == 22f ? otherConfig.loopDuration : loopDuration;
 
             // If current one is null take the other
+            shipLogStartingPlanetID = string.IsNullOrEmpty(shipLogStartingPlanetID) ? otherConfig.shipLogStartingPlanetID : shipLogStartingPlanetID;
             factRequiredForWarp = string.IsNullOrEmpty(factRequiredForWarp) ? otherConfig.factRequiredForWarp : factRequiredForWarp;
             factRequiredToExitViaWarpDrive = string.IsNullOrEmpty(factRequiredToExitViaWarpDrive) ? otherConfig.factRequiredToExitViaWarpDrive : factRequiredToExitViaWarpDrive;
             Skybox = Skybox == null ? otherConfig.Skybox : Skybox;
@@ -353,9 +355,14 @@ namespace NewHorizons.External.Configs
             mapRestricted = mapRestricted || otherConfig.mapRestricted;
             respawnHere = respawnHere || otherConfig.respawnHere;
             startHere = startHere || otherConfig.startHere;
+            freeMapAngle = freeMapAngle || otherConfig.freeMapAngle;
 
             if (Vessel != null && otherConfig.Vessel != null)
             {
+                Vessel.coords ??= otherConfig.Vessel.coords;
+                Vessel.promptFact = string.IsNullOrEmpty(Vessel.promptFact) ? otherConfig.Vessel.promptFact : Vessel.promptFact;
+                Vessel.vesselSpawn ??= otherConfig.Vessel.vesselSpawn;
+                Vessel.warpExit ??= otherConfig.Vessel.warpExit;
                 Vessel.spawnOnVessel = Vessel.spawnOnVessel || otherConfig.Vessel.spawnOnVessel;
                 Vessel.alwaysPresent = Vessel.alwaysPresent || otherConfig.Vessel.alwaysPresent;
                 Vessel.hasPhysics = Vessel.hasPhysics ?? otherConfig.Vessel.hasPhysics;
