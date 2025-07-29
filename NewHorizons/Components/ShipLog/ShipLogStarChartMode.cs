@@ -43,8 +43,6 @@ namespace NewHorizons.Components.ShipLog
 
         private Color _elementColor = new Color(245f / 255f, 158f / 255f, 44f / 255f);
 
-        private bool alreadyInitialized = false;
-
         private AudioClip _onOpenClip;
         private AudioClip _onSelectClip;
         private AudioClip _onDeselectClip;
@@ -196,6 +194,12 @@ namespace NewHorizons.Components.ShipLog
         {
             AddStar("", false);
         }
+
+        internal void AddStar(string customName)
+        {
+            AddStar(customName, Main.Instance.CurrentStarSystem == customName);
+        }
+
         private void AddStar(string customName, bool isThisSystem)
         {
             AddStar(customName, isThisSystem, false, Vector3.zero);
@@ -330,12 +334,10 @@ namespace NewHorizons.Components.ShipLog
 
         public override void Initialize(ScreenPromptList centerPromptList, ScreenPromptList upperRightPromptList, OWAudioSource oneShotSource)
         {
-            if (Main.HasWarpDrive)
-            {
-                _galaxyStarPoints = CreateGalaxy();
-                CreateCard();
-                LoadAssets();
-            }
+            _galaxyStarPoints = CreateGalaxy();
+            CreateCard();
+            LoadAssets();
+            InitializeStars();
             _oneShotSource = oneShotSource;
             _centerPromptList = centerPromptList;
             _targetSystemPrompt = new ScreenPrompt(InputLibrary.markEntryOnHUD, TranslationHandler.GetTranslation("LOCK_AUTOPILOT_WARP", TranslationHandler.TextType.UI), 0, ScreenPrompt.DisplayState.Normal, false);
@@ -361,9 +363,6 @@ namespace NewHorizons.Components.ShipLog
 
         public override void EnterMode(string entryID = "", List<ShipLogFact> revealQueue = null)
         {
-            if (!alreadyInitialized) InitializeStars();
-            alreadyInitialized = true;
-
             gameObject.SetActive(true);
             _oneShotSource.PlayOneShot(_onOpenClip, _volumeScale);
             Locator.GetPromptManager().AddScreenPrompt(_targetSystemPrompt, _centerPromptList, TextAnchor.MiddleCenter, -1, false);
@@ -372,6 +371,9 @@ namespace NewHorizons.Components.ShipLog
         public override void ExitMode()
         {
             gameObject.SetActive(false);
+            cameraPosition = new Vector2(_thisStar._starPosition.x, _thisStar._starPosition.y);
+            cameraZoom = 8;
+            cameraPivot.localEulerAngles = new Vector3(-5, 0, 0);
             cameraPivot.localScale = Vector3.zero;
 
             Locator.GetPromptManager().RemoveScreenPrompt(_targetSystemPrompt);
