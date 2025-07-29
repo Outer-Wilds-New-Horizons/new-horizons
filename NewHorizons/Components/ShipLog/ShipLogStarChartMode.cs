@@ -174,12 +174,9 @@ namespace NewHorizons.Components.ShipLog
         }
 
 
-        private void SwitchWarpDriveVisuals(bool canWarp)
+        private void UpdateWarpDriveVisuals()
         {
-            if (_enableOnWarpVisuals == null) _enableOnWarpVisuals = GameObject.Find("Ship_Body/WarpDrive/EnableOnWarp");
-            if (_disableOnWarpVisuals == null) _disableOnWarpVisuals = GameObject.Find("Ship_Body/WarpDrive/DisableOnWarp");
-            _enableOnWarpVisuals.SetActive(canWarp);
-            _disableOnWarpVisuals.SetActive(!canWarp);
+            Main.Instance.ShipWarpController.UpdateWarpDriveVisuals();
         }
 
         private RawImage AddVisualIndicator()
@@ -588,7 +585,7 @@ namespace NewHorizons.Components.ShipLog
 
             var warpPromptText = "<CMD> " + TranslationHandler.GetTranslation("ENGAGE_WARP_PROMPT", TranslationHandler.TextType.UI).Replace("{0}", name);
             _warpPrompt.SetText(warpPromptText);
-            SwitchWarpDriveVisuals(true);
+            UpdateWarpDriveVisuals();
         }
 
         private void RemoveWarpTarget(bool playSound = false)
@@ -598,7 +595,7 @@ namespace NewHorizons.Components.ShipLog
             if (playSound) _oneShotSource.PlayOneShot(_onDeselectClip, _volumeScale);
             _target = null;
             _startPanTime = 0;
-            SwitchWarpDriveVisuals(false);
+            UpdateWarpDriveVisuals();
         }
 
         public string GetTargetStarSystem()

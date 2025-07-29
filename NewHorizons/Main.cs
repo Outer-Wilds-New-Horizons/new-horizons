@@ -93,8 +93,8 @@ namespace NewHorizons
         public bool WearingSuit { get; private set; } = false;
 
         public bool IsChangingStarSystem { get; private set; } = false;
-
-        public static bool HasWarpDrive { get; private set; } = false;
+        public static bool HasWarpDriveVisuals { get; private set; } = false;
+        public static bool HasWarpDriveFunctionality { get; private set; } = false;
 
         private string _defaultStarSystem = "SolarSystem";
 
@@ -500,15 +500,20 @@ namespace NewHorizons
                 if (isSolarSystem)
                 {
                     // Warp drive
-                    HasWarpDrive = StarChartHandler.CanWarp();
+                    HasWarpDriveVisuals = StarChartHandler.CanEverWarp();
+                    HasWarpDriveFunctionality = StarChartHandler.CanWarp();
                     if (ShipWarpController == null)
                     {
                         ShipWarpController = SearchUtilities.Find("Ship_Body").AddComponent<ShipWarpController>();
                         ShipWarpController.Init();
                     }
-                    if (HasWarpDrive == true)
+                    if (HasWarpDriveVisuals)
                     {
-                        EnableWarpDrive();
+                        EnableWarpDriveVisuals();
+                    }
+                    if (HasWarpDriveFunctionality)
+                    {
+                        EnableWarpDriveFunctionality();
                     }
 
                     var shouldWarpInFromShip = IsWarpingFromShip && ShipWarpController != null;
@@ -633,14 +638,29 @@ namespace NewHorizons
             }
         }
 
-        public void EnableWarpDrive()
+        public void EnableWarpDriveVisuals()
         {
-            NHLogger.LogVerbose("Setting up warp drive");
+            NHLogger.LogVerbose("Setting up warp drive visuals");
 
             GameObject shipObject = AssetBundleUtilities.NHPrivateAssetBundle.LoadAsset<GameObject>("Assets/StarChart/WarpDrive.prefab");
             GameObject shipWarpDrive = Instantiate(shipObject, GameObject.Find("Ship_Body").transform);
             shipWarpDrive.name = "WarpDrive";
             AssetBundleUtilities.ReplaceShaders(shipWarpDrive);
+
+            if (ShipWarpController != null)
+            {
+                ShipWarpController.InitializeWarpDriveVisuals(
+                    enableObj: shipWarpDrive.transform.Find("EnableOnWarp").gameObject,
+                    disableObj: shipWarpDrive.transform.Find("DisableOnWarp").gameObject
+                );
+            }
+
+            HasWarpDriveVisuals = true;
+        }
+
+        public void EnableWarpDriveFunctionality()
+        {
+            NHLogger.LogVerbose("Setting up warp drive functionality");
 
             // In weird edge case when starting in another system on a new expedition, don't want it to briefly pop up during warp
             if (!IsWarpingFromShip)
@@ -649,7 +669,7 @@ namespace NewHorizons
                 PlanetCreationHandler.LoadBody(LoadConfig(this, "Assets/WarpDriveConfig.json"));
             }
 
-            HasWarpDrive = true;
+            HasWarpDriveFunctionality = true;
         }
 
         /// <summary>
