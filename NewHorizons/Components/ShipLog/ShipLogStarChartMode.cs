@@ -240,9 +240,15 @@ namespace NewHorizons.Components.ShipLog
                     newStar._starPosition = new Vector3(UnityEngine.Random.Range(-100f, 100f), UnityEngine.Random.Range(-100f, 100f), 0);
                 }
 
+                Color? inferredColor = SystemStarColor(customName);
+
                 if (config != null && config.color != null)
                 {
-                    starImage.color = new Color(config.color.r, config.color.g, config.color.b, config.color.a);
+                    starImage.color = config.color.ToColor();
+                }
+                else if (inferredColor.HasValue)
+                {
+                    starImage.color = inferredColor.Value;
                 }
                 else
                 {
@@ -301,6 +307,41 @@ namespace NewHorizons.Components.ShipLog
             Color blueYellowColor = Color.Lerp(Color.blue, Color.yellow, UnityEngine.Random.Range(0f, 1f));
             Color darkLightColor = Color.Lerp(blueYellowColor, Color.white, UnityEngine.Random.Range(0.8f, 1f));
             return darkLightColor;
+        }
+
+        private Color? SystemStarColor(string customName)
+        {
+            if (customName == "SolarSystem") return new Color(2.302f, 0.8554f, 0.0562f, 1);
+
+            Color? inferredColor = null;
+
+            // Try to find the center of the solar system
+            var bodies = Main.BodyDict[customName];
+            var center = bodies.FirstOrDefault(body => body.Config.Base?.centerOfSolarSystem == true && body.Config.Star != null);
+
+            if (center != null)
+            {
+                var tint = center.Config.Star.tint.ToColor();
+                tint.a = 1f;
+                inferredColor = tint;
+            }
+            else
+            {
+                // Fallback to largest star if no center is found
+                var largestStar = bodies
+                    .Where(body => body.Config.Star != null)
+                    .OrderByDescending(body => body.Config.Star.size)
+                    .FirstOrDefault();
+
+                if (largestStar != null)
+                {
+                    var tint = largestStar.Config.Star.tint.ToColor();
+                    tint.a = 1f;
+                    inferredColor = tint;
+                }
+            }
+
+            return inferredColor;
         }
 
         private void AddTextLabel(Transform parent, string Text)
