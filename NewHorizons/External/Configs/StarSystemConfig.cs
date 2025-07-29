@@ -236,7 +236,7 @@ namespace NewHorizons.External.Configs
             /// <summary>
             /// The color of the star as it appears on the star chart.
             /// </summary>
-            public MColor color = MColor.white;
+            public MColor color;
 
             /// <summary>
             /// Filepath to a texture that will replace the default texture used to display this star in the star map.
@@ -379,6 +379,18 @@ namespace NewHorizons.External.Configs
             else
             {
                 GlobalMusic ??= otherConfig.GlobalMusic;
+            }
+
+            if (StarChart != null && otherConfig.StarChart != null)
+            {
+                StarChart.position = StarChart.position ?? otherConfig.StarChart.position;
+                StarChart.color = StarChart.color ?? otherConfig.StarChart.color;
+                StarChart.starTexturePath = string.IsNullOrEmpty(StarChart.starTexturePath) ? otherConfig.StarChart.starTexturePath : StarChart.starTexturePath;
+                StarChart.disappearanceTime = StarChart.disappearanceTime == 30f ? otherConfig.StarChart.disappearanceTime : StarChart.disappearanceTime;
+            }
+            else
+            {
+                StarChart ??= otherConfig.StarChart;
             }
 
             if (conditionalChecks != null && otherConfig.conditionalChecks != null)
