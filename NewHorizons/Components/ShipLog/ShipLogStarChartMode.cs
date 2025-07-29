@@ -412,14 +412,13 @@ namespace NewHorizons.Components.ShipLog
 
         public override void ExitMode()
         {
-            gameObject.SetActive(false);
             cameraPosition = new Vector2(_thisStar._starPosition.x, _thisStar._starPosition.y);
             cameraRotation = 0;
             cameraZoom = 8;
             cameraPivot.localEulerAngles = new Vector3(-5, 0, 0);
             cameraPivot.localScale = Vector3.zero;
-
             Locator.GetPromptManager().RemoveScreenPrompt(_targetSystemPrompt);
+            gameObject.SetActive(false);
         }
 
         public override string GetFocusedEntryID()
