@@ -637,6 +637,11 @@ namespace NewHorizons
         {
             NHLogger.LogVerbose("Setting up warp drive");
 
+            GameObject shipObject = AssetBundleUtilities.NHPrivateAssetBundle.LoadAsset<GameObject>("Assets/StarChart/WarpDrive.prefab");
+            GameObject shipWarpDrive = Instantiate(shipObject, GameObject.Find("Ship_Body").transform);
+            shipWarpDrive.name = "WarpDrive";
+            AssetBundleUtilities.ReplaceShaders(shipWarpDrive);
+
             // In weird edge case when starting in another system on a new expedition, don't want it to briefly pop up during warp
             if (!IsWarpingFromShip)
             {

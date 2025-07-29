@@ -163,18 +163,12 @@ namespace NewHorizons.Components.ShipLog
 
         private void LoadAssets()
         {
-
             _onOpenClip = NHPrivateAssetBundle.LoadAsset<AudioClip>("Assets/StarChart/Audio/open star map.ogg");
             _onSelectClip = NHPrivateAssetBundle.LoadAsset<AudioClip>("Assets/StarChart/Audio/select star.ogg");
             _onDeselectClip = NHPrivateAssetBundle.LoadAsset<AudioClip>("Assets/StarChart/Audio/deselect star.ogg");
 
             _cursorTexture = NHPrivateAssetBundle.LoadAsset<Texture2D>("Assets/StarChart/arrow.png");
             _starTexture = NHPrivateAssetBundle.LoadAsset<Texture2D>("Assets/StarChart/star.png");
-
-            GameObject shipObject = NHPrivateAssetBundle.LoadAsset<GameObject>("Assets/StarChart/WarpDrive.prefab");
-            GameObject shipWarpDrive = Instantiate(shipObject, GameObject.Find("Ship_Body").transform);
-            shipWarpDrive.name = "WarpDrive";
-            AssetBundleUtilities.ReplaceShaders(shipWarpDrive);
         }
 
 
