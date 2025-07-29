@@ -246,9 +246,9 @@ namespace NewHorizons.External.Configs
 
             /// <summary>
             /// Time in the loop (in minutes) that this star will disappear.
-            /// The default time (30) means that players can warp to your star at any point in the loop. A 22 minute disappearance time would make the star unavailable to be warped to as soon as the sun explodes.
+            /// The default time (0) means that players can warp to your star at any point. A 22 minute disappearance time would make the star unavailable to be warped to as soon as the sun explodes.
             /// </summary>
-            public float disappearanceTime = 30;
+            public float disappearanceTime = 0;
         }
 
         [JsonObject]

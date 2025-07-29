@@ -21,6 +21,7 @@ namespace NewHorizons.Components.ShipLog
         public float _starTimeLoopEnd;
 
         private ShipLogStarChartMode mode;
+        internal HashSet<Vector3> usedOffsets;
 
         public void Initialize(ShipLogStarChartMode m)
         {
@@ -29,6 +30,7 @@ namespace NewHorizons.Components.ShipLog
 
         public void Update()
         {
+            if (_starTimeLoopEnd == 0) return;
             if ((TimeLoop.GetSecondsElapsed() / 60) > _starTimeLoopEnd) gameObject.SetActive(false);
         }
 

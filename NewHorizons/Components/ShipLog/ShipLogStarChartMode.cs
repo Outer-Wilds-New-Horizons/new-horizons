@@ -1,3 +1,5 @@
+using NewHorizons.External;
+using NewHorizons.External.Configs;
 using NewHorizons.External.SerializableData;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
@@ -39,6 +41,8 @@ namespace NewHorizons.Components.ShipLog
         public float cameraZoom = 8;
         public Transform cameraPivot;
         private Transform _allStarsParent;
+        private Transform _genericParent;
+        private Transform _systemsParent;
         private RectTransform highlightCursor;
         private RectTransform visualWarpLine;
 
@@ -136,6 +140,16 @@ namespace NewHorizons.Components.ShipLog
             _allStarsParent.SetAsFirstSibling();
             ResetTransforms(_allStarsParent);
 
+            _genericParent = new GameObject("Generic").transform;
+            _genericParent.parent = _allStarsParent;
+            _genericParent.SetAsFirstSibling();
+            ResetTransforms(_genericParent);
+
+            _systemsParent = new GameObject("Systems").transform;
+            _systemsParent.parent = _allStarsParent;
+            _systemsParent.SetAsLastSibling();
+            ResetTransforms(_systemsParent);
+
             RawImage highlightCursorImage = AddVisualIndicator();
             highlightCursorImage.texture = _cursorTexture;
             highlightCursor = highlightCursorImage.gameObject.GetAddComponent<RectTransform>();
@@ -151,7 +165,7 @@ namespace NewHorizons.Components.ShipLog
             ResetTransforms(cameraPivot);
             cameraPivot.localEulerAngles = new Vector3(-5, 0, 0);
 
-            foreach (Vector3 point in _galaxyStarPoints) AddStar(point);
+            foreach (Vector3 point in _galaxyStarPoints) AddGenericStar(point);
 
             foreach (var starSystem in Main.SystemDict.Keys)
             {
@@ -189,11 +203,58 @@ namespace NewHorizons.Components.ShipLog
             return image;
         }
 
-
-
-        private void AddStar()
+        private Color StarTint(MColor tint)
         {
-            AddStar("", false);
+            var color = tint.ToColor();
+            color.a = 1f;
+            return color;
+        }
+
+        private GameObject AddVisualChildStar(Transform parent, Color color, float lifespan, Vector3 offset, float scale)
+        {
+            GameObject childStar = new GameObject("ChildStar");
+            ShipLogChildStar newChildStar = childStar.AddComponent<ShipLogChildStar>();
+            childStar.transform.parent = parent;
+            ResetTransforms(childStar.transform);
+            childStar.transform.localPosition = offset;
+
+            var image = childStar.AddComponent<RawImage>();
+            image.texture = _starTexture;
+            image.color = color;
+
+            childStar.AddComponent<CanvasRenderer>();
+
+            newChildStar._starTimeLoopEnd = lifespan;
+            newChildStar._starScale = scale;
+            newChildStar.Initialize(this);
+
+            return childStar;
+        }
+
+        private GameObject AddVisualChildStar(Transform parent)
+        {
+            return AddVisualChildStar(parent, Color.white, 0f, Vector3.zero, 1f);
+        }
+
+        private GameObject AddVisualChildStar(Transform parent, PlanetConfig body, Vector3 offset)
+        {
+            var singularities = body.Props?.singularities;
+            bool isStar = body.Star != null;
+            bool isSingularity = singularities != null && singularities.Length > 0;
+            float scale = isStar
+                ? Mathf.Clamp(body.Star.size / 2000f, 0.5f, 2f)
+                : (isSingularity
+                    ? Mathf.Clamp(singularities.First().horizonRadius / 2000f, 0f, 2f)
+                    : 0.5f);
+
+            var childStar = AddVisualChildStar(parent,
+                isStar ? StarTint(body.Star.tint) : (isSingularity && singularities.FirstOrDefault().type == External.Modules.VariableSize.SingularityModule.SingularityType.BlackHole ? Color.black : Color.white),
+                isStar ? body.Star.lifespan : 0f,
+                offset,
+                scale);
+
+            childStar.name = body.name;
+            return childStar;
         }
 
         internal void AddStar(string customName)
@@ -201,101 +262,235 @@ namespace NewHorizons.Components.ShipLog
             AddStar(customName, Main.Instance.CurrentStarSystem == customName);
         }
 
+        private List<Vector3> GetUniqueOffsets(int count, float radius, Vector3 offset, HashSet<Vector3> used)
+        {
+            List<Vector3> offsets = new();
+            float angleStep = 360f / count;
+            int attempts = 0;
+
+            for (int i = 0; i < count; i++)
+            {
+                float angle = angleStep * i * Mathf.Deg2Rad;
+                Vector3 candidate = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0f) * radius;
+                var combination = offset + candidate;
+
+                // If occupied, search around until a free spot is found
+                while (used.Contains(combination) && attempts < 100)
+                {
+                    angle += 10f * Mathf.Deg2Rad;
+                    candidate = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0f) * radius;
+                    attempts++;
+                }
+
+                offsets.Add(candidate);
+            }
+
+            return offsets;
+        }
+
+        private static PlanetConfig Sun = new PlanetConfig
+        {
+            name = "Sun",
+            Base = new External.Modules.BaseModule
+            {
+                centerOfSolarSystem = true
+            },
+            Star = new External.Modules.VariableSize.StarModule
+            {
+                size = 2000,
+                tint = MColor.FromColor(new Color(2.302f, 0.8554f, 0.0562f, 1)),
+                lifespan = 22
+            }
+        };
+
         private void AddStar(string customName, bool isThisSystem)
         {
-            AddStar(customName, isThisSystem, false, Vector3.zero);
-        }
+            var config = Main.SystemDict[customName].Config.StarChart;
+            var bodies = Main.BodyDict[customName];
 
-        private void AddStar(Vector3 customPosition)
-        {
-            AddStar("", false, true, customPosition);
-        }
+            // The seed for any default (random) fields of a custom star is based on the hash of their unique name (plus ten, bc why not).
+            UnityEngine.Random.InitState(customName.GetHashCode() + 10);
 
-        private void AddStar(string customName, bool isThisSystem, bool hasInputPosition,  Vector3 inputPosition)
-        {
-            GameObject newStarObject = new GameObject("Star");
+            GameObject newStarObject = new GameObject("StarGroup");
             ShipLogStar newStar = newStarObject.AddComponent<ShipLogStar>();
-            newStar.transform.parent = _allStarsParent;
+            newStar.transform.parent = _systemsParent;
 
             RawImage starImage = newStarObject.AddComponent<RawImage>();
             starImage.texture = _starTexture;
             newStarObject.AddComponent<CanvasRenderer>();
             ResetTransforms(newStar.transform);
 
-            if (!string.IsNullOrEmpty(customName))
+            //Null check config on each so that we don't have to repeat each else statement
+            //(Basically if we null check the config only once, then we have to provide the "else" statement both when the field is null and when the whole config is null)
+            if (config?.position != null)
             {
-                // The seed for any default (random) fields of a custom star is based on the hash of their unique name (plus ten, bc why not).
-                UnityEngine.Random.InitState(customName.GetHashCode() + 10);
+                newStar._starPosition = new Vector3(config.position.x, config.position.y, 0);
+            }
+            else
+            {
+                newStar._starPosition = new Vector3(UnityEngine.Random.Range(-100f, 100f), UnityEngine.Random.Range(-100f, 100f), 0);
+            }
 
+            newStar._starScale = 0.6f;
+            newStar._starName = customName;
+            newStarObject.name = customName;
 
-                External.Configs.StarSystemConfig.StarChartModule config = Main.SystemDict[customName].Config.StarChart;
+            bool hasColor = config?.color != null;
+            bool hasTexture = config?.starTexturePath != null;
 
-                //Null check config on each so that we don't have to repeat each else statement
-                //(Basically if we null check the config only once, then we have to provide the "else" statement both when the field is null and when the whole config is null)
-                if (config != null && config.position != null)
-                {
-                    newStar._starPosition = new Vector3(config.position.x, config.position.y, 0);
-                } else
-                {
-                    newStar._starPosition = new Vector3(UnityEngine.Random.Range(-100f, 100f), UnityEngine.Random.Range(-100f, 100f), 0);
-                }
+            // Use manual color/texture if provided
+            if (hasColor || hasTexture)
+            {
+                starImage.color = hasColor ? config.color.ToColor() : Color.white;
 
-                Color? inferredColor = SystemStarColor(customName);
-
-                if (config != null && config.color != null)
+                if (hasTexture)
                 {
-                    starImage.color = config.color.ToColor();
-                }
-                else if (inferredColor.HasValue)
-                {
-                    starImage.color = inferredColor.Value;
-                }
-                else
-                {
-                    starImage.color = Color.white;
-                }
-
-                if (config != null && config.starTexturePath != null)
-                {
-                    IModBehaviour mod = Main.SystemDict[customName].Mod;
+                    var mod = Main.SystemDict[customName].Mod;
                     string path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, config.starTexturePath);
                     if (File.Exists(path)) starImage.texture = ImageUtilities.GetTexture(mod, path);
                 }
 
-                if (config != null)
-                {
-                    newStar._starTimeLoopEnd = config.disappearanceTime;
-                } else
-                {
-                    newStar._starTimeLoopEnd = 30;
-                }
-
-                newStar._starScale = 0.6f;
-                newStar._starName = customName;
-
-                newStarObject.name = customName;
-                if (!isThisSystem)
-                {
-                    shipLogStars.Add(newStar); 
-                } else
-                {
-                    _thisStar = newStar;
-                    cameraPosition = new Vector2(newStar._starPosition.x, newStar._starPosition.y);
-                }
-
-                AddTextLabel(newStarObject.transform, UniqueIDToName(customName));
-            } else
+                newStar._starTimeLoopEnd = config?.disappearanceTime ?? 0;
+            }
+            else
             {
-                starImage.color = RandomStarColor();
-                newStar._starTimeLoopEnd = UnityEngine.Random.Range(0f, 23f);
-                newStar._starScale = UnityEngine.Random.Range(0.03f, 0.2f);
-                newStar._starPosition = new Vector3(UnityEngine.Random.Range(-1000f, 1000f), UnityEngine.Random.Range(-1000f, 1000f), UnityEngine.Random.Range(-5f, 5f));
+                // No explicit texture/color: infer from center and children
+                starImage.enabled = false; // No root visual
+
+                var center = bodies.FirstOrDefault(b => b.Config.Base?.centerOfSolarSystem == true)?.Config ?? (customName == "SolarSystem" ? Sun : null);
+                if (center == null)
+                {
+                    AddVisualChildStar(newStarObject.transform);
+                    newStar._starTimeLoopEnd = 0f;
+                }
+                else
+                {
+                    float maxLifespan = 0f;
+                    HashSet<Vector3> usedOffsets = new HashSet<Vector3>();
+                    newStar.usedOffsets = usedOffsets;
+
+                    void Traverse(PlanetConfig current, Vector3 offset)
+                    {
+                        if (current?.FocalPoint != null)
+                        {
+                            // Get primary and secondary stars
+                            var primary = bodies.Find(b => b.Config.name == current.FocalPoint.primary)?.Config;
+                            var secondary = bodies.Find(b => b.Config.name == current.FocalPoint.secondary)?.Config;
+
+                            // Get children orbiting the focal point (excluding the primary and secondary)
+                            var focalChildren = bodies
+                                .Where(b => b.Config.Orbit?.primaryBody == current.name &&
+                                            b.Config.name != current.FocalPoint.primary &&
+                                            b.Config.name != current.FocalPoint.secondary)
+                                .Select(b => b.Config)
+                                .ToList();
+
+                            // Place primary at center (offset)
+                            if (primary != null)
+                            {
+                                Traverse(primary, offset); // primary is center
+                            }
+
+                            // Place secondary + children around it
+                            var surrounding = new List<PlanetConfig>();
+                            if (secondary != null) surrounding.Add(secondary);
+                            surrounding.AddRange(focalChildren);
+
+                            var focalOffsets = GetUniqueOffsets(surrounding.Count, 20, offset, usedOffsets);
+                            for (int i = 0; i < surrounding.Count; i++)
+                            {
+                                Traverse(surrounding[i], offset + focalOffsets[i]);
+                            }
+                            
+                            return; // done handling focal point, skip default traversal
+                        }
+
+                        var singularities = current.Props?.singularities;
+                        bool isStar = current.Star != null;
+                        bool isSingularity = singularities != null && singularities.Length > 0;
+
+                        if (isStar)
+                        {
+                            maxLifespan = Mathf.Max(maxLifespan, current.Star.lifespan);
+                        }
+
+                        if (isStar || isSingularity)
+                        {
+                            usedOffsets.Add(offset);
+                            AddVisualChildStar(newStarObject.transform, current, offset);
+                        }
+
+                        var children = bodies
+                            .Where(b => b.Config.Orbit?.primaryBody == current.name)
+                            .Select(b => b.Config)
+                            .ToList();
+
+                        if (!isStar && !isSingularity && children.Count > 0)
+                        {
+                            // Try to find first star/singularity among children
+                            var newPrimary = children.FirstOrDefault(c =>
+                                c.Star != null || (c.Props?.singularities?.Length ?? 0) > 0);
+
+                            if (newPrimary != null)
+                            {
+                                Traverse(newPrimary, offset); // Promote to visual center
+                                children.Remove(newPrimary);
+                            }
+                        }
+
+                        var childOffsets = GetUniqueOffsets(children.Count, 20f, offset, usedOffsets);
+                        for (int i = 0; i < children.Count; i++)
+                        {
+                            Traverse(children[i], offset + childOffsets[i]);
+                        }
+                    }
+
+                    Traverse(center, Vector3.zero);
+
+                    // No valid children found: fallback
+                    if (newStarObject.transform.childCount == 0)
+                    {
+                        usedOffsets.Add(Vector3.zero);
+                        AddVisualChildStar(newStarObject.transform);
+                        newStar._starTimeLoopEnd = 0f;
+                    }
+                    else
+                    {
+                        newStar._starTimeLoopEnd = maxLifespan;
+                    }
+                }
             }
 
-            if (hasInputPosition)
+            if (!isThisSystem) shipLogStars.Add(newStar);
+            else
             {
-                newStar._starPosition = inputPosition;
+                _thisStar = newStar;
+                cameraPosition = new Vector2(newStar._starPosition.x, newStar._starPosition.y);
             }
+
+            AddTextLabel(newStarObject.transform, UniqueIDToName(customName));
+            newStar.enabled = true;
+            newStar.Initialize(this);
+        }
+
+
+        public void AddGenericStar(Vector3 inputPosition)
+        {
+            GameObject newStarObject = new GameObject("Star");
+            ShipLogStar newStar = newStarObject.AddComponent<ShipLogStar>();
+            newStar.transform.parent = _genericParent;
+
+            RawImage starImage = newStarObject.AddComponent<RawImage>();
+            starImage.texture = _starTexture;
+            newStarObject.AddComponent<CanvasRenderer>();
+            ResetTransforms(newStar.transform);
+
+            starImage.color = RandomStarColor();
+            newStar._starTimeLoopEnd = UnityEngine.Random.Range(0f, 23f);
+            newStar._starScale = UnityEngine.Random.Range(0.03f, 0.2f);
+            newStar._starPosition = new Vector3(UnityEngine.Random.Range(-1000f, 1000f), UnityEngine.Random.Range(-1000f, 1000f), UnityEngine.Random.Range(-5f, 5f));
+
+            newStar._starPosition = inputPosition;
 
             newStar.enabled = true;
 
@@ -321,9 +516,7 @@ namespace NewHorizons.Components.ShipLog
 
             if (center != null)
             {
-                var tint = center.Config.Star.tint.ToColor();
-                tint.a = 1f;
-                inferredColor = tint;
+                inferredColor = StarTint(center.Config.Star.tint);
             }
             else
             {
@@ -335,9 +528,7 @@ namespace NewHorizons.Components.ShipLog
 
                 if (largestStar != null)
                 {
-                    var tint = largestStar.Config.Star.tint.ToColor();
-                    tint.a = 1f;
-                    inferredColor = tint;
+                    inferredColor = StarTint(largestStar.Config.Star.tint);
                 }
             }
 
