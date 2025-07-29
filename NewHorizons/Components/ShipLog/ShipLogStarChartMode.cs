@@ -35,6 +35,7 @@ namespace NewHorizons.Components.ShipLog
         private List<ShipLogStar> shipLogStars = new List<ShipLogStar>();
 
         public Vector2 cameraPosition;
+        public float cameraRotation = 0;
         public float cameraZoom = 8;
         public Transform cameraPivot;
         private Transform _allStarsParent;
@@ -372,6 +373,7 @@ namespace NewHorizons.Components.ShipLog
         {
             gameObject.SetActive(false);
             cameraPosition = new Vector2(_thisStar._starPosition.x, _thisStar._starPosition.y);
+            cameraRotation = 0;
             cameraZoom = 8;
             cameraPivot.localEulerAngles = new Vector3(-5, 0, 0);
             cameraPivot.localScale = Vector3.zero;
@@ -403,6 +405,12 @@ namespace NewHorizons.Components.ShipLog
 
         private void UpdateMapCamera()
         {
+            if (shipLogStars.Count == 0)
+            {
+                NHLogger.LogWarning("Showing star chart mode when there are no available systems");
+                return;
+            }
+
             cameraPivot.transform.localScale = Vector3.Lerp(cameraPivot.transform.localScale, Vector3.one, Time.unscaledDeltaTime * 2);
             if (_target != null && _card != null)
             {
@@ -416,8 +424,27 @@ namespace NewHorizons.Components.ShipLog
             cameraZoom *= 1 + (zoom * Time.unscaledDeltaTime * 2);
             cameraZoom = Mathf.Clamp(cameraZoom, 1f, 10f);
 
-            Vector2 axisValue = OWInput.GetAxisValue(InputLibrary.moveXZ);
-            cameraPosition += (axisValue * Time.unscaledDeltaTime * 500) / cameraZoom;
+            float deltaTime = Time.unscaledDeltaTime;
+            float adjustedDeltaTime = InputUtil.IsMouseMoveAxis(InputLibrary.look.AxisID) ? (1f / 60f) : deltaTime;
+
+            Vector2 look = OWInput.GetAxisValue(InputLibrary.look, InputMode.All);
+            float rotationSensitivity = OWInput.UsingGamepad() ? PlayerCameraController.GAMEPAD_LOOK_RATE_Y : PlayerCameraController.LOOK_RATE;
+            float delta = look.x * -rotationSensitivity * adjustedDeltaTime;
+            cameraRotation = ((cameraRotation + delta) % 360f + 360f) % 360f;
+
+            float rad = cameraRotation * Mathf.Deg2Rad;
+            float cos = Mathf.Cos(rad);
+            float sin = Mathf.Sin(rad);
+            float x = -5f * cos;
+            float y = -5f * sin;
+            cameraPivot.localRotation = Quaternion.Euler(x, y, cameraRotation);
+            
+            Vector2 moveInput = OWInput.GetAxisValue(InputLibrary.moveXZ);
+            Vector2 rotatedInput = new Vector2(
+                moveInput.x * cos - moveInput.y * sin,
+                moveInput.x * sin + moveInput.y * cos
+            );
+            cameraPosition += (rotatedInput * Time.unscaledDeltaTime * 500) / cameraZoom;
 
             _card._nameBackground.color = _elementColor;
             _card._border.color = _elementColor;
