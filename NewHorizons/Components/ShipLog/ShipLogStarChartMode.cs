@@ -60,6 +60,9 @@ namespace NewHorizons.Components.ShipLog
 
         Vector3[] _galaxyStarPoints;
 
+        private float _startPanTime;
+        private Vector2 _startPanPos;
+        private float _panDuration = 0.25f;
 
         private void SetCard(string uniqueID)
         {
@@ -446,6 +449,12 @@ namespace NewHorizons.Components.ShipLog
             );
             cameraPosition += (rotatedInput * Time.unscaledDeltaTime * 500) / cameraZoom;
 
+            if (_target != null && Time.unscaledTime < _startPanTime + _panDuration)
+            {
+                float pan = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(_startPanTime, _startPanTime + _panDuration, Time.unscaledTime));
+                cameraPosition = Vector2.Lerp(_startPanPos, _target._starPosition, pan);
+            }
+
             _card._nameBackground.color = _elementColor;
             _card._border.color = _elementColor;
             _card._hudMarkerIcon.gameObject.SetActive(true);
@@ -566,6 +575,8 @@ namespace NewHorizons.Components.ShipLog
             }
             _oneShotSource.PlayOneShot(_onSelectClip, _volumeScale);
             _target = starTarget;
+            _startPanTime = Time.unscaledTime;
+            _startPanPos = cameraPosition;
             Locator._rfTracker.UntargetReferenceFrame();
             GlobalMessenger.FireEvent("UntargetReferenceFrame");
 
@@ -586,6 +597,7 @@ namespace NewHorizons.Components.ShipLog
             if (_target == null) return;
             if (playSound) _oneShotSource.PlayOneShot(_onDeselectClip, _volumeScale);
             _target = null;
+            _startPanTime = 0;
             SwitchWarpDriveVisuals(false);
         }
 
