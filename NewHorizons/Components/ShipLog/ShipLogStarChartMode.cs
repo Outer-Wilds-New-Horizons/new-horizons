@@ -126,10 +126,10 @@ namespace NewHorizons.Components.ShipLog
             _card._moreToExploreIcon.gameObject.SetActive(false);
             _card._unreadIcon.gameObject.SetActive(false);
         }
+
         public void InitializeStars()
         {
-            _allStarsParent = new GameObject().transform;
-            _allStarsParent.name = "Stars";
+            _allStarsParent = new GameObject("Stars").transform;
             _allStarsParent.parent = this.transform;
             _allStarsParent.SetAsFirstSibling();
             ResetTransforms(_allStarsParent);
@@ -144,10 +144,9 @@ namespace NewHorizons.Components.ShipLog
 
             _fontToUse = FindObjectOfType<ShipLogController>().GetComponentInChildren<Text>().font;
 
-            cameraPivot = new GameObject().transform;
+            cameraPivot = new GameObject("CameraPivot").transform;
             cameraPivot.parent = this.transform;
             ResetTransforms(cameraPivot);
-            cameraPivot.gameObject.name = "Camera Pivot";
             cameraPivot.localEulerAngles = new Vector3(-5, 0, 0);
 
             foreach (Vector3 point in _galaxyStarPoints) AddStar(point);
@@ -189,7 +188,7 @@ namespace NewHorizons.Components.ShipLog
 
         private RawImage AddVisualIndicator()
         {
-            GameObject highlightCursorObject = new GameObject();
+            GameObject highlightCursorObject = new GameObject("VisualIndicator");
             highlightCursorObject.transform.parent = this.transform;
             ResetTransforms(highlightCursorObject.transform);
             RawImage image = highlightCursorObject.AddComponent<RawImage>();
@@ -215,8 +214,7 @@ namespace NewHorizons.Components.ShipLog
 
         private void AddStar(string customName, bool isThisSystem, bool hasInputPosition,  Vector3 inputPosition)
         {
-
-            GameObject newStarObject = new GameObject();
+            GameObject newStarObject = new GameObject("Star");
             ShipLogStar newStar = newStarObject.AddComponent<ShipLogStar>();
             newStar.transform.parent = _allStarsParent;
 
@@ -286,7 +284,6 @@ namespace NewHorizons.Components.ShipLog
                 starImage.color = RandomStarColor();
                 newStar._starTimeLoopEnd = UnityEngine.Random.Range(0f, 23f);
                 newStar._starScale = UnityEngine.Random.Range(0.03f, 0.2f);
-                newStarObject.name = "star";
                 newStar._starPosition = new Vector3(UnityEngine.Random.Range(-1000f, 1000f), UnityEngine.Random.Range(-1000f, 1000f), UnityEngine.Random.Range(-5f, 5f));
             }
 
@@ -309,7 +306,7 @@ namespace NewHorizons.Components.ShipLog
 
         private void AddTextLabel(Transform parent, string Text)
         {
-            GameObject textObject = new GameObject();
+            GameObject textObject = new GameObject("TextLabel");
             textObject.transform.parent = parent;
             ResetTransforms(textObject.transform);
             textObject.transform.localScale = Vector3.one * 2;
@@ -433,7 +430,6 @@ namespace NewHorizons.Components.ShipLog
 
         private void UpdateSelection()
         {
-
             float minimumDistance = Mathf.Infinity;
             ShipLogStar highlightedStar = null;
             foreach(ShipLogStar s in shipLogStars)
