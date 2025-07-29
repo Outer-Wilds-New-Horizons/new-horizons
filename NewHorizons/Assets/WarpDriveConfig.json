@@ -16,11 +16,15 @@
         "remoteTrigger": {
           "radius": 1,
           "position": {
-            "x": -0.05656214,
-            "y": 0.5362684,
-            "z": 0.5467669
+            "x": 0,
+            "y": 3,
+            "z": 0
           },
           "rename": "WarpDriveRemoteTrigger"
+        },
+        "attentionPoint": {
+          "parentPath": "WarpDrive/Reactor",
+          "isRelativeToParent": true
         }
       }
     ]

@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/outer-wilds-new-horizons/new-horizons/main/NewHorizons/Schemas/translation_schema.json",
   "DialogueDictionary": {
-    "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_1": "Your ship is now equiped with a warp drive!",
+    "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_1": "Your ship is now equipped with a warp drive!",
     "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_2": "You can use the new \"Interstellar Mode\" page in the ship log to lock-on your autopilot to another star system.",
     "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_3": "Then just buckle up and engage the autopilot to warp there!"
   },
