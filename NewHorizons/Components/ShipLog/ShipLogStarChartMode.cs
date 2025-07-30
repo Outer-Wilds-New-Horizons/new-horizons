@@ -68,6 +68,8 @@ namespace NewHorizons.Components.ShipLog
         private Vector2 _startPanPos;
         private float _panDuration = 0.25f;
 
+        public static readonly float comparisonRadius = 2000f;
+
         private void SetCard(string uniqueID)
         {
             _card.transform.localScale = new Vector3(1, 0, 1);
@@ -241,18 +243,24 @@ namespace NewHorizons.Components.ShipLog
             var singularities = body.Props?.singularities;
             bool isStar = body.Star != null;
             bool isSingularity = singularities != null && singularities.Length > 0;
+
             float scale = isStar
-                ? Mathf.Clamp(body.Star.size / 2000f, 0.5f, 2f)
+                ? Mathf.Clamp(body.Star.size / comparisonRadius, 0.5f, 2f)
                 : (isSingularity
-                    ? Mathf.Clamp(singularities.First().horizonRadius / 2000f, 0f, 2f)
+                    ? Mathf.Clamp(singularities.Max(s => s.horizonRadius) / comparisonRadius, 0f, 2f)
                     : 0.5f);
 
-            var childStar = AddVisualChildStar(parent,
-                isStar ? StarTint(body.Star.tint) : (isSingularity && singularities.FirstOrDefault().type == External.Modules.VariableSize.SingularityModule.SingularityType.BlackHole ? Color.black : Color.white),
-                isStar ? body.Star.lifespan : 0f,
-                offset,
-                scale);
+            if (isSingularity && scale < 0.2f)
+                return null;
 
+            var color = isStar
+                ? StarTint(body.Star.tint)
+                : (isSingularity && singularities.First().type == External.Modules.VariableSize.SingularityModule.SingularityType.BlackHole
+                    ? Color.black
+                    : Color.white);
+            var lifespan = isStar ? body.Star.lifespan : 0f;
+
+            var childStar = AddVisualChildStar(parent, color, lifespan, offset, scale);
             childStar.name = body.name;
             return childStar;
         }
@@ -407,7 +415,8 @@ namespace NewHorizons.Components.ShipLog
 
                         var singularities = current.Props?.singularities;
                         bool isStar = current.Star != null;
-                        bool isSingularity = singularities != null && singularities.Length > 0;
+                        bool isSingularity = singularities != null && singularities.Length > 0
+                            && Mathf.Clamp(singularities.Max(s => s.horizonRadius) / comparisonRadius, 0f, 2f) >= 0.2f; // skip small ones
 
                         if (isStar)
                         {
@@ -429,7 +438,10 @@ namespace NewHorizons.Components.ShipLog
                         {
                             // Try to find first star/singularity among children
                             var newPrimary = children.FirstOrDefault(c =>
-                                c.Star != null || (c.Props?.singularities?.Length ?? 0) > 0);
+                                c.Star != null ||
+                                (c.Props?.singularities != null && c.Props.singularities.Length > 0 &&
+                                Mathf.Clamp(c.Props.singularities.Max(s => s.horizonRadius) / comparisonRadius, 0f, 2f) >= 0.2f)
+                            );
 
                             if (newPrimary != null)
                             {
