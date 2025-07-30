@@ -434,22 +434,6 @@ namespace NewHorizons.Components.ShipLog
                             .Select(b => b.Config)
                             .ToList();
 
-                        if (!isStar && !isSingularity && children.Count > 0)
-                        {
-                            // Try to find first star/singularity among children
-                            var newPrimary = children.FirstOrDefault(c =>
-                                c.Star != null ||
-                                (c.Props?.singularities != null && c.Props.singularities.Length > 0 &&
-                                Mathf.Clamp(c.Props.singularities.Max(s => s.horizonRadius) / comparisonRadius, 0f, 2f) >= 0.2f)
-                            );
-
-                            if (newPrimary != null)
-                            {
-                                Traverse(newPrimary, offset); // Promote to visual center
-                                children.Remove(newPrimary);
-                            }
-                        }
-
                         var childOffsets = GetUniqueOffsets(children.Count, 20f, offset, usedOffsets);
                         for (int i = 0; i < children.Count; i++)
                         {
