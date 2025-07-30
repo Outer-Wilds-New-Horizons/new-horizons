@@ -271,11 +271,12 @@ namespace NewHorizons.Components.ShipLog
             AddStar(customName, Main.Instance.CurrentStarSystem == customName);
         }
 
-        private List<Vector3> GetUniqueOffsets(int count, float radius, Vector3 offset, HashSet<Vector3> used)
+        private List<Vector3> GetUniqueOffsets(int count, Vector3 offset, HashSet<Vector3> used)
         {
             List<Vector3> offsets = new();
-            float angleStep = 360f / count;
+            float angleStep = 360f / Mathf.Max(count, 1);
             int attempts = 0;
+            float radius = 20f;
 
             for (int i = 0; i < count; i++)
             {
@@ -286,8 +287,9 @@ namespace NewHorizons.Components.ShipLog
                 // If occupied, search around until a free spot is found
                 while (used.Contains(combination) && attempts < 100)
                 {
-                    angle += 10f * Mathf.Deg2Rad;
+                    angle += 10 * Mathf.Deg2Rad;
                     candidate = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0f) * radius;
+                    combination = offset + candidate;
                     attempts++;
                 }
 
@@ -405,7 +407,7 @@ namespace NewHorizons.Components.ShipLog
                             if (secondary != null) surrounding.Add(secondary);
                             surrounding.AddRange(focalChildren);
 
-                            var focalOffsets = GetUniqueOffsets(surrounding.Count, 20, offset, usedOffsets);
+                            var focalOffsets = GetUniqueOffsets(surrounding.Count, offset, usedOffsets);
                             for (int i = 0; i < surrounding.Count; i++)
                             {
                                 Traverse(surrounding[i], offset + focalOffsets[i]);
@@ -435,7 +437,7 @@ namespace NewHorizons.Components.ShipLog
                             .Select(b => b.Config)
                             .ToList();
 
-                        var childOffsets = GetUniqueOffsets(children.Count, 20f, offset, usedOffsets);
+                        var childOffsets = GetUniqueOffsets(children.Count, offset, usedOffsets);
                         for (int i = 0; i < children.Count; i++)
                         {
                             Traverse(children[i], offset + childOffsets[i]);
