@@ -54,6 +54,7 @@ namespace NewHorizons.Components.ShipLog
         private float _volumeScale = 0.45f;
 
         private Texture2D _starTexture;
+        private Texture2D _blackHoleTexture;
         private Texture2D _cursorTexture;
 
         private GameObject _enableOnWarpVisuals;
@@ -187,6 +188,7 @@ namespace NewHorizons.Components.ShipLog
 
             _cursorTexture = NHPrivateAssetBundle.LoadAsset<Texture2D>("Assets/StarChart/arrow.png");
             _starTexture = NHPrivateAssetBundle.LoadAsset<Texture2D>("Assets/StarChart/star.png");
+            _blackHoleTexture = ImageUtilities.GetTexture(Main.Instance, "Assets/BlackHole.png");
         }
 
 
@@ -221,8 +223,8 @@ namespace NewHorizons.Components.ShipLog
             childStar.transform.localPosition = offset;
 
             var image = childStar.AddComponent<RawImage>();
-            image.texture = _starTexture;
-            image.color = color;
+            image.texture = color == Color.black ? _blackHoleTexture : _starTexture;
+            image.color = color == Color.black ? Color.white : color;
 
             childStar.AddComponent<CanvasRenderer>();
 
