@@ -66,6 +66,7 @@ namespace NewHorizons.Components.ShipLog
         private float _panDuration = 0.25f;
 
         public static readonly float comparisonRadius = 2000f;
+        public static readonly float starMinimum = 0.099f;
         public static readonly float singularityMinimum = 0.199f;
         private static readonly Color sunColor = new Color(2.302f, 0.8554f, 0.0562f, 1);
 
@@ -246,12 +247,12 @@ namespace NewHorizons.Components.ShipLog
             bool isSingularity = singularities != null && singularities.Length > 0;
 
             float scale = isStar
-                ? Mathf.Clamp(body.Star.size / comparisonRadius, 0.5f, 2f)
+                ? Mathf.Clamp(body.Star.size / comparisonRadius, starMinimum, 2f)
                 : (isSingularity
-                    ? Mathf.Clamp(singularities.Max(s => s.horizonRadius) / comparisonRadius, 0f, 2f)
+                    ? Mathf.Clamp(singularities.Max(s => s.horizonRadius) / comparisonRadius, singularityMinimum, 2f)
                     : 0.5f);
 
-            if (isSingularity && scale < singularityMinimum)
+            if ((isStar && scale < starMinimum) || (isSingularity && scale < singularityMinimum))
                 return null;
 
             var color = isStar
@@ -417,7 +418,7 @@ namespace NewHorizons.Components.ShipLog
                         }
 
                         var singularities = current.Props?.singularities;
-                        bool isStar = current.Star != null;
+                        bool isStar = current.Star != null && Mathf.Clamp(current.Star.size / comparisonRadius, 0f, 2f) >= starMinimum; // skip small ones
                         bool isSingularity = singularities != null && singularities.Length > 0
                             && Mathf.Clamp(singularities.Max(s => s.horizonRadius) / comparisonRadius, 0f, 2f) >= singularityMinimum; // skip small ones
 
