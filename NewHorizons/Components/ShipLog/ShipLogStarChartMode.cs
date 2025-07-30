@@ -274,7 +274,7 @@ namespace NewHorizons.Components.ShipLog
         private List<Vector3> GetUniqueOffsets(int count, Vector3 offset, HashSet<Vector3> used)
         {
             List<Vector3> offsets = new();
-            float angleStep = 360f / Mathf.Max(count, 1);
+            float angleStep = 360f / Mathf.Max(count, 2);
             int attempts = 0;
             float radius = 20f;
 
