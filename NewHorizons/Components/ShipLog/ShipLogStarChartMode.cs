@@ -66,6 +66,7 @@ namespace NewHorizons.Components.ShipLog
         private float _panDuration = 0.25f;
 
         public static readonly float comparisonRadius = 2000f;
+        public static readonly float singularityMinimum = 0.199f;
         private static readonly Color sunColor = new Color(2.302f, 0.8554f, 0.0562f, 1);
 
         private void SetCard(string uniqueID)
@@ -250,7 +251,7 @@ namespace NewHorizons.Components.ShipLog
                     ? Mathf.Clamp(singularities.Max(s => s.horizonRadius) / comparisonRadius, 0f, 2f)
                     : 0.5f);
 
-            if (isSingularity && scale < 0.2f)
+            if (isSingularity && scale < singularityMinimum)
                 return null;
 
             var color = isStar
@@ -416,7 +417,7 @@ namespace NewHorizons.Components.ShipLog
                         var singularities = current.Props?.singularities;
                         bool isStar = current.Star != null;
                         bool isSingularity = singularities != null && singularities.Length > 0
-                            && Mathf.Clamp(singularities.Max(s => s.horizonRadius) / comparisonRadius, 0f, 2f) >= 0.2f; // skip small ones
+                            && Mathf.Clamp(singularities.Max(s => s.horizonRadius) / comparisonRadius, 0f, 2f) >= singularityMinimum; // skip small ones
 
                         if (isStar)
                         {
