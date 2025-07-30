@@ -514,6 +514,10 @@ namespace NewHorizons.Components.ShipLog
             text.alignment = TextAnchor.UpperCenter;
             text.text = Text;
             text.font = _fontToUse;
+            text.fontSize = 12;
+            text.resizeTextForBestFit = true;
+            text.resizeTextMaxSize = 14;
+            text.resizeTextMinSize = 10;
         }
 
         private void ResetTransforms(Transform t)
