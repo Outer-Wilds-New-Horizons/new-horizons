@@ -376,7 +376,7 @@ namespace NewHorizons.Components.ShipLog
                 }
                 else
                 {
-                    float maxLifespan = 0f;
+                    float maxLifespan = -1;
                     HashSet<Vector3> usedOffsets = new HashSet<Vector3>();
                     newStar.usedOffsets = usedOffsets;
 
@@ -421,9 +421,14 @@ namespace NewHorizons.Components.ShipLog
                         bool isSingularity = singularities != null && singularities.Length > 0
                             && Mathf.Clamp(singularities.Max(s => s.horizonRadius) / comparisonRadius, 0f, 2f) >= singularityMinimum; // skip small ones
 
-                        if (isStar)
+                        if (isStar && maxLifespan != 0)
                         {
                             maxLifespan = Mathf.Max(maxLifespan, current.Star.lifespan);
+                        }
+
+                        if (isSingularity)
+                        {
+                            maxLifespan = 0;
                         }
 
                         if (isStar || isSingularity)
