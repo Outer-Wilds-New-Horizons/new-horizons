@@ -13,6 +13,7 @@ using NewHorizons.Components.Ship;
 using NewHorizons.Components.SizeControllers;
 using NewHorizons.External;
 using NewHorizons.External.Configs;
+using NewHorizons.External.SerializableData;
 using NewHorizons.Handlers;
 using NewHorizons.OtherMods.AchievementsPlus;
 using NewHorizons.OtherMods.MenuFramework;
@@ -199,6 +200,10 @@ namespace NewHorizons
                             y = new int[5]{ 4,5,3,2,1 },
                             z = new int[5]{ 4,1,2,5,0 }
                         }
+                    },
+                    StarChart = new StarSystemConfig.StarChartModule()
+                    {
+                        position = new MVector2(0, 0)
                     }
                 }
             };
@@ -217,7 +222,13 @@ namespace NewHorizons
                             z = new int[6] { 1, 2, 3, 0, 5, 4 }
                         }
                     },
-                    canEnterViaWarpDrive = false
+                    canEnterViaWarpDrive = false,
+                    StarChart = new StarSystemConfig.StarChartModule()
+                    {
+                        position = new MVector2(0, 5),
+                        starTexturePath = "Assets/eye symbol starchart.png",
+                        disappearanceTime = 0
+                    }
                 }
             };
 
