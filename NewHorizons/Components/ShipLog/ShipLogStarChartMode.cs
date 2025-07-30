@@ -56,10 +56,6 @@ namespace NewHorizons.Components.ShipLog
         private Texture2D _starTexture;
         private Texture2D _blackHoleTexture;
         private Texture2D _cursorTexture;
-
-        private GameObject _enableOnWarpVisuals;
-        private GameObject _disableOnWarpVisuals;
-
         private ShipLogEntryCard _card;
         private GameObject _cardTemplate = null;
 
@@ -70,6 +66,7 @@ namespace NewHorizons.Components.ShipLog
         private float _panDuration = 0.25f;
 
         public static readonly float comparisonRadius = 2000f;
+        private static readonly Color sunColor = new Color(2.302f, 0.8554f, 0.0562f, 1);
 
         private void SetCard(string uniqueID)
         {
@@ -209,6 +206,7 @@ namespace NewHorizons.Components.ShipLog
 
         private Color StarTint(MColor tint)
         {
+            if (tint == null) return sunColor;
             var color = tint.ToColor();
             color.a = 1f;
             return color;
@@ -298,7 +296,7 @@ namespace NewHorizons.Components.ShipLog
             return offsets;
         }
 
-        private static PlanetConfig Sun = new PlanetConfig
+        private static readonly PlanetConfig Sun = new PlanetConfig
         {
             name = "Sun",
             Base = new External.Modules.BaseModule
@@ -308,7 +306,7 @@ namespace NewHorizons.Components.ShipLog
             Star = new External.Modules.VariableSize.StarModule
             {
                 size = 2000,
-                tint = MColor.FromColor(new Color(2.302f, 0.8554f, 0.0562f, 1)),
+                tint = MColor.FromColor(sunColor),
                 lifespan = 22
             }
         };
@@ -516,37 +514,6 @@ namespace NewHorizons.Components.ShipLog
             Color blueYellowColor = Color.Lerp(Color.blue, Color.yellow, UnityEngine.Random.Range(0f, 1f));
             Color darkLightColor = Color.Lerp(blueYellowColor, Color.white, UnityEngine.Random.Range(0.8f, 1f));
             return darkLightColor;
-        }
-
-        private Color? SystemStarColor(string customName)
-        {
-            if (customName == "SolarSystem") return new Color(2.302f, 0.8554f, 0.0562f, 1);
-
-            Color? inferredColor = null;
-
-            // Try to find the center of the solar system
-            var bodies = Main.BodyDict[customName];
-            var center = bodies.FirstOrDefault(body => body.Config.Base?.centerOfSolarSystem == true && body.Config.Star != null);
-
-            if (center != null)
-            {
-                inferredColor = StarTint(center.Config.Star.tint);
-            }
-            else
-            {
-                // Fallback to largest star if no center is found
-                var largestStar = bodies
-                    .Where(body => body.Config.Star != null)
-                    .OrderByDescending(body => body.Config.Star.size)
-                    .FirstOrDefault();
-
-                if (largestStar != null)
-                {
-                    inferredColor = StarTint(largestStar.Config.Star.tint);
-                }
-            }
-
-            return inferredColor;
         }
 
         private void AddTextLabel(Transform parent, string Text)
