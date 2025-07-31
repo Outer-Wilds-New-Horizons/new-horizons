@@ -83,7 +83,7 @@ namespace NewHorizons.Builder.Props
                 bool reasonableHeightConstraints = true;
                 if (!propInfo.preventOverlap && (heightMapTexture != null) && (propInfo.minHeight != null || propInfo.maxHeight != null)) // If caution is relevant
                 {
-                    var maxHeight = (propInfo.minHeight != null ? Math.Min(propInfo.maxHeight, heightMap.maxHeight) : heightMap.maxHeight);
+                    var maxHeight = (propInfo.maxHeight != null ? Math.Min(propInfo.maxHeight, heightMap.maxHeight) : heightMap.maxHeight);
                     var minHeight = (propInfo.minHeight != null ? Math.Max(propInfo.minHeight, heightMap.minHeight) : heightMap.minHeight);
                     if ((maxHeight - minHeight) / (heightMap.maxHeight - heightMap.minHeight) < 0.001) // If height roll has less than 0.1% chance of being valid
                         reasonableHeightConstraints = false; // Ignore propInfo.min/maxHeight to prevent infinite rerolls
