@@ -382,8 +382,14 @@ namespace NewHorizons.Components.ShipLog
                     float maxLifespan = 0;
                     HashSet<Vector3> usedOffsets = new HashSet<Vector3>();
                     newStar.usedOffsets = usedOffsets;
+                    usedOffsets.Add(Vector3.zero);
 
-                    void Traverse(PlanetConfig current, Vector3 offset)
+                    var staticRootless = bodies
+                        .Where(b => b.Config.Base?.centerOfSolarSystem != true && b.Config.Orbit?.isStatic == true && string.IsNullOrEmpty(b.Config.Orbit.primaryBody))
+                        .Select(b => b.Config)
+                        .ToList();
+
+                    void Traverse(PlanetConfig current, Vector3 offset, bool first)
                     {
                         if (current?.FocalPoint != null)
                         {
@@ -399,10 +405,15 @@ namespace NewHorizons.Components.ShipLog
                                 .Select(b => b.Config)
                                 .ToList();
 
+                            if (first && staticRootless.Count > 0)
+                            {
+                                focalChildren = focalChildren.Concat(staticRootless).ToList();
+                            }
+
                             // Place primary at center (offset)
                             if (primary != null)
                             {
-                                Traverse(primary, offset); // primary is center
+                                Traverse(primary, offset, false); // primary is center
                             }
 
                             // Place secondary + children around it
@@ -413,7 +424,7 @@ namespace NewHorizons.Components.ShipLog
                             var focalOffsets = GetUniqueOffsets(surrounding.Count, offset, usedOffsets);
                             for (int i = 0; i < surrounding.Count; i++)
                             {
-                                Traverse(surrounding[i], offset + focalOffsets[i]);
+                                Traverse(surrounding[i], offset + focalOffsets[i], false);
                             }
                             
                             return; // done handling focal point, skip default traversal
@@ -439,20 +450,32 @@ namespace NewHorizons.Components.ShipLog
                             usedOffsets.Add(offset);
                             AddVisualChildStar(newStarObject.transform, current, offset);
                         }
+                        else
+                        {
+                            GameObject empty = new GameObject(current.name);
+                            empty.transform.parent = newStarObject.transform;
+                            ResetTransforms(empty.transform);
+                            empty.transform.localPosition = offset;
+                        }
 
                         var children = bodies
                             .Where(b => b.Config.Orbit?.primaryBody == current.name)
                             .Select(b => b.Config)
                             .ToList();
 
+                        if (first && staticRootless.Count > 0)
+                        {
+                            children = children.Concat(staticRootless).ToList();
+                        }
+
                         var childOffsets = GetUniqueOffsets(children.Count, offset, usedOffsets);
                         for (int i = 0; i < children.Count; i++)
                         {
-                            Traverse(children[i], offset + childOffsets[i]);
+                            Traverse(children[i], offset + childOffsets[i], false);
                         }
                     }
 
-                    Traverse(center, Vector3.zero);
+                    Traverse(center, Vector3.zero, true);
 
                     // No valid children found: fallback
                     if (newStarObject.transform.childCount == 0)
