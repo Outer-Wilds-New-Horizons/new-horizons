@@ -22,6 +22,7 @@ namespace NewHorizons.Components.ShipLog
 
         private ShipLogStarChartMode mode;
         internal HashSet<Vector3> usedOffsets;
+        internal Transform visualGroup;
 
         public void Initialize(ShipLogStarChartMode m)
         {

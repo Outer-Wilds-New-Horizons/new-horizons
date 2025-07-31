@@ -29,5 +29,10 @@ namespace NewHorizons.Components.ShipLog
             if (_starTimeLoopEnd <= 0) return;
             if ((TimeLoop.GetSecondsElapsed() / 60) > _starTimeLoopEnd) gameObject.SetActive(false);
         }
+
+        public float GetDistanceFrom(ShipLogChildStar other)
+        {
+            return Vector3.Distance(this.transform.localPosition, other.transform.localPosition);
+        }
     }
 }
