@@ -239,7 +239,7 @@ namespace NewHorizons.Components.ShipLog
 
         private GameObject AddVisualChildStar(Transform parent)
         {
-            return AddVisualChildStar(parent, Color.white, 0f, Vector3.zero, 1f);
+            return AddVisualChildStar(parent, Color.white, 0, Vector3.zero, 1f);
         }
 
         private GameObject AddVisualChildStar(Transform parent, PlanetConfig body, Vector3 offset)
@@ -262,7 +262,7 @@ namespace NewHorizons.Components.ShipLog
                 : (isSingularity && singularities.First().type == External.Modules.VariableSize.SingularityModule.SingularityType.BlackHole
                     ? Color.black
                     : Color.white);
-            var lifespan = isStar ? body.Star.lifespan : 0f;
+            var lifespan = isStar ? body.Star.lifespan : 0;
 
             var childStar = AddVisualChildStar(parent, color, lifespan, offset, scale);
             childStar.name = body.name;
@@ -375,11 +375,11 @@ namespace NewHorizons.Components.ShipLog
                 if (center == null)
                 {
                     AddVisualChildStar(newStarObject.transform);
-                    newStar._starTimeLoopEnd = 0f;
+                    newStar._starTimeLoopEnd = 0;
                 }
                 else
                 {
-                    float maxLifespan = -1;
+                    float maxLifespan = 0;
                     HashSet<Vector3> usedOffsets = new HashSet<Vector3>();
                     newStar.usedOffsets = usedOffsets;
 
@@ -420,18 +420,18 @@ namespace NewHorizons.Components.ShipLog
                         }
 
                         var singularities = current.Props?.singularities;
-                        bool isStar = current.Star != null && Mathf.Clamp(current.Star.size / comparisonRadius, 0f, 2f) >= starMinimum; // skip small ones
+                        bool isStar = current.Star != null && Mathf.Clamp(current.Star.size / comparisonRadius, 0, highestScale) >= starMinimum; // skip small ones
                         bool isSingularity = singularities != null && singularities.Length > 0
-                            && Mathf.Clamp(singularities.Max(s => s.horizonRadius) / comparisonRadius, 0f, 2f) >= singularityMinimum; // skip small ones
+                            && Mathf.Clamp(singularities.Max(s => s.horizonRadius) / comparisonRadius, 0, highestScale) >= singularityMinimum; // skip small ones
 
-                        if (isStar && maxLifespan != 0)
+                        if (isStar && maxLifespan >= 0)
                         {
                             maxLifespan = Mathf.Max(maxLifespan, current.Star.lifespan);
                         }
 
                         if (isSingularity)
                         {
-                            maxLifespan = 0;
+                            maxLifespan = -1;
                         }
 
                         if (isStar || isSingularity)
@@ -459,11 +459,11 @@ namespace NewHorizons.Components.ShipLog
                     {
                         usedOffsets.Add(Vector3.zero);
                         AddVisualChildStar(newStarObject.transform);
-                        newStar._starTimeLoopEnd = 0f;
+                        newStar._starTimeLoopEnd = 0;
                     }
                     else
                     {
-                        newStar._starTimeLoopEnd = maxLifespan;
+                        newStar._starTimeLoopEnd = Mathf.Max(maxLifespan, 0);
                     }
                 }
             }

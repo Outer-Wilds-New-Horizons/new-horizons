@@ -26,7 +26,7 @@ namespace NewHorizons.Components.ShipLog
 
         public void Update()
         {
-            if (_starTimeLoopEnd == 0) return;
+            if (_starTimeLoopEnd <= 0) return;
             if ((TimeLoop.GetSecondsElapsed() / 60) > _starTimeLoopEnd) gameObject.SetActive(false);
         }
     }
