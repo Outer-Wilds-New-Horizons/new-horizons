@@ -1,7 +1,8 @@
-using Epic.OnlineServices.Stats;
 using NewHorizons.Components.Orbital;
 using NewHorizons.External;
 using NewHorizons.External.Configs;
+using NewHorizons.External.Modules;
+using NewHorizons.External.Modules.VariableSize;
 using NewHorizons.External.SerializableData;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
@@ -13,10 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.AccessControl;
-using System.Xml;
 using UnityEngine;
-using UnityEngine.InputSystem.HID;
 using UnityEngine.UI;
 using static NewHorizons.Utility.Files.AssetBundleUtilities;
 
@@ -230,57 +228,56 @@ namespace NewHorizons.Components.ShipLog
             return stringID;
         }
 
-        private List<PlanetConfig> GetChildrenOf(string parentName, List<NewHorizonsBody> bodies)
+        private List<MergedPlanetData> GetChildrenOf(MergedPlanetData parent, List<MergedPlanetData> bodies)
         {
             return bodies
-                .Where(b => GetStringID(b.Config.Orbit?.primaryBody) == GetStringID(parentName))
-                .Select(b => b.Config)
+                .Where(b => GetStringID(b.Orbit?.primaryBody) == parent.ID)
                 .ToList();
         }
 
-        private float GetRenderableScale(PlanetConfig config)
+        private float GetRenderableScale(MergedPlanetData config)
         {
             if (IsRenderableStar(config))
                 return Mathf.Clamp(config.Star.size / comparisonRadius, lowestScale, highestScale);
 
             if (IsRenderableSingularity(config))
-                return Mathf.Clamp(config.Props.singularities.Max(s => s.horizonRadius) / comparisonRadius, lowestScale, highestScale);
+                return Mathf.Clamp(config.Singularities.Max(s => s.horizonRadius) / comparisonRadius, lowestScale, highestScale);
 
             return 0;
         }
 
-        private Color GetRenderableColor(PlanetConfig config)
+        private Color GetRenderableColor(MergedPlanetData config)
         {
             if (IsRenderableStar(config))
                 return StarTint(config.Star.tint);
 
-            if (IsRenderableSingularity(config) && config.Props.singularities.First().type ==
-                External.Modules.VariableSize.SingularityModule.SingularityType.BlackHole)
+            if (IsRenderableSingularity(config) && config.Singularities.First().type ==
+                SingularityModule.SingularityType.BlackHole)
                 return Color.black;
 
             return Color.white;
         }
 
-        private float GetRenderableLifespan(PlanetConfig config)
+        private float GetRenderableLifespan(MergedPlanetData config)
         {
             return IsRenderableStar(config) ? config.Star.lifespan : 0;
         }
 
-        private bool IsRenderableStar(PlanetConfig config)
+        private bool IsRenderableStar(MergedPlanetData config)
         {
             return config.Star != null &&
                    Mathf.Clamp(config.Star.size / comparisonRadius, 0, highestScale) >= starMinimum;
         }
 
-        private bool IsRenderableSingularity(PlanetConfig config)
+        private bool IsRenderableSingularity(MergedPlanetData config)
         {
-            var singularities = config.Props?.singularities;
+            var singularities = config.Singularities;
             return singularities != null &&
                    singularities.Length > 0 &&
                    Mathf.Clamp(singularities.Max(s => s.horizonRadius) / comparisonRadius, 0, highestScale) >= singularityMinimum;
         }
 
-        private bool IsRenderableStarOrSingularity(PlanetConfig config)
+        private bool IsRenderableStarOrSingularity(MergedPlanetData config)
         {
             return IsRenderableStar(config) || IsRenderableSingularity(config);
         }
@@ -334,7 +331,7 @@ namespace NewHorizons.Components.ShipLog
             return AddVisualChildStar(parent, Color.white, 0, Vector3.zero, 1f);
         }
 
-        private GameObject AddVisualChildStar(Transform parent, PlanetConfig body, Vector3 offset)
+        private GameObject AddVisualChildStar(Transform parent, MergedPlanetData body, Vector3 offset)
         {
             if (!IsRenderableStarOrSingularity(body)) return null;
 
@@ -345,7 +342,7 @@ namespace NewHorizons.Components.ShipLog
             float lifespan = GetRenderableLifespan(body);
 
             var childStar = AddVisualChildStar(parent, color, lifespan, offset, scale);
-            childStar.name = body.name;
+            childStar.name = body.Name;
             return childStar;
         }
 
@@ -367,7 +364,7 @@ namespace NewHorizons.Components.ShipLog
             return (primaryOffset, secondaryOffset);
         }
 
-        private (Vector3 primaryOffset, Vector3 secondaryOffset) GetAdjustedFocalOffsets(Vector3 origin, PlanetConfig primary, PlanetConfig secondary)
+        private (Vector3 primaryOffset, Vector3 secondaryOffset) GetAdjustedFocalOffsets(Vector3 origin, MergedPlanetData primary, MergedPlanetData secondary)
         {
             const float maxDistance = 12f;   // distance for large stars
             const float baseDistance = 8f;   // distance for normal stars
@@ -410,11 +407,11 @@ namespace NewHorizons.Components.ShipLog
         private static readonly PlanetConfig Sun = new PlanetConfig
         {
             name = "Sun",
-            Base = new External.Modules.BaseModule
+            Base = new BaseModule
             {
                 centerOfSolarSystem = true
             },
-            Star = new External.Modules.VariableSize.StarModule
+            Star = new StarModule
             {
                 size = 2000,
                 tint = MColor.FromColor(sunColor),
@@ -434,7 +431,7 @@ namespace NewHorizons.Components.ShipLog
         }
 
         private Vector3 GetOrbitVisualPosition(
-            PlanetConfig config,
+            MergedPlanetData config,
             Vector3 centerOffset,
             float minRadius,
             float maxRadius,
@@ -480,9 +477,8 @@ namespace NewHorizons.Components.ShipLog
             return centerOffset + (Vector3)(flatOrbit.normalized * radiusOrbit);
         }
 
-        private float GetOrbitDistance(PlanetConfig c)
+        private float GetOrbitDistance(OrbitModule orbit)
         {
-            var orbit = c.Orbit;
             if (orbit == null) return 0f;
 
             float semi = orbit.semiMajorAxis;
@@ -490,10 +486,30 @@ namespace NewHorizons.Components.ShipLog
             return Mathf.Max(semi, stat);
         }
 
+        private float GetOrbitDistance(MergedPlanetData c)
+        {
+            return GetOrbitDistance(c.Orbit);
+        }
+
         private void AddStar(string customName, bool isThisSystem)
         {
             var config = Main.SystemDict[customName].Config.StarChart;
-            var bodies = Main.BodyDict[customName];
+            var bodies = Main.BodyDict[customName].Select(b => b.Config);
+            if (customName == "SolarSystem") bodies = bodies.Prepend(Sun);
+
+            Dictionary<string, MergedPlanetData> mergedBodies = new();
+            foreach (var body in bodies)
+            {
+                string id = GetStringID(body.name);
+                if (!mergedBodies.ContainsKey(id))
+                {
+                    mergedBodies.Add(id, new MergedPlanetData { ID = id });
+                }
+
+                mergedBodies[id].Merge(body);
+            }
+
+            var mergedList = mergedBodies.Values.ToList();
 
             // The seed for any default (random) fields of a custom star is based on the hash of their unique name (plus ten, bc why not).
             UnityEngine.Random.InitState(customName.GetHashCode() + 10);
@@ -540,7 +556,7 @@ namespace NewHorizons.Components.ShipLog
                 // Assign this to something accessible if needed:
                 newStar.visualGroup = visualGroup;
 
-                var center = bodies.FirstOrDefault(b => b.Config.Base?.centerOfSolarSystem == true)?.Config ?? (customName == "SolarSystem" ? Sun : null);
+                var center = mergedList.FirstOrDefault(b => b.IsCenter);
                 if (center == null)
                 {
                     AddVisualChildStar(newStarObject.transform);
@@ -550,15 +566,13 @@ namespace NewHorizons.Components.ShipLog
                 {
                     float maxLifespan = 0;
 
-                    var staticRootless = bodies
-                        .Where(b => b.Config.Base?.centerOfSolarSystem != true && b.Config.Orbit?.isStatic == true && string.IsNullOrEmpty(b.Config.Orbit.primaryBody))
-                        .Select(b => b.Config)
+                    var staticRootless = mergedList
+                        .Where(b => !b.IsCenter && b.Orbit?.isStatic == true && string.IsNullOrEmpty(b.Orbit.primaryBody))
                         .ToList();
 
-
                     // Collect all non-zero orbit distances
-                    List<float> orbitDistances = bodies
-                        .Select(b => GetOrbitDistance(b.Config))
+                    List<float> orbitDistances = mergedList
+                        .Select(b => GetOrbitDistance(b.Orbit))
                         .Where(d => d > 0)
                         .OrderBy(d => d)
                         .ToList();
@@ -579,9 +593,9 @@ namespace NewHorizons.Components.ShipLog
                     }
 
 
-                    void TraverseFromCenter(PlanetConfig center)
+                    void TraverseFromCenter(MergedPlanetData center)
                     {
-                        Queue<(PlanetConfig config, Vector3 offset)> queue = new();
+                        Queue<(MergedPlanetData config, Vector3 offset)> queue = new();
                         queue.Enqueue((center, Vector3.zero));
 
                         while (queue.Count > 0)
@@ -610,7 +624,7 @@ namespace NewHorizons.Components.ShipLog
                             /*
                             else
                             {
-                                GameObject empty = new GameObject(current.name);
+                                GameObject empty = new GameObject(current.Name);
                                 empty.transform.parent = visualGroup;
                                 ResetTransforms(empty.transform);
                                 empty.transform.localPosition = offset;
@@ -618,7 +632,7 @@ namespace NewHorizons.Components.ShipLog
                             */
 
                             // Enqueue children for next layer
-                            var children = GetChildrenOf(current.name, bodies);
+                            var children = GetChildrenOf(current, mergedList);
 
                             if (current == center && staticRootless.Count > 0)
                                 children = children.Concat(staticRootless).ToList();
@@ -629,11 +643,11 @@ namespace NewHorizons.Components.ShipLog
                             {
                                 // Remove primary and secondary from children list (they are added manually)
                                 children = children
-                                    .Where(c => GetStringID(c.name) != GetStringID(current.FocalPoint.primary) && GetStringID(c.name) != GetStringID(current.FocalPoint.secondary))
+                                    .Where(c => c.ID != GetStringID(current.FocalPoint.primary) && c.ID != GetStringID(current.FocalPoint.secondary))
                                     .ToList();
 
-                                var primary = bodies.Find(b => GetStringID(b.Config.name) == GetStringID(current.FocalPoint.primary))?.Config;
-                                var secondary = bodies.Find(b => GetStringID(b.Config.name) == GetStringID(current.FocalPoint.secondary))?.Config;
+                                var primary = mergedList.FirstOrDefault(b => b.ID == GetStringID(current.FocalPoint.primary));
+                                var secondary = mergedList.FirstOrDefault(b => b.ID == GetStringID(current.FocalPoint.secondary));
 
                                 if (primary != null && secondary != null)
                                 {
@@ -1118,6 +1132,85 @@ namespace NewHorizons.Components.ShipLog
         private float RandomStarRange(float Range)
         {
             return UnityEngine.Random.Range(Range * -1, Range);
+        }
+
+        private class MergedPlanetData
+        {
+            public string ID;
+            public bool IsCenter;
+            public PlanetConfig PrimaryConfig;
+            public List<PlanetConfig> AllConfigs = new();
+
+            private OrbitModule _orbit;
+            private FocalPointModule _focalPoint;
+            private StarModule _star;
+            private SingularityModule[] _singularities;
+
+            public string Name => PrimaryConfig.name;
+            public OrbitModule Orbit => _orbit;
+            public FocalPointModule FocalPoint => _focalPoint;
+            public StarModule Star => _star;
+            public SingularityModule[] Singularities => _singularities;
+
+            public void Merge(PlanetConfig config)
+            {
+                AllConfigs.Add(config);
+
+                if (PrimaryConfig == null || config.Base?.centerOfSolarSystem == true)
+                {
+                    PrimaryConfig = config;
+                }
+
+                if (config.Base?.centerOfSolarSystem == true)
+                {
+                    IsCenter = true;
+                }
+
+                RefreshResolvedValues();
+            }
+
+            private void RefreshResolvedValues()
+            {
+                _orbit = null;
+                _focalPoint = null;
+                _star = null;
+                _singularities = null;
+
+                // Orbit: prefer last with valid orbit data
+                foreach (var cfg in AllConfigs)
+                {
+                    if (cfg.Orbit != null && HasValidOrbit(cfg.Orbit))
+                    {
+                        _orbit = cfg.Orbit;
+                    }
+                }
+                _orbit ??= PrimaryConfig?.Orbit;
+
+                // FocalPoint: prefer primary, then fallback
+                _focalPoint = PrimaryConfig?.FocalPoint
+                    ?? AllConfigs.Select(c => c.FocalPoint).FirstOrDefault(fp => fp != null);
+
+                // Star: prefer primary, then fallback
+                _star = PrimaryConfig?.Star
+                    ?? AllConfigs.Select(c => c.Star).FirstOrDefault(s => s != null);
+
+                // Singularities: prefer primary, then fallback
+                _singularities = PrimaryConfig?.Props?.singularities;
+                if (_singularities == null || _singularities.Length == 0)
+                {
+                    _singularities = AllConfigs
+                        .Select(c => c.Props?.singularities)
+                        .FirstOrDefault(s => s != null && s.Length > 0);
+                }
+            }
+
+            private static bool HasValidOrbit(OrbitModule orbit)
+            {
+                return orbit != null && (
+                    orbit.semiMajorAxis > 0f ||
+                    (orbit.isStatic && orbit.staticPosition != null)
+                );
+            }
         }
     }
 }
