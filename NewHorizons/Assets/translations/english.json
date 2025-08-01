@@ -24,7 +24,8 @@
     "DEBUG_UNDO": "Undo",
     "DEBUG_REDO": "Redo",
     "Vessel": "Vessel",
-    "DLC_REQUIRED": "WARNING\n\nYou have addons (like {0}) installed which require the DLC but it is not enabled.\n\nYour mods may not function as intended."
+    "DLC_REQUIRED": "WARNING\n\nYou have addons (like {0}) installed which require the DLC but it is not enabled.\n\nYour mods may not function as intended.",
+    "The Outer Wilds": "The Outer Wilds"
   },
   "OtherDictionary": {
     "NOMAI_SHUTTLE_COMPUTER": "The <![CDATA[<color=orange>shuttle</color>]]> is currently resting at <![CDATA[<color=lightblue>{0}</color>]]>."
