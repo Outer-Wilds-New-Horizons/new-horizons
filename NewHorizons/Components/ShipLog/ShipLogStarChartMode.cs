@@ -213,10 +213,27 @@ namespace NewHorizons.Components.ShipLog
             return image;
         }
 
+        public static string GetStringID(string name)
+        {
+            if (string.IsNullOrEmpty(name)) return null;
+
+            var stringID = name.ToUpperInvariant().Replace(" ", "_").Replace("'", "").Replace(" ", "");
+            if (stringID.Equals("TIMBER_MOON")) stringID = "ATTLEROCK";
+            if (stringID.Equals("VOLCANIC_MOON")) stringID = "HOLLOWS_LANTERN";
+            if (stringID.Equals("TOWER_TWIN")) stringID = "ASH_TWIN";
+            if (stringID.Equals("CAVE_TWIN")) stringID = "EMBER_TWIN";
+            if (stringID.Equals("COMET")) stringID = "INTERLOPER";
+            if (stringID.Equals("EYE") || stringID.Equals("EYEOFTHEUNIVERSE")) stringID = "EYE_OF_THE_UNIVERSE";
+            if (stringID.Equals("MAPSATELLITE")) stringID = "MAP_SATELLITE";
+            if (stringID.Equals("INVISIBLE_PLANET")) stringID = "RINGWORLD";
+
+            return stringID;
+        }
+
         private List<PlanetConfig> GetChildrenOf(string parentName, List<NewHorizonsBody> bodies)
         {
             return bodies
-                .Where(b => b.Config.Orbit?.primaryBody == parentName)
+                .Where(b => GetStringID(b.Config.Orbit?.primaryBody) == GetStringID(parentName))
                 .Select(b => b.Config)
                 .ToList();
         }
@@ -612,11 +629,11 @@ namespace NewHorizons.Components.ShipLog
                             {
                                 // Remove primary and secondary from children list (they are added manually)
                                 children = children
-                                    .Where(c => c.name != current.FocalPoint.primary && c.name != current.FocalPoint.secondary)
+                                    .Where(c => GetStringID(c.name) != GetStringID(current.FocalPoint.primary) && GetStringID(c.name) != GetStringID(current.FocalPoint.secondary))
                                     .ToList();
 
-                                var primary = bodies.Find(b => b.Config.name == current.FocalPoint.primary)?.Config;
-                                var secondary = bodies.Find(b => b.Config.name == current.FocalPoint.secondary)?.Config;
+                                var primary = bodies.Find(b => GetStringID(b.Config.name) == GetStringID(current.FocalPoint.primary))?.Config;
+                                var secondary = bodies.Find(b => GetStringID(b.Config.name) == GetStringID(current.FocalPoint.secondary))?.Config;
 
                                 if (primary != null && secondary != null)
                                 {
@@ -653,7 +670,7 @@ namespace NewHorizons.Components.ShipLog
                     if (childVisuals.Count > 0)
                     {
                         float highestY = childVisuals.Max(r => r.transform.localPosition.y);
-                        if (highestY >= 22.5f)
+                        if (highestY >= 20)
                         {
                             float angleStep = 10;
                             float bestScore = float.MaxValue;
