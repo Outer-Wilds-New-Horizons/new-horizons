@@ -184,25 +184,6 @@ namespace NewHorizons.Components.ShipLog
                     AddStar(starSystem, thisSystem);
                 }
             }
-
-            var stars = _systemsParent.GetComponentsInChildren<ShipLogStar>(true);
-            foreach (var star in stars)
-            {
-                var childs = star.GetComponentsInChildren<ShipLogChildStar>(true);
-                foreach (var child in childs)
-                {
-                    foreach (var child2 in childs)
-                    {
-                        if (child == child2) continue;
-
-                        var distance = child.GetDistanceFrom(child2);
-                        if (distance <= 19)
-                        {
-                            NHLogger.LogWarning(child.name + " is too close to " + child2.name + "! Distance is " + distance + ".");
-                        }
-                    }
-                }
-            }
         }
 
         private void LoadAssets()
@@ -551,9 +532,6 @@ namespace NewHorizons.Components.ShipLog
                 else
                 {
                     float maxLifespan = 0;
-                    HashSet<Vector3> usedOffsets = new HashSet<Vector3>();
-                    newStar.usedOffsets = usedOffsets;
-                    usedOffsets.Add(Vector3.zero);
 
                     var staticRootless = bodies
                         .Where(b => b.Config.Base?.centerOfSolarSystem != true && b.Config.Orbit?.isStatic == true && string.IsNullOrEmpty(b.Config.Orbit.primaryBody))
@@ -583,8 +561,6 @@ namespace NewHorizons.Components.ShipLog
                         while (queue.Count > 0)
                         {
                             var (current, offset) = queue.Dequeue();
-                            UnityEngine.Random.InitState(current.name.GetHashCode() + 10);
-                            NHLogger.Log("Traverse: " + current.name + " | " + offset.ToString());
 
                             // Determine if this is a valid star or singularity
                             bool isStar = IsRenderableStar(current);
@@ -603,7 +579,6 @@ namespace NewHorizons.Components.ShipLog
                             // Place visual
                             if (isStar || isSingularity)
                             {
-                                usedOffsets.Add(offset);
                                 AddVisualChildStar(visualGroup, current, offset);
                             }
                             /*
@@ -637,17 +612,6 @@ namespace NewHorizons.Components.ShipLog
                                 if (primary != null && secondary != null)
                                 {
                                     var (primaryOffset, secondaryOffset) = GetAdjustedFocalOffsets(offset, primary, secondary);
-
-                                    if (IsRenderableStarOrSingularity(primary))
-                                    {
-                                        usedOffsets.Add(offset + primaryOffset);
-                                    }
-                                    
-                                    if (IsRenderableStarOrSingularity(secondary))
-                                    {
-                                        usedOffsets.Add(offset + secondaryOffset);
-                                    }
-
                                     queue.Enqueue((primary, offset + primaryOffset));
                                     queue.Enqueue((secondary, offset + secondaryOffset));
                                 }
@@ -666,11 +630,6 @@ namespace NewHorizons.Components.ShipLog
 
                                 var childOffset = isZero ? offset
                                     : GetOrbitVisualPosition(child, offset, minVisualRadius, maxVisualRadius, 0, maxOrbitDist);
-
-                                if (IsRenderableStarOrSingularity(current))
-                                {
-                                    usedOffsets.Add(childOffset);
-                                }
 
                                 queue.Enqueue((child, childOffset));
                             }

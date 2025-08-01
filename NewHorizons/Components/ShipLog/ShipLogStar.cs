@@ -21,7 +21,6 @@ namespace NewHorizons.Components.ShipLog
         public float _starTimeLoopEnd;
 
         private ShipLogStarChartMode mode;
-        internal HashSet<Vector3> usedOffsets;
         internal Transform visualGroup;
         private float scaleMultiplier;
 
