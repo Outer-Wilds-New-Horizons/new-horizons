@@ -73,7 +73,8 @@ namespace NewHorizons.Components.ShipLog
         public static readonly float highestScale = 2f;
         public static readonly float starMinimum = 0.099f;
         public static readonly float singularityMinimum = 0.199f;
-        public static readonly float focalChildRadiusMultiplier = 1.6f;
+        public static readonly float focalRadiusMultiplier = 1.6f;
+        public static readonly float focalChildRadiusMultiplier = focalRadiusMultiplier * focalRadiusMultiplier;
         public static readonly Color sunColor = new Color(2.302f, 0.8554f, 0.0562f, 1);
 
         private void SetCard(string uniqueID)
@@ -659,7 +660,7 @@ namespace NewHorizons.Components.ShipLog
                             {
                                 bool isZero = GetOrbitDistance(child) == 0;
 
-                                float scale = isFocal || child.FocalPoint != null ? focalChildRadiusMultiplier : 1f;
+                                float scale = isFocal ? focalChildRadiusMultiplier : (child.FocalPoint != null ? focalRadiusMultiplier : 1f);
                                 float minVisualRadius = 0;
                                 float maxVisualRadius = 40 * scale;
 
