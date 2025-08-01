@@ -359,8 +359,8 @@ namespace NewHorizons.Components.ShipLog
         {
             // Get perpendicular direction based on offset
             Vector2 raw = new Vector2(origin.x, origin.y);
-            Vector2 dir = raw == Vector2.zero ? Vector2.left : raw.normalized;
-            Vector2 perp = -dir;
+            Vector2 dir = raw == Vector2.zero ? Vector2.down : raw.normalized;
+            Vector2 perp = new Vector2(-dir.y, dir.x);
 
             Vector3 primaryOffset = (Vector3)(perp * -distance);
             Vector3 secondaryOffset = (Vector3)(perp * distance);
