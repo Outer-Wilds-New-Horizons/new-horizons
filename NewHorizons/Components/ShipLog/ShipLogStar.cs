@@ -23,6 +23,7 @@ namespace NewHorizons.Components.ShipLog
         private ShipLogStarChartMode mode;
         internal HashSet<Vector3> usedOffsets;
         internal Transform visualGroup;
+        private float scaleMultiplier;
 
         public void Initialize(ShipLogStarChartMode m)
         {
@@ -44,7 +45,20 @@ namespace NewHorizons.Components.ShipLog
 
             Depth = Mathf.Clamp(Depth, 0.01f, Mathf.Infinity);
             transform.localPosition = new Vector3(representPosition.x, representPosition.y, 0) / Depth;
-            transform.localScale = Vector3.one * _starScale;
+
+            float minScale = 0.75f;
+            float baseScale = 1f;
+            float baseZoom = 8f;
+            float zoomMin = 1f;
+            float zoomMax = 10f;
+
+            float maxScale = baseScale + (baseScale - minScale) * ((zoomMax - baseZoom) / (baseZoom - zoomMin));
+
+            float t = Mathf.InverseLerp(zoomMin, zoomMax, mode.cameraZoom);
+            scaleMultiplier = Mathf.Lerp(minScale, maxScale, t);
+
+            transform.localScale = Vector3.one * (_starScale * scaleMultiplier);
+
         }
     }
 }
