@@ -538,20 +538,29 @@ namespace NewHorizons.Components.ShipLog
                         .Select(b => b.Config)
                         .ToList();
 
-                    // Compute max orbit distance for this system
-                    float maxOrbitDist = float.MinValue;
 
-                    foreach (var body in bodies.Select(b => b.Config).Where(IsRenderableStarOrSingularity))
+                    // Collect all non-zero orbit distances
+                    List<float> orbitDistances = bodies
+                        .Select(b => GetOrbitDistance(b.Config))
+                        .Where(d => d > 0)
+                        .OrderBy(d => d)
+                        .ToList();
+
+                    float maxOrbitDist;
+
+                    // Use percentile cutoff to avoid outliers
+                    if (orbitDistances.Count == 0)
                     {
-                        float dist = GetOrbitDistance(body);
-                        if (dist > 0)
-                        {
-                            maxOrbitDist = Mathf.Max(maxOrbitDist, dist);
-                        }
+                        maxOrbitDist = 1f; // fallback
+                    }
+                    else
+                    {
+                        // Take 90th percentile to ignore extreme far-out stars
+                        int index = Mathf.FloorToInt(orbitDistances.Count * 0.9f);
+                        index = Mathf.Clamp(index, 0, orbitDistances.Count - 1);
+                        maxOrbitDist = orbitDistances[index];
                     }
 
-                    // Prevent zero range divide
-                    if (maxOrbitDist == float.MinValue) maxOrbitDist = 1;
 
                     void TraverseFromCenter(PlanetConfig center)
                     {
