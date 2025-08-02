@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.InputSystem.HID;
 using UnityEngine.UI;
 using static NewHorizons.Utility.Files.AssetBundleUtilities;
 
@@ -71,8 +72,8 @@ namespace NewHorizons.Components.ShipLog
         public static readonly float highestScale = 2f;
         public static readonly float starMinimum = 0.099f;
         public static readonly float singularityMinimum = 0.199f;
-        public static readonly float focalRadiusMultiplier = 1.6f;
-        public static readonly float focalChildRadiusMultiplier = focalRadiusMultiplier * focalRadiusMultiplier;
+        public static readonly float minVisualRadius = 0;
+        public static readonly float maxVisualRadius = 40;
         public static readonly Color sunColor = new Color(2.302f, 0.8554f, 0.0562f, 1);
 
         private void SetCard(string uniqueID)
@@ -632,9 +633,6 @@ namespace NewHorizons.Components.ShipLog
 
                                 if (primary != null && secondary != null)
                                 {
-                                    float minVisualRadius = 0;
-                                    float maxVisualRadius = 40;
-
                                     var semiMajorAxis = (secondary.Orbit.semiMajorAxis + primary.Orbit.semiMajorAxis) / 2;
 
                                     OrbitModule primaryOrbit = new OrbitModule
@@ -657,13 +655,13 @@ namespace NewHorizons.Components.ShipLog
                                         trueAnomaly = secondary.Orbit.trueAnomaly,
                                     };
 
-                                    Vector3 secondaryOffset = GetOrbitVisualPosition(
-                                        secondaryOrbit, offset,
+                                    Vector3 primaryOffset = GetOrbitVisualPosition(
+                                        primaryOrbit, offset,
                                         minVisualRadius, maxVisualRadius,
                                         0, maxOrbitDist);
 
-                                    Vector3 primaryOffset = GetOrbitVisualPosition(
-                                        primaryOrbit, offset,
+                                    Vector3 secondaryOffset = GetOrbitVisualPosition(
+                                        secondaryOrbit, offset,
                                         minVisualRadius, maxVisualRadius,
                                         0, maxOrbitDist);
 
@@ -678,10 +676,6 @@ namespace NewHorizons.Components.ShipLog
                             foreach (var child in children.OrderBy(GetOrbitDistance))
                             {
                                 bool isZero = GetOrbitDistance(child) == 0;
-
-                                float scale = isFocal ? focalChildRadiusMultiplier : (child.FocalPoint != null ? focalRadiusMultiplier : 1f);
-                                float minVisualRadius = 0;
-                                float maxVisualRadius = 40 * scale;
 
                                 var childOffset = isZero ? offset
                                     : GetOrbitVisualPosition(child, offset, minVisualRadius, maxVisualRadius, 0, maxOrbitDist);
