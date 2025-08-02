@@ -173,8 +173,18 @@ namespace NewHorizons.Components.ShipLog
             ResetTransforms(cameraPivot);
             cameraPivot.localEulerAngles = new Vector3(-5, 0, 0);
 
-            foreach (Vector3 point in _galaxyStarPoints) AddGenericStar(point);
+            CreateGalaxyStars();
 
+            CreateSystemStars();
+        }
+
+        private void CreateGalaxyStars()
+        {
+            foreach (Vector3 point in _galaxyStarPoints) AddGenericStar(point);
+        }
+
+        private void CreateSystemStars()
+        {
             foreach (var starSystem in Main.SystemDict.Keys)
             {
                 bool thisSystem = Main.Instance.CurrentStarSystem == starSystem;
