@@ -1141,12 +1141,14 @@ namespace NewHorizons.Components.ShipLog
             public PlanetConfig PrimaryConfig;
             public List<PlanetConfig> AllConfigs = new();
 
+            private BaseModule _base;
             private OrbitModule _orbit;
             private FocalPointModule _focalPoint;
             private StarModule _star;
             private SingularityModule[] _singularities;
 
             public string Name => PrimaryConfig.name;
+            public BaseModule Base => _base;
             public OrbitModule Orbit => _orbit;
             public FocalPointModule FocalPoint => _focalPoint;
             public StarModule Star => _star;
@@ -1171,20 +1173,18 @@ namespace NewHorizons.Components.ShipLog
 
             private void RefreshResolvedValues()
             {
+                _base = null;
                 _orbit = null;
                 _focalPoint = null;
                 _star = null;
                 _singularities = null;
 
+                _base = PrimaryConfig?.Base
+                    ?? AllConfigs.Select(c => c.Base).FirstOrDefault(fp => fp != null);
+
                 // Orbit: prefer last with valid orbit data
-                foreach (var cfg in AllConfigs)
-                {
-                    if (cfg.Orbit != null && HasValidOrbit(cfg.Orbit))
-                    {
-                        _orbit = cfg.Orbit;
-                    }
-                }
-                _orbit ??= PrimaryConfig?.Orbit;
+                _orbit = AllConfigs.LastOrDefault(HasValidOrbit)?.Orbit
+                    ?? PrimaryConfig?.Orbit;
 
                 // FocalPoint: prefer primary, then fallback
                 _focalPoint = PrimaryConfig?.FocalPoint
@@ -1194,18 +1194,16 @@ namespace NewHorizons.Components.ShipLog
                 _star = PrimaryConfig?.Star
                     ?? AllConfigs.Select(c => c.Star).FirstOrDefault(s => s != null);
 
-                // Singularities: prefer primary, then fallback
-                _singularities = PrimaryConfig?.Props?.singularities;
-                if (_singularities == null || _singularities.Length == 0)
-                {
-                    _singularities = AllConfigs
-                        .Select(c => c.Props?.singularities)
-                        .FirstOrDefault(s => s != null && s.Length > 0);
-                }
+                // Singularities: merge all from configs
+                _singularities = AllConfigs
+                    .Where(c => c.Props?.singularities != null)
+                    .SelectMany(c => c.Props.singularities)
+                    .ToArray();
             }
 
-            private static bool HasValidOrbit(OrbitModule orbit)
+            private static bool HasValidOrbit(PlanetConfig config)
             {
+                var orbit = config.Orbit;
                 return orbit != null && (
                     orbit.semiMajorAxis > 0f ||
                     (orbit.isStatic && orbit.staticPosition != null)
