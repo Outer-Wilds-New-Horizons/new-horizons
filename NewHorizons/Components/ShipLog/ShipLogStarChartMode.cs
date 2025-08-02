@@ -375,59 +375,6 @@ namespace NewHorizons.Components.ShipLog
             AddStar(customName, Main.Instance.CurrentStarSystem == customName);
         }
 
-        private static (Vector3 primaryOffset, Vector3 secondaryOffset) GetFocalOffsets(Vector3 origin, float distance = 10)
-        {
-            // Get perpendicular direction based on offset
-            Vector2 raw = new Vector2(origin.x, origin.y);
-            Vector2 dir = raw == Vector2.zero ? Vector2.down : raw.normalized;
-            Vector2 perp = new Vector2(-dir.y, dir.x);
-
-            Vector3 primaryOffset = (Vector3)(perp * -distance);
-            Vector3 secondaryOffset = (Vector3)(perp * distance);
-
-            return (primaryOffset, secondaryOffset);
-        }
-
-        private (Vector3 primaryOffset, Vector3 secondaryOffset) GetAdjustedFocalOffsets(Vector3 origin, MergedPlanetData primary, MergedPlanetData secondary)
-        {
-            const float maxDistance = 12f;   // distance for large stars
-            const float baseDistance = 8f;   // distance for normal stars
-            const float minDistance = 4f;    // distance for tiny stars
-
-            const float largeScaleThreshold = 1.5f; // scale above this is "large"
-            const float tinyScaleThreshold = 0.5f;  // scale below this is "tiny"
-
-            float scale1 = GetRenderableScale(primary);
-            float scale2 = GetRenderableScale(secondary);
-            float avgScale = (scale1 + scale2) / 2f;
-
-            float distance = minDistance;
-
-            // Only adjust if both are renderable
-            if (IsRenderableStarOrSingularity(primary) && IsRenderableStarOrSingularity(secondary))
-            {
-                if (avgScale < tinyScaleThreshold)
-                {
-                    // Tiny stars: interpolate between minDistance and baseDistance
-                    float t = avgScale / tinyScaleThreshold;
-                    distance = Mathf.Lerp(minDistance, baseDistance, Mathf.Clamp01(t));
-                }
-                else if (avgScale > largeScaleThreshold)
-                {
-                    // Large stars: interpolate between baseDistance and maxDistance
-                    float t = (avgScale - largeScaleThreshold) / (highestScale - largeScaleThreshold);
-                    distance = Mathf.Lerp(baseDistance, maxDistance, Mathf.Clamp01(t));
-                }
-                else
-                {
-                    // Normal range (between tiny and large)
-                    distance = baseDistance;
-                }
-            }
-
-            return GetFocalOffsets(origin, distance);
-        }
-
         private static readonly PlanetConfig Sun = new PlanetConfig
         {
             name = "Sun",
@@ -686,9 +633,43 @@ namespace NewHorizons.Components.ShipLog
 
                                 if (primary != null && secondary != null)
                                 {
-                                    var (primaryOffset, secondaryOffset) = GetAdjustedFocalOffsets(offset, primary, secondary);
-                                    queue.Enqueue((primary, offset + primaryOffset));
-                                    queue.Enqueue((secondary, offset + secondaryOffset));
+                                    float minVisualRadius = 0;
+                                    float maxVisualRadius = 40;
+
+                                    var semiMajorAxis = (secondary.Orbit.semiMajorAxis + primary.Orbit.semiMajorAxis) / 2;
+
+                                    OrbitModule primaryOrbit = new OrbitModule
+                                    {
+                                        semiMajorAxis = semiMajorAxis,
+                                        eccentricity = secondary.Orbit.eccentricity,
+                                        inclination = secondary.Orbit.inclination,
+                                        argumentOfPeriapsis = secondary.Orbit.argumentOfPeriapsis - 180,
+                                        longitudeOfAscendingNode = secondary.Orbit.longitudeOfAscendingNode,
+                                        trueAnomaly = secondary.Orbit.trueAnomaly,
+                                    };
+
+                                    OrbitModule secondaryOrbit = new OrbitModule
+                                    {
+                                        semiMajorAxis = semiMajorAxis,
+                                        eccentricity = secondary.Orbit.eccentricity,
+                                        inclination = secondary.Orbit.inclination,
+                                        argumentOfPeriapsis = secondary.Orbit.argumentOfPeriapsis,
+                                        longitudeOfAscendingNode = secondary.Orbit.longitudeOfAscendingNode,
+                                        trueAnomaly = secondary.Orbit.trueAnomaly,
+                                    };
+
+                                    Vector3 secondaryOffset = GetOrbitVisualPosition(
+                                        secondaryOrbit, offset,
+                                        minVisualRadius, maxVisualRadius,
+                                        0, maxOrbitDist);
+
+                                    Vector3 primaryOffset = GetOrbitVisualPosition(
+                                        primaryOrbit, offset,
+                                        minVisualRadius, maxVisualRadius,
+                                        0, maxOrbitDist);
+
+                                    queue.Enqueue((primary, primaryOffset));
+                                    queue.Enqueue((secondary, secondaryOffset));
                                 }
                             }
 
