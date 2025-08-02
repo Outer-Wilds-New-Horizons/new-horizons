@@ -463,6 +463,17 @@ namespace NewHorizons.Components.ShipLog
             float maxOrbitDist)
         {
             var orbit = config.Orbit;
+            return GetOrbitVisualPosition(orbit, centerOffset, minRadius, maxRadius, minOrbitDist, maxOrbitDist);
+        }
+
+        private Vector3 GetOrbitVisualPosition(
+            OrbitModule orbit,
+            Vector3 centerOffset,
+            float minRadius,
+            float maxRadius,
+            float minOrbitDist,
+            float maxOrbitDist)
+        {
             if (orbit == null) return centerOffset;
 
             // If static, just use position directly
