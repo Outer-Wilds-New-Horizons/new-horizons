@@ -401,6 +401,20 @@ namespace NewHorizons.Components.ShipLog
             return new Vector2(x, y);
         }
 
+        private static OrbitalParameters GetOrbitalParametersFromConfig(OrbitModule orbit)
+        {
+            return OrbitalParameters.FromTrueAnomaly(
+                new Gravity(0, 2),
+                new Gravity(0, 2),
+                orbit.eccentricity,
+                orbit.semiMajorAxis,
+                orbit.inclination,
+                orbit.argumentOfPeriapsis,
+                orbit.longitudeOfAscendingNode,
+                orbit.trueAnomaly
+            );
+        }
+
         private Vector3 GetOrbitVisualPosition(
             MergedPlanetData config,
             Vector3 centerOffset,
@@ -439,16 +453,7 @@ namespace NewHorizons.Components.ShipLog
             if (orbit.semiMajorAxis == 0f)
                 return centerOffset;
 
-            var op = OrbitalParameters.FromTrueAnomaly(
-                new Gravity(0, 2),
-                new Gravity(0, 2),
-                orbit.eccentricity,
-                orbit.semiMajorAxis,
-                orbit.inclination,
-                orbit.argumentOfPeriapsis,
-                orbit.longitudeOfAscendingNode,
-                orbit.trueAnomaly
-            );
+            var op = GetOrbitalParametersFromConfig(orbit);
 
             Vector3 flatOrbit = FlattenTo2D(op.InitialPosition);
             float dist3D = op.InitialPosition.magnitude;
