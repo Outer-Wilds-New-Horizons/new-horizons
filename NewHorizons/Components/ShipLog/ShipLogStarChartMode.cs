@@ -563,21 +563,16 @@ namespace NewHorizons.Components.ShipLog
                         .OrderBy(d => d)
                         .ToList();
 
-                    float maxOrbitDist;
+                    float maxOrbitDist = 50000;
 
                     // Use percentile cutoff to avoid outliers
-                    if (orbitDistances.Count == 0)
-                    {
-                        maxOrbitDist = 1f; // fallback
-                    }
-                    else
+                    if (orbitDistances.Count > 0)
                     {
                         // Take 90th percentile to ignore extreme far-out stars
                         int index = Mathf.FloorToInt(orbitDistances.Count * 0.9f);
                         index = Mathf.Clamp(index, 0, orbitDistances.Count - 1);
-                        maxOrbitDist = orbitDistances[index];
+                        maxOrbitDist = Mathf.Max(orbitDistances[index], maxOrbitDist);
                     }
-
 
                     void TraverseFromCenter(MergedPlanetData center)
                     {
