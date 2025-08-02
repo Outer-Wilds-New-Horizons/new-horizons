@@ -143,17 +143,17 @@ namespace NewHorizons.Components.ShipLog
         public void InitializeStars()
         {
             _allStarsParent = new GameObject("Stars").transform;
-            _allStarsParent.parent = this.transform;
+            _allStarsParent.transform.SetParent(transform, false);
             _allStarsParent.SetAsFirstSibling();
             ResetTransforms(_allStarsParent);
 
             _genericParent = new GameObject("Generic").transform;
-            _genericParent.parent = _allStarsParent;
+            _genericParent.transform.SetParent(_allStarsParent, false);
             _genericParent.SetAsFirstSibling();
             ResetTransforms(_genericParent);
 
             _systemsParent = new GameObject("Systems").transform;
-            _systemsParent.parent = _allStarsParent;
+            _systemsParent.transform.SetParent(_allStarsParent, false);
             _systemsParent.SetAsLastSibling();
             ResetTransforms(_systemsParent);
 
@@ -168,7 +168,7 @@ namespace NewHorizons.Components.ShipLog
             _fontToUse = FindObjectOfType<ShipLogController>().GetComponentInChildren<Text>().font;
 
             cameraPivot = new GameObject("CameraPivot").transform;
-            cameraPivot.parent = this.transform;
+            cameraPivot.transform.SetParent(transform, false);
             ResetTransforms(cameraPivot);
             cameraPivot.localEulerAngles = new Vector3(-5, 0, 0);
 
@@ -204,7 +204,7 @@ namespace NewHorizons.Components.ShipLog
         private RawImage AddVisualIndicator()
         {
             GameObject highlightCursorObject = new GameObject("VisualIndicator");
-            highlightCursorObject.transform.parent = this.transform;
+            highlightCursorObject.transform.SetParent(transform, false);
             ResetTransforms(highlightCursorObject.transform);
             RawImage image = highlightCursorObject.AddComponent<RawImage>();
             image.color = _elementColor;
@@ -333,15 +333,14 @@ namespace NewHorizons.Components.ShipLog
         {
             GameObject childStar = new GameObject("ChildStar");
             ShipLogChildStar newChildStar = childStar.AddComponent<ShipLogChildStar>();
-            childStar.transform.parent = parent;
+            childStar.transform.SetParent(parent, false);
             ResetTransforms(childStar.transform);
             childStar.transform.localPosition = offset;
 
+            childStar.AddComponent<CanvasRenderer>();
             var image = childStar.AddComponent<RawImage>();
             image.texture = color == Color.black ? _blackHoleTexture : _starTexture;
             image.color = color == Color.black ? Color.white : color;
-
-            childStar.AddComponent<CanvasRenderer>();
 
             newChildStar._starTimeLoopEnd = lifespan;
             newChildStar._starScale = scale;
@@ -503,11 +502,11 @@ namespace NewHorizons.Components.ShipLog
 
             GameObject newStarObject = new GameObject("StarGroup");
             ShipLogStar newStar = newStarObject.AddComponent<ShipLogStar>();
-            newStar.transform.parent = _systemsParent;
+            newStar.transform.SetParent(_systemsParent, false);
 
+            newStarObject.AddComponent<CanvasRenderer>();
             RawImage starImage = newStarObject.AddComponent<RawImage>();
             starImage.texture = _starTexture;
-            newStarObject.AddComponent<CanvasRenderer>();
             ResetTransforms(newStar.transform);
 
             newStar._starPosition = GetStarPosition(config);
@@ -612,7 +611,7 @@ namespace NewHorizons.Components.ShipLog
                             else
                             {
                                 GameObject empty = new GameObject(current.Name);
-                                empty.transform.parent = visualGroup;
+                                empty.transform.SetParent(visualGroup, false);
                                 ResetTransforms(empty.transform);
                                 empty.transform.localPosition = offset;
                             }
@@ -759,11 +758,11 @@ namespace NewHorizons.Components.ShipLog
         {
             GameObject newStarObject = new GameObject("Star");
             ShipLogStar newStar = newStarObject.AddComponent<ShipLogStar>();
-            newStar.transform.parent = _genericParent;
+            newStar.transform.SetParent(_genericParent, false);
 
+            newStarObject.AddComponent<CanvasRenderer>();
             RawImage starImage = newStarObject.AddComponent<RawImage>();
             starImage.texture = _starTexture;
-            newStarObject.AddComponent<CanvasRenderer>();
             ResetTransforms(newStar.transform);
 
             starImage.color = RandomStarColor();
@@ -788,13 +787,13 @@ namespace NewHorizons.Components.ShipLog
         private void AddTextLabel(Transform parent, string Text)
         {
             GameObject textObject = new GameObject("TextLabel");
-            textObject.transform.parent = parent;
+            textObject.transform.SetParent(parent, false);
             ResetTransforms(textObject.transform);
             textObject.transform.localScale = Vector3.one * 2;
 
+            textObject.AddComponent<CanvasRenderer>();
             Text text = textObject.AddComponent<Text>();
             RectTransform rect = textObject.GetAddComponent<RectTransform>();
-            textObject.AddComponent<CanvasRenderer>();
 
             text.alignment = TextAnchor.UpperCenter;
             text.text = Text;
