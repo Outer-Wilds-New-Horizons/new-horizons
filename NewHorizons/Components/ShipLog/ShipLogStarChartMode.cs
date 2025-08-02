@@ -235,13 +235,37 @@ namespace NewHorizons.Components.ShipLog
                 .ToList();
         }
 
+        private float GetStarScale(StarModule star) => GetStarScale(star, false);
+
+        private float GetStarScale(StarModule star, bool unconstrainedLowest)
+        {
+            return Mathf.Clamp(star.size / comparisonRadius, unconstrainedLowest ? 0 : lowestScale, highestScale);
+        }
+
+        private float GetSingularityScale(SingularityModule singularity) => GetSingularityScale(singularity, false);
+
+        private float GetSingularityScale(SingularityModule singularity, bool unconstrainedLowest)
+        {
+            return Mathf.Clamp(singularity.horizonRadius / comparisonRadius, unconstrainedLowest ? 0 : lowestScale, highestScale);
+        }
+
+        private float GetSingularitiesScale(SingularityModule[] singularities)
+        {
+            return singularities.Max(GetSingularityScale);
+        }
+
+        private float GetSingularitiesScale(SingularityModule[] singularities, bool unconstrainedLowest)
+        {
+            return singularities.Max(singularity => GetSingularityScale(singularity, unconstrainedLowest));
+        }
+
         private float GetRenderableScale(MergedPlanetData config)
         {
             if (IsRenderableStar(config))
-                return Mathf.Clamp(config.Star.size / comparisonRadius, lowestScale, highestScale);
+                return GetStarScale(config.Star);
 
             if (IsRenderableSingularity(config))
-                return Mathf.Clamp(config.Singularities.Max(s => s.horizonRadius) / comparisonRadius, lowestScale, highestScale);
+                return GetSingularitiesScale(config.Singularities);
 
             return 0;
         }
@@ -266,7 +290,7 @@ namespace NewHorizons.Components.ShipLog
         private bool IsRenderableStar(MergedPlanetData config)
         {
             return config.Star != null &&
-                   Mathf.Clamp(config.Star.size / comparisonRadius, 0, highestScale) >= starMinimum;
+                   GetStarScale(config.Star, true) >= starMinimum;
         }
 
         private bool IsRenderableSingularity(MergedPlanetData config)
@@ -274,7 +298,7 @@ namespace NewHorizons.Components.ShipLog
             var singularities = config.Singularities;
             return singularities != null &&
                    singularities.Length > 0 &&
-                   Mathf.Clamp(singularities.Max(s => s.horizonRadius) / comparisonRadius, 0, highestScale) >= singularityMinimum;
+                   GetSingularitiesScale(singularities, true) >= singularityMinimum;
         }
 
         private bool IsRenderableStarOrSingularity(MergedPlanetData config)
