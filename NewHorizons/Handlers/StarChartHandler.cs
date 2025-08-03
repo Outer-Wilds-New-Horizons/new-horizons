@@ -131,6 +131,21 @@ namespace NewHorizons.Handlers
             return ShipLogHandler.KnowsFact(factID);
         }
 
+        public static bool HasShipSpawn(string system)
+        {
+            var config = Main.SystemDict[system];
+
+            var canWarpTo = false;
+            if (system.Equals("SolarSystem")) canWarpTo = true;
+            else if (system.Equals("EyeOfTheUniverse")) canWarpTo = false;
+            else if (config.HasShipSpawn) canWarpTo = true;
+
+            return canWarpTo;
+        }
+
+        public static bool CanEnterViaWarpDrive(string system) => system == "SolarSystem" ||
+            Main.SystemDict[system].Config.canEnterViaWarpDrive;
+
         public static bool CanExitViaWarpDrive() => Main.Instance.CurrentStarSystem == "SolarSystem" || (_canExitViaWarpDrive
                 && (string.IsNullOrEmpty(_factRequiredToExitViaWarpDrive) || ShipLogHandler.KnowsFact(_factRequiredToExitViaWarpDrive)));
 
@@ -164,18 +179,12 @@ namespace NewHorizons.Handlers
         /// <returns></returns>
         public static bool CanEverWarpToSystem(string system)
         {
-            var config = Main.SystemDict[system];
+            var hasShipSpawn = HasShipSpawn(system);
+            var canEnterViaWarpDrive = CanEnterViaWarpDrive(system);
 
-            var canWarpTo = false;
-            if (system.Equals("SolarSystem")) canWarpTo = true;
-            else if (system.Equals("EyeOfTheUniverse")) canWarpTo = false;
-            else if (config.HasShipSpawn) canWarpTo = true;
+            NHLogger.LogVerbose(system, hasShipSpawn, canEnterViaWarpDrive);
 
-            var canEnterViaWarpDrive = Main.SystemDict[system].Config.canEnterViaWarpDrive || system == "SolarSystem";
-
-            NHLogger.LogVerbose(system, canWarpTo, canEnterViaWarpDrive);
-
-            return canWarpTo && canEnterViaWarpDrive;
+            return hasShipSpawn && canEnterViaWarpDrive;
         }
 
         public static void OnRevealFact(string factID)
