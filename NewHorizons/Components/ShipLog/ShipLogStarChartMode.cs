@@ -76,6 +76,37 @@ namespace NewHorizons.Components.ShipLog
         public static readonly float maxVisualRadius = 40;
         public static readonly Color sunColor = new Color(2.302f, 0.8554f, 0.0562f, 1);
 
+        private static readonly PlanetConfig SunConfig = new PlanetConfig
+        {
+            name = "Sun",
+            starSystem = "SolarSystem",
+            Base = new BaseModule
+            {
+                surfaceSize = 2000,
+                surfaceGravity = 100,
+                centerOfSolarSystem = true
+            },
+            Star = new StarModule
+            {
+                size = 2000,
+                tint = MColor.FromColor(sunColor),
+                solarLuminosity = 1,
+                lifespan = 22
+            }
+        };
+
+        private static readonly PlanetConfig EyeOfTheUniverseConfig = new PlanetConfig
+        {
+            name = "Eye of the Universe",
+            starSystem = "EyeOfTheUniverse",
+            Base = new BaseModule
+            {
+                surfaceSize = 300,
+                surfaceGravity = 30,
+                centerOfSolarSystem = true
+            }
+        };
+
         private void SetCard(string uniqueID)
         {
             _card.transform.localScale = new Vector3(1, 0, 1);
@@ -387,21 +418,6 @@ namespace NewHorizons.Components.ShipLog
             AddStar(customName, Main.Instance.CurrentStarSystem == customName);
         }
 
-        private static readonly PlanetConfig Sun = new PlanetConfig
-        {
-            name = "Sun",
-            Base = new BaseModule
-            {
-                centerOfSolarSystem = true
-            },
-            Star = new StarModule
-            {
-                size = 2000,
-                tint = MColor.FromColor(sunColor),
-                lifespan = 22
-            }
-        };
-
         private Vector2 FlattenTo2D(Vector3 pos3D)
         {
             // Flatten Z (forward) → Y (vertical)
@@ -494,7 +510,8 @@ namespace NewHorizons.Components.ShipLog
         {
             var config = Main.SystemDict[customName].Config.StarChart;
             var bodies = Main.BodyDict[customName].Select(b => b.Config);
-            if (customName == "SolarSystem") bodies = bodies.Prepend(Sun);
+            if (customName == "SolarSystem") bodies = bodies.Prepend(SunConfig);
+            else if (customName == "EyeOfTheUniverse") bodies = bodies.Prepend(EyeOfTheUniverseConfig);
 
             Dictionary<string, MergedPlanetData> mergedBodies = new();
             foreach (var body in bodies)
