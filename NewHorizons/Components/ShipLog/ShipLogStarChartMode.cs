@@ -506,6 +506,17 @@ namespace NewHorizons.Components.ShipLog
             return GetOrbitDistance(c.Orbit);
         }
 
+        private float GetTotalOrbitDistance(MergedPlanetData body)
+        {
+            if (body == null) return 0;
+
+            float currentDist = GetOrbitDistance(body);
+            if (body.Parent == null) return currentDist;
+
+            float parentDist = GetTotalOrbitDistance(body.Parent);
+            return currentDist + parentDist;
+        }
+
         private void AddStar(string customName, bool isThisSystem)
         {
             var config = Main.SystemDict[customName].Config.StarChart;
@@ -582,18 +593,33 @@ namespace NewHorizons.Components.ShipLog
                 {
                     float maxLifespan = 0;
 
+                    foreach (var data in mergedList)
+                    {
+                        var primary = GetStringID(data.Orbit.primaryBody);
+                        if (!string.IsNullOrEmpty(primary) && mergedBodies.TryGetValue(primary, out var parent))
+                        {
+                            data.Parent = parent;
+                        }
+                    }
+
                     var staticRootless = mergedList
                         .Where(b => !b.IsCenter && b.Orbit?.isStatic == true && string.IsNullOrEmpty(b.Orbit.primaryBody))
                         .ToList();
 
+                    foreach (var rootlessBody in staticRootless)
+                    {
+                        rootlessBody.Parent = center;
+                    }
+
                     // Collect all non-zero orbit distances
                     List<float> orbitDistances = mergedList
-                        .Select(b => GetOrbitDistance(b.Orbit))
+                        .Where(b => IsRenderableStarOrSingularity(b))
+                        .Select(b => GetTotalOrbitDistance(b))
                         .Where(d => d > 0)
                         .OrderBy(d => d)
                         .ToList();
 
-                    float maxOrbitDist = 50000;
+                    float maxOrbitDist = comparisonRadius;
 
                     // Use percentile cutoff to avoid outliers
                     if (orbitDistances.Count > 0)
@@ -601,6 +627,13 @@ namespace NewHorizons.Components.ShipLog
                         // Take 90th percentile to ignore extreme far-out stars
                         int index = Mathf.FloorToInt(orbitDistances.Count * 0.9f);
                         index = Mathf.Clamp(index, 0, orbitDistances.Count - 1);
+
+                        // If it's the last element and there is a second-to-last, use that instead
+                        if (index == orbitDistances.Count - 1 && orbitDistances.Count > 1)
+                        {
+                            index = orbitDistances.Count - 2;
+                        }
+
                         maxOrbitDist = Mathf.Max(orbitDistances[index], maxOrbitDist);
                     }
 
@@ -702,7 +735,7 @@ namespace NewHorizons.Components.ShipLog
                             // Sort all remaining children by orbital distance
                             children = children.OrderBy(GetOrbitDistance).ToList();
 
-                            foreach (var child in children.OrderBy(GetOrbitDistance))
+                            foreach (var child in children)
                             {
                                 bool isZero = GetOrbitDistance(child) == 0;
 
@@ -1191,6 +1224,8 @@ namespace NewHorizons.Components.ShipLog
             public FocalPointModule FocalPoint => _focalPoint;
             public StarModule Star => _star;
             public SingularityModule[] Singularities => _singularities;
+
+            public MergedPlanetData Parent { get; internal set; }
 
             public void Merge(PlanetConfig config)
             {
