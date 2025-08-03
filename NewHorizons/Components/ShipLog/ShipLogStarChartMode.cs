@@ -284,7 +284,7 @@ namespace NewHorizons.Components.ShipLog
         private Color GetRenderableColor(MergedPlanetData config)
         {
             if (IsRenderableStar(config))
-                return StarTint(config.Star.tint);
+                return StarTint(config.Star.tint, config.Star.solarLuminosity);
 
             if (IsRenderableSingularity(config) && config.Singularities.First().type ==
                 SingularityModule.SingularityType.BlackHole)
@@ -332,12 +332,14 @@ namespace NewHorizons.Components.ShipLog
                 image.texture = ImageUtilities.GetTexture(mod, path);
         }
 
-        private Color StarTint(MColor tint)
+        private Color StarTint(MColor tint, float solarLuminosity)
         {
             if (tint == null) return sunColor;
             var color = tint.ToColor();
             color.a = 1f;
-            return color;
+            var modifier = Mathf.Max(1f, 2f * Mathf.Sqrt(solarLuminosity));
+            var adjustedColor = new Color(color.r * modifier, color.g * modifier, color.b * modifier);
+            return adjustedColor;
         }
 
         private GameObject AddVisualChildStar(Transform parent, Color color, float lifespan, Vector3 offset, float scale)
