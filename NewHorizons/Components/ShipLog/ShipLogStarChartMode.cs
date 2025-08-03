@@ -492,13 +492,30 @@ namespace NewHorizons.Components.ShipLog
             return centerOffset + (Vector3)(flatOrbit.normalized * radiusOrbit);
         }
 
+        private Vector3 GetOrbitPosition(OrbitModule orbit)
+        {
+            if (orbit == null) return Vector3.zero;
+
+            // Static position override
+            if (orbit.isStatic && orbit.staticPosition != null && orbit.staticPosition.Length() > 0)
+                return orbit.staticPosition;
+
+            if (orbit.semiMajorAxis == 0)
+                return Vector3.zero;
+
+            // Use orbital parameters for dynamic position
+            var op = GetOrbitalParametersFromConfig(orbit);
+            return op.InitialPosition;
+        }
+
+        private Vector3 GetOrbitPosition(MergedPlanetData c)
+        {
+            return GetOrbitPosition(c.Orbit);
+        }
+
         private float GetOrbitDistance(OrbitModule orbit)
         {
-            if (orbit == null) return 0f;
-
-            float semi = orbit.semiMajorAxis;
-            float stat = (orbit.staticPosition?.Length() ?? 0);
-            return Mathf.Max(semi, stat);
+            return GetOrbitPosition(orbit).magnitude;
         }
 
         private float GetOrbitDistance(MergedPlanetData c)
@@ -506,15 +523,53 @@ namespace NewHorizons.Components.ShipLog
             return GetOrbitDistance(c.Orbit);
         }
 
+        private Vector3 GetTotalOrbitPosition(MergedPlanetData body)
+        {
+            if (body == null) return Vector3.zero;
+
+            Vector3 currentPosition = GetOrbitPosition(body);
+            if (body.Parent == null) return currentPosition;
+
+            Vector3 parentPosition = GetTotalOrbitPosition(body.Parent);
+            return parentPosition + currentPosition;
+        }
+
         private float GetTotalOrbitDistance(MergedPlanetData body)
         {
-            if (body == null) return 0;
+            return GetTotalOrbitPosition(body).magnitude;
+        }
 
-            float currentDist = GetOrbitDistance(body);
-            if (body.Parent == null) return currentDist;
+        private float GetMaxOrbitDistanceFrom(MergedPlanetData body, List<MergedPlanetData> allBodies)
+        {
+            List<float> distances = new();
 
-            float parentDist = GetTotalOrbitDistance(body.Parent);
-            return currentDist + parentDist;
+            void CollectDistances(MergedPlanetData current)
+            {
+                float dist = GetTotalOrbitDistance(current);
+                if (dist > 0) distances.Add(dist);
+
+                foreach (var child in GetChildrenOf(current, allBodies))
+                {
+                    CollectDistances(child);
+                }
+            }
+
+            CollectDistances(body);
+
+            if (distances.Count == 0) return 0f;
+
+            distances.Sort();
+
+            int index = Mathf.FloorToInt(distances.Count * 0.8f); // 80th percentile
+            index = Mathf.Clamp(index, 0, distances.Count - 1);
+
+            // If it's the last and there’s another one, use second-to-last
+            if (index == distances.Count - 1 && distances.Count > 2)
+            {
+                index = distances.Count - 2;
+            }
+
+            return distances[index];
         }
 
         private void AddStar(string customName, bool isThisSystem)
@@ -611,31 +666,10 @@ namespace NewHorizons.Components.ShipLog
                         rootlessBody.Parent = center;
                     }
 
-                    // Collect all non-zero orbit distances
-                    List<float> orbitDistances = mergedList
-                        .Where(b => IsRenderableStarOrSingularity(b))
-                        .Select(b => GetTotalOrbitDistance(b))
-                        .Where(d => d > 0)
-                        .OrderBy(d => d)
-                        .ToList();
-
-                    float maxOrbitDist = comparisonRadius;
-
-                    // Use percentile cutoff to avoid outliers
-                    if (orbitDistances.Count > 0)
-                    {
-                        // Take 90th percentile to ignore extreme far-out stars
-                        int index = Mathf.FloorToInt(orbitDistances.Count * 0.9f);
-                        index = Mathf.Clamp(index, 0, orbitDistances.Count - 1);
-
-                        // If it's the last element and there is a second-to-last, use that instead
-                        if (index == orbitDistances.Count - 1 && orbitDistances.Count > 1)
-                        {
-                            index = orbitDistances.Count - 2;
-                        }
-
-                        maxOrbitDist = Mathf.Max(orbitDistances[index], maxOrbitDist);
-                    }
+                    float maxOrbitDist = Mathf.Max(
+                        GetMaxOrbitDistanceFrom(center, mergedList),
+                        comparisonRadius
+                    );
 
                     void TraverseFromCenter(MergedPlanetData center)
                     {
