@@ -87,7 +87,7 @@ namespace NewHorizons.Builder.Props
                     var minHeight = (propInfo.minHeight != null ? Math.Max(propInfo.minHeight, heightMap.minHeight) : heightMap.minHeight);
                     if ((maxHeight - minHeight) / (heightMap.maxHeight - heightMap.minHeight) < 0.001) // If height roll has less than 0.1% chance of being valid
                     {
-                        NHLogger.LogError($"Ignoring minHeight/maxHeight for scatter of [{scatterPrefab.name}] to prevent infinite rerolls.");
+                        NHLogger.LogError($"Ignoring minHeight/maxHeight for scatter of [{scatterPrefab.name}] to prevent infinite rerolls from too much constraint on height.");
                         reasonableHeightConstraints = false; // Ignore propInfo.min/maxHeight to prevent infinite rerolls
                     }
                     // That way, even if often not valid, it still won't loop much more than propInfo.count * 1000 per prop
