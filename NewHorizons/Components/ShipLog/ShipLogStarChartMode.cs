@@ -427,11 +427,69 @@ namespace NewHorizons.Components.ShipLog
             return new Vector2(x, y);
         }
 
-        private static OrbitalParameters GetOrbitalParametersFromConfig(OrbitModule orbit)
+        private static OrbitalParameters GetOrbitalParametersFromConfig(MergedPlanetData config)
         {
+            if (config == null || config.Orbit == null) return null;
+
+            var orbit = config.Orbit;
+
+            var gravity = new Gravity(config.Base);
+            var parentGravity = new Gravity(0, 2);
+
+            if (config.Parent != null)
+            {
+                parentGravity = new Gravity(config.Parent.Base);
+                if (config.Parent.FocalPoint != null)
+                {
+                    var focal = config.Parent.FocalPoint;
+                    var primaryID = ShipLogStarChartMode.GetStringID(focal.primary);
+                    var secondaryID = ShipLogStarChartMode.GetStringID(focal.secondary);
+
+                    // Check if we're the primary or secondary body
+                    bool isPrimary = config.ID == primaryID;
+                    bool isSecondary = config.ID == secondaryID;
+
+                    if (isPrimary || isSecondary)
+                    {
+                        // Grab both bodies
+                        var primaryBody = config.Parent.Children.FirstOrDefault(b => b.ID == primaryID);
+                        var secondaryBody = config.Parent.Children.FirstOrDefault(b => b.ID == secondaryID);
+
+                        if (primaryBody != null && secondaryBody != null)
+                        {
+                            var primaryGravity = new Gravity(primaryBody.Base);
+                            var secondaryGravity = new Gravity(secondaryBody.Base);
+
+                            float m1 = primaryGravity.Mass;
+                            float m2 = secondaryGravity.Mass;
+                            float distance = primaryBody.Orbit.semiMajorAxis + secondaryBody.Orbit.semiMajorAxis;
+
+                            float r1 = distance * m2 / (m1 + m2);
+                            float r2 = distance * m1 / (m1 + m2);
+
+
+                            float focalSemiMajorAxis = isPrimary ? r1 : r2;
+
+                            var secondaryOrbit = secondaryBody.Orbit;
+
+                            return OrbitalParameters.FromTrueAnomaly(
+                                isPrimary ? primaryGravity : secondaryGravity,
+                                isPrimary ? secondaryGravity : primaryGravity,
+                                secondaryOrbit.eccentricity,
+                                focalSemiMajorAxis,
+                                secondaryOrbit.inclination,
+                                secondaryOrbit.argumentOfPeriapsis + (isPrimary ? -180 : 0),
+                                secondaryOrbit.longitudeOfAscendingNode,
+                                secondaryOrbit.trueAnomaly
+                            );
+                        }
+                    }
+                }
+            }
+
             return OrbitalParameters.FromTrueAnomaly(
-                new Gravity(0, 2),
-                new Gravity(0, 2),
+                parentGravity,
+                gravity,
                 orbit.eccentricity,
                 orbit.semiMajorAxis,
                 orbit.inclination,
@@ -450,17 +508,6 @@ namespace NewHorizons.Components.ShipLog
             float maxOrbitDist)
         {
             var orbit = config.Orbit;
-            return GetOrbitVisualPosition(orbit, centerOffset, minRadius, maxRadius, minOrbitDist, maxOrbitDist);
-        }
-
-        private Vector3 GetOrbitVisualPosition(
-            OrbitModule orbit,
-            Vector3 centerOffset,
-            float minRadius,
-            float maxRadius,
-            float minOrbitDist,
-            float maxOrbitDist)
-        {
             if (orbit == null) return centerOffset;
 
             // If static, just use position directly
@@ -479,7 +526,7 @@ namespace NewHorizons.Components.ShipLog
             if (orbit.semiMajorAxis == 0f)
                 return centerOffset;
 
-            var op = GetOrbitalParametersFromConfig(orbit);
+            var op = GetOrbitalParametersFromConfig(config);
 
             Vector3 flatOrbit = FlattenTo2D(op.InitialPosition);
             float dist3D = op.InitialPosition.magnitude;
@@ -490,8 +537,9 @@ namespace NewHorizons.Components.ShipLog
             return centerOffset + (Vector3)(flatOrbit.normalized * radiusOrbit);
         }
 
-        private Vector3 GetOrbitPosition(OrbitModule orbit)
+        private Vector3 GetOrbitPosition(MergedPlanetData config)
         {
+            var orbit = config.Orbit;
             if (orbit == null) return Vector3.zero;
 
             // Static position override
@@ -502,23 +550,13 @@ namespace NewHorizons.Components.ShipLog
                 return Vector3.zero;
 
             // Use orbital parameters for dynamic position
-            var op = GetOrbitalParametersFromConfig(orbit);
+            var op = GetOrbitalParametersFromConfig(config);
             return op.InitialPosition;
         }
 
-        private Vector3 GetOrbitPosition(MergedPlanetData c)
+        private float GetOrbitDistance(MergedPlanetData config)
         {
-            return GetOrbitPosition(c.Orbit);
-        }
-
-        private float GetOrbitDistance(OrbitModule orbit)
-        {
-            return GetOrbitPosition(orbit).magnitude;
-        }
-
-        private float GetOrbitDistance(MergedPlanetData c)
-        {
-            return GetOrbitDistance(c.Orbit);
+            return GetOrbitPosition(config).magnitude;
         }
 
         private Vector3 GetTotalOrbitPosition(MergedPlanetData body)
@@ -652,6 +690,7 @@ namespace NewHorizons.Components.ShipLog
                         if (!string.IsNullOrEmpty(primary) && mergedBodies.TryGetValue(primary, out var parent))
                         {
                             data.Parent = parent;
+                            parent.Children.Add(data);
                         }
                     }
 
@@ -662,6 +701,7 @@ namespace NewHorizons.Components.ShipLog
                     foreach (var rootlessBody in staticRootless)
                     {
                         rootlessBody.Parent = center;
+                        center.Children.SafeAdd(rootlessBody);
                     }
 
                     float maxOrbitDist = Mathf.Max(
@@ -727,35 +767,13 @@ namespace NewHorizons.Components.ShipLog
 
                                 if (primary != null && secondary != null)
                                 {
-                                    var semiMajorAxis = (secondary.Orbit.semiMajorAxis + primary.Orbit.semiMajorAxis) / 2;
-
-                                    OrbitModule primaryOrbit = new OrbitModule
-                                    {
-                                        semiMajorAxis = semiMajorAxis,
-                                        eccentricity = secondary.Orbit.eccentricity,
-                                        inclination = secondary.Orbit.inclination,
-                                        argumentOfPeriapsis = secondary.Orbit.argumentOfPeriapsis - 180,
-                                        longitudeOfAscendingNode = secondary.Orbit.longitudeOfAscendingNode,
-                                        trueAnomaly = secondary.Orbit.trueAnomaly,
-                                    };
-
-                                    OrbitModule secondaryOrbit = new OrbitModule
-                                    {
-                                        semiMajorAxis = semiMajorAxis,
-                                        eccentricity = secondary.Orbit.eccentricity,
-                                        inclination = secondary.Orbit.inclination,
-                                        argumentOfPeriapsis = secondary.Orbit.argumentOfPeriapsis,
-                                        longitudeOfAscendingNode = secondary.Orbit.longitudeOfAscendingNode,
-                                        trueAnomaly = secondary.Orbit.trueAnomaly,
-                                    };
-
                                     Vector3 primaryOffset = GetOrbitVisualPosition(
-                                        primaryOrbit, offset,
+                                        primary, offset,
                                         minVisualRadius, maxVisualRadius,
                                         0, maxOrbitDist);
 
                                     Vector3 secondaryOffset = GetOrbitVisualPosition(
-                                        secondaryOrbit, offset,
+                                        secondary, offset,
                                         minVisualRadius, maxVisualRadius,
                                         0, maxOrbitDist);
 
@@ -1258,6 +1276,10 @@ namespace NewHorizons.Components.ShipLog
             public SingularityModule[] Singularities => _singularities;
 
             public MergedPlanetData Parent { get; internal set; }
+            public List<MergedPlanetData> Children { get; } = new();
+
+            public bool ValidBase => HasValidBase(Base);
+            public bool ValidOrbit => HasValidOrbit(Orbit);
 
             public void Merge(PlanetConfig config)
             {
@@ -1284,8 +1306,9 @@ namespace NewHorizons.Components.ShipLog
                 _star = null;
                 _singularities = null;
 
-                _base = PrimaryConfig?.Base
-                    ?? AllConfigs.Select(c => c.Base).FirstOrDefault(fp => fp != null);
+                // Base: prefer last with valid base data
+                _base = AllConfigs.LastOrDefault(HasValidBase)?.Base
+                    ?? PrimaryConfig?.Base;
 
                 // Orbit: prefer last with valid orbit data
                 _orbit = AllConfigs.LastOrDefault(HasValidOrbit)?.Orbit
@@ -1306,9 +1329,27 @@ namespace NewHorizons.Components.ShipLog
                     .ToArray();
             }
 
+            private static bool HasValidBase(PlanetConfig config)
+            {
+                var baseModule = config.Base;
+                return HasValidBase(baseModule);
+            }
+
+            private static bool HasValidBase(BaseModule baseModule)
+            {
+                return baseModule != null &&
+                       baseModule.surfaceGravity > 0 &&
+                       baseModule.surfaceSize > 0;
+            }
+
             private static bool HasValidOrbit(PlanetConfig config)
             {
                 var orbit = config.Orbit;
+                return HasValidOrbit(orbit);
+            }
+
+            private static bool HasValidOrbit(OrbitModule orbit)
+            {
                 return orbit != null && (
                     orbit.semiMajorAxis > 0f ||
                     (orbit.isStatic && orbit.staticPosition != null)
