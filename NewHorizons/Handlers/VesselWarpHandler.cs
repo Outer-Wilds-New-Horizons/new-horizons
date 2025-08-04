@@ -214,6 +214,13 @@ namespace NewHorizons.Handlers
 
             var hasParentBody = !string.IsNullOrEmpty(system.Config.Vessel?.vesselSpawn?.parentBody);
             var hasPhysics = system.Config.Vessel?.hasPhysics ?? !hasParentBody;
+            
+            if (hasParentBody && vesselObject.transform.parent == null)
+            {
+                NHLogger.LogError($"Vessel is missing parent body [{system.Config.Vessel?.vesselSpawn?.parentBody}]");
+                hasParentBody = false;
+            }
+
             var planetGO = hasParentBody ? vesselObject.transform.parent.gameObject : null;
 
             if (hasPhysics)
