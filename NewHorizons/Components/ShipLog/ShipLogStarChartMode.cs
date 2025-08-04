@@ -467,7 +467,6 @@ namespace NewHorizons.Components.ShipLog
                             float r1 = distance * m2 / (m1 + m2);
                             float r2 = distance * m1 / (m1 + m2);
 
-
                             float focalSemiMajorAxis = isPrimary ? r1 : r2;
 
                             var secondaryOrbit = secondaryBody.Orbit;
@@ -649,6 +648,8 @@ namespace NewHorizons.Components.ShipLog
             bool hasColor = config?.color != null;
             bool hasTexture = config?.starTexturePath != null;
 
+            float labelYOffset = 0;
+
             // Use manual color/texture if provided
             if (hasColor || hasTexture)
             {
@@ -799,39 +800,20 @@ namespace NewHorizons.Components.ShipLog
 
                     TraverseFromCenter(center);
 
-                    // After placement: auto-rotate if visuals are too far upward
                     var childVisuals = visualGroupObj.GetComponentsInChildren<ShipLogChildStar>(true).ToList();
 
+                    // After placement: Shift text label higher based on how far above 20 the highest visual goes
                     if (childVisuals.Count > 0)
                     {
                         float highestY = childVisuals.Max(r => r.transform.localPosition.y);
                         if (highestY >= 20)
                         {
-                            float angleStep = 10;
-                            float bestScore = float.MaxValue;
-                            float bestAngle = 0;
-
-                            for (float angle = 0; angle < 360; angle += angleStep)
-                            {
-                                Quaternion rot = Quaternion.Euler(0, 0, angle);
-                                float score = childVisuals
-                                    .Select(r => rot * r.transform.localPosition)
-                                    .Max(pos => Mathf.Max(pos.y - 20, 0)); // penalize anything over 20
-
-                                if (score < bestScore)
-                                {
-                                    bestScore = score;
-                                    bestAngle = angle;
-                                }
-                            }
-
-                            // Apply best rotation to entire group
-                            visualGroup.localRotation = Quaternion.Euler(0, 0, bestAngle);
+                            labelYOffset = highestY - 20;
                         }
                     }
 
                     // No valid children found: fallback
-                    if (newStarObject.GetComponentsInChildren<ShipLogChildStar>(true).Length == 0)
+                    if (childVisuals.Count == 0)
                     {
                         AddVisualChildStar(visualGroup);
                         newStar._starTimeLoopEnd = 0;
@@ -850,7 +832,12 @@ namespace NewHorizons.Components.ShipLog
                 cameraPosition = new Vector2(newStar._starPosition.x, newStar._starPosition.y);
             }
 
-            AddTextLabel(newStarObject.transform, UniqueIDToName(customName));
+            var textLabel = AddTextLabel(newStarObject.transform, UniqueIDToName(customName));
+            if (labelYOffset > 0 && textLabel != null)
+            {
+                textLabel.transform.localPosition += new Vector3(0, labelYOffset, 0);
+            }
+
             newStar.enabled = true;
             newStar.Initialize(this);
         }
@@ -885,7 +872,7 @@ namespace NewHorizons.Components.ShipLog
             return darkLightColor;
         }
 
-        private void AddTextLabel(Transform parent, string Text)
+        private Text AddTextLabel(Transform parent, string Text)
         {
             GameObject textObject = new GameObject("TextLabel");
             textObject.transform.SetParent(parent, false);
@@ -903,6 +890,8 @@ namespace NewHorizons.Components.ShipLog
             text.resizeTextForBestFit = true;
             text.resizeTextMaxSize = 14;
             text.resizeTextMinSize = 10;
+
+            return text;
         }
 
         private void ResetTransforms(Transform t)
