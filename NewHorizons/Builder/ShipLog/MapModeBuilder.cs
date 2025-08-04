@@ -306,7 +306,14 @@ namespace NewHorizons.Builder.ShipLog
 
             foreach (NewHorizonsBody body in bodies)
             {
-                if (body.Config.ShipLog?.mapMode?.manualNavigationPosition == null && body.Config.ShipLog?.mapMode?.details == null) continue;
+                if (body.Config.ShipLog?.mapMode?.manualNavigationPosition == null && body.Config.ShipLog?.mapMode?.details == null)
+                {
+                    if (body.Config.ShipLog?.mapMode?.manualPosition != null)
+                    {
+                        NHLogger.LogError($"Missing ship log map mode manualNavigationPosition for [{body.Config.name}]");
+                    }
+                    continue;
+                }
 
                 // Sometimes they got other names idk
                 var name = body.Config.name.Replace(" ", "");
@@ -322,6 +329,7 @@ namespace NewHorizons.Builder.ShipLog
 
                 if (!isVanilla)
                 {
+                    NHLogger.LogVerbose($"Making map mode object for [{body.Config.name}]");
                     GameObject newMapModeGO = CreateMapModeGameObject(body, transformParent, layer, body.Config.ShipLog?.mapMode?.manualPosition);
                     ShipLogAstroObject newAstroObject = AddShipLogAstroObject(newMapModeGO, body, greyScaleMaterial, layer);
                     if (body.Config.FocalPoint != null)
@@ -527,6 +535,20 @@ namespace NewHorizons.Builder.ShipLog
 
         private static void ConnectNodeToLastSibling(MapModeObject node, Material greyScaleMaterial)
         {
+            if (node.astroObject == null)
+            {
+                NHLogger.LogError($"Failed to connect node to last sibling because ShipLogAstroObject is null");
+                return;
+            }
+
+            if (node.lastSibling == null || node.lastSibling.astroObject == null)
+            {
+                NHLogger.LogError($"Failed to connect node {node.astroObject.GetID()} to last sibling because lastSibling is null");
+                return;
+            }
+            
+            NHLogger.LogVerbose($"Connecting node {node.astroObject.GetID()} to last sibling {node.lastSibling.astroObject.GetID()}");
+
             Vector2 fromPosition = node.astroObject.transform.localPosition;
             Vector2 toPosition = node.lastSibling.astroObject.transform.localPosition;
 
@@ -558,6 +580,8 @@ namespace NewHorizons.Builder.ShipLog
 
         private static void MakeNode(ref MapModeObject node, GameObject parent, Material greyScaleMaterial, int layer)
         {
+            NHLogger.LogVerbose($"Making node for [{node.mainBody?.Config?.name}]");
+
             // Space between this node and the previous node
             // Take whatever scale will prevent overlap
             var lastSiblingScale = node.lastSibling?.mainBody?.Config?.ShipLog?.mapMode?.scale ?? 1f;
@@ -567,20 +591,28 @@ namespace NewHorizons.Builder.ShipLog
             Vector2 position = Vector2.zero;
             if (node.lastSibling != null)
             {
-                ShipLogAstroObject lastAstroObject = node.lastSibling.astroObject;
-                Vector3 lastPosition = lastAstroObject.transform.localPosition;
-                position = lastPosition;
-                float extraDistance = (node.mainBody.Config.ShipLog?.mapMode?.offset ?? 0f) * 100;
-
-                if (node.level % 2 == 0)
+                if (node.lastSibling.astroObject != null)
                 {
-                    position.y += padding * (node.y - node.lastSibling.y) + extraDistance;
+                    ShipLogAstroObject lastAstroObject = node.lastSibling.astroObject;
+                    Vector3 lastPosition = lastAstroObject.transform.localPosition;
+                    position = lastPosition;
+                    float extraDistance = (node.mainBody.Config.ShipLog?.mapMode?.offset ?? 0f) * 100;
+
+                    if (node.level % 2 == 0)
+                    {
+                        position.y += padding * (node.y - node.lastSibling.y) + extraDistance;
+                    }
+                    else
+                    {
+                        position.x += padding * (node.x - node.lastSibling.x) + extraDistance;
+                    }
                 }
                 else
                 {
-                    position.x += padding * (node.x - node.lastSibling.x) + extraDistance;
+                    NHLogger.LogError($"Last sibling's ShipLogAstroObject is null");
                 }
             }
+
             GameObject newNodeGO = CreateMapModeGameObject(node.mainBody, parent, layer, position);
             ShipLogAstroObject astroObject = AddShipLogAstroObject(newNodeGO, node.mainBody, greyScaleMaterial, layer);
             if (node.mainBody.Config.FocalPoint != null)
