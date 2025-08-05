@@ -85,6 +85,10 @@
       "description": "Configure warping to this system with the vessel",
       "$ref": "#/definitions/VesselModule"
     },
+    "StarChart": {
+      "description": "Configure how this system will appear in the Interstellar Mode in the ship log.",
+      "$ref": "#/definitions/StarChartModule"
+    },
     "entryPositions": {
       "type": "array",
       "description": "Manually layout ship log entries in detective mode",
@@ -378,17 +382,26 @@
         }
       }
     },
-    "EntryPositionInfo": {
+    "StarChartModule": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "The name of the entry to apply the position to."
-        },
         "position": {
-          "description": "Position of the entry",
+          "description": "The position of the star on the star chart.",
           "$ref": "#/definitions/MVector2"
+        },
+        "color": {
+          "description": "The color of the star as it appears on the star chart.",
+          "$ref": "#/definitions/MColor"
+        },
+        "starTexturePath": {
+          "type": "string",
+          "description": "Filepath to a texture that will replace the default texture used to display this star in the star map.\nIf you use this, it's probably best to leave the color field blank, unless you have a white texture that you'd like to tint a different color."
+        },
+        "disappearanceTime": {
+          "type": "number",
+          "description": "Time in the loop (in minutes) that this star will disappear.\nThe default time (0) means that players can warp to your star at any point. A 22 minute disappearance time would make the star unavailable to be warped to as soon as the sun explodes.",
+          "format": "float"
         }
       }
     },
@@ -403,24 +416,6 @@
         "y": {
           "type": "number",
           "format": "float"
-        }
-      }
-    },
-    "CuriosityColorInfo": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "color": {
-          "description": "The color to apply to entries with this curiosity.",
-          "$ref": "#/definitions/MColor"
-        },
-        "highlightColor": {
-          "description": "The color to apply to highlighted entries with this curiosity.",
-          "$ref": "#/definitions/MColor"
-        },
-        "id": {
-          "type": "string",
-          "description": "The ID of the curiosity to apply the color to."
         }
       }
     },
@@ -456,6 +451,38 @@
           "default": 255,
           "maximum": 255.0,
           "minimum": 0.0
+        }
+      }
+    },
+    "EntryPositionInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "The name of the entry to apply the position to."
+        },
+        "position": {
+          "description": "Position of the entry",
+          "$ref": "#/definitions/MVector2"
+        }
+      }
+    },
+    "CuriosityColorInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "color": {
+          "description": "The color to apply to entries with this curiosity.",
+          "$ref": "#/definitions/MColor"
+        },
+        "highlightColor": {
+          "description": "The color to apply to highlighted entries with this curiosity.",
+          "$ref": "#/definitions/MColor"
+        },
+        "id": {
+          "type": "string",
+          "description": "The ID of the curiosity to apply the color to."
         }
       }
     },
