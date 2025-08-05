@@ -658,6 +658,7 @@ namespace NewHorizons.Components.ShipLog
             newStar._starPosition = GetStarPosition(config);
             newStar._starScale = 0.6f;
             newStar._starName = customName;
+            newStar._isWarpSystem = true;
             newStarObject.name = customName;
 
             bool hasColor = config?.color != null;
