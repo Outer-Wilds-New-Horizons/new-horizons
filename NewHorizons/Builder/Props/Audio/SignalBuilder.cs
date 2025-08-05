@@ -100,8 +100,6 @@ namespace NewHorizons.Builder.Props.Audio
             var freq = CollectionUtilities.KeyByValue(_customFrequencyNames, str);
             if (freq != default) return freq;
 
-            NHLogger.Log($"Registering new frequency name [{str}]");
-
             if (NumberOfFrequencies == 31)
             {
                 NHLogger.LogWarning($"Can't store any more frequencies, skipping [{str}]");
@@ -111,10 +109,9 @@ namespace NewHorizons.Builder.Props.Audio
             freq = EnumUtilities.Create<SignalFrequency>(str);
             _customFrequencyNames.Add(freq, str);
 
-            NumberOfFrequencies = EnumUtils.GetValues<SignalFrequency>().Length;
+            NHLogger.Log($"Registered new frequency name [{str}] with value [{(int)freq}] and index [{AudioSignal.FrequencyToIndex(freq)}]");
 
-            // This stuff happens after the signalscope is Awake so we have to change the number of frequencies now
-            GameObject.FindObjectOfType<Signalscope>()._strongestSignals = new AudioSignal[NumberOfFrequencies + 1];
+            NumberOfFrequencies = EnumUtils.GetValues<SignalFrequency>().Length;
 
             return freq;
         }

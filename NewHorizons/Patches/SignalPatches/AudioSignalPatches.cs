@@ -45,7 +45,9 @@ namespace NewHorizons.Patches.SignalPatches
                 SignalFrequency.HideAndSeek => 5,
                 SignalFrequency.Radio => 6,
                 SignalFrequency.Statue => 7,
-                _ => (int)(Mathf.Log((float)frequency) / Mathf.Log(2f)),// Frequencies are in powers of 2
+                // Can't cast to int because floating point error, it was doing 12.9999999 -> 12
+                // Frequencies are in powers of 2
+                _ => Mathf.RoundToInt(Mathf.Log((float)frequency) / Mathf.Log(2f)),
             };
             return false;
         }
