@@ -630,6 +630,8 @@ namespace NewHorizons.Components.ShipLog
 
         private void AddStar(string customName, bool isThisSystem)
         {
+            try
+            {
             var config = Main.SystemDict[customName].Config.StarChart;
             var bodies = Main.BodyDict[customName].Select(b => b.Config);
             if (customName == "SolarSystem") bodies = bodies.Prepend(SunConfig);
@@ -834,6 +836,11 @@ namespace NewHorizons.Components.ShipLog
 
             newStar.enabled = true;
             newStar.Initialize(this);
+            }
+            catch (Exception e)
+            {
+                NHLogger.LogError($"Failed to add system [{customName}] to Ship Log Star Chart: {e}");
+            }
         }
 
         public void AddGenericStar(Vector3 inputPosition)
