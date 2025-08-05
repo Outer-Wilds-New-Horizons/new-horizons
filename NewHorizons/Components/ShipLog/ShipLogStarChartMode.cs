@@ -271,11 +271,6 @@ namespace NewHorizons.Components.ShipLog
             return stringID;
         }
 
-        private List<MergedPlanetData> GetChildrenOf(MergedPlanetData parent)
-        {
-            return parent.Children;
-        }
-
         private Dictionary<string, MergedPlanetData> GetMergedBodies(IEnumerable<PlanetConfig> configs)
         {
             Dictionary<string, MergedPlanetData> lookup = new();
@@ -754,9 +749,6 @@ namespace NewHorizons.Components.ShipLog
 
                             // Enqueue children for next layer
                             var children = current.Children;
-
-                            if (current == center && staticRootless.Count > 0)
-                                children = children.Concat(staticRootless).ToList();
 
                             // Handle focal point logic
                             var isFocal = current.FocalPoint != null;
