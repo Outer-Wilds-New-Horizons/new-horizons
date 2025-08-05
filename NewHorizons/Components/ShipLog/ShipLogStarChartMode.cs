@@ -765,10 +765,8 @@ namespace NewHorizons.Components.ShipLog
                                     .Where(c => c.ID != GetStringID(current.FocalPoint.primary) && c.ID != GetStringID(current.FocalPoint.secondary))
                                     .ToList();
 
-                                var primary = mergedList.FirstOrDefault(b => b.ID == GetStringID(current.FocalPoint.primary));
-                                var secondary = mergedList.FirstOrDefault(b => b.ID == GetStringID(current.FocalPoint.secondary));
-
-                                if (primary != null && secondary != null)
+                                if (mergedBodies.TryGetValue(GetStringID(current.FocalPoint.primary), out MergedPlanetData primary) && 
+                                    mergedBodies.TryGetValue(GetStringID(current.FocalPoint.secondary), out MergedPlanetData secondary))
                                 {
                                     Vector3 primaryOffset = GetOrbitVisualPosition(
                                         primary, offset,
