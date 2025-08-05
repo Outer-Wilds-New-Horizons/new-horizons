@@ -67,6 +67,7 @@ namespace NewHorizons.Components.ShipLog
         private Vector2 _startPanPos;
         private float _panDuration = 0.25f;
 
+        public static readonly float orbitDistPercentile = 0.8f; // 80th percentile
         public static readonly float comparisonRadius = 2000f;
         public static readonly float lowestScale = 0.375f;
         public static readonly float highestScale = 2f;
@@ -620,7 +621,7 @@ namespace NewHorizons.Components.ShipLog
 
             distances.Sort();
 
-            int index = Mathf.FloorToInt(distances.Count * 0.8f); // 80th percentile
+            int index = Mathf.FloorToInt(distances.Count * orbitDistPercentile);
             index = Mathf.Clamp(index, 0, distances.Count - 1);
 
             // If it's the last and there’s another one, use second-to-last
