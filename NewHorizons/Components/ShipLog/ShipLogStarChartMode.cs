@@ -632,210 +632,210 @@ namespace NewHorizons.Components.ShipLog
         {
             try
             {
-            var config = Main.SystemDict[customName].Config.StarChart;
-            var bodies = Main.BodyDict[customName].Select(b => b.Config);
-            if (customName == "SolarSystem") bodies = bodies.Prepend(SunConfig);
-            else if (customName == "EyeOfTheUniverse") bodies = bodies.Prepend(EyeOfTheUniverseConfig);
+                var config = Main.SystemDict[customName].Config.StarChart;
+                var bodies = Main.BodyDict[customName].Select(b => b.Config);
+                if (customName == "SolarSystem") bodies = bodies.Prepend(SunConfig);
+                else if (customName == "EyeOfTheUniverse") bodies = bodies.Prepend(EyeOfTheUniverseConfig);
 
-            Dictionary<string, MergedPlanetData> mergedBodies = GetMergedBodies(bodies);
-            var mergedList = mergedBodies.Values.ToList();
+                Dictionary<string, MergedPlanetData> mergedBodies = GetMergedBodies(bodies);
+                var mergedList = mergedBodies.Values.ToList();
 
-            // The seed for any default (random) fields of a custom star is based on the hash of their unique name (plus ten, bc why not).
-            UnityEngine.Random.InitState(customName.GetHashCode() + 10);
+                // The seed for any default (random) fields of a custom star is based on the hash of their unique name (plus ten, bc why not).
+                UnityEngine.Random.InitState(customName.GetHashCode() + 10);
 
-            GameObject newStarObject = new GameObject("StarGroup");
-            ShipLogStar newStar = newStarObject.AddComponent<ShipLogStar>();
-            newStar.transform.SetParent(_systemsParent, false);
+                GameObject newStarObject = new GameObject("StarGroup");
+                ShipLogStar newStar = newStarObject.AddComponent<ShipLogStar>();
+                newStar.transform.SetParent(_systemsParent, false);
 
-            newStarObject.AddComponent<CanvasRenderer>();
-            RawImage starImage = newStarObject.AddComponent<RawImage>();
-            starImage.texture = _starTexture;
-            ResetTransforms(newStar.transform);
+                newStarObject.AddComponent<CanvasRenderer>();
+                RawImage starImage = newStarObject.AddComponent<RawImage>();
+                starImage.texture = _starTexture;
+                ResetTransforms(newStar.transform);
 
-            newStar._starPosition = GetStarPosition(config);
-            newStar._starScale = 0.6f;
-            newStar._starName = customName;
-            newStar._isWarpSystem = true;
-            newStarObject.name = customName;
+                newStar._starPosition = GetStarPosition(config);
+                newStar._starScale = 0.6f;
+                newStar._starName = customName;
+                newStar._isWarpSystem = true;
+                newStarObject.name = customName;
 
-            bool hasColor = config?.color != null;
-            bool hasTexture = config?.starTexturePath != null;
+                bool hasColor = config?.color != null;
+                bool hasTexture = config?.starTexturePath != null;
 
-            float labelYOffset = 0;
+                float labelYOffset = 0;
 
-            // Use manual color/texture if provided
-            if (hasColor || hasTexture)
-            {
-                starImage.color = hasColor ? config.color.ToColor() : Color.white;
-
-                if (hasTexture)
+                // Use manual color/texture if provided
+                if (hasColor || hasTexture)
                 {
-                    TryAddTextureFromPath(customName, config.starTexturePath, starImage);
-                }
+                    starImage.color = hasColor ? config.color.ToColor() : Color.white;
 
-                newStar._starTimeLoopEnd = config?.disappearanceTime ?? 0;
-            }
-            else
-            {
-                // No explicit texture/color: infer from center and children
-                starImage.enabled = false; // No root visual
+                    if (hasTexture)
+                    {
+                        TryAddTextureFromPath(customName, config.starTexturePath, starImage);
+                    }
 
-                GameObject visualGroupObj = new GameObject("VisualGroup");
-                Transform visualGroup = visualGroupObj.transform;
-                visualGroup.SetParent(newStarObject.transform);
-                ResetTransforms(visualGroup);
-
-                var center = mergedList.FirstOrDefault(b => b.IsCenter);
-                if (center == null)
-                {
-                    AddVisualChildStar(newStarObject.transform);
-                    newStar._starTimeLoopEnd = 0;
+                    newStar._starTimeLoopEnd = config?.disappearanceTime ?? 0;
                 }
                 else
                 {
-                    float maxLifespan = 0;
+                    // No explicit texture/color: infer from center and children
+                    starImage.enabled = false; // No root visual
 
-                    SetupParentChildRelationships(mergedBodies);
+                    GameObject visualGroupObj = new GameObject("VisualGroup");
+                    Transform visualGroup = visualGroupObj.transform;
+                    visualGroup.SetParent(newStarObject.transform);
+                    ResetTransforms(visualGroup);
 
-                    var staticRootless = mergedList
-                        .Where(b => !b.IsCenter && b.Orbit?.isStatic == true && string.IsNullOrEmpty(b.Orbit.primaryBody))
-                        .ToList();
-
-                    foreach (var rootlessBody in staticRootless)
+                    var center = mergedList.FirstOrDefault(b => b.IsCenter);
+                    if (center == null)
                     {
-                        rootlessBody.SetupParentChildRelationship(center);
-                    }
-
-                    float maxOrbitDist = Mathf.Max(
-                        GetMaxOrbitDistanceFrom(center),
-                        comparisonRadius
-                    );
-
-                    void TraverseFromCenter(MergedPlanetData center)
-                    {
-                        Queue<(MergedPlanetData config, Vector3 offset)> queue = new();
-                        queue.Enqueue((center, Vector3.zero));
-
-                        while (queue.Count > 0)
-                        {
-                            var (current, offset) = queue.Dequeue();
-
-                            // Determine if this is a valid star or singularity
-                            bool isStar = IsRenderableStar(current);
-                            bool isSingularity = IsRenderableSingularity(current);
-
-                            if (isStar && maxLifespan >= 0)
-                            {
-                                maxLifespan = Mathf.Max(maxLifespan, current.Star.lifespan);
-                            }
-
-                            if (isSingularity)
-                            {
-                                maxLifespan = -1;
-                            }
-
-                            // Place visual
-                            if (isStar || isSingularity)
-                            {
-                                AddVisualChildStar(visualGroup, current, offset);
-                            }
-                            /*
-                            else
-                            {
-                                GameObject empty = new GameObject(current.Name);
-                                empty.transform.SetParent(visualGroup, false);
-                                ResetTransforms(empty.transform);
-                                empty.transform.localPosition = offset;
-                            }
-                            */
-
-                            // Enqueue children for next layer
-                            var children = current.Children;
-
-                            // Handle focal point logic
-                            var isFocal = current.FocalPoint != null;
-                            if (isFocal)
-                            {
-                                // Remove primary and secondary from children list (they are added manually)
-                                children = children
-                                    .Where(c => c.ID != GetStringID(current.FocalPoint.primary) && c.ID != GetStringID(current.FocalPoint.secondary))
-                                    .ToList();
-
-                                if (mergedBodies.TryGetValue(GetStringID(current.FocalPoint.primary), out MergedPlanetData primary) && 
-                                    mergedBodies.TryGetValue(GetStringID(current.FocalPoint.secondary), out MergedPlanetData secondary))
-                                {
-                                    Vector3 primaryOffset = GetOrbitVisualPosition(
-                                        primary, offset,
-                                        minVisualRadius, maxVisualRadius,
-                                        0, maxOrbitDist);
-
-                                    Vector3 secondaryOffset = GetOrbitVisualPosition(
-                                        secondary, offset,
-                                        minVisualRadius, maxVisualRadius,
-                                        0, maxOrbitDist);
-
-                                    queue.Enqueue((primary, primaryOffset));
-                                    queue.Enqueue((secondary, secondaryOffset));
-                                }
-                            }
-
-                            // Sort all remaining children by orbital distance
-                            children = children.OrderBy(GetOrbitDistance).ToList();
-
-                            foreach (var child in children)
-                            {
-                                bool isZero = GetOrbitDistance(child) == 0;
-
-                                var childOffset = isZero ? offset
-                                    : GetOrbitVisualPosition(child, offset, minVisualRadius, maxVisualRadius, 0, maxOrbitDist);
-
-                                queue.Enqueue((child, childOffset));
-                            }
-                        }
-                    }
-
-                    TraverseFromCenter(center);
-
-                    var childVisuals = visualGroupObj.GetComponentsInChildren<ShipLogChildStar>(true).ToList();
-
-                    // After placement: Shift text label higher based on how far above 20 the highest visual goes
-                    if (childVisuals.Count > 0)
-                    {
-                        float highestY = childVisuals.Max(r => r.transform.localPosition.y);
-                        if (highestY >= 20)
-                        {
-                            labelYOffset = highestY - 20;
-                        }
-                    }
-
-                    // No valid children found: fallback
-                    if (childVisuals.Count == 0)
-                    {
-                        AddVisualChildStar(visualGroup);
+                        AddVisualChildStar(newStarObject.transform);
                         newStar._starTimeLoopEnd = 0;
                     }
                     else
                     {
-                        newStar._starTimeLoopEnd = Mathf.Max(maxLifespan, 0);
+                        float maxLifespan = 0;
+
+                        SetupParentChildRelationships(mergedBodies);
+
+                        var staticRootless = mergedList
+                            .Where(b => !b.IsCenter && b.Orbit?.isStatic == true && string.IsNullOrEmpty(b.Orbit.primaryBody))
+                            .ToList();
+
+                        foreach (var rootlessBody in staticRootless)
+                        {
+                            rootlessBody.SetupParentChildRelationship(center);
+                        }
+
+                        float maxOrbitDist = Mathf.Max(
+                            GetMaxOrbitDistanceFrom(center),
+                            comparisonRadius
+                        );
+
+                        void TraverseFromCenter(MergedPlanetData center)
+                        {
+                            Queue<(MergedPlanetData config, Vector3 offset)> queue = new();
+                            queue.Enqueue((center, Vector3.zero));
+
+                            while (queue.Count > 0)
+                            {
+                                var (current, offset) = queue.Dequeue();
+
+                                // Determine if this is a valid star or singularity
+                                bool isStar = IsRenderableStar(current);
+                                bool isSingularity = IsRenderableSingularity(current);
+
+                                if (isStar && maxLifespan >= 0)
+                                {
+                                    maxLifespan = Mathf.Max(maxLifespan, current.Star.lifespan);
+                                }
+
+                                if (isSingularity)
+                                {
+                                    maxLifespan = -1;
+                                }
+
+                                // Place visual
+                                if (isStar || isSingularity)
+                                {
+                                    AddVisualChildStar(visualGroup, current, offset);
+                                }
+                                /*
+                                else
+                                {
+                                    GameObject empty = new GameObject(current.Name);
+                                    empty.transform.SetParent(visualGroup, false);
+                                    ResetTransforms(empty.transform);
+                                    empty.transform.localPosition = offset;
+                                }
+                                */
+
+                                // Enqueue children for next layer
+                                var children = current.Children;
+
+                                // Handle focal point logic
+                                var isFocal = current.FocalPoint != null;
+                                if (isFocal)
+                                {
+                                    // Remove primary and secondary from children list (they are added manually)
+                                    children = children
+                                        .Where(c => c.ID != GetStringID(current.FocalPoint.primary) && c.ID != GetStringID(current.FocalPoint.secondary))
+                                        .ToList();
+
+                                    if (mergedBodies.TryGetValue(GetStringID(current.FocalPoint.primary), out MergedPlanetData primary) &&
+                                        mergedBodies.TryGetValue(GetStringID(current.FocalPoint.secondary), out MergedPlanetData secondary))
+                                    {
+                                        Vector3 primaryOffset = GetOrbitVisualPosition(
+                                            primary, offset,
+                                            minVisualRadius, maxVisualRadius,
+                                            0, maxOrbitDist);
+
+                                        Vector3 secondaryOffset = GetOrbitVisualPosition(
+                                            secondary, offset,
+                                            minVisualRadius, maxVisualRadius,
+                                            0, maxOrbitDist);
+
+                                        queue.Enqueue((primary, primaryOffset));
+                                        queue.Enqueue((secondary, secondaryOffset));
+                                    }
+                                }
+
+                                // Sort all remaining children by orbital distance
+                                children = children.OrderBy(GetOrbitDistance).ToList();
+
+                                foreach (var child in children)
+                                {
+                                    bool isZero = GetOrbitDistance(child) == 0;
+
+                                    var childOffset = isZero ? offset
+                                        : GetOrbitVisualPosition(child, offset, minVisualRadius, maxVisualRadius, 0, maxOrbitDist);
+
+                                    queue.Enqueue((child, childOffset));
+                                }
+                            }
+                        }
+
+                        TraverseFromCenter(center);
+
+                        var childVisuals = visualGroupObj.GetComponentsInChildren<ShipLogChildStar>(true).ToList();
+
+                        // After placement: Shift text label higher based on how far above 20 the highest visual goes
+                        if (childVisuals.Count > 0)
+                        {
+                            float highestY = childVisuals.Max(r => r.transform.localPosition.y);
+                            if (highestY >= 20)
+                            {
+                                labelYOffset = highestY - 20;
+                            }
+                        }
+
+                        // No valid children found: fallback
+                        if (childVisuals.Count == 0)
+                        {
+                            AddVisualChildStar(visualGroup);
+                            newStar._starTimeLoopEnd = 0;
+                        }
+                        else
+                        {
+                            newStar._starTimeLoopEnd = Mathf.Max(maxLifespan, 0);
+                        }
                     }
                 }
-            }
 
-            if (!isThisSystem) shipLogStars.Add(newStar);
-            else
-            {
-                _thisStar = newStar;
-                cameraPosition = new Vector2(newStar._starPosition.x, newStar._starPosition.y);
-            }
+                if (!isThisSystem) shipLogStars.Add(newStar);
+                else
+                {
+                    _thisStar = newStar;
+                    cameraPosition = new Vector2(newStar._starPosition.x, newStar._starPosition.y);
+                }
 
-            var textLabel = AddTextLabel(newStarObject.transform, UniqueIDToName(customName));
-            if (labelYOffset > 0 && textLabel != null)
-            {
-                textLabel.transform.localPosition += new Vector3(0, labelYOffset, 0);
-            }
+                var textLabel = AddTextLabel(newStarObject.transform, UniqueIDToName(customName));
+                if (labelYOffset > 0 && textLabel != null)
+                {
+                    textLabel.transform.localPosition += new Vector3(0, labelYOffset, 0);
+                }
 
-            newStar.enabled = true;
-            newStar.Initialize(this);
+                newStar.enabled = true;
+                newStar.Initialize(this);
             }
             catch (Exception e)
             {
@@ -990,7 +990,8 @@ namespace NewHorizons.Components.ShipLog
             if (_target != null && _card != null)
             {
                 _card.transform.localScale = Vector3.Lerp(_card.transform.localScale, Vector3.one * 1.25f, Time.unscaledDeltaTime * 20);
-            } else
+            }
+            else
             {
                 _card.transform.localScale = Vector3.Lerp(_card.transform.localScale, Vector3.zero, Time.unscaledDeltaTime * 20);
             }
@@ -1013,7 +1014,7 @@ namespace NewHorizons.Components.ShipLog
             float x = -5f * cos;
             float y = -5f * sin;
             cameraPivot.localRotation = Quaternion.Euler(x, y, cameraRotation);
-            
+
             Vector2 moveInput = OWInput.GetAxisValue(InputLibrary.moveXZ);
             Vector2 rotatedInput = new Vector2(
                 moveInput.x * cos - moveInput.y * sin,
@@ -1201,14 +1202,14 @@ namespace NewHorizons.Components.ShipLog
             int arms = 7;
             for (int i = 0; i < arms; i++)
             {
-               CreateGalaxyArm(
-                   galaxyStarPoints,
-                   360*((float)i/(float)arms),
-                   12, 1,
-                   60, 200,
-                   UnityEngine.Random.Range(2f, 3f),
-                   24
-                   );
+                CreateGalaxyArm(
+                    galaxyStarPoints,
+                    360 * ((float)i / (float)arms),
+                    12, 1,
+                    60, 200,
+                    UnityEngine.Random.Range(2f, 3f),
+                    24
+                    );
             }
 
             return galaxyStarPoints.ToArray();
