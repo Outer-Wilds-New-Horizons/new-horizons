@@ -275,6 +275,33 @@ namespace NewHorizons.Components.ShipLog
             return parent.Children;
         }
 
+        private Dictionary<string, MergedPlanetData> GetMergedBodies(IEnumerable<PlanetConfig> configs)
+        {
+            Dictionary<string, MergedPlanetData> lookup = new();
+            foreach (var config in configs)
+            {
+                string id = GetStringID(config.name);
+                if (!lookup.ContainsKey(id))
+                {
+                    lookup.Add(id, new MergedPlanetData { ID = id });
+                }
+                lookup[id].Merge(config);
+            }
+            return lookup;
+        }
+
+        private void SetupParentChildRelationships(Dictionary<string, MergedPlanetData> mergedBodies)
+        {
+            foreach (var data in mergedBodies.Values)
+            {
+                var primary = GetStringID(data.Orbit?.primaryBody);
+                if (!string.IsNullOrEmpty(primary) && mergedBodies.TryGetValue(primary, out var parent))
+                {
+                    data.SetupParentChildRelationship(parent);
+                }
+            }
+        }
+
         private float GetStarScale(StarModule star) => GetStarScale(star, false);
 
         private float GetStarScale(StarModule star, bool unconstrainedLowest)
@@ -612,18 +639,7 @@ namespace NewHorizons.Components.ShipLog
             if (customName == "SolarSystem") bodies = bodies.Prepend(SunConfig);
             else if (customName == "EyeOfTheUniverse") bodies = bodies.Prepend(EyeOfTheUniverseConfig);
 
-            Dictionary<string, MergedPlanetData> mergedBodies = new();
-            foreach (var body in bodies)
-            {
-                string id = GetStringID(body.name);
-                if (!mergedBodies.ContainsKey(id))
-                {
-                    mergedBodies.Add(id, new MergedPlanetData { ID = id });
-                }
-
-                mergedBodies[id].Merge(body);
-            }
-
+            Dictionary<string, MergedPlanetData> mergedBodies = GetMergedBodies(bodies);
             var mergedList = mergedBodies.Values.ToList();
 
             // The seed for any default (random) fields of a custom star is based on the hash of their unique name (plus ten, bc why not).
@@ -683,15 +699,7 @@ namespace NewHorizons.Components.ShipLog
                 {
                     float maxLifespan = 0;
 
-                    foreach (var data in mergedList)
-                    {
-                        var primary = GetStringID(data.Orbit.primaryBody);
-                        if (!string.IsNullOrEmpty(primary) && mergedBodies.TryGetValue(primary, out var parent))
-                        {
-                            data.Parent = parent;
-                            parent.Children.Add(data);
-                        }
-                    }
+                    SetupParentChildRelationships(mergedBodies);
 
                     var staticRootless = mergedList
                         .Where(b => !b.IsCenter && b.Orbit?.isStatic == true && string.IsNullOrEmpty(b.Orbit.primaryBody))
@@ -699,8 +707,7 @@ namespace NewHorizons.Components.ShipLog
 
                     foreach (var rootlessBody in staticRootless)
                     {
-                        rootlessBody.Parent = center;
-                        center.Children.SafeAdd(rootlessBody);
+                        rootlessBody.SetupParentChildRelationship(center);
                     }
 
                     float maxOrbitDist = Mathf.Max(
@@ -1264,6 +1271,12 @@ namespace NewHorizons.Components.ShipLog
 
             public MergedPlanetData Parent { get; internal set; }
             public List<MergedPlanetData> Children { get; } = new();
+
+            public void SetupParentChildRelationship(MergedPlanetData parent)
+            {
+                this.Parent = parent;
+                parent.Children.SafeAdd(this);
+            }
 
             public bool ValidBase => HasValidBase(Base);
             public bool ValidOrbit => HasValidOrbit(Orbit);
