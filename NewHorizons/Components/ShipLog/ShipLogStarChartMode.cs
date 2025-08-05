@@ -686,9 +686,6 @@ namespace NewHorizons.Components.ShipLog
                 visualGroup.SetParent(newStarObject.transform);
                 ResetTransforms(visualGroup);
 
-                // Assign this to something accessible if needed:
-                newStar.visualGroup = visualGroup;
-
                 var center = mergedList.FirstOrDefault(b => b.IsCenter);
                 if (center == null)
                 {
