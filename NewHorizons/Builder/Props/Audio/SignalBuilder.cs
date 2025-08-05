@@ -113,9 +113,6 @@ namespace NewHorizons.Builder.Props.Audio
 
             NumberOfFrequencies = EnumUtils.GetValues<SignalFrequency>().Length;
 
-            // This stuff happens after the signalscope is Awake so we have to change the number of frequencies now
-            GameObject.FindObjectOfType<Signalscope>()._strongestSignals = new AudioSignal[NumberOfFrequencies + 1];
-
             return freq;
         }
 
