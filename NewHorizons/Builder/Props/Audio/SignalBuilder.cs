@@ -100,8 +100,6 @@ namespace NewHorizons.Builder.Props.Audio
             var freq = CollectionUtilities.KeyByValue(_customFrequencyNames, str);
             if (freq != default) return freq;
 
-            NHLogger.Log($"Registering new frequency name [{str}]");
-
             if (NumberOfFrequencies == 31)
             {
                 NHLogger.LogWarning($"Can't store any more frequencies, skipping [{str}]");
@@ -110,6 +108,8 @@ namespace NewHorizons.Builder.Props.Audio
 
             freq = EnumUtilities.Create<SignalFrequency>(str);
             _customFrequencyNames.Add(freq, str);
+
+            NHLogger.Log($"Registered new frequency name [{str}] with value [{(int)freq}] and index [{AudioSignal.FrequencyToIndex(freq)}]");
 
             NumberOfFrequencies = EnumUtils.GetValues<SignalFrequency>().Length;
 
