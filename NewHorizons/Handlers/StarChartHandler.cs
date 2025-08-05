@@ -194,17 +194,17 @@ namespace NewHorizons.Handlers
                 _canExitViaWarpDrive = true;
                 if (!Main.HasWarpDriveFunctionality)
                 {
-                    var flagActuallyAddedACard = false;
-                    // Add all cards that now work
+                    var flagActuallyAddedAStar = false;
+                    // Add all stars that now work
                     foreach (var starSystem in Main.SystemDict.Keys)
                     {
                         if (CanWarpToSystem(starSystem))
                         {
                             ShipLogStarChartMode.AddStar(starSystem);
-                            flagActuallyAddedACard = true;
+                            flagActuallyAddedAStar = true;
                         }
                     }
-                    if (flagActuallyAddedACard)
+                    if (flagActuallyAddedAStar)
                     {
                         Main.Instance.EnableWarpDriveFunctionality();
                     }
