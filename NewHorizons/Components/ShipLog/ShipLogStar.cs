@@ -20,12 +20,16 @@ namespace NewHorizons.Components.ShipLog
         public bool _isWarpSystem;
         public float _starTimeLoopEnd;
 
+        private Dictionary<string, ShipLogChildStar> _childStars = new();
+        public IReadOnlyDictionary<string, ShipLogChildStar> ChildStars => _childStars;
+
         private ShipLogStarChartMode mode;
         private float scaleMultiplier;
 
         public void Initialize(ShipLogStarChartMode m)
         {
             mode = m;
+            _childStars = GetComponentsInChildren<ShipLogChildStar>(true).ToDictionary(child => child.name);
         }
 
         public void Update()
@@ -57,6 +61,12 @@ namespace NewHorizons.Components.ShipLog
 
             transform.localScale = Vector3.one * (_starScale * scaleMultiplier);
 
+        }
+
+        public ShipLogChildStar GetChildStarByName(string name)
+        {
+            _childStars.TryGetValue(name, out var result);
+            return result;
         }
     }
 }
