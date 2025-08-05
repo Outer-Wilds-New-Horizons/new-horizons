@@ -37,6 +37,7 @@ namespace NewHorizons.Utility.Files
 
         public static void ClearCache()
         {
+            NHLogger.Log("Clearing bundle cache.");
             foreach (var pair in AssetBundles)
             {
                 if (!pair.Value.keepLoaded)
@@ -48,11 +49,32 @@ namespace NewHorizons.Utility.Files
                     else
                     {
                         pair.Value.bundle.Unload(true);
+                        NHLogger.Log($"Unloaded asset bundle {pair.Key}");
                     }
                 }
-
             }
+
             AssetBundles = AssetBundles.Where(x => x.Value.keepLoaded).ToDictionary(x => x.Key, x => x.Value);
+            _prefabCache.Clear();
+        }
+
+        public static void UnloadAllBundles()
+        {
+            NHLogger.Log("Unloading all bundles.");
+            foreach (var pair in AssetBundles)
+            {
+                if (pair.Value.bundle == null)
+                {
+                    NHLogger.LogError($"The asset bundle for {pair.Key} was null when trying to unload");
+                }
+                else
+                {
+                    pair.Value.bundle.Unload(true);
+                    NHLogger.Log($"Unloaded asset bundle {pair.Key}");
+                }
+            }
+
+            AssetBundles.Clear();
             _prefabCache.Clear();
         }
 
