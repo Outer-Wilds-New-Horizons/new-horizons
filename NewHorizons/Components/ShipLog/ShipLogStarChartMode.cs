@@ -270,11 +270,9 @@ namespace NewHorizons.Components.ShipLog
             return stringID;
         }
 
-        private List<MergedPlanetData> GetChildrenOf(MergedPlanetData parent, List<MergedPlanetData> bodies)
+        private List<MergedPlanetData> GetChildrenOf(MergedPlanetData parent)
         {
-            return bodies
-                .Where(b => GetStringID(b.Orbit?.primaryBody) == parent.ID)
-                .ToList();
+            return parent.Children;
         }
 
         private float GetStarScale(StarModule star) => GetStarScale(star, false);
@@ -574,7 +572,7 @@ namespace NewHorizons.Components.ShipLog
             return GetTotalOrbitPosition(body).magnitude;
         }
 
-        private float GetMaxOrbitDistanceFrom(MergedPlanetData body, List<MergedPlanetData> allBodies)
+        private float GetMaxOrbitDistanceFrom(MergedPlanetData body)
         {
             List<float> distances = new();
 
@@ -583,7 +581,7 @@ namespace NewHorizons.Components.ShipLog
                 float dist = GetTotalOrbitDistance(current);
                 if (dist > 0) distances.Add(dist);
 
-                foreach (var child in GetChildrenOf(current, allBodies))
+                foreach (var child in current.Children)
                 {
                     CollectDistances(child);
                 }
@@ -706,7 +704,7 @@ namespace NewHorizons.Components.ShipLog
                     }
 
                     float maxOrbitDist = Mathf.Max(
-                        GetMaxOrbitDistanceFrom(center, mergedList),
+                        GetMaxOrbitDistanceFrom(center),
                         comparisonRadius
                     );
 
@@ -749,7 +747,7 @@ namespace NewHorizons.Components.ShipLog
                             */
 
                             // Enqueue children for next layer
-                            var children = GetChildrenOf(current, mergedList);
+                            var children = current.Children;
 
                             if (current == center && staticRootless.Count > 0)
                                 children = children.Concat(staticRootless).ToList();
