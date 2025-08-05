@@ -4571,6 +4571,10 @@
         "startLit": {
           "type": "boolean",
           "description": "Whether the candle should start lit or extinguished."
+        },
+        "condition": {
+          "description": "A condition to set when the candle is lit.",
+          "$ref": "#/definitions/DreamLightConditionInfo"
         }
       }
     },
@@ -4599,6 +4603,28 @@
         "standing",
         "pile"
       ]
+    },
+    "DreamLightConditionInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "condition": {
+          "type": "string",
+          "description": "The name of the dialogue condition or persistent condition to set when the light is lit."
+        },
+        "persistent": {
+          "type": "boolean",
+          "description": "If true, the condition will persist across all future loops until unset."
+        },
+        "reversible": {
+          "type": "boolean",
+          "description": "Whether to unset the condition when the light is extinguished again."
+        },
+        "onExtinguish": {
+          "type": "boolean",
+          "description": "Whether to set the condition when the light is extinguished instead. If `reversible` is true, the condition will be unset when the light is lit again."
+        }
+      }
     },
     "ProjectionTotemInfo": {
       "type": "object",
@@ -4667,6 +4693,10 @@
         "toggleProjectedObjectsActive": {
           "type": "boolean",
           "description": "If set, projected objects will be set to fully active or fully disabled instantly instead of smoothly fading lights/renderers/colliders. Use this if the normal behavior is insufficient for the objects you're using."
+        },
+        "condition": {
+          "description": "A condition to set when the totem is lit.",
+          "$ref": "#/definitions/DreamLightConditionInfo"
         }
       }
     },
@@ -5365,6 +5395,13 @@
             "$ref": "#/definitions/AudioVolumeInfo"
           }
         },
+        "conditionTriggerVolumes": {
+          "type": "array",
+          "description": "Add condition trigger volumes to this planet. Sets a condition when the player, scout, or ship enters this volume.",
+          "items": {
+            "$ref": "#/definitions/ConditionTriggerVolumeInfo"
+          }
+        },
         "dayNightAudioVolumes": {
           "type": "array",
           "description": "Add day night audio volumes to this planet. These volumes play a different clip depending on the time of day.",
@@ -5395,6 +5432,13 @@
           "description": "Add hazard volumes to this planet.\nCauses damage to player when inside this volume.",
           "items": {
             "$ref": "#/definitions/HazardVolumeInfo"
+          }
+        },
+        "interactionVolumes": {
+          "type": "array",
+          "description": "Add interaction volumes to this planet.\nThey can be interacted with by the player to trigger various effects.",
+          "items": {
+            "$ref": "#/definitions/InteractionVolumeInfo"
           }
         },
         "interferenceVolumes": {
@@ -5723,6 +5767,74 @@
         "sequential",
         "manual"
       ]
+    },
+    "ConditionTriggerVolumeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume, if a shape is not specified.",
+          "format": "float",
+          "default": 1.0
+        },
+        "shape": {
+          "description": "The shape of this volume. Defaults to a sphere with a radius of `radius` if not specified.",
+          "$ref": "#/definitions/ShapeInfo"
+        },
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "condition": {
+          "type": "string",
+          "description": "The name of the dialogue condition or persistent condition to set when entering the volume."
+        },
+        "persistent": {
+          "type": "boolean",
+          "description": "If true, the condition will persist across all future loops until unset."
+        },
+        "reversible": {
+          "type": "boolean",
+          "description": "Whether to unset the condition when existing the volume."
+        },
+        "player": {
+          "type": "boolean",
+          "description": "Whether to set the condition when the player enters this volume. Defaults to true.",
+          "default": true
+        },
+        "probe": {
+          "type": "boolean",
+          "description": "Whether to set the condition when the scout probe enters this volume."
+        },
+        "ship": {
+          "type": "boolean",
+          "description": "Whether to set the condition when the ship enters this volume."
+        }
+      }
     },
     "DayNightAudioVolumeInfo": {
       "type": "object",
@@ -6525,6 +6637,95 @@
           "type": "number",
           "description": "The amount of damage you will take when you first touch this volume.",
           "format": "float"
+        }
+      }
+    },
+    "InteractionVolumeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume, if a shape is not specified.",
+          "format": "float",
+          "default": 1.0
+        },
+        "shape": {
+          "description": "The shape of this volume. Defaults to a sphere with a radius of `radius` if not specified.",
+          "$ref": "#/definitions/ShapeInfo"
+        },
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "prompt": {
+          "type": "string",
+          "description": "The prompt to display when the volume is interacted with."
+        },
+        "range": {
+          "type": "number",
+          "description": "The range at which the volume can be interacted with.",
+          "format": "float",
+          "default": 2.0
+        },
+        "maxViewAngle": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "description": "The max view angle (in degrees) the player can see the volume with to interact with it. This will effectively be a cone extending from the volume's center forwards (along the Z axis) based on the volume's rotation.\nIf not specified, no view angle restriction will be applied.",
+          "format": "float"
+        },
+        "usableInShip": {
+          "type": "boolean",
+          "description": "Whether the volume can be interacted with while in the ship."
+        },
+        "reusable": {
+          "type": "boolean",
+          "description": "Whether the volume can be interacted with multiple times."
+        },
+        "condition": {
+          "type": "string",
+          "description": "The name of the dialogue condition or persistent condition to set when the volume is interacted with."
+        },
+        "persistent": {
+          "type": "boolean",
+          "description": "If true, the condition will persist across all future loops until unset."
+        },
+        "audio": {
+          "type": "string",
+          "description": "A sound to play when the volume is interacted with. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+        },
+        "pathToAnimator": {
+          "type": "string",
+          "description": "A path to an animator component where an animation will be triggered when the volume is interacted with. "
+        },
+        "animationTrigger": {
+          "type": "string",
+          "description": "The name of an animation trigger to set on the animator when the volume is interacted with."
         }
       }
     },

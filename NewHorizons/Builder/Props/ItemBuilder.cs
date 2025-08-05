@@ -16,13 +16,6 @@ namespace NewHorizons.Builder.Props
 
         internal static void Init()
         {
-            if (_itemTypes != null)
-            {
-                foreach (var value in _itemTypes.Values)
-                {
-                    EnumUtils.Remove<ItemType>(value);
-                }
-            }
             _itemTypes = new Dictionary<string, ItemType>();
         }
 
@@ -141,11 +134,7 @@ namespace NewHorizons.Builder.Props
         {
             go.layer = Layer.Interactible;
 
-            var itemType = EnumUtils.TryParse(info.itemType, true, out ItemType result) ? result : ItemType.Invalid;
-            if (itemType == ItemType.Invalid && !string.IsNullOrEmpty(info.itemType))
-            {
-                itemType = EnumUtilities.Create<ItemType>(info.itemType);
-            }
+            var itemType = GetOrCreateItemType(info.itemType);
 
             var socket = go.GetAddComponent<NHItemSocket>();
             socket._sector = sector;
@@ -205,7 +194,7 @@ namespace NewHorizons.Builder.Props
             }
             else if (!string.IsNullOrEmpty(name))
             {
-                itemType = EnumUtils.Create<ItemType>(name);
+                itemType = EnumUtilities.Create<ItemType>(name);
                 _itemTypes.Add(name, itemType);
             }
             return itemType;

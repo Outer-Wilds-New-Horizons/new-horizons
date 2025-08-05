@@ -56,6 +56,7 @@ These mods are useful when developing your addon
 - [Save Editor](https://outerwildsmods.com/mods/saveeditor) - Useful when creating a custom [ship log](/ship-log), can be used to reveal all custom facts so you can see them in the ship's computer.
 - [Time Saver](https://outerwildsmods.com/mods/timesaver/) - Lets you skip some repeated cutscenes and get into the game faster.
 - [The Examples Mod](https://github.com/Outer-Wilds-New-Horizons/nh-examples) - A mod that contains examples of how to use New Horizons features.
+- [Nomai Text Printer](https://github.com/coderCleric/NomaiTextPrinter) - Useful for saving text changes (such as moving arcs with Unity Explorer) to your json files.
 
 ## Helpful Tools
 
