@@ -448,6 +448,33 @@ namespace NewHorizons.Components.ShipLog
             return new Vector2(x, y);
         }
 
+        private static Gravity GetFocalPointGravity(MergedPlanetData focalPoint)
+        {
+            var fallback = new Gravity(focalPoint.Base); // Default fallback
+            if (focalPoint?.FocalPoint == null)
+                return fallback;
+
+            string primaryID = GetStringID(focalPoint.FocalPoint.primary);
+            string secondaryID = GetStringID(focalPoint.FocalPoint.secondary);
+
+            var primary = focalPoint.Children.FirstOrDefault(b => b.ID == primaryID);
+            var secondary = focalPoint.Children.FirstOrDefault(b => b.ID == secondaryID);
+
+            if (primary == null || secondary == null)
+                return fallback;
+
+            var primaryGravity = GetFocalPointGravity(primary);
+            var secondaryGravity = GetFocalPointGravity(secondary);
+
+            float totalMass = primaryGravity.Mass + secondaryGravity.Mass;
+
+            var upperSurfaceRadius = 1;
+            var surfaceAcceleration = totalMass * GravityVolume.GRAVITATIONAL_CONSTANT;
+            int falloffExponent = primaryGravity.Power;
+
+            return new Gravity(surfaceAcceleration * Mathf.Pow(upperSurfaceRadius, falloffExponent) / GravityVolume.GRAVITATIONAL_CONSTANT, falloffExponent);
+        }
+
         private static OrbitalParameters GetOrbitalParametersFromConfig(MergedPlanetData config)
         {
             if (config == null || config.Orbit == null) return null;
@@ -478,8 +505,8 @@ namespace NewHorizons.Components.ShipLog
 
                         if (primaryBody != null && secondaryBody != null)
                         {
-                            var primaryGravity = new Gravity(primaryBody.Base);
-                            var secondaryGravity = new Gravity(secondaryBody.Base);
+                            var primaryGravity = GetFocalPointGravity(primaryBody);
+                            var secondaryGravity = GetFocalPointGravity(secondaryBody);
 
                             float m1 = primaryGravity.Mass;
                             float m2 = secondaryGravity.Mass;
