@@ -48,7 +48,7 @@ namespace NewHorizons.Handlers
                 if (matchInitialMotion != null) UnityEngine.Object.Destroy(matchInitialMotion);
 
                 // Arbitrary number, depending on the machine some people die, some people fall through the floor, its very inconsistent
-                Delay.StartCoroutine(SpawnCoroutine(30));
+                Delay.StartCoroutine(SpawnCoroutine(20));
             }
 
 
@@ -177,7 +177,7 @@ namespace NewHorizons.Handlers
             for(int i = 0; i < length; i++) 
             {
                 FixPlayerVelocity(false); // dont recenter universe here or else it spams and lags game
-                yield return new WaitForEndOfFrame();
+                yield return new WaitForFixedUpdate();
             }
             FixPlayerVelocity();
 
