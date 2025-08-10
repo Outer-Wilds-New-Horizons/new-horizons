@@ -340,6 +340,11 @@ namespace NewHorizons.Builder.ShipLog
                     }
                     MakeDetails(body, newMapModeGO.transform, greyScaleMaterial);
                     Vector2 navigationPosition = body.Config.ShipLog?.mapMode?.manualNavigationPosition;
+                   if (navigationPosition.y < 0 || navigationPosition.y < 0)
+                    {
+                        NHLogger.LogError("Map Mode navigation positions cannot be in the negatives!");
+                        continue;
+                    }
                     navMatrix[(int)navigationPosition.y][(int)navigationPosition.x] = newAstroObject;
                 }
                 else if (Main.Instance.CurrentStarSystem == "SolarSystem")
