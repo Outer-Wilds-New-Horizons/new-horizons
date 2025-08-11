@@ -1,3 +1,4 @@
+using NewHorizons.Builder.Body;
 using NewHorizons.Components.Orbital;
 using NewHorizons.External;
 using NewHorizons.External.Configs;
@@ -15,7 +16,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.InputSystem.HID;
 using UnityEngine.UI;
 using static NewHorizons.Utility.Files.AssetBundleUtilities;
 
@@ -92,7 +92,8 @@ namespace NewHorizons.Components.ShipLog
                 size = 2000,
                 tint = MColor.FromColor(sunColor),
                 solarLuminosity = 1,
-                lifespan = 22
+                lifespan = 22,
+                stellarRemnantType = StellarRemnantType.None // vanilla doesn't have one, so we just make it nothing
             }
         };
 
@@ -283,6 +284,13 @@ namespace NewHorizons.Components.ShipLog
                 }
                 lookup[id].Merge(config);
             }
+
+            // Resolve remnants after merge
+            foreach (var body in lookup.Values)
+            {
+                body.ResolveStellarRemnant();
+            }
+
             return lookup;
         }
 
@@ -298,31 +306,42 @@ namespace NewHorizons.Components.ShipLog
             }
         }
 
-        private float GetStarScale(StarModule star) => GetStarScale(star, false);
+        private static float GetStarScale(StarModule star) => GetStarScale(star, false);
 
-        private float GetStarScale(StarModule star, bool unconstrainedLowest)
+        private static float GetStarScale(StarModule star, bool unconstrainedLowest)
         {
             return Mathf.Clamp(star.size / comparisonRadius, unconstrainedLowest ? 0 : lowestScale, highestScale);
         }
 
-        private float GetSingularityScale(SingularityModule singularity) => GetSingularityScale(singularity, false);
+        private static float GetSingularityScale(SingularityModule singularity) => GetSingularityScale(singularity, false);
 
-        private float GetSingularityScale(SingularityModule singularity, bool unconstrainedLowest)
+        private static float GetSingularityScale(SingularityModule singularity, bool unconstrainedLowest)
         {
             return Mathf.Clamp(singularity.horizonRadius / comparisonRadius, unconstrainedLowest ? 0 : lowestScale, highestScale);
         }
 
-        private float GetSingularitiesScale(SingularityModule[] singularities)
+        private static float GetSingularitiesScale(SingularityModule[] singularities)
         {
             return singularities.Max(GetSingularityScale);
         }
 
-        private float GetSingularitiesScale(SingularityModule[] singularities, bool unconstrainedLowest)
+        private static float GetSingularitiesScale(SingularityModule[] singularities, bool unconstrainedLowest)
         {
             return singularities.Max(singularity => GetSingularityScale(singularity, unconstrainedLowest));
         }
 
-        private float GetRenderableScale(MergedPlanetData config)
+        private static float GetScale(MergedPlanetData config)
+        {
+            if (IsStar(config))
+                return GetStarScale(config.Star, true);
+
+            if (IsSingularity(config))
+                return GetSingularitiesScale(config.Singularities, true);
+
+            return 0;
+        }
+
+        private static float GetRenderableScale(MergedPlanetData config)
         {
             if (IsRenderableStar(config))
                 return GetStarScale(config.Star);
@@ -333,7 +352,19 @@ namespace NewHorizons.Components.ShipLog
             return 0;
         }
 
-        private Color GetRenderableColor(MergedPlanetData config)
+        private static Color GetColor(MergedPlanetData config)
+        {
+            if (IsStar(config))
+                return StarTint(config.Star.tint);
+
+            if (IsSingularity(config) && config.Singularities.First().type ==
+                SingularityModule.SingularityType.BlackHole)
+                return Color.black;
+
+            return Color.white;
+        }
+
+        private static Color GetRenderableColor(MergedPlanetData config)
         {
             if (IsRenderableStar(config))
                 return StarTint(config.Star.tint);
@@ -345,26 +376,41 @@ namespace NewHorizons.Components.ShipLog
             return Color.white;
         }
 
-        private float GetRenderableLifespan(MergedPlanetData config)
+        private static float GetRenderableLifespan(MergedPlanetData config)
         {
             return IsRenderableStar(config) ? config.Star.lifespan : 0;
         }
 
-        private bool IsRenderableStar(MergedPlanetData config)
+        private static bool IsStar(MergedPlanetData config)
         {
-            return config.Star != null &&
+            return config.Star != null;
+        }
+
+        private static bool IsRenderableStar(MergedPlanetData config)
+        {
+            return IsStar(config) &&
                    GetStarScale(config.Star, true) >= starMinimum;
         }
 
-        private bool IsRenderableSingularity(MergedPlanetData config)
+        private static bool IsSingularity(MergedPlanetData config)
         {
             var singularities = config.Singularities;
             return singularities != null &&
-                   singularities.Length > 0 &&
-                   GetSingularitiesScale(singularities, true) >= singularityMinimum;
+                   singularities.Length > 0;
         }
 
-        private bool IsRenderableStarOrSingularity(MergedPlanetData config)
+        private static bool IsRenderableSingularity(MergedPlanetData config)
+        {
+            return IsSingularity(config) &&
+                   GetSingularitiesScale(config.Singularities, true) >= singularityMinimum;
+        }
+
+        private static bool IsStarOrSingularity(MergedPlanetData config)
+        {
+            return IsStar(config) || IsSingularity(config);
+        }
+
+        private static bool IsRenderableStarOrSingularity(MergedPlanetData config)
         {
             return IsRenderableStar(config) || IsRenderableSingularity(config);
         }
@@ -376,7 +422,7 @@ namespace NewHorizons.Components.ShipLog
                 : new Vector3(UnityEngine.Random.Range(-100f, 100f), UnityEngine.Random.Range(-100f, 100f), 0);
         }
 
-        private void TryAddTextureFromPath(string customName, string texturePath, RawImage image)
+        private static void TryAddTextureFromPath(string customName, string texturePath, RawImage image)
         {
             var mod = Main.SystemDict[customName].Mod;
             string path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, texturePath);
@@ -384,7 +430,7 @@ namespace NewHorizons.Components.ShipLog
                 image.texture = ImageUtilities.GetTexture(mod, path);
         }
 
-        private Color StarTint(MColor tint)
+        private static Color StarTint(MColor tint)
         {
             if (tint == null) return sunColor;
             var color = tint.ToColor();
@@ -392,29 +438,25 @@ namespace NewHorizons.Components.ShipLog
             return color;
         }
 
-        private GameObject AddVisualChildStar(Transform parent, Color color, float lifespan, Vector3 offset, float scale)
+        private GameObject AddVisualChildStar(Transform parent, Color color, Vector3 offset, float scale)
         {
             GameObject childStar = new GameObject("ChildStar");
-            ShipLogChildStar newChildStar = childStar.AddComponent<ShipLogChildStar>();
             childStar.transform.SetParent(parent, false);
             ResetTransforms(childStar.transform);
             childStar.transform.localPosition = offset;
+            childStar.transform.localScale = Vector3.one * scale;
 
             childStar.AddComponent<CanvasRenderer>();
             var image = childStar.AddComponent<RawImage>();
             image.texture = color == Color.black ? _blackHoleTexture : _starTexture;
             image.color = color == Color.black ? Color.white : color;
 
-            newChildStar._starTimeLoopEnd = lifespan;
-            newChildStar._starScale = scale;
-            newChildStar.Initialize(this);
-
             return childStar;
         }
 
         private GameObject AddVisualChildStar(Transform parent)
         {
-            return AddVisualChildStar(parent, Color.white, 0, Vector3.zero, 1f);
+            return AddVisualChildStar(parent, Color.white, Vector3.zero, 1);
         }
 
         private GameObject AddVisualChildStar(Transform parent, MergedPlanetData body, Vector3 offset)
@@ -427,8 +469,32 @@ namespace NewHorizons.Components.ShipLog
             Color color = GetRenderableColor(body);
             float lifespan = GetRenderableLifespan(body);
 
-            var childStar = AddVisualChildStar(parent, color, lifespan, offset, scale);
-            childStar.name = body.Name;
+            // Create parent object
+            GameObject childStar = new GameObject(body.Name);
+            ShipLogChildStar newChildStar = childStar.AddComponent<ShipLogChildStar>();
+            childStar.transform.SetParent(parent, false);
+            ResetTransforms(childStar.transform);
+            childStar.transform.localPosition = offset;
+            childStar.transform.localScale = Vector3.one;
+
+            GameObject living = AddVisualChildStar(childStar.transform, color, Vector3.zero, scale);
+            living.name = "Living";
+
+            GameObject remnant = null;
+
+            // If remnant exists, and is a star/singularity, create it now
+            if (body.StellarRemnant != null && IsStarOrSingularity(body.StellarRemnant))
+            {
+                float remnantScale = GetScale(body.StellarRemnant);
+                Color remnantColor = GetColor(body.StellarRemnant);
+
+                remnant = AddVisualChildStar(childStar.transform, remnantColor, Vector3.zero, remnantScale);
+                remnant.name = "Remnant";
+                remnant.SetActive(false);
+            }
+
+            newChildStar.Initialize(lifespan, living, remnant);
+            
             return childStar;
         }
 
@@ -751,8 +817,7 @@ namespace NewHorizons.Components.ShipLog
 
                                 if (isStar && maxLifespan >= 0)
                                 {
-                                    bool willExplode = current.Star.stellarDeathType != StellarDeathType.None 
-                                                        && current.Star.lifespan < 999; // some mods just set the star lifespans to be crazy values when they could have just set stellarDeathType to None
+                                    bool willExplode = current.Star.stellarDeathType != StellarDeathType.None;
                                     if (willExplode)
                                     {
                                         maxLifespan = Mathf.Max(maxLifespan, current.Star.lifespan);
@@ -1284,6 +1349,7 @@ namespace NewHorizons.Components.ShipLog
         private class MergedPlanetData
         {
             public string ID;
+            public bool IsStellarRemnant;
             public bool IsCenter;
             public PlanetConfig PrimaryConfig;
             public List<PlanetConfig> AllConfigs = new();
@@ -1303,6 +1369,17 @@ namespace NewHorizons.Components.ShipLog
 
             public MergedPlanetData Parent { get; internal set; }
             public List<MergedPlanetData> Children { get; } = new();
+            public MergedPlanetData StellarRemnant { get; private set; }
+
+            public MergedPlanetData()
+            {
+                IsStellarRemnant = false;
+            }
+
+            public MergedPlanetData(bool isStellarRemnant)
+            {
+                IsStellarRemnant = isStellarRemnant;
+            }
 
             public void SetupParentChildRelationship(MergedPlanetData parent)
             {
@@ -1315,6 +1392,14 @@ namespace NewHorizons.Components.ShipLog
 
             public void Merge(PlanetConfig config)
             {
+                // If the incoming config is a stellar remnant, and this data isn't a stellar remnant, don't add it to AllConfigs or set as PrimaryConfig
+                if (!IsStellarRemnant && config.isStellarRemnant)
+                {
+                    // Store it separately for ResolveStellarRemnant to use
+                    _pendingRemnantConfig = config;
+                    return;
+                }
+
                 AllConfigs.Add(config);
 
                 if (PrimaryConfig == null || config.Base?.centerOfSolarSystem == true)
@@ -1386,6 +1471,64 @@ namespace NewHorizons.Components.ShipLog
                     orbit.semiMajorAxis > 0f ||
                     (orbit.isStatic && orbit.staticPosition != null)
                 );
+            }
+
+
+            private PlanetConfig _pendingRemnantConfig;
+            public void ResolveStellarRemnant()
+            {
+                RefreshResolvedValues();
+                if (Star != null && StellarRemnantBuilder.HasRemnant(Star))
+                {
+                    var remnantType = Star.stellarRemnantType;
+                    if (remnantType == StellarRemnantType.Default) remnantType = StellarRemnantBuilder.GetDefault(Star.size);
+
+                    switch (remnantType)
+                    {
+                        case StellarRemnantType.WhiteDwarf:
+                            StellarRemnant = new MergedPlanetData(true);
+                            StellarRemnant.Merge(new PlanetConfig
+                            {
+                                name = Name + " Remnant",
+                                starSystem = PrimaryConfig.starSystem,
+                                isStellarRemnant = true,
+                                Star = StellarRemnantBuilder.MakeWhiteDwarfModule(Star)
+                            });
+                            break;
+                        case StellarRemnantType.NeutronStar:
+                            StellarRemnant = new MergedPlanetData(true);
+                            StellarRemnant.Merge(new PlanetConfig
+                            {
+                                name = Name + " Remnant",
+                                starSystem = PrimaryConfig.starSystem,
+                                isStellarRemnant = true,
+                                Star = StellarRemnantBuilder.MakeNeutronStarModule(Star)
+                            });
+                            break;
+                        case StellarRemnantType.BlackHole:
+                            StellarRemnant = new MergedPlanetData(true);
+                            StellarRemnant.Merge(new PlanetConfig
+                            {
+                                name = Name + " Remnant",
+                                starSystem = PrimaryConfig.starSystem,
+                                isStellarRemnant = true,
+                                Props = new PropModule
+                                {
+                                    singularities = new[] { StellarRemnantBuilder.MakeBlackHoleModule(Star) }
+                                }
+                            });
+                            break;
+                        case StellarRemnantType.Custom:
+                            if (_pendingRemnantConfig != null)
+                            {
+                                StellarRemnant = new MergedPlanetData(true);
+                                StellarRemnant.Merge(_pendingRemnantConfig);
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
             }
         }
     }

@@ -45,7 +45,7 @@ namespace NewHorizons.Builder.Body
 
                         break;
                     case StellarRemnantType.BlackHole:
-                        MakeBlackhole(go, sector, star.Config.Star);
+                        MakeBlackHole(go, sector, star.Config.Star);
 
                         break;
                     default:
@@ -61,40 +61,45 @@ namespace NewHorizons.Builder.Body
             }
         }
 
-        private static StellarRemnantType GetDefault(float progenitorSize)
+        public static StellarRemnantType GetDefault(float progenitorSize)
         {
             if (progenitorSize > blackholeSize) return StellarRemnantType.BlackHole;
             else if (neutronStarSize < progenitorSize && progenitorSize <= blackholeSize) return StellarRemnantType.NeutronStar;
-            else return StellarRemnantType.WhiteDwarf;
+            else if (progenitorSize < whiteDwarfSize) return StellarRemnantType.WhiteDwarf;
+            else return StellarRemnantType.None;
         }
 
-        public static bool HasRemnant(StarModule star) 
+        public static bool HasRemnant(StarModule star)
         {
-            if (star.stellarDeathType == StellarDeathType.None) return false;
+            if (star.stellarDeathType == StellarDeathType.None || star.stellarRemnantType == StellarRemnantType.None) return false;
 
-            return !(star.stellarRemnantType == StellarRemnantType.Default && star.size <= whiteDwarfSize);
+            return !(star.stellarRemnantType == StellarRemnantType.Default && star.size < whiteDwarfSize);
         }
 
-        private static GameObject MakeWhiteDwarf(GameObject planetGO, Sector sector, IModBehaviour mod, StarModule progenitor, GameObject proxy = null)
+
+        public static StarModule MakeWhiteDwarfModule(StarModule progenitor)
         {
             var whiteDwarfSize = progenitor.size / 10;
             var whiteDwarfModule = new StarModule
             {
+                stellarDeathType = StellarDeathType.None,
+                stellarRemnantType = StellarRemnantType.None,
                 size = whiteDwarfSize,
                 tint = new MColor(384, 384, 384, 255),
                 lightTint = MColor.white,
                 lightRadius = 10000,
                 solarLuminosity = 0.5f
             };
-            if (proxy != null) return StarBuilder.MakeStarProxy(planetGO, proxy, whiteDwarfModule, mod, true).Item1;
-            else return StarBuilder.Make(planetGO, sector, whiteDwarfModule, mod, true).Item1;
+            return whiteDwarfModule;
         }
 
-        private static GameObject MakeNeutronStar(GameObject planetGO, Sector sector, IModBehaviour mod, StarModule progenitor, GameObject proxy = null)
+        public static StarModule MakeNeutronStarModule(StarModule progenitor)
         {
             var neutronStarSize = progenitor.size / 50;
             var neutronStarModule = new StarModule
             {
+                stellarDeathType = StellarDeathType.None,
+                stellarRemnantType = StellarRemnantType.None,
                 size = neutronStarSize,
                 tint = new MColor(128, 510, 510, 255),
                 lightTint = new MColor(128, 255, 255, 255),
@@ -102,6 +107,34 @@ namespace NewHorizons.Builder.Body
                 solarLuminosity = 0.5f,
                 hasAtmosphere = false
             };
+            return neutronStarModule;
+        }
+
+        public static SingularityModule MakeBlackHoleModule(StarModule progenitor)
+        {
+            var horizonSize = progenitor.size / 100;
+            var distortSize = horizonSize * 2.5f;
+            var blackHoleModule = new SingularityModule
+            {
+                type = SingularityModule.SingularityType.BlackHole,
+                horizonRadius = horizonSize,
+                distortRadius = distortSize
+            };
+            return blackHoleModule;
+        }
+
+
+        public static GameObject MakeWhiteDwarf(GameObject planetGO, Sector sector, IModBehaviour mod, StarModule progenitor, GameObject proxy = null)
+        {
+            var whiteDwarfModule = MakeWhiteDwarfModule(progenitor);
+            if (proxy != null) return StarBuilder.MakeStarProxy(planetGO, proxy, whiteDwarfModule, mod, true).Item1;
+            else return StarBuilder.Make(planetGO, sector, whiteDwarfModule, mod, true).Item1;
+        }
+
+        public static GameObject MakeNeutronStar(GameObject planetGO, Sector sector, IModBehaviour mod, StarModule progenitor, GameObject proxy = null)
+        {
+            var neutronStarSize = progenitor.size / 50;
+            var neutronStarModule = MakeNeutronStarModule(progenitor);
 
             // Instead of showing the typical star surface we use a tinted singularity
             GameObject neutronStar;
@@ -122,12 +155,12 @@ namespace NewHorizons.Builder.Body
             return neutronStar;
         }
 
-        private static GameObject MakeBlackhole(GameObject planetGO, Sector sector, StarModule progenitor, GameObject proxy = null)
+        public static GameObject MakeBlackHole(GameObject planetGO, Sector sector, StarModule progenitor, GameObject proxy = null)
         {
-            var blackHoleSize = progenitor.size / 100;
+            var blackHoleModule = MakeBlackHoleModule(progenitor);
 
-            if (proxy != null) return SingularityBuilder.MakeSingularityProxy(proxy, Vector3.zero, true, blackHoleSize, blackHoleSize * 2.5f);
-            else return SingularityBuilder.MakeSingularity(planetGO, sector, Vector3.zero, Vector3.zero, true, blackHoleSize, blackHoleSize * 2.5f, true, string.Empty);
+            if (proxy != null) return SingularityBuilder.MakeSingularityProxy(proxy, blackHoleModule);
+            else return SingularityBuilder.MakeWithNoUniqueID(planetGO, sector, blackHoleModule);
         }
 
         public static GameObject MakeProxyRemnant(GameObject planet, GameObject proxy, IModBehaviour mod, StarModule progenitor)
@@ -143,7 +176,7 @@ namespace NewHorizons.Builder.Body
                 case StellarRemnantType.NeutronStar:
                     return MakeNeutronStar(planet, null, mod, progenitor, proxy);
                 case StellarRemnantType.BlackHole:
-                    return MakeBlackhole(planet, null, progenitor, proxy);
+                    return MakeBlackHole(planet, null, progenitor, proxy);
                 default:
                     NHLogger.LogError($"Couldn't make proxy remnant for {planet.name}");
                     return null;

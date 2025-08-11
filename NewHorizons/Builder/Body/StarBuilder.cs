@@ -304,8 +304,7 @@ namespace NewHorizons.Builder.Body
             }
 
             StellarDeathController supernova = null;
-            var willExplode = !isStellarRemnant && starModule.stellarDeathType != StellarDeathType.None
-                && starModule.lifespan < 999; // some mods just set the star lifespans to be crazy values when they could have just set stellarDeathType to None
+            var willExplode = !isStellarRemnant && starModule.stellarDeathType != StellarDeathType.None;
             if (willExplode)
             {
                 supernova = MakeSupernova(starGO, starModule);
