@@ -659,8 +659,11 @@ namespace NewHorizons.Components.ShipLog
         {
             try
             {
-                var config = Main.SystemDict[customName].Config.StarChart;
+                var system = Main.SystemDict[customName].Config;
+                var loopDuration = system.enableTimeLoop ? system.loopDuration + (40 / 60) : -1; // memories get sent back in time about 40 seconds after the loop duration
+                var config = system.StarChart;
                 var bodies = Main.BodyDict[customName].Select(b => b.Config);
+
                 if (customName == "SolarSystem") bodies = bodies.Prepend(SunConfig);
                 else if (customName == "EyeOfTheUniverse") bodies = bodies.Prepend(EyeOfTheUniverseConfig);
 
@@ -689,6 +692,8 @@ namespace NewHorizons.Components.ShipLog
                 bool hasTexture = config?.starTexturePath != null;
 
                 float labelYOffset = 0;
+                float maxLifespan = 0;
+                bool containsSingularity = false;
 
                 // Use manual color/texture if provided
                 if (hasColor || hasTexture)
@@ -713,15 +718,8 @@ namespace NewHorizons.Components.ShipLog
                     ResetTransforms(visualGroup);
 
                     var center = mergedList.FirstOrDefault(b => b.IsCenter);
-                    if (center == null)
+                    if (center != null)
                     {
-                        AddVisualChildStar(newStarObject.transform);
-                        newStar._starTimeLoopEnd = 0;
-                    }
-                    else
-                    {
-                        float maxLifespan = 0;
-
                         SetupParentChildRelationships(mergedBodies);
 
                         var staticRootless = mergedList
@@ -753,12 +751,18 @@ namespace NewHorizons.Components.ShipLog
 
                                 if (isStar && maxLifespan >= 0)
                                 {
-                                    maxLifespan = Mathf.Max(maxLifespan, current.Star.lifespan);
+                                    bool willExplode = current.Star.stellarDeathType != StellarDeathType.None 
+                                                        && current.Star.lifespan < 999; // some mods just set the star lifespans to be crazy values when they could have just set stellarDeathType to None
+                                    if (willExplode)
+                                    {
+                                        maxLifespan = Mathf.Max(maxLifespan, current.Star.lifespan);
+                                    }
                                 }
 
                                 if (isSingularity)
                                 {
-                                    maxLifespan = -1;
+                                    containsSingularity = true;
+                                    maxLifespan = -1; // mark as infinite
                                 }
 
                                 // Place visual
@@ -834,21 +838,25 @@ namespace NewHorizons.Components.ShipLog
                                 labelYOffset = highestY - 20;
                             }
                         }
-
                         // No valid children found: fallback
-                        if (childVisuals.Count == 0)
-                        {
-                            AddVisualChildStar(visualGroup);
-                            newStar._starTimeLoopEnd = 0;
-                        }
                         else
                         {
-                            newStar._starTimeLoopEnd = Mathf.Max(maxLifespan, 0);
+                            AddVisualChildStar(visualGroup);
                         }
                     }
+                    else
+                    {
+                        AddVisualChildStar(newStarObject.transform);
+                    }
+
+                    newStar._starTimeLoopEnd = config?.disappearanceTime ?? 
+                        ((containsSingularity || loopDuration < 0 || maxLifespan < 0) ? -1 : Mathf.Max(maxLifespan, loopDuration));
                 }
 
-                if (!isThisSystem) shipLogStars.Add(newStar);
+                if (!isThisSystem)
+                {
+                    shipLogStars.Add(newStar);
+                }
                 else
                 {
                     _thisStar = newStar;

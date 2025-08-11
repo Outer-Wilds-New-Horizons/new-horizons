@@ -15,6 +15,7 @@ using NewHorizons.External;
 using NewHorizons.External.Configs;
 using NewHorizons.External.SerializableData;
 using NewHorizons.Handlers;
+using NewHorizons.OtherMods;
 using NewHorizons.OtherMods.AchievementsPlus;
 using NewHorizons.OtherMods.MenuFramework;
 using NewHorizons.OtherMods.OWRichPresence;
@@ -187,11 +188,13 @@ namespace NewHorizons
 
             BodyDict["SolarSystem"] = new List<NewHorizonsBody>();
             BodyDict["EyeOfTheUniverse"] = new List<NewHorizonsBody>(); // Keep this empty tho fr
+            var vanillaLoopDuration = OtherModUtil.IsEnabled("dnlwtsn.SlowTime") ? 60 : 22;
             SystemDict["SolarSystem"] = new NewHorizonsSystem("SolarSystem", new StarSystemConfig() { name = "SolarSystem" }, "", Instance)
             {
                 Config =
                 {
                     destroyStockPlanets = false,
+                    loopDuration = vanillaLoopDuration,
                     Vessel = new StarSystemConfig.VesselModule()
                     {
                         coords = new StarSystemConfig.NomaiCoordinates
@@ -203,7 +206,8 @@ namespace NewHorizons
                     },
                     StarChart = new StarSystemConfig.StarChartModule()
                     {
-                        position = new MVector2(0, 0)
+                        position = new MVector2(0, 0),
+                        disappearanceTime = vanillaLoopDuration + (40/60)
                     }
                 }
             };

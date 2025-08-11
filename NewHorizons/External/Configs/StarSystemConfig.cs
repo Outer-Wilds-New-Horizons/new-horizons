@@ -229,26 +229,32 @@ namespace NewHorizons.External.Configs
         public class StarChartModule
         {
             /// <summary>
-            /// The position of the star on the star chart.
+            /// The position of the system on the star chart.
+            /// This applies regardless of any other settings.
             /// </summary>
             public MVector2 position;
 
             /// <summary>
             /// The color of the star as it appears on the star chart.
+            /// If specified, it will override any custom generation we do.
             /// </summary>
             public MColor color;
 
             /// <summary>
             /// Filepath to a texture that will replace the default texture used to display this star in the star map.
-            /// If you use this, it's probably best to leave the color field blank, unless you have a white texture that you'd like to tint a different color.
+            /// If you use this, it's probably best to leave the <see cref="color"/> field blank, unless you have a white texture that you'd like to tint a different color.
+            /// If specified, it will override any custom generation we do.
             /// </summary>
             public string starTexturePath;
 
             /// <summary>
-            /// Time in the loop (in minutes) that this star will disappear.
-            /// The default time (0) means that players can warp to your star at any point. A 22 minute disappearance time would make the star unavailable to be warped to as soon as the sun explodes.
+            /// Time in the loop (in minutes) that this system will disappear.
+            /// If not specified, the time is calculated automatically based on the stars and singularities in the system.
+            /// If specified, this value takes priority over automatic calculations.
+            /// If <see cref="color"/> or <see cref="starTexturePath"/> is specified but this is not, it will default to 0 meaning players can warp to your system at any point.
+            /// A 22 minutes and 40 seconds (22.667) disappearance time will make the system unavailable to warp to at the exact moment the vanilla loop ends.
             /// </summary>
-            public float disappearanceTime = 0;
+            public float? disappearanceTime;
         }
 
         [JsonObject]
@@ -393,7 +399,7 @@ namespace NewHorizons.External.Configs
                 StarChart.position = StarChart.position ?? otherConfig.StarChart.position;
                 StarChart.color = StarChart.color ?? otherConfig.StarChart.color;
                 StarChart.starTexturePath = string.IsNullOrEmpty(StarChart.starTexturePath) ? otherConfig.StarChart.starTexturePath : StarChart.starTexturePath;
-                StarChart.disappearanceTime = StarChart.disappearanceTime == 30f ? otherConfig.StarChart.disappearanceTime : StarChart.disappearanceTime;
+                StarChart.disappearanceTime = StarChart.disappearanceTime ?? otherConfig.StarChart.disappearanceTime;
             }
             else
             {
