@@ -14,32 +14,26 @@ namespace NewHorizons.Components.ShipLog
     [DefaultExecutionOrder(+50)]
     public class ShipLogStarSystem : MonoBehaviour
     {
-        public string uniqueName;
         public Vector3 position;
         public float scale;
-        public bool isWarpSystem;
         public float timeLoopEnd;
-
-        private Dictionary<string, ShipLogStellarBody> _stellarBodies = new();
-        public IReadOnlyDictionary<string, ShipLogStellarBody> StellarBodies => _stellarBodies;
 
         private ShipLogStarChartMode mode;
         private float scaleMultiplier;
 
-        public void Initialize(ShipLogStarChartMode m)
+        public virtual void Initialize(ShipLogStarChartMode m)
         {
             mode = m;
-            _stellarBodies = GetComponentsInChildren<ShipLogStellarBody>(true).ToDictionary(body => body.name);
         }
 
-        public void Update()
+        public virtual void Update()
         {
             if (timeLoopEnd <= 0) return;
             if ((TimeLoop.GetSecondsElapsed() / 60) > timeLoopEnd) gameObject.SetActive(false);
         }
 
         // Update the position in lateupdate so that the position isn't calculated from the previous frame if the mode was just enabled
-        public void LateUpdate()
+        public virtual void LateUpdate()
         {
             Vector3 representPosition = new Vector3(position.x - mode.cameraPosition.x, position.y - mode.cameraPosition.y, position.z) * mode.cameraZoom;
             representPosition = mode.cameraPivot.InverseTransformPoint(mode.transform.TransformPoint(representPosition));
@@ -60,12 +54,6 @@ namespace NewHorizons.Components.ShipLog
             scaleMultiplier = Mathf.Lerp(minScale, maxScale, t);
 
             transform.localScale = Vector3.one * (scale * scaleMultiplier);
-        }
-
-        public ShipLogStellarBody GetStellarBodyByName(string name)
-        {
-            _stellarBodies.TryGetValue(name, out var result);
-            return result;
         }
     }
 }

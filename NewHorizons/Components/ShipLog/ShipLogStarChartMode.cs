@@ -31,12 +31,12 @@ namespace NewHorizons.Components.ShipLog
         private ScreenPrompt _targetSystemPrompt;
         private ScreenPrompt _warpPrompt = new ScreenPrompt(InputLibrary.autopilot, "<CMD> Warp to system");
 
-        private ShipLogStarSystem _targetSystem = null;
-        private ShipLogStarSystem _thisSystem = null;
-        private ShipLogStarSystem _switchSystem = null;
+        private ShipLogWarpableStarSystem _targetSystem = null;
+        private ShipLogWarpableStarSystem _thisSystem = null;
+        private ShipLogWarpableStarSystem _switchSystem = null;
         private NotificationData _warpNotificationData = null;
 
-        private List<ShipLogStarSystem> shipLogSystems = new List<ShipLogStarSystem>();
+        private List<ShipLogWarpableStarSystem> shipLogSystems = new List<ShipLogWarpableStarSystem>();
 
         public Vector2 cameraPosition;
         public float cameraRotation = 0;
@@ -740,7 +740,7 @@ namespace NewHorizons.Components.ShipLog
                 UnityEngine.Random.InitState(customName.GetHashCode() + 10);
 
                 GameObject newSystemObject = new GameObject(customName);
-                ShipLogStarSystem newSystem = newSystemObject.AddComponent<ShipLogStarSystem>();
+                ShipLogWarpableStarSystem newSystem = newSystemObject.AddComponent<ShipLogWarpableStarSystem>();
                 newSystem.transform.SetParent(_systemsParent, false);
 
                 newSystemObject.AddComponent<CanvasRenderer>();
@@ -751,7 +751,6 @@ namespace NewHorizons.Components.ShipLog
                 newSystem.position = GetSystemPosition(config);
                 newSystem.scale = 0.6f;
                 newSystem.uniqueName = customName;
-                newSystem.isWarpSystem = true;
 
                 bool hasColor = config?.color != null;
                 bool hasTexture = config?.starTexturePath != null;
@@ -1135,8 +1134,8 @@ namespace NewHorizons.Components.ShipLog
         private void UpdateSelection()
         {
             float minimumDistance = Mathf.Infinity;
-            ShipLogStarSystem highlightedSystem = null;
-            foreach(ShipLogStarSystem s in shipLogSystems)
+            ShipLogWarpableStarSystem highlightedSystem = null;
+            foreach(ShipLogWarpableStarSystem s in shipLogSystems)
             {
                 float distance = Vector3.Distance(s.transform.localPosition, Vector3.zero);
                 if (distance < minimumDistance && distance < 200 && s.gameObject.activeSelf)
@@ -1239,7 +1238,7 @@ namespace NewHorizons.Components.ShipLog
             RemoveWarpTarget();
         }
 
-        private void SetWarpTarget(ShipLogStarSystem starTarget)
+        private void SetWarpTarget(ShipLogWarpableStarSystem starTarget)
         {
             RemoveWarpTarget(false);
             if (starTarget != null)
