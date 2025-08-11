@@ -417,9 +417,23 @@ namespace NewHorizons.Components.ShipLog
 
         private static Vector3 GetSystemPosition(StarSystemConfig.StarChartModule config)
         {
-            return config?.position != null
-                ? new Vector3(config.position.x, config.position.y, 0)
-                : new Vector3(UnityEngine.Random.Range(-100f, 100f), UnityEngine.Random.Range(-100f, 100f), 0);
+            if (config?.position != null)
+            {
+                return new Vector3(config.position.x, config.position.y, 0);
+            }
+            else
+            {
+                float x = UnityEngine.Random.Range(-100f, 100f);
+                float y = UnityEngine.Random.Range(-100f, 100f);
+
+                if (x < 25 && y < 25) // avoid being near the vanilla system with this random position
+                {
+                    x += 25;
+                    y += 25;
+                }
+
+                return new Vector3(x, y, 0);
+            }
         }
 
         private static void TryAddTextureFromPath(string customName, string texturePath, RawImage image)
