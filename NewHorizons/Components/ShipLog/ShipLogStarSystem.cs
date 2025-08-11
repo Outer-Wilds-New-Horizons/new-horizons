@@ -12,16 +12,16 @@ using UnityEngine.UI;
 namespace NewHorizons.Components.ShipLog
 {
     [DefaultExecutionOrder(+50)]
-    public class ShipLogStar : MonoBehaviour
+    public class ShipLogStarSystem : MonoBehaviour
     {
-        public string _starName;
-        public Vector3 _starPosition;
-        public float _starScale;
-        public bool _isWarpSystem;
-        public float _starTimeLoopEnd;
+        public string uniqueName;
+        public Vector3 position;
+        public float scale;
+        public bool isWarpSystem;
+        public float timeLoopEnd;
 
-        private Dictionary<string, ShipLogChildStar> _childStars = new();
-        public IReadOnlyDictionary<string, ShipLogChildStar> ChildStars => _childStars;
+        private Dictionary<string, ShipLogStellarBody> _stellarBodies = new();
+        public IReadOnlyDictionary<string, ShipLogStellarBody> StellarBodies => _stellarBodies;
 
         private ShipLogStarChartMode mode;
         private float scaleMultiplier;
@@ -29,19 +29,19 @@ namespace NewHorizons.Components.ShipLog
         public void Initialize(ShipLogStarChartMode m)
         {
             mode = m;
-            _childStars = GetComponentsInChildren<ShipLogChildStar>(true).ToDictionary(child => child.name);
+            _stellarBodies = GetComponentsInChildren<ShipLogStellarBody>(true).ToDictionary(body => body.name);
         }
 
         public void Update()
         {
-            if (_starTimeLoopEnd <= 0) return;
-            if ((TimeLoop.GetSecondsElapsed() / 60) > _starTimeLoopEnd) gameObject.SetActive(false);
+            if (timeLoopEnd <= 0) return;
+            if ((TimeLoop.GetSecondsElapsed() / 60) > timeLoopEnd) gameObject.SetActive(false);
         }
 
         // Update the position in lateupdate so that the position isn't calculated from the previous frame if the mode was just enabled
         public void LateUpdate()
         {
-            Vector3 representPosition = new Vector3(_starPosition.x - mode.cameraPosition.x, _starPosition.y - mode.cameraPosition.y, _starPosition.z) * mode.cameraZoom;
+            Vector3 representPosition = new Vector3(position.x - mode.cameraPosition.x, position.y - mode.cameraPosition.y, position.z) * mode.cameraZoom;
             representPosition = mode.cameraPivot.InverseTransformPoint(mode.transform.TransformPoint(representPosition));
             float Depth = (representPosition.z + 60) / 50;
 
@@ -59,13 +59,12 @@ namespace NewHorizons.Components.ShipLog
             float t = Mathf.InverseLerp(zoomMin, zoomMax, mode.cameraZoom);
             scaleMultiplier = Mathf.Lerp(minScale, maxScale, t);
 
-            transform.localScale = Vector3.one * (_starScale * scaleMultiplier);
-
+            transform.localScale = Vector3.one * (scale * scaleMultiplier);
         }
 
-        public ShipLogChildStar GetChildStarByName(string name)
+        public ShipLogStellarBody GetStellarBodyByName(string name)
         {
-            _childStars.TryGetValue(name, out var result);
+            _stellarBodies.TryGetValue(name, out var result);
             return result;
         }
     }

@@ -31,12 +31,12 @@ namespace NewHorizons.Components.ShipLog
         private ScreenPrompt _targetSystemPrompt;
         private ScreenPrompt _warpPrompt = new ScreenPrompt(InputLibrary.autopilot, "<CMD> Warp to system");
 
-        private ShipLogStar _target = null;
-        private ShipLogStar _thisStar = null;
-        private ShipLogStar _switchStar = null;
+        private ShipLogStarSystem _targetSystem = null;
+        private ShipLogStarSystem _thisSystem = null;
+        private ShipLogStarSystem _switchSystem = null;
         private NotificationData _warpNotificationData = null;
 
-        private List<ShipLogStar> shipLogStars = new List<ShipLogStar>();
+        private List<ShipLogStarSystem> shipLogSystems = new List<ShipLogStarSystem>();
 
         public Vector2 cameraPosition;
         public float cameraRotation = 0;
@@ -208,22 +208,22 @@ namespace NewHorizons.Components.ShipLog
 
             CreateGalaxyStars();
 
-            CreateSystemStars();
+            CreateStarSystems();
         }
 
         private void CreateGalaxyStars()
         {
-            foreach (Vector3 point in _galaxyStarPoints) AddGenericStar(point);
+            foreach (Vector3 point in _galaxyStarPoints) AddGalaxyStar(point);
         }
 
-        private void CreateSystemStars()
+        private void CreateStarSystems()
         {
             foreach (var starSystem in Main.SystemDict.Keys)
             {
                 bool thisSystem = Main.Instance.CurrentStarSystem == starSystem;
                 if (StarChartHandler.CanWarpToSystem(starSystem) || thisSystem)
                 {
-                    AddStar(starSystem, thisSystem);
+                    AddStarSystem(starSystem, thisSystem);
                 }
             }
         }
@@ -240,7 +240,7 @@ namespace NewHorizons.Components.ShipLog
         }
 
 
-        private void UpdateWarpDriveVisuals()
+        private static void UpdateWarpDriveVisuals()
         {
             Main.Instance.ShipWarpController.UpdateWarpDriveVisuals();
         }
@@ -272,7 +272,7 @@ namespace NewHorizons.Components.ShipLog
             return stringID;
         }
 
-        private Dictionary<string, MergedPlanetData> GetMergedBodies(IEnumerable<PlanetConfig> configs)
+        private static Dictionary<string, MergedPlanetData> GetMergedBodies(IEnumerable<PlanetConfig> configs)
         {
             Dictionary<string, MergedPlanetData> lookup = new();
             foreach (var config in configs)
@@ -294,7 +294,7 @@ namespace NewHorizons.Components.ShipLog
             return lookup;
         }
 
-        private void SetupParentChildRelationships(Dictionary<string, MergedPlanetData> mergedBodies)
+        private static void SetupParentChildRelationships(Dictionary<string, MergedPlanetData> mergedBodies)
         {
             foreach (var data in mergedBodies.Values)
             {
@@ -415,7 +415,7 @@ namespace NewHorizons.Components.ShipLog
             return IsRenderableStar(config) || IsRenderableSingularity(config);
         }
 
-        private Vector3 GetStarPosition(StarSystemConfig.StarChartModule config)
+        private static Vector3 GetSystemPosition(StarSystemConfig.StarChartModule config)
         {
             return config?.position != null
                 ? new Vector3(config.position.x, config.position.y, 0)
@@ -438,28 +438,28 @@ namespace NewHorizons.Components.ShipLog
             return color;
         }
 
-        private GameObject AddVisualChildStar(Transform parent, Color color, Vector3 offset, float scale)
+        private GameObject CreateStellarBodyObject(Transform parent, Color color, Vector3 offset, float scale)
         {
-            GameObject childStar = new GameObject("ChildStar");
-            childStar.transform.SetParent(parent, false);
-            ResetTransforms(childStar.transform);
-            childStar.transform.localPosition = offset;
-            childStar.transform.localScale = Vector3.one * scale;
+            GameObject stellarBody = new GameObject("StellarBody");
+            stellarBody.transform.SetParent(parent, false);
+            ResetTransforms(stellarBody.transform);
+            stellarBody.transform.localPosition = offset;
+            stellarBody.transform.localScale = Vector3.one * scale;
 
-            childStar.AddComponent<CanvasRenderer>();
-            var image = childStar.AddComponent<RawImage>();
+            stellarBody.AddComponent<CanvasRenderer>();
+            var image = stellarBody.AddComponent<RawImage>();
             image.texture = color == Color.black ? _blackHoleTexture : _starTexture;
             image.color = color == Color.black ? Color.white : color;
 
-            return childStar;
+            return stellarBody;
         }
 
-        private GameObject AddVisualChildStar(Transform parent)
+        private GameObject CreateStellarBodyObject(Transform parent)
         {
-            return AddVisualChildStar(parent, Color.white, Vector3.zero, 1);
+            return CreateStellarBodyObject(parent, Color.white, Vector3.zero, 1);
         }
 
-        private GameObject AddVisualChildStar(Transform parent, MergedPlanetData body, Vector3 offset)
+        private GameObject CreateStellarBodyObject(Transform parent, MergedPlanetData body, Vector3 offset)
         {
             if (!IsRenderableStarOrSingularity(body)) return null;
 
@@ -470,15 +470,15 @@ namespace NewHorizons.Components.ShipLog
             float lifespan = GetRenderableLifespan(body);
 
             // Create parent object
-            GameObject childStar = new GameObject(body.Name);
-            ShipLogChildStar newChildStar = childStar.AddComponent<ShipLogChildStar>();
-            childStar.transform.SetParent(parent, false);
-            ResetTransforms(childStar.transform);
-            childStar.transform.localPosition = offset;
-            childStar.transform.localScale = Vector3.one;
+            GameObject stellarBody = new GameObject(body.Name);
+            ShipLogStellarBody stellarBodyComponent = stellarBody.AddComponent<ShipLogStellarBody>();
+            stellarBody.transform.SetParent(parent, false);
+            ResetTransforms(stellarBody.transform);
+            stellarBody.transform.localPosition = offset;
+            stellarBody.transform.localScale = Vector3.one;
 
-            GameObject living = AddVisualChildStar(childStar.transform, color, Vector3.zero, scale);
-            living.name = "Living";
+            GameObject progenitor = CreateStellarBodyObject(stellarBody.transform, color, Vector3.zero, scale);
+            progenitor.name = "Progenitor";
 
             GameObject remnant = null;
 
@@ -488,22 +488,22 @@ namespace NewHorizons.Components.ShipLog
                 float remnantScale = GetScale(body.StellarRemnant);
                 Color remnantColor = GetColor(body.StellarRemnant);
 
-                remnant = AddVisualChildStar(childStar.transform, remnantColor, Vector3.zero, remnantScale);
+                remnant = CreateStellarBodyObject(stellarBody.transform, remnantColor, Vector3.zero, remnantScale);
                 remnant.name = "Remnant";
                 remnant.SetActive(false);
             }
 
-            newChildStar.Initialize(lifespan, living, remnant);
+            stellarBodyComponent.Initialize(lifespan, progenitor, remnant);
             
-            return childStar;
+            return stellarBody;
         }
 
-        internal void AddStar(string customName)
+        internal void AddStarSystem(string customName)
         {
-            AddStar(customName, Main.Instance.CurrentStarSystem == customName);
+            AddStarSystem(customName, Main.Instance.CurrentStarSystem == customName);
         }
 
-        private Vector2 FlattenTo2D(Vector3 pos3D)
+        private static Vector2 FlattenTo2D(Vector3 pos3D)
         {
             // Flatten Z (forward) → Y (vertical)
             // Blend in Y (up) to give the orbit inclination some effect in 2D
@@ -612,7 +612,7 @@ namespace NewHorizons.Components.ShipLog
             );
         }
 
-        private Vector3 GetOrbitVisualPosition(
+        private static Vector3 GetOrbitVisualPosition(
             MergedPlanetData config,
             Vector3 centerOffset,
             float minRadius,
@@ -650,7 +650,7 @@ namespace NewHorizons.Components.ShipLog
             return centerOffset + (Vector3)(flatOrbit.normalized * radiusOrbit);
         }
 
-        private Vector3 GetOrbitPosition(MergedPlanetData config)
+        private static Vector3 GetOrbitPosition(MergedPlanetData config)
         {
             var orbit = config.Orbit;
             if (orbit == null) return Vector3.zero;
@@ -667,12 +667,12 @@ namespace NewHorizons.Components.ShipLog
             return op.InitialPosition;
         }
 
-        private float GetOrbitDistance(MergedPlanetData config)
+        private static float GetOrbitDistance(MergedPlanetData config)
         {
             return GetOrbitPosition(config).magnitude;
         }
 
-        private Vector3 GetTotalOrbitPosition(MergedPlanetData body)
+        private static Vector3 GetTotalOrbitPosition(MergedPlanetData body)
         {
             if (body == null) return Vector3.zero;
 
@@ -683,12 +683,12 @@ namespace NewHorizons.Components.ShipLog
             return parentPosition + currentPosition;
         }
 
-        private float GetTotalOrbitDistance(MergedPlanetData body)
+        private static float GetTotalOrbitDistance(MergedPlanetData body)
         {
             return GetTotalOrbitPosition(body).magnitude;
         }
 
-        private float GetMaxOrbitDistanceFrom(MergedPlanetData body)
+        private static float GetMaxOrbitDistanceFrom(MergedPlanetData body)
         {
             List<float> distances = new();
 
@@ -721,7 +721,7 @@ namespace NewHorizons.Components.ShipLog
             return distances[index];
         }
 
-        private void AddStar(string customName, bool isThisSystem)
+        private void AddStarSystem(string customName, bool isThisSystem)
         {
             try
             {
@@ -739,20 +739,19 @@ namespace NewHorizons.Components.ShipLog
                 // The seed for any default (random) fields of a custom star is based on the hash of their unique name (plus ten, bc why not).
                 UnityEngine.Random.InitState(customName.GetHashCode() + 10);
 
-                GameObject newStarObject = new GameObject("StarGroup");
-                ShipLogStar newStar = newStarObject.AddComponent<ShipLogStar>();
-                newStar.transform.SetParent(_systemsParent, false);
+                GameObject newSystemObject = new GameObject(customName);
+                ShipLogStarSystem newSystem = newSystemObject.AddComponent<ShipLogStarSystem>();
+                newSystem.transform.SetParent(_systemsParent, false);
 
-                newStarObject.AddComponent<CanvasRenderer>();
-                RawImage starImage = newStarObject.AddComponent<RawImage>();
-                starImage.texture = _starTexture;
-                ResetTransforms(newStar.transform);
+                newSystemObject.AddComponent<CanvasRenderer>();
+                RawImage systemImage = newSystemObject.AddComponent<RawImage>();
+                systemImage.texture = _starTexture;
+                ResetTransforms(newSystem.transform);
 
-                newStar._starPosition = GetStarPosition(config);
-                newStar._starScale = 0.6f;
-                newStar._starName = customName;
-                newStar._isWarpSystem = true;
-                newStarObject.name = customName;
+                newSystem.position = GetSystemPosition(config);
+                newSystem.scale = 0.6f;
+                newSystem.uniqueName = customName;
+                newSystem.isWarpSystem = true;
 
                 bool hasColor = config?.color != null;
                 bool hasTexture = config?.starTexturePath != null;
@@ -764,23 +763,23 @@ namespace NewHorizons.Components.ShipLog
                 // Use manual color/texture if provided
                 if (hasColor || hasTexture)
                 {
-                    starImage.color = hasColor ? config.color.ToColor() : Color.white;
+                    systemImage.color = hasColor ? config.color.ToColor() : Color.white;
 
                     if (hasTexture)
                     {
-                        TryAddTextureFromPath(customName, config.starTexturePath, starImage);
+                        TryAddTextureFromPath(customName, config.starTexturePath, systemImage);
                     }
 
-                    newStar._starTimeLoopEnd = config?.disappearanceTime ?? 0;
+                    newSystem.timeLoopEnd = config?.disappearanceTime ?? 0;
                 }
                 else
                 {
                     // No explicit texture/color: infer from center and children
-                    starImage.enabled = false; // No root visual
+                    systemImage.enabled = false; // No root visual
 
                     GameObject visualGroupObj = new GameObject("VisualGroup");
                     Transform visualGroup = visualGroupObj.transform;
-                    visualGroup.SetParent(newStarObject.transform);
+                    visualGroup.SetParent(newSystemObject.transform);
                     ResetTransforms(visualGroup);
 
                     var center = mergedList.FirstOrDefault(b => b.IsCenter);
@@ -833,7 +832,7 @@ namespace NewHorizons.Components.ShipLog
                                 // Place visual
                                 if (isStar || isSingularity)
                                 {
-                                    AddVisualChildStar(visualGroup, current, offset);
+                                    CreateStellarBodyObject(visualGroup, current, offset);
                                 }
                                 /*
                                 else
@@ -892,7 +891,7 @@ namespace NewHorizons.Components.ShipLog
 
                         TraverseFromCenter(center);
 
-                        var childVisuals = visualGroupObj.GetComponentsInChildren<ShipLogChildStar>(true).ToList();
+                        var childVisuals = visualGroupObj.GetComponentsInChildren<ShipLogStellarBody>(true).ToList();
 
                         // After placement: Shift text label higher based on how far above 20 the highest visual goes
                         if (childVisuals.Count > 0)
@@ -906,36 +905,36 @@ namespace NewHorizons.Components.ShipLog
                         // No valid children found: fallback
                         else
                         {
-                            AddVisualChildStar(visualGroup);
+                            CreateStellarBodyObject(visualGroup);
                         }
                     }
                     else
                     {
-                        AddVisualChildStar(newStarObject.transform);
+                        CreateStellarBodyObject(newSystemObject.transform);
                     }
 
-                    newStar._starTimeLoopEnd = config?.disappearanceTime ?? 
+                    newSystem.timeLoopEnd = config?.disappearanceTime ?? 
                         ((containsSingularity || loopDuration < 0 || maxLifespan < 0) ? -1 : Mathf.Max(maxLifespan, loopDuration));
                 }
 
                 if (!isThisSystem)
                 {
-                    shipLogStars.Add(newStar);
+                    shipLogSystems.Add(newSystem);
                 }
                 else
                 {
-                    _thisStar = newStar;
-                    cameraPosition = new Vector2(newStar._starPosition.x, newStar._starPosition.y);
+                    _thisSystem = newSystem;
+                    cameraPosition = new Vector2(newSystem.position.x, newSystem.position.y);
                 }
 
-                var textLabel = AddTextLabel(newStarObject.transform, UniqueIDToName(customName));
+                var textLabel = AddTextLabel(newSystemObject.transform, UniqueIDToName(customName));
                 if (labelYOffset > 0 && textLabel != null)
                 {
                     textLabel.transform.localPosition += new Vector3(0, labelYOffset, 0);
                 }
 
-                newStar.enabled = true;
-                newStar.Initialize(this);
+                newSystem.enabled = true;
+                newSystem.Initialize(this);
             }
             catch (Exception e)
             {
@@ -943,10 +942,10 @@ namespace NewHorizons.Components.ShipLog
             }
         }
 
-        public void AddGenericStar(Vector3 inputPosition)
+        public void AddGalaxyStar(Vector3 inputPosition)
         {
-            GameObject newStarObject = new GameObject("Star");
-            ShipLogStar newStar = newStarObject.AddComponent<ShipLogStar>();
+            GameObject newStarObject = new GameObject("GalaxyStar");
+            ShipLogStarSystem newStar = newStarObject.AddComponent<ShipLogStarSystem>();
             newStar.transform.SetParent(_genericParent, false);
 
             newStarObject.AddComponent<CanvasRenderer>();
@@ -955,18 +954,18 @@ namespace NewHorizons.Components.ShipLog
             ResetTransforms(newStar.transform);
 
             starImage.color = RandomStarColor();
-            newStar._starTimeLoopEnd = UnityEngine.Random.Range(0f, 23f);
-            newStar._starScale = UnityEngine.Random.Range(0.03f, 0.2f);
-            newStar._starPosition = new Vector3(UnityEngine.Random.Range(-1000f, 1000f), UnityEngine.Random.Range(-1000f, 1000f), UnityEngine.Random.Range(-5f, 5f));
+            newStar.timeLoopEnd = UnityEngine.Random.Range(0f, 23f);
+            newStar.scale = UnityEngine.Random.Range(0.03f, 0.2f);
+            newStar.position = new Vector3(UnityEngine.Random.Range(-1000f, 1000f), UnityEngine.Random.Range(-1000f, 1000f), UnityEngine.Random.Range(-5f, 5f));
 
-            newStar._starPosition = inputPosition;
+            newStar.position = inputPosition;
 
             newStar.enabled = true;
 
             newStar.Initialize(this);
         }
 
-        private Color RandomStarColor()
+        private static Color RandomStarColor()
         {
             Color blueYellowColor = Color.Lerp(Color.blue, Color.yellow, UnityEngine.Random.Range(0f, 1f));
             Color darkLightColor = Color.Lerp(blueYellowColor, Color.white, UnityEngine.Random.Range(0.8f, 1f));
@@ -995,7 +994,7 @@ namespace NewHorizons.Components.ShipLog
             return text;
         }
 
-        private void ResetTransforms(Transform t)
+        private static void ResetTransforms(Transform t)
         {
             t.transform.localPosition = Vector3.zero;
             t.transform.localScale = Vector3.one;
@@ -1047,7 +1046,7 @@ namespace NewHorizons.Components.ShipLog
 
         public override void ExitMode()
         {
-            cameraPosition = new Vector2(_thisStar._starPosition.x, _thisStar._starPosition.y);
+            cameraPosition = new Vector2(_thisSystem.position.x, _thisSystem.position.y);
             cameraRotation = 0;
             cameraZoom = 8;
             cameraPivot.localEulerAngles = new Vector3(-5, 0, 0);
@@ -1080,14 +1079,14 @@ namespace NewHorizons.Components.ShipLog
 
         private void UpdateMapCamera()
         {
-            if (shipLogStars.Count == 0)
+            if (shipLogSystems.Count == 0)
             {
                 NHLogger.LogWarning("Showing star chart mode when there are no available systems");
                 return;
             }
 
             cameraPivot.transform.localScale = Vector3.Lerp(cameraPivot.transform.localScale, Vector3.one, Time.unscaledDeltaTime * 2);
-            if (_target != null && _card != null)
+            if (_targetSystem != null && _card != null)
             {
                 _card.transform.localScale = Vector3.Lerp(_card.transform.localScale, Vector3.one * 1.25f, Time.unscaledDeltaTime * 20);
             }
@@ -1122,10 +1121,10 @@ namespace NewHorizons.Components.ShipLog
             );
             cameraPosition += (rotatedInput * Time.unscaledDeltaTime * 500) / cameraZoom;
 
-            if (_target != null && Time.unscaledTime < _startPanTime + _panDuration)
+            if (_targetSystem != null && Time.unscaledTime < _startPanTime + _panDuration)
             {
                 float pan = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(_startPanTime, _startPanTime + _panDuration, Time.unscaledTime));
-                cameraPosition = Vector2.Lerp(_startPanPos, _target._starPosition, pan);
+                cameraPosition = Vector2.Lerp(_startPanPos, _targetSystem.position, pan);
             }
 
             _card._nameBackground.color = _elementColor;
@@ -1136,22 +1135,22 @@ namespace NewHorizons.Components.ShipLog
         private void UpdateSelection()
         {
             float minimumDistance = Mathf.Infinity;
-            ShipLogStar highlightedStar = null;
-            foreach(ShipLogStar s in shipLogStars)
+            ShipLogStarSystem highlightedSystem = null;
+            foreach(ShipLogStarSystem s in shipLogSystems)
             {
                 float distance = Vector3.Distance(s.transform.localPosition, Vector3.zero);
                 if (distance < minimumDistance && distance < 200 && s.gameObject.activeSelf)
                 {
                     minimumDistance = distance;
-                    highlightedStar = s;
+                    highlightedSystem = s;
                 }
             }
 
             if (OWInput.IsNewlyPressed(InputLibrary.markEntryOnHUD, InputMode.All))
             {
-                if (highlightedStar != null && _target != highlightedStar)
+                if (highlightedSystem != null && _targetSystem != highlightedSystem)
                 {
-                    SetWarpTarget(highlightedStar);
+                    SetWarpTarget(highlightedSystem);
                 } else
                 {
                     RemoveWarpTarget(true);
@@ -1161,38 +1160,38 @@ namespace NewHorizons.Components.ShipLog
 
             if (highlightCursor != null)
             {
-                if (highlightedStar != null && _target != highlightedStar)
+                if (highlightedSystem != null && _targetSystem != highlightedSystem)
                 {
                     _targetSystemPrompt.SetVisibility(true);
-                    highlightCursor.localPosition = highlightedStar.transform.localPosition + (Vector3.down * 30);
+                    highlightCursor.localPosition = highlightedSystem.transform.localPosition + (Vector3.down * 30);
                     highlightCursor.localScale = Vector3.one * 0.25f;
 
-                    if (_switchStar != highlightedStar) _oneShotSource.PlayOneShot(AudioType.ShipLogHighlightEntry);
+                    if (_switchSystem != highlightedSystem) _oneShotSource.PlayOneShot(AudioType.ShipLogHighlightEntry);
 
-                    _switchStar = highlightedStar;
+                    _switchSystem = highlightedSystem;
                 } else
                 {
                     _targetSystemPrompt.SetVisibility(false);
                     highlightCursor.localScale = Vector3.zero;
-                    _switchStar = null;
+                    _switchSystem = null;
                 }
             } else
             {
-                _switchStar = null;
+                _switchSystem = null;
             }
 
             if (visualWarpLine != null)
             {
-                if (_target != null)
+                if (_targetSystem != null)
                 {
-                    SetWarpLinePositions(_thisStar.transform.localPosition, _target.transform.localPosition);
+                    SetWarpLinePositions(_thisSystem.transform.localPosition, _targetSystem.transform.localPosition);
                 } else
                 {
-                    SetWarpLinePositions(_thisStar.transform.localPosition, Vector3.zero);
+                    SetWarpLinePositions(_thisSystem.transform.localPosition, Vector3.zero);
                 }
             }
 
-            if (_target != null && !_target.gameObject.activeSelf) RemoveWarpTarget(false);
+            if (_targetSystem != null && !_targetSystem.gameObject.activeSelf) RemoveWarpTarget(false);
         }
 
         private void SetWarpLinePositions(Vector3 pos1, Vector3 pos2)
@@ -1228,7 +1227,7 @@ namespace NewHorizons.Components.ShipLog
             return (a % b + b) % b;
         }
 
-        private Sprite MakeSprite(Texture2D texture)
+        private static Sprite MakeSprite(Texture2D texture)
         {
             var rect = new Rect(0, 0, texture.width, texture.height);
             var pivot = new Vector2(texture.width / 2, texture.height / 2);
@@ -1240,15 +1239,15 @@ namespace NewHorizons.Components.ShipLog
             RemoveWarpTarget();
         }
 
-        private void SetWarpTarget(ShipLogStar starTarget)
+        private void SetWarpTarget(ShipLogStarSystem starTarget)
         {
             RemoveWarpTarget(false);
             if (starTarget != null)
             {
-                SetCard(starTarget._starName);
+                SetCard(starTarget.uniqueName);
             }
             _oneShotSource.PlayOneShot(_onSelectClip, _volumeScale);
-            _target = starTarget;
+            _targetSystem = starTarget;
             _startPanTime = Time.unscaledTime;
             _startPanPos = cameraPosition;
             Locator._rfTracker.UntargetReferenceFrame();
@@ -1268,21 +1267,21 @@ namespace NewHorizons.Components.ShipLog
         private void RemoveWarpTarget(bool playSound = false)
         {
             if (_warpNotificationData != null) NotificationManager.SharedInstance.UnpinNotification(_warpNotificationData);
-            if (_target == null) return;
+            if (_targetSystem == null) return;
             if (playSound) _oneShotSource.PlayOneShot(_onDeselectClip, _volumeScale);
-            _target = null;
+            _targetSystem = null;
             _startPanTime = 0;
             UpdateWarpDriveVisuals();
         }
 
         public string GetTargetStarSystem()
         {
-            return _target?.name;
+            return _targetSystem?.name;
         }
 
         private bool IsWarpDriveAvailable()
         {
-            return OWInput.IsInputMode(InputMode.ShipCockpit) && _target != null;
+            return OWInput.IsInputMode(InputMode.ShipCockpit) && _targetSystem != null;
         }
 
         public void UpdateWarpPromptVisibility()
@@ -1294,7 +1293,7 @@ namespace NewHorizons.Components.ShipLog
 
 
         // Galaxy Visuals
-        private Vector3[] CreateGalaxy()
+        private static Vector3[] CreateGalaxy()
         {
             List<Vector3> galaxyStarPoints = new List<Vector3>();
 
@@ -1315,7 +1314,7 @@ namespace NewHorizons.Components.ShipLog
             return galaxyStarPoints.ToArray();
         }
 
-        private void CreateGalaxyArm(List<Vector3> list, float startingAngle, float startDensity, float endDensity, float startScatter, float endScatter, float armLength, int bunchCount)
+        private static void CreateGalaxyArm(List<Vector3> list, float startingAngle, float startDensity, float endDensity, float startScatter, float endScatter, float armLength, int bunchCount)
         {
             Vector3 moveDirection = Quaternion.AngleAxis(startingAngle, Vector3.forward) * Vector3.up;
             Vector3 point = moveDirection * 5;
@@ -1337,11 +1336,11 @@ namespace NewHorizons.Components.ShipLog
                 point += moveDirection * 30 * armLength;
             }
         }
-        private Vector3 RandomStarOffsetVector(float Range)
+        private static Vector3 RandomStarOffsetVector(float Range)
         {
             return new Vector3(RandomStarRange(Range), RandomStarRange(Range), RandomStarRange(Range) * 0.03f);
         }
-        private float RandomStarRange(float Range)
+        private static float RandomStarRange(float Range)
         {
             return UnityEngine.Random.Range(Range * -1, Range);
         }
@@ -1478,7 +1477,7 @@ namespace NewHorizons.Components.ShipLog
             public void ResolveStellarRemnant()
             {
                 RefreshResolvedValues();
-                if (Star != null && StellarRemnantBuilder.HasRemnant(Star))
+                if (IsStar(this) && StellarRemnantBuilder.HasRemnant(Star))
                 {
                     var remnantType = Star.stellarRemnantType;
                     if (remnantType == StellarRemnantType.Default) remnantType = StellarRemnantBuilder.GetDefault(Star.size);

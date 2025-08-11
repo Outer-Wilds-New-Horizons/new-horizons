@@ -11,36 +11,36 @@ using UnityEngine.UI;
 
 namespace NewHorizons.Components.ShipLog
 {
-    public class ShipLogChildStar : MonoBehaviour
+    public class ShipLogStellarBody : MonoBehaviour
     {
-        private float _starTimeLoopEnd;
-        private GameObject _living;
+        private float _lifespan;
+        private GameObject _progenitor;
         private GameObject _remnant;
 
-        public void Initialize(float lifespan, GameObject living, GameObject remnant = null)
+        public void Initialize(float lifespan, GameObject progenitor, GameObject remnant = null)
         {
-            _starTimeLoopEnd = lifespan;
+            _lifespan = lifespan;
 
-            _living = living;
+            _progenitor = progenitor;
             _remnant = remnant;
 
-            // Hide remnant until star dies
+            // Hide remnant until progenitor dies
             if (_remnant != null)
                 _remnant.SetActive(false);
         }
 
         public void Update()
         {
-            if (_starTimeLoopEnd <= 0) return;
+            if (_lifespan <= 0) return;
 
-            if ((TimeLoop.GetSecondsElapsed() / 60) > _starTimeLoopEnd)
+            if ((TimeLoop.GetSecondsElapsed() / 60) > _lifespan)
             {
-                if (_living != null) _living.SetActive(false);
+                if (_progenitor != null) _progenitor.SetActive(false);
                 if (_remnant != null) _remnant.SetActive(true);
             }
         }
 
-        public float GetDistanceFrom(ShipLogChildStar other)
+        public float GetDistanceFrom(ShipLogStellarBody other)
         {
             return Vector3.Distance(transform.localPosition, other.transform.localPosition);
         }

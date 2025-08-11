@@ -200,7 +200,7 @@ namespace NewHorizons.Handlers
                     {
                         if (CanWarpToSystem(starSystem))
                         {
-                            ShipLogStarChartMode.AddStar(starSystem);
+                            ShipLogStarChartMode.AddStarSystem(starSystem);
                             flagActuallyAddedAStar = true;
                         }
                     }
@@ -224,7 +224,7 @@ namespace NewHorizons.Handlers
                 {
                     Main.Instance.EnableWarpDriveFunctionality();
                 }
-                ShipLogStarChartMode.AddStar(systemUnlocked);
+                ShipLogStarChartMode.AddStarSystem(systemUnlocked);
             }
         }
 
