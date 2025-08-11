@@ -12,7 +12,7 @@ namespace NewHorizons.Builder.Volumes
     {
         public static AudioVolume Make(GameObject planetGO, Sector sector, AudioVolumeInfo info, IModBehaviour mod)
         {
-            var go = GeneralPropBuilder.MakeNew("AudioVolume", planetGO, sector, info);
+            var go = GeneralPropBuilder.MakeNew("AudioVolume", planetGO, ref sector, info);
             go.layer = Layer.AdvancedEffectVolume;
 
             var audioSource = go.AddComponent<AudioSource>();
@@ -25,7 +25,7 @@ namespace NewHorizons.Builder.Volumes
             owAudioSource.SetTrack(info.track.ConvertToOW());
             AudioUtilities.SetAudioClip(owAudioSource, info.audio, mod);
 
-            var audioVolume = PriorityVolumeBuilder.MakeExisting<AudioVolume>(go, planetGO, sector, info);
+            var audioVolume = PriorityVolumeBuilder.MakeExisting<AudioVolume>(go, planetGO, ref sector, info);
 
             audioVolume._layer = info.layer;
             audioVolume.SetPriority(info.priority);

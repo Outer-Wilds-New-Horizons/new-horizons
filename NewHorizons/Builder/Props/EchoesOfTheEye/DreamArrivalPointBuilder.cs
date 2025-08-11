@@ -48,7 +48,7 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
 
             if (_prefab == null || sector == null) return null;
 
-            var arrivalPointObj = DetailBuilder.Make(planetGO, sector, mod, _prefab, new DetailInfo(info));
+            var arrivalPointObj = DetailBuilder.Make(planetGO, ref sector, mod, _prefab, new DetailInfo(info));
 
             StreamingHandler.SetUpStreaming(arrivalPointObj, sector);
 

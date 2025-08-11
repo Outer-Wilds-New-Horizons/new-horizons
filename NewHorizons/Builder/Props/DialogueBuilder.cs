@@ -246,7 +246,7 @@ namespace NewHorizons.Builder.Props
 
         private static RemoteDialogueTrigger MakeRemoteDialogueTrigger(GameObject planetGO, Sector sector, DialogueInfo info, CharacterDialogueTree dialogue)
         {
-            var conversationTrigger = GeneralPropBuilder.MakeNew("ConversationTrigger", planetGO, sector, info.remoteTrigger, defaultPosition: info.position, defaultParentPath: info.pathToAnimController);
+            var conversationTrigger = GeneralPropBuilder.MakeNew("ConversationTrigger", planetGO, ref sector, info.remoteTrigger, defaultPosition: info.position, defaultParentPath: info.pathToAnimController);
 
             var remoteDialogueTrigger = conversationTrigger.AddComponent<RemoteDialogueTrigger>();
             var sphereCollider = conversationTrigger.AddComponent<SphereCollider>();
@@ -277,7 +277,7 @@ namespace NewHorizons.Builder.Props
 
         private static CharacterDialogueTree MakeConversationZone(GameObject planetGO, Sector sector, DialogueInfo info, string xml, string dialogueName)
         {
-            var conversationZone = GeneralPropBuilder.MakeNew("ConversationZone", planetGO, sector, info, defaultParentPath: info.pathToAnimController);
+            var conversationZone = GeneralPropBuilder.MakeNew("ConversationZone", planetGO, ref sector, info, defaultParentPath: info.pathToAnimController);
 
             conversationZone.layer = Layer.Interactible;
 
@@ -345,7 +345,8 @@ namespace NewHorizons.Builder.Props
         {
             if (info.attentionPoint != null)
             {
-                var ptGo = GeneralPropBuilder.MakeNew("AttentionPoint", go, sector, info.attentionPoint, defaultParent: dialogue.transform);
+                var pointSector = sector;
+                var ptGo = GeneralPropBuilder.MakeNew("AttentionPoint", go, ref pointSector, info.attentionPoint, defaultParent: dialogue.transform);
                 dialogue._attentionPoint = ptGo.transform;
                 dialogue._attentionPointOffset = info.attentionPoint.offset ?? Vector3.zero;
                 ptGo.SetActive(true);
@@ -354,7 +355,8 @@ namespace NewHorizons.Builder.Props
             {
                 foreach (var pointInfo in info.swappedAttentionPoints)
                 {
-                    var ptGo = GeneralPropBuilder.MakeNew($"AttentionPoint_{pointInfo.dialogueNode}_{pointInfo.dialoguePage}", go, sector, pointInfo, defaultParent: dialogue.transform);
+                    var pointSector = sector;
+                    var ptGo = GeneralPropBuilder.MakeNew($"AttentionPoint_{pointInfo.dialogueNode}_{pointInfo.dialoguePage}", go, ref pointSector, pointInfo, defaultParent: dialogue.transform);
                     var swapper = ptGo.AddComponent<DialogueAttentionPointSwapper>();
                     swapper._dialogueTree = dialogue;
                     swapper._attentionPoint = ptGo.transform;

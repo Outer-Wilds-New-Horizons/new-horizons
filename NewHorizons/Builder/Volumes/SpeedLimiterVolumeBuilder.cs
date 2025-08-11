@@ -8,7 +8,7 @@ namespace NewHorizons.Builder.Volumes
     {
         public static SpeedLimiterVolume Make(GameObject planetGO, Sector sector, SpeedLimiterVolumeInfo info)
         {
-            var volume = VolumeBuilder.Make<SpeedLimiterVolume>(planetGO, sector, info);
+            var volume = VolumeBuilder.Make<SpeedLimiterVolume>(planetGO, ref sector, info);
 
             volume.maxSpeed = info.maxSpeed;
             volume.stoppingDistance = info.stoppingDistance;

@@ -18,7 +18,7 @@ namespace NewHorizons.Builder.Props
         {
             InitPrefab();
 
-            var geyserGO = GeneralPropBuilder.MakeFromPrefab(_geyserPrefab, "Geyser", planetGO, sector, info);
+            var geyserGO = GeneralPropBuilder.MakeFromPrefab(_geyserPrefab, "Geyser", planetGO, ref sector, info);
 
             geyserGO.transform.position += geyserGO.transform.up * info.offset;
 

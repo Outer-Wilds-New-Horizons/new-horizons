@@ -15,15 +15,15 @@ namespace NewHorizons.Builder.Volumes
             {
                 case FluidVolume.Type.PLASMA:
                 case FluidVolume.Type.WATER:
-                    var radialVolume = PriorityVolumeBuilder.Make<RadialFluidVolume>(planetGO, sector, info);
+                    var radialVolume = PriorityVolumeBuilder.Make<RadialFluidVolume>(planetGO, ref sector, info);
                     radialVolume._radius = info.radius;
                     volume = radialVolume;
                     break;
                 case FluidVolume.Type.CLOUD:
-                    volume = PriorityVolumeBuilder.Make<CloudLayerFluidVolume>(planetGO, sector, info);
+                    volume = PriorityVolumeBuilder.Make<CloudLayerFluidVolume>(planetGO, ref sector, info);
                     break;
                 default:
-                    var sphericalVolume = PriorityVolumeBuilder.Make<SphericalFluidVolume>(planetGO, sector, info);
+                    var sphericalVolume = PriorityVolumeBuilder.Make<SphericalFluidVolume>(planetGO, ref sector, info);
                     sphericalVolume.radius = info.radius;
                     volume = sphericalVolume;
                     break;

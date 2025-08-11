@@ -13,7 +13,7 @@ namespace NewHorizons.Builder.Volumes
     {
         public static HazardVolume Make(GameObject planetGO, Sector sector, OWRigidbody owrb, HazardVolumeInfo info, IModBehaviour mod)
         {
-            var go = GeneralPropBuilder.MakeNew("HazardVolume", planetGO, sector, info);
+            var go = GeneralPropBuilder.MakeNew("HazardVolume", planetGO, ref sector, info);
             
             var volume = MakeExisting(go, planetGO, sector, owrb, info);
 
@@ -27,15 +27,15 @@ namespace NewHorizons.Builder.Volumes
             HazardVolume hazardVolume = null;
             if (info.type == HazardVolumeInfo.HazardType.RIVERHEAT)
             {
-                hazardVolume = VolumeBuilder.MakeExisting<RiverHeatHazardVolume>(go, planetGO, sector, info);
+                hazardVolume = VolumeBuilder.MakeExisting<RiverHeatHazardVolume>(go, planetGO, ref sector, info);
             }
             else if (info.type == HazardVolumeInfo.HazardType.HEAT)
             {
-                hazardVolume = VolumeBuilder.MakeExisting<HeatHazardVolume>(go, planetGO, sector, info);
+                hazardVolume = VolumeBuilder.MakeExisting<HeatHazardVolume>(go, planetGO, ref sector, info);
             }
             else if (info.type == HazardVolumeInfo.HazardType.DARKMATTER)
             {
-                hazardVolume = VolumeBuilder.MakeExisting<DarkMatterVolume>(go, planetGO, sector, info);
+                hazardVolume = VolumeBuilder.MakeExisting<DarkMatterVolume>(go, planetGO, ref sector, info);
                 var visorFrostEffectVolume = go.AddComponent<VisorFrostEffectVolume>();
                 visorFrostEffectVolume._frostRate = 0.5f;
                 visorFrostEffectVolume._maxFrost = 0.91f;
@@ -63,7 +63,7 @@ namespace NewHorizons.Builder.Volumes
             }
             else if (info.type == HazardVolumeInfo.HazardType.ELECTRICITY)
             {
-                var electricityVolume = VolumeBuilder.MakeExisting<ElectricityVolume>(go, planetGO, sector, info);
+                var electricityVolume = VolumeBuilder.MakeExisting<ElectricityVolume>(go, planetGO, ref sector, info);
                 electricityVolume._shockAudioPool = new OWAudioSource[0];
                 hazardVolume = electricityVolume;
             }

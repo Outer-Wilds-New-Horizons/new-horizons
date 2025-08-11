@@ -12,7 +12,7 @@ namespace NewHorizons.Builder.ShipLog
     {
         public static void Make(GameObject go, Sector sector, RevealVolumeInfo info, IModBehaviour mod)
         {
-            var newRevealGO = GeneralPropBuilder.MakeNew("Reveal Volume (" + info.revealOn + ")", go, sector, info);
+            var newRevealGO = GeneralPropBuilder.MakeNew("Reveal Volume (" + info.revealOn + ")", go, ref sector, info);
             switch (info.revealOn)
             {
                 case RevealVolumeInfo.RevealVolumeType.Enter:

@@ -3,14 +3,28 @@ using NewHorizons.External.SerializableData;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OuterWilds;
 using NewHorizons.Utility.OWML;
+using System;
 using UnityEngine;
 
 namespace NewHorizons.Builder.Props
 {
     public static class GeneralPropBuilder
     {
+        #region obsolete
+        // Changed to ref sector
+        [Obsolete]
+        public static GameObject MakeFromExisting(GameObject go, GameObject planetGO, Sector sector, GeneralPointPropInfo info, MVector3 defaultPosition = null, string defaultParentPath = null, Transform defaultParent = null)
+            => MakeFromExisting(go, planetGO, ref sector, info, defaultPosition, defaultParentPath, defaultParent);
+        [Obsolete]
+        public static GameObject MakeNew(string defaultName, GameObject planetGO, Sector sector, GeneralPointPropInfo info, MVector3 defaultPosition = null, string defaultParentPath = null, Transform defaultParent = null)
+            => MakeNew(defaultName, planetGO, ref sector, info, defaultPosition, defaultParentPath, defaultParent);
+        [Obsolete]
+        public static GameObject MakeFromPrefab(GameObject prefab, string defaultName, GameObject planetGO, Sector sector, GeneralPointPropInfo info, MVector3 defaultPosition = null, string defaultParentPath = null, Transform defaultParent = null)
+            => MakeFromPrefab(prefab, defaultName, planetGO, ref sector, info, defaultPosition, defaultParentPath, defaultParent);
+        #endregion
+
         public static GameObject MakeFromExisting(GameObject go,
-            GameObject planetGO, Sector sector, GeneralPointPropInfo info,
+            GameObject planetGO, ref Sector sector, GeneralPointPropInfo info,
             MVector3 defaultPosition = null, string defaultParentPath = null, Transform defaultParent = null)
         {
             if (info == null) return go;
@@ -46,7 +60,6 @@ namespace NewHorizons.Builder.Props
                 if (newParent != null)
                 {
                     go.transform.parent = newParent;
-                    sector = newParent.GetComponentInParent<Sector>();
                 }
                 else
                 {
@@ -82,25 +95,54 @@ namespace NewHorizons.Builder.Props
                 var up = (go.transform.position - planetGO.transform.position).normalized;
                 go.transform.rotation = Quaternion.FromToRotation(Vector3.up, up) * rot;
             }
+
+            sector = GetPropSector(go, planetGO, sector, info);
+
             return go;
         }
 
         public static GameObject MakeNew(string defaultName,
-            GameObject planetGO, Sector sector, GeneralPointPropInfo info,
+            GameObject planetGO, ref Sector sector, GeneralPointPropInfo info,
             MVector3 defaultPosition = null, string defaultParentPath = null, Transform defaultParent = null)
         {
             var go = new GameObject(defaultName);
             go.SetActive(false);
-            return MakeFromExisting(go, planetGO, sector, info, defaultPosition, defaultParentPath, defaultParent);
+            return MakeFromExisting(go, planetGO, ref sector, info, defaultPosition, defaultParentPath, defaultParent);
         }
 
         public static GameObject MakeFromPrefab(GameObject prefab, string defaultName,
-            GameObject planetGO, Sector sector, GeneralPointPropInfo info,
+            GameObject planetGO, ref Sector sector, GeneralPointPropInfo info,
             MVector3 defaultPosition = null, string defaultParentPath = null, Transform defaultParent = null)
         {
             var go = prefab.InstantiateInactive();
             go.name = defaultName;
-            return MakeFromExisting(go, planetGO, sector, info, defaultPosition, defaultParentPath, defaultParent);
+            return MakeFromExisting(go, planetGO, ref sector, info, defaultPosition, defaultParentPath, defaultParent);
+        }
+
+        static Sector GetPropSector(GameObject go, GameObject planetGO, Sector sector, BasePropInfo info)
+        {
+            if (string.IsNullOrEmpty(info.sectorPath))
+            {
+                return sector;
+            }
+            else if (info.sectorPath == "auto")
+            {
+                return go.GetComponentInParent<Sector>();
+            }
+            else
+            {
+                var newSectorObj = planetGO.transform.Find(info.sectorPath);
+                if (newSectorObj != null)
+                {
+                    var newSector = newSectorObj.GetComponent<Sector>();
+                    if (newSector != null)
+                    {
+                        return newSector;
+                    }
+                }
+                NHLogger.LogError($"Cannot find sector at path: {planetGO.name}/{info.sectorPath}");
+                return sector;
+            }
         }
     }
 }

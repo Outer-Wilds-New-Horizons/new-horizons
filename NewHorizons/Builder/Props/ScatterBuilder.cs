@@ -76,9 +76,9 @@ namespace NewHorizons.Builder.Props
                 {
                     scale = propInfo.scale,
                     stretch = propInfo.stretch,
-					keepLoaded = propInfo.keepLoaded
+					keepLoaded = propInfo.keepLoaded,
                 };
-                var scatterPrefab = DetailBuilder.Make(go, sector, mod, prefab, detailInfo);
+                var scatterPrefab = DetailBuilder.Make(go, ref sector, mod, prefab, detailInfo);
 
                 for (int i = 0; i < propInfo.count; i++)
                 {
