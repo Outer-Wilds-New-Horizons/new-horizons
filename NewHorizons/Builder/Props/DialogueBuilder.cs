@@ -345,28 +345,36 @@ namespace NewHorizons.Builder.Props
         {
             if (info.attentionPoint != null)
             {
-                var pointSector = sector;
-                var ptGo = GeneralPropBuilder.MakeNew("AttentionPoint", go, ref pointSector, info.attentionPoint, defaultParent: dialogue.transform);
-                dialogue._attentionPoint = ptGo.transform;
-                dialogue._attentionPointOffset = info.attentionPoint.offset ?? Vector3.zero;
-                ptGo.SetActive(true);
+                MakeAttentionPoint(go, sector, dialogue, info.attentionPoint);
             }
             if (info.swappedAttentionPoints != null && info.swappedAttentionPoints.Length > 0)
             {
                 foreach (var pointInfo in info.swappedAttentionPoints)
                 {
-                    var pointSector = sector;
-                    var ptGo = GeneralPropBuilder.MakeNew($"AttentionPoint_{pointInfo.dialogueNode}_{pointInfo.dialoguePage}", go, ref pointSector, pointInfo, defaultParent: dialogue.transform);
-                    var swapper = ptGo.AddComponent<DialogueAttentionPointSwapper>();
-                    swapper._dialogueTree = dialogue;
-                    swapper._attentionPoint = ptGo.transform;
-                    swapper._attentionPointOffset = pointInfo.offset ?? Vector3.zero;
-                    swapper._nodeName = pointInfo.dialogueNode;
-                    swapper._dialoguePage = pointInfo.dialoguePage;
-                    swapper._lookEasing = pointInfo.lookEasing;
-                    ptGo.SetActive(true);
+                    MakeSwappedAttentionPoint(go, sector, dialogue, pointInfo);
                 }
             }
+        }
+
+        private static void MakeAttentionPoint(GameObject go, Sector sector, CharacterDialogueTree dialogue, AttentionPointInfo info)
+        {
+            var ptGo = GeneralPropBuilder.MakeNew("AttentionPoint", go, ref sector, info, defaultParent: dialogue.transform);
+            dialogue._attentionPoint = ptGo.transform;
+            dialogue._attentionPointOffset = info.offset ?? Vector3.zero;
+            ptGo.SetActive(true);
+        }
+
+        private static void MakeSwappedAttentionPoint(GameObject go, Sector sector, CharacterDialogueTree dialogue, SwappedAttentionPointInfo info)
+        {
+            var ptGo = GeneralPropBuilder.MakeNew($"AttentionPoint_{info.dialogueNode}_{info.dialoguePage}", go, ref sector, info, defaultParent: dialogue.transform);
+            var swapper = ptGo.AddComponent<DialogueAttentionPointSwapper>();
+            swapper._dialogueTree = dialogue;
+            swapper._attentionPoint = ptGo.transform;
+            swapper._attentionPointOffset = info.offset ?? Vector3.zero;
+            swapper._nodeName = info.dialogueNode;
+            swapper._dialoguePage = info.dialoguePage;
+            swapper._lookEasing = info.lookEasing;
+            ptGo.SetActive(true);
         }
 
         private static void MakePlayerTrackingZone(GameObject go, CharacterDialogueTree dialogue, DialogueInfo info)

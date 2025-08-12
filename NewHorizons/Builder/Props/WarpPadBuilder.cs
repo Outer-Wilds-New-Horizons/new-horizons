@@ -92,9 +92,9 @@ namespace NewHorizons.Builder.Props
 
         public static void Make(GameObject planetGO, Sector sector, IModBehaviour mod, NomaiWarpReceiverInfo info)
         {
+            var planetSector = sector;
             var detailInfo = new DetailInfo(info);
-            var receiverSector = sector;
-            var receiverObject = DetailBuilder.Make(planetGO, ref receiverSector, mod, info.detailed ? _detailedReceiverPrefab : _receiverPrefab, detailInfo);
+            var receiverObject = DetailBuilder.Make(planetGO, ref sector, mod, info.detailed ? _detailedReceiverPrefab : _receiverPrefab, detailInfo);
 
             NHLogger.Log($"Position is {detailInfo.position} was {info.position}");
 
@@ -127,7 +127,7 @@ namespace NewHorizons.Builder.Props
 
             if (info.computer != null)
             {
-                CreateComputer(planetGO, sector, mod, info.computer, receiver);
+                CreateComputer(planetGO, planetSector, mod, info.computer, receiver);
             }
         }
 
