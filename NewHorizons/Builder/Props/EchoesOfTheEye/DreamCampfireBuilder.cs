@@ -44,7 +44,7 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
 
             if (_prefab == null || sector == null) return null;
 
-            var campfireObj = DetailBuilder.Make(planetGO, sector, mod, _prefab, new DetailInfo(info));
+            var campfireObj = DetailBuilder.Make(planetGO, ref sector, mod, _prefab, new DetailInfo(info));
 
             var campfire = campfireObj.GetComponentInChildren<DreamCampfire>();
             campfire._dreamArrivalLocation = DreamHandler.GetDreamArrivalLocation(info.id);

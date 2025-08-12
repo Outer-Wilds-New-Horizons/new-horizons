@@ -18,7 +18,7 @@ namespace NewHorizons.Builder.Volumes
             info.shape ??= new();
             info.shape.useShape = false;
 
-            var volume = VolumeBuilder.Make<TVolume>(planetGO, sector, info);
+            var volume = VolumeBuilder.Make<TVolume>(planetGO, ref sector, info);
 
             var collider = volume.gameObject.GetComponent<Collider>();
             volume._collider = collider;

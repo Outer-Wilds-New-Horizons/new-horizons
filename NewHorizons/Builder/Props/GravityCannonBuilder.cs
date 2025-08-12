@@ -65,8 +65,10 @@ namespace NewHorizons.Builder.Props
 
             if (_interfacePrefab == null || planetGO == null || sector == null || _detailedPlatformPrefab == null || _platformPrefab == null) return null;
 
+            var planetSector = sector;
+
             var detailInfo = new DetailInfo(info.controls) { keepLoaded = true };
-            var gravityCannonObject = DetailBuilder.Make(planetGO, sector, mod, _interfacePrefab, detailInfo);
+            var gravityCannonObject = DetailBuilder.Make(planetGO, ref sector, mod, _interfacePrefab, detailInfo);
             gravityCannonObject.SetActive(false);
 
             var gravityCannonController = gravityCannonObject.GetComponent<GravityCannonController>();
@@ -77,14 +79,14 @@ namespace NewHorizons.Builder.Props
             gravityCannonController._retrieveShipLogFact = info.retrieveReveal ?? string.Empty;
             gravityCannonController._launchShipLogFact = info.launchReveal ?? string.Empty;
 
-            CreatePlatform(planetGO, sector, mod, gravityCannonController, info);
+            CreatePlatform(planetGO, planetSector, mod, gravityCannonController, info);
 
             if (info.computer != null)
             {
                 // Do it next update so that the shuttle has been made
                 Delay.FireOnNextUpdate(() =>
                 {
-                    gravityCannonController._nomaiComputer = CreateComputer(planetGO, sector, info.computer, id);
+                    gravityCannonController._nomaiComputer = CreateComputer(planetGO, planetSector, info.computer, id);
                 });
             }
             else
@@ -122,7 +124,7 @@ namespace NewHorizons.Builder.Props
 
         private static GameObject CreatePlatform(GameObject planetGO, Sector sector, IModBehaviour mod, GravityCannonController gravityCannonController, GravityCannonInfo platformInfo)
         {
-            var platform = DetailBuilder.Make(planetGO, sector, mod, platformInfo.detailed ? _detailedPlatformPrefab : _platformPrefab, new DetailInfo(platformInfo) { keepLoaded = true });
+            var platform = DetailBuilder.Make(planetGO, ref sector, mod, platformInfo.detailed ? _detailedPlatformPrefab : _platformPrefab, new DetailInfo(platformInfo) { keepLoaded = true });
 
             gravityCannonController._forceVolume = platform.FindChild("ForceVolume").GetComponent<DirectionalForceVolume>();
             gravityCannonController._platformTrigger = platform.FindChild("PlatformTrigger").GetComponent<OWTriggerVolume>();

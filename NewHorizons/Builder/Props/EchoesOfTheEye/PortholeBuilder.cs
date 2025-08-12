@@ -57,13 +57,15 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
 
             if (_mainPrefab == null || _simPrefab == null || sector == null) return null;
 
-            var portholeObj = DetailBuilder.Make(planetGO, sector, mod, _mainPrefab, new DetailInfo(info));
+            var portholeSector = sector;
+            var portholeObj = DetailBuilder.Make(planetGO, ref portholeSector, mod, _mainPrefab, new DetailInfo(info));
             portholeObj.name = "Prefab_Porthole";
 
-            var simObj = DetailBuilder.Make(planetGO, sector, mod, _simPrefab, new DetailInfo(info));
+            var simSector = sector;
+            var simObj = DetailBuilder.Make(planetGO, ref simSector, mod, _simPrefab, new DetailInfo(info));
             simObj.transform.parent = portholeObj.transform;
 
-            var parentObj = GeneralPropBuilder.MakeNew("Porthole", planetGO, sector, info);
+            var parentObj = GeneralPropBuilder.MakeNew("Porthole", planetGO, ref sector, info);
             parentObj.SetActive(true);
             portholeObj.transform.SetParent(parentObj.transform, true);
             portholeObj.transform.localPosition = new Vector3(0f, -4f, 8f);
@@ -81,10 +83,14 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
             // Reposition the peephole camera later, after all planets are built, in case the target point is on a different astro body.
             Delay.FireInNUpdates(() =>
             {
-                var cameraObj = GeneralPropBuilder.MakeFromExisting(peephole._peepholeCamera.gameObject, planetGO, sector, info.target);
+                var viewingSector = sector;
+                if (string.IsNullOrEmpty(info.target.sectorPath))
+                {
+                    info.target.sectorPath = "auto";
+                }
+                var cameraObj = GeneralPropBuilder.MakeFromExisting(peephole._peepholeCamera.gameObject, planetGO, ref viewingSector, info.target);
                 cameraObj.transform.Rotate(Vector3.up, 180f, Space.Self);
                 cameraObj.transform.position += cameraObj.transform.up;
-                var viewingSector = cameraObj.GetComponentInParent<Sector>();
                 peephole._viewingSector = viewingSector;
             }, 2);
 

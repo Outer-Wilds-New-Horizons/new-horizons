@@ -184,7 +184,8 @@ namespace NewHorizons.Handlers
                 {
                     foreach (var simplifiedDetail in config.Background.details)
                     {
-                        DetailBuilder.Make(background, background.GetComponentInParent<Sector>(), mod, new DetailInfo(simplifiedDetail));
+                        var sector = background.GetComponentInParent<Sector>();
+                        DetailBuilder.Make(background, ref sector, mod, new DetailInfo(simplifiedDetail));
                     }
                 }
 
@@ -203,7 +204,8 @@ namespace NewHorizons.Handlers
                 {
                     foreach (var simplifiedDetail in config.MenuPlanet.details)
                     {
-                        DetailBuilder.Make(menuPlanet, menuPlanet.GetComponentInParent<Sector>(), mod, new DetailInfo(simplifiedDetail));
+                        var sector = menuPlanet.GetComponentInParent<Sector>();
+                        DetailBuilder.Make(menuPlanet, ref sector, mod, new DetailInfo(simplifiedDetail));
                     }
                 }
 

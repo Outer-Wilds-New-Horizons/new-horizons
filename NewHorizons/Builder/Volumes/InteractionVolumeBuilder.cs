@@ -20,7 +20,7 @@ namespace NewHorizons.Builder.Volumes
                 info.shape.useShape = false;
             }
 
-            var receiver = VolumeBuilder.Make<InteractReceiver>(planetGO, sector, info);
+            var receiver = VolumeBuilder.Make<InteractReceiver>(planetGO, ref sector, info);
             receiver.gameObject.layer = Layer.Interactible;
 
             receiver._interactRange = info.range;

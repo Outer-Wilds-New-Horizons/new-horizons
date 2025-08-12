@@ -19,7 +19,7 @@ namespace NewHorizons.Builder.Props.Audio
 
         public static OWAudioSource Make(GameObject planetGO, Sector sector, BaseAudioInfo info, IModBehaviour mod)
         {
-            var signalGO = GeneralPropBuilder.MakeNew($"{(string.IsNullOrEmpty(info.rename) ? "AudioSource" : info.rename)}", planetGO, sector, info);
+            var signalGO = GeneralPropBuilder.MakeNew($"{(string.IsNullOrEmpty(info.rename) ? "AudioSource" : info.rename)}", planetGO, ref sector, info);
             signalGO.layer = Layer.AdvancedEffectVolume;
 
             var source = signalGO.AddComponent<AudioSource>();

@@ -68,7 +68,8 @@ public static class HeldItemHandler
 
         var tempParent = new GameObject();
         tempParent.transform.position = new Vector3(100000, 0, 0);
-        var newObject = DetailBuilder.Make(tempParent, tempParent.AddComponent<Sector>(), null, go, new DetailInfo() { keepLoaded = true });
+        var sector = tempParent.AddComponent<Sector>();
+        var newObject = DetailBuilder.Make(tempParent, ref sector, null, go, new DetailInfo() { keepLoaded = true });
         newObject.SetActive(false);
         newObject.transform.parent = null;
         newObject.name = go.name;

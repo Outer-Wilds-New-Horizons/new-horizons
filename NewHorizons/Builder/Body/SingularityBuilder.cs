@@ -145,7 +145,8 @@ namespace NewHorizons.Builder.Body
                         var sphereCollider = blackHoleVolume.GetComponent<SphereCollider>();
                         // Shouldn't ever be null but doesn't hurt ig
                         var loadRadius = sphereCollider == null ? 100f : sphereCollider.radius + 50f;
-                        var streamingVolume = VolumeBuilder.Make<StreamingWarpVolume>(blackHoleVolume.GetAttachedOWRigidbody().gameObject, blackHoleVolume.GetComponentInParent<Sector>(),
+                        var blackHoleSector = blackHoleVolume.GetComponentInParent<Sector>();
+                        var streamingVolume = VolumeBuilder.Make<StreamingWarpVolume>(blackHoleVolume.GetAttachedOWRigidbody().gameObject, ref blackHoleSector,
                             new External.Modules.Volumes.VolumeInfos.VolumeInfo() { radius = loadRadius });
                         streamingVolume.streamingGroup = streamingGroup;
                         streamingVolume.transform.parent = blackHoleVolume.transform;
@@ -174,7 +175,7 @@ namespace NewHorizons.Builder.Body
                 rename = rename,
             };
 
-            var singularity = GeneralPropBuilder.MakeNew(polarity ? "BlackHole" : "WhiteHole", planetGO, sector, info);
+            var singularity = GeneralPropBuilder.MakeNew(polarity ? "BlackHole" : "WhiteHole", planetGO, ref sector, info);
 
             var singularityRenderer = MakeSingularityGraphics(singularity, polarity, horizon, distort, renderQueue);
 

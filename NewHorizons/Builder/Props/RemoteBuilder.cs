@@ -204,7 +204,7 @@ namespace NewHorizons.Builder.Props
         {
             InitPrefabs();
             var mod = nhBody.Mod;
-            var whiteboard = DetailBuilder.Make(go, sector, mod, _whiteboardPrefab, new DetailInfo(info));
+            var whiteboard = DetailBuilder.Make(go, ref sector, mod, _whiteboardPrefab, new DetailInfo(info));
             whiteboard.SetActive(false);
 
             var decalMat = new Material(_decalMaterial);
@@ -245,7 +245,7 @@ namespace NewHorizons.Builder.Props
         public static void MakePlatform(GameObject go, Sector sector, NomaiRemoteCameraPlatform.ID id, Texture2D decal, RemotePlatformInfo info, IModBehaviour mod)
         {
             InitPrefabs();
-            var platform = DetailBuilder.Make(go, sector, mod, _remoteCameraPlatformPrefab, new DetailInfo(info));
+            var platform = DetailBuilder.Make(go, ref sector, mod, _remoteCameraPlatformPrefab, new DetailInfo(info));
             platform.SetActive(false);
 
             var decalMat = new Material(_decalMaterial);
@@ -272,7 +272,7 @@ namespace NewHorizons.Builder.Props
         public static void MakeStone(GameObject go, Sector sector, NomaiRemoteCameraPlatform.ID id, Texture2D decal, ProjectionStoneInfo info, IModBehaviour mod)
         {
             InitPrefabs();
-            var shareStone = GeneralPropBuilder.MakeFromPrefab(_shareStonePrefab, "ShareStone_" + id.ToString(), go, sector, info);
+            var shareStone = GeneralPropBuilder.MakeFromPrefab(_shareStonePrefab, "ShareStone_" + id.ToString(), go, ref sector, info);
 
             shareStone.GetComponent<SharedStone>()._connectedPlatform = id;
 

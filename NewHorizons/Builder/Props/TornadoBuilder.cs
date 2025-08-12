@@ -101,7 +101,7 @@ namespace NewHorizons.Builder.Props
         private static void MakeTornado(GameObject planetGO, Sector sector, TornadoInfo info, Vector3 position, bool downwards)
         {
             var prefab = downwards ? _downPrefab.InstantiateInactive() : _upPrefab.InstantiateInactive();
-            var tornadoGO = GeneralPropBuilder.MakeFromPrefab(prefab, downwards ? "Tornado_Down" : "Tornado_Up", planetGO, sector, info, defaultPosition: position);
+            var tornadoGO = GeneralPropBuilder.MakeFromPrefab(prefab, downwards ? "Tornado_Down" : "Tornado_Up", planetGO, ref sector, info, defaultPosition: position);
 
             // Add the sound thing before changing the scale
             var soundGO = _soundPrefab.InstantiateInactive();
