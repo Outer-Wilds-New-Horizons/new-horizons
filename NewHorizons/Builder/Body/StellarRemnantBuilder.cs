@@ -65,7 +65,7 @@ namespace NewHorizons.Builder.Body
         {
             if (progenitorSize > blackholeSize) return StellarRemnantType.BlackHole;
             else if (neutronStarSize < progenitorSize && progenitorSize <= blackholeSize) return StellarRemnantType.NeutronStar;
-            else if (progenitorSize < whiteDwarfSize) return StellarRemnantType.WhiteDwarf;
+            else if (whiteDwarfSize <= progenitorSize) return StellarRemnantType.WhiteDwarf;
             else return StellarRemnantType.None;
         }
 
