@@ -83,7 +83,7 @@ namespace NewHorizons
 
         public GameObject GetPlanet(string name)
         {
-            return Main.BodyDict.Values.SelectMany(x => x)?.ToList()?.FirstOrDefault(x => x.Config.name == name)?.Object;
+            return Main.BodyDict[Main.Instance.CurrentStarSystem].FirstOrDefault(x => x.Config.name == name)?.Object;
         }
 
         public string GetCurrentStarSystem() => Main.Instance.CurrentStarSystem;
