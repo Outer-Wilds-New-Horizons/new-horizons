@@ -24,3 +24,5 @@ To unlock ship logs after reading each text block, add a `<ShipLogConditions>` n
 In your planet config, you must define where the Nomai text is positioned. See [the translator text json schema](/schemas/body-schema/defs/translatortextinfo/) for more info.
 
 You can input a `seed` for a wall of text which will randomly generate the position of each arc. To test out different combinations, just keep incrementing the number and then hit "Reload Configs" from the pause menu with debug mode on. This seed ensures the same positioning each time the mod is played. Alternatively, you can use `arcInfo` to set the position and rotation of all text arcs, as well as determining their types (adult, teenager, child, or Stranger). The various age stages make the text look messier, while Stranger allows you to make a translatable version of the DLC text.
+
+If you decide to arrange text manually in your mod, the [Unity Explorer](https://outerwildsmods.com/mods/unityexplorer/) and [Nomai Text Printer](https://github.com/coderCleric/NomaiTextPrinter) mods can make that much more convenient.

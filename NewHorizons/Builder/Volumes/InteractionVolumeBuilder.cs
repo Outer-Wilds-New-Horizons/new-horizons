@@ -15,10 +15,14 @@ namespace NewHorizons.Builder.Volumes
         public static InteractReceiver Make(GameObject planetGO, Sector sector, InteractionVolumeInfo info, IModBehaviour mod)
         {
             // Interaction volumes must use colliders because the first-person interaction system uses raycasting
-            if (info.shape != null)
+            if (info.shape != null && info.shape?.useShape == false)
             {
-                info.shape.useShape = false;
+                NHLogger.LogError($"Interaction volumes only support colliders. Affects planet [{planetGO.name}]. Set useShape to false.");
             }
+
+            // If info.shape was null, it will still default to using a sphere with info.radius, just make sure it does so with a collider
+            info.shape ??= new();
+            info.shape.useShape = false;
 
             var receiver = VolumeBuilder.Make<InteractReceiver>(planetGO, sector, info);
             receiver.gameObject.layer = Layer.Interactible;
