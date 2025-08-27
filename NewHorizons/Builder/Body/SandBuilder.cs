@@ -40,10 +40,10 @@ namespace NewHorizons.Builder.Body
 
             sandSphere.AddComponent<SphereShape>().radius = 1;
             sandSphere.AddComponent<OWTriggerVolume>();
-            var sandMaterial = new Material(_hgtSandEffectMaterial);
+            var sandEffectMaterial = new Material(_hgtSandEffectMaterial);
             var sER = sandSphere.AddComponent<EffectRuleset>();
             sER._type = EffectRuleset.BubbleType.None;
-            sER._sandMaterial = sandMaterial;
+            sER._sandMaterial = sandEffectMaterial;
 
             if (module.tint != null)
             {
@@ -62,7 +62,7 @@ namespace NewHorizons.Builder.Body
 
                 var baseColor = module.tint.ToColor();
                 var effectColor = new Color(baseColor.r * 0.184f, baseColor.g * 0.184f, baseColor.b * 0.184f, baseColor.a); // base game does .184 darker
-                sandMaterial.color = effectColor;
+                sandEffectMaterial.color = effectColor;
             }
 
             var collider = Object.Instantiate(_sandCollider, sandGO.transform);
