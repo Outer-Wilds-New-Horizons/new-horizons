@@ -61,7 +61,7 @@ namespace NewHorizons.Builder.Body
                 sandMR.sharedMaterials[1].color = module.tint.ToColor();
 
                 var baseColor = module.tint.ToColor();
-                var effectColor = new Color(baseColor.r * 0.184f, baseColor.g * 0.184f, baseColor.b * 0.184f, baseColor.a);
+                var effectColor = new Color(baseColor.r * 0.184f, baseColor.g * 0.184f, baseColor.b * 0.184f, baseColor.a); // base game does .184 darker
                 sandMaterial.color = effectColor;
             }
 
