@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using static NewHorizons.Utility.Files.AssetBundleUtilities;
 
 namespace NewHorizons.Components.ShipLog
 {
@@ -32,6 +33,11 @@ namespace NewHorizons.Components.ShipLog
         private ShipLogEntryCard _target = null;
         private NotificationData _warpNotificationData = null;
 
+        private float _volumeScale = 0.45f;
+        private AudioClip _onOpenClip;
+        private AudioClip _onSelectClip;
+        private AudioClip _onDeselectClip;
+
         private int _nextCardIndex;
 
         private HashSet<string> _systemCards = new();
@@ -47,6 +53,7 @@ namespace NewHorizons.Components.ShipLog
         {
             root = transform.Find("ScaleRoot/PanRoot");
             _oneShotSource = oneShotSource;
+            LoadAssets();
 
             _centerPromptList = centerPromptList;
 
@@ -69,6 +76,13 @@ namespace NewHorizons.Components.ShipLog
                 AddSystemCard("EyeOfTheUniverse");
             }
             */
+        }
+
+        private void LoadAssets()
+        {
+            _onOpenClip = NHPrivateAssetBundle.LoadAsset<AudioClip>("Assets/StarChart/Audio/open star map.ogg");
+            _onSelectClip = NHPrivateAssetBundle.LoadAsset<AudioClip>("Assets/StarChart/Audio/select star.ogg");
+            _onDeselectClip = NHPrivateAssetBundle.LoadAsset<AudioClip>("Assets/StarChart/Audio/deselect star.ogg");
         }
 
         public void AddStarSystem(string uniqueID)
@@ -147,7 +161,7 @@ namespace NewHorizons.Components.ShipLog
         {
             gameObject.SetActive(true);
 
-            _oneShotSource.PlayOneShot(AudioType.ShipLogEnterMapMode);
+            _oneShotSource.PlayOneShot(_onOpenClip, _volumeScale);
             Locator.GetPromptManager().AddScreenPrompt(_targetSystemPrompt, _centerPromptList, TextAnchor.MiddleCenter, -1, true);
         }
 
@@ -222,7 +236,7 @@ namespace NewHorizons.Components.ShipLog
             {
                 var shipLogEntryCard = _starSystemCards[_cardIndex].GetComponent<ShipLogEntryCard>();
 
-                if (_target == shipLogEntryCard) RemoveWarpTarget();
+                if (_target == shipLogEntryCard) RemoveWarpTarget(true);
                 else SetWarpTarget(shipLogEntryCard);
             }
         }
@@ -263,7 +277,7 @@ namespace NewHorizons.Components.ShipLog
         private void SetWarpTarget(ShipLogEntryCard shipLogEntryCard)
         {
             RemoveWarpTarget(false);
-            _oneShotSource.PlayOneShot(AudioType.ShipLogUnmarkLocation, 1f);
+            _oneShotSource.PlayOneShot(_onSelectClip, _volumeScale);
             _target = shipLogEntryCard;
             _target.SetMarkedOnHUD(true);
             Locator._rfTracker.UntargetReferenceFrame();
@@ -283,7 +297,7 @@ namespace NewHorizons.Components.ShipLog
         {
             if (_warpNotificationData != null) NotificationManager.SharedInstance.UnpinNotification(_warpNotificationData);
             if (_target == null) return;
-            if (playSound) _oneShotSource.PlayOneShot(AudioType.ShipLogMarkLocation, 1f);
+            if (playSound) _oneShotSource.PlayOneShot(_onDeselectClip, _volumeScale);
             _target.SetMarkedOnHUD(false);
             _target = null;
         }
