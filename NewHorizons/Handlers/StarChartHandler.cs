@@ -1,17 +1,20 @@
-using Epic.OnlineServices;
 using NewHorizons.Components.ShipLog;
 using NewHorizons.External;
 using NewHorizons.OtherMods.CustomShipLogModes;
 using NewHorizons.Utility;
+using NewHorizons.Utility.Files;
 using NewHorizons.Utility.OWML;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 namespace NewHorizons.Handlers
 {
     public static class StarChartHandler
     {
+        public static IShipLogStarChartMode CurrentMode => Main.UseLegacyStarChart ? ShipLogLegacyStarChartMode : ShipLogStarChartMode;
         public static ShipLogStarChartMode ShipLogStarChartMode;
+        public static ShipLogLegacyStarChartMode ShipLogLegacyStarChartMode;
 
         private static Dictionary<string, string> _starSystemToFactID;
         private static Dictionary<string, string> _factIDToStarSystem;
@@ -37,9 +40,8 @@ namespace NewHorizons.Handlers
                 starChartLog.transform.localPosition = Vector3.zero;
                 starChartLog.transform.localRotation = Quaternion.Euler(0, 0, 0);
 
-                ShipLogStarChartMode = starChartLog.AddComponent<ShipLogStarChartMode>();
-
-                Object.Instantiate(reticleImage, starChartLog.transform);
+                var starChartReticle = Object.Instantiate(reticleImage, starChartLog.transform);
+                starChartReticle.name = "ReticleImage";
 
                 var scaleRoot = new GameObject("ScaleRoot");
                 scaleRoot.transform.parent = starChartLog.transform;
@@ -52,6 +54,12 @@ namespace NewHorizons.Handlers
                 panRoot.transform.localScale = Vector3.one;
                 panRoot.transform.localPosition = Vector3.zero;
                 panRoot.transform.localRotation = Quaternion.Euler(0, 0, 0);
+
+                var starChartLogLegacy = Object.Instantiate(starChartLog, shipLogRoot.transform);
+                starChartLogLegacy.name = "LegacyStarChartMode";
+
+                ShipLogStarChartMode = starChartLog.AddComponent<ShipLogStarChartMode>();
+                ShipLogLegacyStarChartMode = starChartLogLegacy.AddComponent<ShipLogLegacyStarChartMode>();
 
                 CustomShipLogModesHandler.AddInterstellarMode();
             }
@@ -201,6 +209,7 @@ namespace NewHorizons.Handlers
                         if (CanWarpToSystem(starSystem))
                         {
                             ShipLogStarChartMode.AddStarSystem(starSystem);
+                            ShipLogLegacyStarChartMode.AddStarSystem(starSystem);
                             flagActuallyAddedAStar = true;
                         }
                     }
@@ -225,6 +234,7 @@ namespace NewHorizons.Handlers
                     Main.Instance.EnableWarpDriveFunctionality();
                 }
                 ShipLogStarChartMode.AddStarSystem(systemUnlocked);
+                ShipLogLegacyStarChartMode.AddStarSystem(systemUnlocked);
             }
         }
 
@@ -235,6 +245,40 @@ namespace NewHorizons.Handlers
             _factIDToStarSystem.Add(factID, system);
         }
 
-        public static bool IsWarpDriveLockedOn() => StarChartHandler.ShipLogStarChartMode.GetTargetStarSystem() != null;
+        public static bool IsWarpDriveLockedOn() => StarChartHandler.CurrentMode.GetTargetStarSystem() != null;
+
+        public static Texture GetSystemCardTexture(string uniqueID)
+        {
+            Texture texture = null;
+            try
+            {
+                if (uniqueID.Equals("SolarSystem"))
+                {
+                    texture = ImageUtilities.GetTexture(Main.Instance, "Assets/hearthian system.png");
+                }
+                else if (uniqueID.Equals("EyeOfTheUniverse"))
+                {
+                    texture = ImageUtilities.GetTexture(Main.Instance, "Assets/eye symbol.png");
+                }
+                else
+                {
+                    var mod = Main.SystemDict[uniqueID].Mod;
+
+                    var path = Path.Combine("systems", uniqueID + ".png");
+
+                    // Else check the old location
+                    if (!File.Exists(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, path)))
+                    {
+                        path = Path.Combine("planets", uniqueID + ".png");
+                    }
+
+                    NHLogger.LogVerbose($"StarChartHandler - Trying to load {path}");
+                    texture = ImageUtilities.GetTexture(mod, path);
+                }
+            }
+            catch (System.Exception) { }
+
+            return texture;
+        }
     }
 }

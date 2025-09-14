@@ -21,7 +21,7 @@ using static NewHorizons.Utility.Files.AssetBundleUtilities;
 
 namespace NewHorizons.Components.ShipLog
 {
-    public class ShipLogStarChartMode : ShipLogMode
+    public class ShipLogStarChartMode : ShipLogMode, IShipLogStarChartMode
     {
         private OWAudioSource _oneShotSource;
         private Font _fontToUse;
@@ -113,33 +113,7 @@ namespace NewHorizons.Components.ShipLog
         {
             _card.transform.localScale = new Vector3(1, 0, 1);
 
-            Texture texture = null;
-            try
-            {
-                if (uniqueID.Equals("SolarSystem"))
-                {
-                    texture = ImageUtilities.GetTexture(Main.Instance, "Assets/hearthian system.png");
-                }
-                else if (uniqueID.Equals("EyeOfTheUniverse"))
-                {
-                    texture = ImageUtilities.GetTexture(Main.Instance, "Assets/eye symbol.png");
-                }
-                else
-                {
-                    IModBehaviour mod = Main.SystemDict[uniqueID].Mod;
-
-                    var path = Path.Combine("systems", uniqueID + ".png");
-
-                    // Else check the old location
-                    if (!File.Exists(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, path)))
-                    {
-                        path = Path.Combine("planets", uniqueID + ".png");
-                    }
-
-                    texture = ImageUtilities.GetTexture(mod, path);
-                }
-            }
-            catch (Exception) { }
+            Texture texture = StarChartHandler.GetSystemCardTexture(uniqueID);
 
             if (texture != null)
             {
@@ -193,9 +167,11 @@ namespace NewHorizons.Components.ShipLog
 
             RawImage highlightCursorImage = AddVisualIndicator();
             highlightCursorImage.texture = _cursorTexture;
+            highlightCursorImage.gameObject.name = "HighlightCursor";
             highlightCursor = highlightCursorImage.gameObject.GetAddComponent<RectTransform>();
 
             RawImage visualWarpLineImage = AddVisualIndicator();
+            visualWarpLineImage.gameObject.name = "VisualWarpLine";
             visualWarpLine = visualWarpLineImage.gameObject.GetAddComponent<RectTransform>();
             visualWarpLine.transform.SetAsFirstSibling();
 
@@ -512,9 +488,9 @@ namespace NewHorizons.Components.ShipLog
             return stellarBody;
         }
 
-        internal void AddStarSystem(string customName)
+        public void AddStarSystem(string uniqueID)
         {
-            AddStarSystem(customName, Main.Instance.CurrentStarSystem == customName);
+            AddStarSystem(uniqueID, Main.Instance.CurrentStarSystem == uniqueID);
         }
 
         private static Vector2 FlattenTo2D(Vector3 pos3D)

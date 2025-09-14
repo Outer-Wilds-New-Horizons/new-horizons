@@ -14,7 +14,11 @@ public static class CustomShipLogModesHandler
     public static void AddInterstellarMode()
     {
         API.AddMode(StarChartHandler.ShipLogStarChartMode, 
-            () => Main.HasWarpDriveFunctionality, 
+            () => Main.HasWarpDriveFunctionality && !Main.UseLegacyStarChart, 
+            () => TranslationHandler.GetTranslation("INTERSTELLAR_MODE", TranslationHandler.TextType.UI));
+
+        API.AddMode(StarChartHandler.ShipLogLegacyStarChartMode,
+            () => Main.HasWarpDriveFunctionality && Main.UseLegacyStarChart,
             () => TranslationHandler.GetTranslation("INTERSTELLAR_MODE", TranslationHandler.TextType.UI));
     }
 }

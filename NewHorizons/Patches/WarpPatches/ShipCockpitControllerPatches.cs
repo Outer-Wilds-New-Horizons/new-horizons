@@ -16,10 +16,10 @@ namespace NewHorizons.Patches.WarpPatches
         {
             if (!Main.HasWarpDriveFunctionality) return true;
 
-            StarChartHandler.ShipLogStarChartMode.UpdateWarpPromptVisibility();
+            StarChartHandler.CurrentMode.UpdateWarpPromptVisibility();
             if (__instance._playerAtFlightConsole && OWInput.IsNewlyPressed(InputLibrary.autopilot, InputMode.ShipCockpit))
             {
-                var targetSystem = StarChartHandler.ShipLogStarChartMode.GetTargetStarSystem();
+                var targetSystem = StarChartHandler.CurrentMode.GetTargetStarSystem();
                 if (targetSystem != null)
                 {
                     Main.Instance.ChangeCurrentStarSystem(targetSystem, true);

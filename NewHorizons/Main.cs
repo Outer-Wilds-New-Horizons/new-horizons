@@ -51,6 +51,7 @@ namespace NewHorizons
         public static bool VisualizeBrambleVolumeNames { get; private set; }
         public static bool VerboseLogs { get; private set; }
         public static bool SequentialPreCaching { get; private set; }
+        public static bool UseLegacyStarChart { get; private set; }
         public static bool CustomTitleScreen { get; private set; }
         public static string DefaultSystemOverride { get; private set; }
         private static bool _wasConfigured = false;
@@ -144,6 +145,7 @@ namespace NewHorizons
             VisualizeBrambleVolumeNames = config.GetSettingsValue<bool>(nameof(VisualizeBrambleVolumeNames));
             VerboseLogs = config.GetSettingsValue<bool>(nameof(VerboseLogs));
             SequentialPreCaching = config.GetSettingsValue<bool>(nameof(SequentialPreCaching));
+            UseLegacyStarChart = config.GetSettingsValue<bool>(nameof(UseLegacyStarChart));
 
             if (currentScene == "SolarSystem")
             {
