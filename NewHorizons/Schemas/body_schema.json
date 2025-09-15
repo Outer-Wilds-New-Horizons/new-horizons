@@ -1846,7 +1846,7 @@
       "properties": {
         "curve": {
           "type": "array",
-          "description": "Scale this object over time. Time value is in minutes.",
+          "description": "Scale this object over time. Time is in minutes. Value is a multiplier of the size of the object.",
           "items": {
             "$ref": "#/definitions/TimeValuePair"
           }
@@ -2035,7 +2035,7 @@
       "properties": {
         "curve": {
           "type": "array",
-          "description": "Scale this object over time. Time value is in minutes.",
+          "description": "Scale this object over time. Time is in minutes. Value is a multiplier of the size of the object.",
           "items": {
             "$ref": "#/definitions/TimeValuePair"
           }
@@ -4808,7 +4808,7 @@
       "properties": {
         "curve": {
           "type": "array",
-          "description": "Scale this object over time. Time value is in minutes.",
+          "description": "Scale this object over time. Time is in minutes. Value is a multiplier of the size of the object.",
           "items": {
             "$ref": "#/definitions/TimeValuePair"
           }
@@ -5089,7 +5089,7 @@
       "properties": {
         "curve": {
           "type": "array",
-          "description": "Scale this object over time. Time value is in minutes.",
+          "description": "Scale this object over time. Time is in minutes. Value is a multiplier of the size of the object.",
           "items": {
             "$ref": "#/definitions/TimeValuePair"
           }
@@ -5255,7 +5255,7 @@
       "properties": {
         "curve": {
           "type": "array",
-          "description": "Scale this object over time. Time value is in minutes.",
+          "description": "Scale this object over time. Time is in minutes. Value is a multiplier of the size of the object.",
           "items": {
             "$ref": "#/definitions/TimeValuePair"
           }
@@ -7830,7 +7830,7 @@
       "properties": {
         "curve": {
           "type": "array",
-          "description": "Scale this object over time. Time value is in minutes.",
+          "description": "Scale this object over time. Time is in minutes. Value is a multiplier of the size of the object.",
           "items": {
             "$ref": "#/definitions/TimeValuePair"
           }

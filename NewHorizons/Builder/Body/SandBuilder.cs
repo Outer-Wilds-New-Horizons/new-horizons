@@ -10,6 +10,7 @@ namespace NewHorizons.Builder.Body
         private static GameObject _sandCollider;
         private static GameObject _sandOcclusion;
         private static GameObject _sandProxyShadowCaster;
+        private static Material _hgtSandEffectMaterial;
 
         private static bool _isInit;
 
@@ -23,6 +24,7 @@ namespace NewHorizons.Builder.Body
             if (_sandCollider == null) _sandCollider = SearchUtilities.Find("TowerTwin_Body/SandSphere_Draining/Collider").InstantiateInactive().Rename("Prefab_TT_SandCollider").DontDestroyOnLoad();
             if (_sandOcclusion == null) _sandOcclusion = SearchUtilities.Find("TowerTwin_Body/SandSphere_Draining/OcclusionSphere").InstantiateInactive().Rename("Prefab_TT_SandOcclusion").DontDestroyOnLoad();
             if (_sandProxyShadowCaster == null) _sandProxyShadowCaster = SearchUtilities.Find("TowerTwin_Body/SandSphere_Draining/ProxyShadowCaster").InstantiateInactive().Rename("Prefab_TT_SandProxyShadowCaster").DontDestroyOnLoad();
+            if (_hgtSandEffectMaterial == null) _hgtSandEffectMaterial = new Material(SearchUtilities.Find("FocalBody/Sector_HGT").GetComponent<EffectRuleset>()._sandMaterial).DontDestroyOnLoad();
         }
 
         public static void Make(GameObject planetGO, Sector sector, OWRigidbody rb, SandModule module)
@@ -35,6 +37,14 @@ namespace NewHorizons.Builder.Body
             var sandSphere = Object.Instantiate(_sandSphere, sandGO.transform);
             sandSphere.name = "Sphere";
             sandSphere.SetActive(true);
+
+            sandSphere.AddComponent<SphereShape>().radius = 1;
+            sandSphere.AddComponent<OWTriggerVolume>();
+            var sandEffectMaterial = new Material(_hgtSandEffectMaterial);
+            var sER = sandSphere.AddComponent<EffectRuleset>();
+            sER._type = EffectRuleset.BubbleType.None;
+            sER._sandMaterial = sandEffectMaterial;
+
             if (module.tint != null)
             {
                 var oldMR = sandSphere.GetComponent<TessellatedSphereRenderer>();
@@ -49,6 +59,10 @@ namespace NewHorizons.Builder.Body
                 Object.Destroy(oldMR);
                 sandMR.sharedMaterials[0].color = module.tint.ToColor();
                 sandMR.sharedMaterials[1].color = module.tint.ToColor();
+
+                var baseColor = module.tint.ToColor();
+                var effectColor = new Color(baseColor.r * 0.184f, baseColor.g * 0.184f, baseColor.b * 0.184f, baseColor.a); // base game does .184 darker
+                sandEffectMaterial.color = effectColor;
             }
 
             var collider = Object.Instantiate(_sandCollider, sandGO.transform);
