@@ -85,6 +85,10 @@
       "description": "Configure warping to this system with the vessel",
       "$ref": "#/definitions/VesselModule"
     },
+    "StarChart": {
+      "description": "Configure how this system will appear in the Interstellar Mode in the ship log.",
+      "$ref": "#/definitions/StarChartModule"
+    },
     "entryPositions": {
       "type": "array",
       "description": "Manually layout ship log entries in detective mode",
@@ -378,17 +382,29 @@
         }
       }
     },
-    "EntryPositionInfo": {
+    "StarChartModule": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "The name of the entry to apply the position to."
-        },
         "position": {
-          "description": "Position of the entry",
+          "description": "The position of the system on the star chart.\nThis applies regardless of any other settings.",
           "$ref": "#/definitions/MVector2"
+        },
+        "color": {
+          "description": "The color of the star as it appears on the star chart.\nIf specified, it will override any custom generation we do.",
+          "$ref": "#/definitions/MColor"
+        },
+        "starTexturePath": {
+          "type": "string",
+          "description": "Filepath to a texture that will replace the default texture used to display this star in the star map.\nIf you use this, it's probably best to leave the color field blank, unless you have a white texture that you'd like to tint a different color.\nIf specified, it will override any custom generation we do."
+        },
+        "disappearanceTime": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "description": "Time in the loop (in minutes) that this system will disappear.\nIf not specified, the time is calculated automatically based on the stars and singularities in the system.\nIf specified, this value takes priority over automatic calculations.\nIf color or starTexturePath is specified but this is not, it will default to 0 meaning players can warp to your system at any point.\nA 22 minutes and 40 seconds (22.667) disappearance time will make the system unavailable to warp to at the exact moment the vanilla loop ends.",
+          "format": "float"
         }
       }
     },
@@ -403,24 +419,6 @@
         "y": {
           "type": "number",
           "format": "float"
-        }
-      }
-    },
-    "CuriosityColorInfo": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "color": {
-          "description": "The color to apply to entries with this curiosity.",
-          "$ref": "#/definitions/MColor"
-        },
-        "highlightColor": {
-          "description": "The color to apply to highlighted entries with this curiosity.",
-          "$ref": "#/definitions/MColor"
-        },
-        "id": {
-          "type": "string",
-          "description": "The ID of the curiosity to apply the color to."
         }
       }
     },
@@ -456,6 +454,38 @@
           "default": 255,
           "maximum": 255.0,
           "minimum": 0.0
+        }
+      }
+    },
+    "EntryPositionInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "The name of the entry to apply the position to."
+        },
+        "position": {
+          "description": "Position of the entry",
+          "$ref": "#/definitions/MVector2"
+        }
+      }
+    },
+    "CuriosityColorInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "color": {
+          "description": "The color to apply to entries with this curiosity.",
+          "$ref": "#/definitions/MColor"
+        },
+        "highlightColor": {
+          "description": "The color to apply to highlighted entries with this curiosity.",
+          "$ref": "#/definitions/MColor"
+        },
+        "id": {
+          "type": "string",
+          "description": "The ID of the curiosity to apply the color to."
         }
       }
     },

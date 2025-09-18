@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 2772415118
+CRC: 1673475312
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: a1c50cfbd83ea025ed5ff8a920ceb135
+    Hash: e56974a170540e9920546af86c46e4e9
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 8a96558a3d9470a68866aeaaa30830cf
+    Hash: d4339e878b9f11da7579ca6f11bd4ebb
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -34,6 +34,8 @@ ClassTypes:
 - Class: 65
   Script: {instanceID: 0}
 - Class: 82
+  Script: {instanceID: 0}
+- Class: 83
   Script: {instanceID: 0}
 - Class: 89
   Script: {instanceID: 0}
@@ -188,18 +190,26 @@ Assets:
 - Assets/SlideReels/Prefab_DW_Reel_7.prefab
 - Assets/SlideReels/Prefab_IP_Reel_Rusted_6.prefab
 - Assets/SlideReels/Prefab_IP_Reel_Rusted_8.prefab
+- Assets/StarChart/star.png
 - Assets/SlideReels/Prefab_DW_Reel_6.prefab
 - Assets/SlideReels/Prefab_IP_Reel_8.prefab
+- Assets/StarChart/Audio/select star.ogg
+- Assets/StarChart/WarpDrive.prefab
+- Assets/StarChart/Audio/open star map.ogg
+- Assets/Mesh/SandColumn_Exterior_Inversed.blend
 - Assets/SlideReels/Prefab_IP_Reel_6.prefab
 - Assets/SlideReels/Prefab_IP_Reel_Destroyed_7.prefab
 - Assets/SlideReels/Prefab_IP_Reel_Destroyed_Whole.prefab
 - Assets/SlideReels/Prefab_IP_Reel_Destroyed_8.prefab
+- Assets/StarChart/Audio/deselect star.ogg
 - Assets/SlideReels/Prefab_IP_Reel_Whole.prefab
 - Assets/SlideReels/Prefab_IP_Reel_Rusted_Whole.prefab
 - Assets/BrambleCollision.prefab
 - Assets/SlideReels/Prefab_DW_Reel_8.prefab
 - Assets/Vessel_Body.prefab
+- Assets/StarChart/Materials/WarpCore/Props_NOM_WarpCore_mat.mat
 - Assets/AmbientLight_QM.png
 - Assets/QuantumLightning/Prefab_EYE_QuantumLightningObject.prefab
+- Assets/StarChart/arrow.png
 - Assets/SlideReels/Prefab_IP_Reel_7.prefab
 Dependencies: []

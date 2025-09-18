@@ -134,7 +134,7 @@ namespace NewHorizons.Builder.Props
 #pragma warning restore 612, 618
             MakeGeneralProps(go, config.Props.translatorText, (nomaiTextInfo) => TranslatorTextBuilder.Make(go, sector, nomaiTextInfo, nhBody), (nomaiTextInfo) => nomaiTextInfo.xmlFile);
             if (Main.HasDLC) MakeGeneralProps(go, config.Props.slideShows, (slideReelInfo) => ProjectionBuilder.Make(go, sector, slideReelInfo, mod), (slideReelInfo) => slideReelInfo.type.ToString().ToCamelCase());
-            MakeGeneralProps(go, config.Props.singularities, (singularity) => SingularityBuilder.Make(go, sector, go.GetComponent<OWRigidbody>(), config, singularity), (singularity) => (string.IsNullOrEmpty(singularity.uniqueID) ? config.name : singularity.uniqueID));
+            MakeGeneralProps(go, config.Props.singularities, (singularity) => SingularityBuilder.Make(go, sector, config, singularity), (singularity) => (string.IsNullOrEmpty(singularity.uniqueID) ? config.name : singularity.uniqueID));
             MakeGeneralProps(go, config.Props.signals, (signal) => SignalBuilder.Make(go, sector, signal, mod), (signal) => signal.name);
             MakeGeneralProps(go, config.Props.warpReceivers, (warpReceiver) => WarpPadBuilder.Make(go, sector, mod, warpReceiver), (warpReceiver) => warpReceiver.frequency);
             MakeGeneralProps(go, config.Props.warpTransmitters, (warpTransmitter) => WarpPadBuilder.Make(go, sector, mod, warpTransmitter), (warpTransmitter) => warpTransmitter.frequency);

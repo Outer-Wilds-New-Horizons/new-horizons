@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/outer-wilds-new-horizons/new-horizons/main/NewHorizons/Schemas/translation_schema.json",
   "DialogueDictionary": {
-    "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_1": "Your ship is now equiped with a warp drive!",
+    "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_1": "Your ship is now equipped with a warp drive!",
     "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_2": "You can use the new \"Interstellar Mode\" page in the ship log to lock-on your autopilot to another star system.",
     "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_3": "Then just buckle up and engage the autopilot to warp there!"
   },
@@ -24,7 +24,8 @@
     "DEBUG_UNDO": "Undo",
     "DEBUG_REDO": "Redo",
     "Vessel": "Vessel",
-    "DLC_REQUIRED": "WARNING\n\nYou have addons (like {0}) installed which require the DLC but it is not enabled.\n\nYour mods may not function as intended."
+    "DLC_REQUIRED": "WARNING\n\nYou have addons (like {0}) installed which require the DLC but it is not enabled.\n\nYour mods may not function as intended.",
+    "The Outer Wilds": "The Outer Wilds"
   },
   "OtherDictionary": {
     "NOMAI_SHUTTLE_COMPUTER": "The <![CDATA[<color=orange>shuttle</color>]]> is currently resting at <![CDATA[<color=lightblue>{0}</color>]]>."
