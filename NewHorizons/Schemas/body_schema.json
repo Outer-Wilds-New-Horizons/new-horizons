@@ -802,7 +802,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -1046,7 +1050,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -1215,7 +1223,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -1313,7 +1325,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -1376,7 +1392,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -1450,7 +1470,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -1480,7 +1504,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -1517,7 +1545,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -1674,7 +1706,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -1790,7 +1826,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -2448,7 +2488,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -2520,7 +2564,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -2561,7 +2609,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -2640,7 +2692,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -2809,7 +2865,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -2856,7 +2916,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -2960,7 +3024,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -3167,7 +3235,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -3335,7 +3407,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -3405,7 +3481,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -3529,7 +3609,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -3608,7 +3692,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -3654,7 +3742,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -3691,7 +3783,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -3736,7 +3832,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -3773,7 +3873,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -3826,7 +3930,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -3904,7 +4012,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -3951,7 +4063,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -3995,7 +4111,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -4134,7 +4254,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -4177,7 +4301,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -4246,7 +4374,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -4286,7 +4418,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -4323,7 +4459,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -4364,7 +4504,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -4421,7 +4565,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -4470,7 +4618,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -4524,7 +4676,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -4557,7 +4713,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -4651,7 +4811,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -5018,7 +5182,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -5075,7 +5243,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -5607,7 +5779,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -5803,7 +5979,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -5883,7 +6063,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -5968,7 +6152,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -6066,7 +6254,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -6200,7 +6392,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -6278,7 +6474,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -6365,7 +6565,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -6471,7 +6675,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -6549,7 +6757,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -6611,7 +6823,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -6675,7 +6891,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -6754,7 +6974,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -6807,7 +7031,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -6893,7 +7121,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -6965,7 +7197,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -7042,7 +7278,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -7180,7 +7420,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -7235,7 +7479,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -7300,7 +7548,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -7359,7 +7611,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -7414,7 +7670,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -7507,7 +7767,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -7576,7 +7840,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -7631,7 +7899,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -7686,7 +7958,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -7738,7 +8014,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",

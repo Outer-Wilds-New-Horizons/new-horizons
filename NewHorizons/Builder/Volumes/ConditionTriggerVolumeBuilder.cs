@@ -8,7 +8,7 @@ namespace NewHorizons.Builder.Volumes
     {
         public static ConditionTriggerVolume Make(GameObject planetGO, Sector sector, ConditionTriggerVolumeInfo info)
         {
-            var volume = VolumeBuilder.Make<ConditionTriggerVolume>(planetGO, sector, info);
+            var volume = VolumeBuilder.Make<ConditionTriggerVolume>(planetGO, ref sector, info);
 
             volume.Condition = info.condition;
             volume.Persistent = info.persistent;

@@ -44,7 +44,7 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
 
             if (_prefab == null || sector == null) return null;
 
-            var totemObj = DetailBuilder.Make(planetGO, sector, mod, _prefab, new DetailInfo(info));
+            var totemObj = DetailBuilder.Make(planetGO, ref sector, mod, _prefab, new DetailInfo(info));
 
             var zoomPoint = totemObj.GetComponentInChildren<LanternZoomPoint>();
             zoomPoint._minActivationDistance = info.minDistance;

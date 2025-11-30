@@ -7,7 +7,7 @@ namespace NewHorizons.Builder.Volumes
     {
         public static ZeroGVolume Make(GameObject planetGO, Sector sector, PriorityVolumeInfo info)
         {
-            var volume = PriorityVolumeBuilder.Make<ZeroGVolume>(planetGO, sector, info);
+            var volume = PriorityVolumeBuilder.Make<ZeroGVolume>(planetGO, ref sector, info);
 
             volume._inheritable = true;
 

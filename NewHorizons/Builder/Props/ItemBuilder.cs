@@ -147,7 +147,8 @@ namespace NewHorizons.Builder.Props
             }
             if (socket._socketTransform == null)
             {
-                var socketGO = GeneralPropBuilder.MakeNew("Socket", planetGO, sector, info, defaultParent: go.transform);
+                var socketSector = sector;
+                var socketGO = GeneralPropBuilder.MakeNew("Socket", planetGO, ref socketSector, info, defaultParent: go.transform);
                 socketGO.SetActive(true);
                 socket._socketTransform = socketGO.transform;
             }

@@ -12,10 +12,10 @@ namespace NewHorizons.Builder.Volumes
     {
         public static NHDayNightAudioVolume Make(GameObject planetGO, Sector sector, DayNightAudioVolumeInfo info, IModBehaviour mod)
         {
-            var go = GeneralPropBuilder.MakeNew("DayNightAudioVolume", planetGO, sector, info);
+            var go = GeneralPropBuilder.MakeNew("DayNightAudioVolume", planetGO, ref sector, info);
             go.layer = Layer.AdvancedEffectVolume;
 
-            var audioVolume = PriorityVolumeBuilder.MakeExisting<NHDayNightAudioVolume>(go, planetGO, sector, info);
+            var audioVolume = PriorityVolumeBuilder.MakeExisting<NHDayNightAudioVolume>(go, planetGO, ref sector, info);
 
             audioVolume.sunName = info.sun;
             audioVolume.dayWindow = info.dayWindow;

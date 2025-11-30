@@ -211,7 +211,8 @@ namespace NewHorizons.Builder.Body
                     foreach (var detailInfo in body.Config.Props.proxyDetails)
                     {
                         // Thought about switching these to SimplifiedDetailInfo but we use AlignRadial with these so we can't
-                        DetailBuilder.Make(proxy, null, body.Mod, detailInfo);
+                        Sector sector = null;
+                        DetailBuilder.Make(proxy, ref sector, body.Mod, detailInfo);
                     }
                 }
 

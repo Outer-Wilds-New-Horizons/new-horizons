@@ -150,12 +150,14 @@ namespace NewHorizons.Handlers
             if (VesselPrefab == null) return null;
 
             NHLogger.LogVerbose("Creating Vessel");
-            var vesselObject = GeneralPropBuilder.MakeFromPrefab(VesselPrefab, VesselPrefab.name, null, null, system.Config.Vessel?.vesselSpawn);
+            Sector sector = null;
+            var vesselObject = GeneralPropBuilder.MakeFromPrefab(VesselPrefab, VesselPrefab.name, null, ref sector, system.Config.Vessel?.vesselSpawn);
             VesselObject = vesselObject;
+            sector = vesselObject.GetComponentInChildren<Sector>(true);
 
             var vesselAO = vesselObject.AddComponent<EyeAstroObject>();
             vesselAO._owRigidbody = vesselObject.GetComponent<OWRigidbody>();
-            vesselAO._rootSector = vesselObject.GetComponentInChildren<Sector>(true);
+            vesselAO._rootSector = sector;
             vesselAO._customName = "Vessel";
             vesselAO._name = AstroObject.Name.CustomString;
             vesselAO._type = AstroObject.Type.SpaceStation;
@@ -248,7 +250,8 @@ namespace NewHorizons.Handlers
             var attachWarpExitToVessel = system.Config.Vessel?.warpExit?.attachToVessel ?? false;
             var warpExitParent = vesselWarpController._targetWarpPlatform.transform.parent;
 
-            var warpExit = GeneralPropBuilder.MakeFromExisting(vesselWarpController._targetWarpPlatform.gameObject, planetGO, null, system.Config.Vessel?.warpExit, defaultParent: attachWarpExitToVessel ? warpExitParent : null);
+            Sector warpExitSector = null;
+            var warpExit = GeneralPropBuilder.MakeFromExisting(vesselWarpController._targetWarpPlatform.gameObject, planetGO, ref warpExitSector, system.Config.Vessel?.warpExit, defaultParent: attachWarpExitToVessel ? warpExitParent : null);
             if (attachWarpExitToVessel)
             {
                 warpExit.transform.parent = warpExitParent;
