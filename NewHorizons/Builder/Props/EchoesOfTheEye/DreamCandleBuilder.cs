@@ -60,7 +60,7 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
 
             if (prefab == null || sector == null) return null;
 
-            var candleObj = DetailBuilder.Make(planetGO, sector, mod, prefab, new DetailInfo(info));
+            var candleObj = DetailBuilder.Make(planetGO, ref sector, mod, prefab, new DetailInfo(info));
 
             var dreamCandle = candleObj.GetComponent<DreamCandle>();
 

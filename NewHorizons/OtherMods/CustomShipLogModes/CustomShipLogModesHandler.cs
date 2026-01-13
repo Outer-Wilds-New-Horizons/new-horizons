@@ -1,4 +1,4 @@
-﻿using NewHorizons.Handlers;
+using NewHorizons.Handlers;
 
 namespace NewHorizons.OtherMods.CustomShipLogModes;
 
@@ -14,7 +14,11 @@ public static class CustomShipLogModesHandler
     public static void AddInterstellarMode()
     {
         API.AddMode(StarChartHandler.ShipLogStarChartMode, 
-            () => Main.HasWarpDrive, 
+            () => Main.HasWarpDriveFunctionality && !Main.UseLegacyStarChart, 
+            () => TranslationHandler.GetTranslation("INTERSTELLAR_MODE", TranslationHandler.TextType.UI));
+
+        API.AddMode(StarChartHandler.ShipLogLegacyStarChartMode,
+            () => Main.HasWarpDriveFunctionality && Main.UseLegacyStarChart,
             () => TranslationHandler.GetTranslation("INTERSTELLAR_MODE", TranslationHandler.TextType.UI));
     }
 }

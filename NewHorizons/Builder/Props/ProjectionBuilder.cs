@@ -148,7 +148,7 @@ namespace NewHorizons.Builder.Props
 
             if (prefab == null) return null;
 
-            var slideReelObj = GeneralPropBuilder.MakeFromPrefab(prefab, $"Prefab_IP_Reel_{GetSlideReelName(info.reelModel, info.reelCondition)}_{mod.ModHelper.Manifest.Name}", planetGO, sector, info);
+            var slideReelObj = GeneralPropBuilder.MakeFromPrefab(prefab, $"Prefab_IP_Reel_{GetSlideReelName(info.reelModel, info.reelCondition)}_{mod.ModHelper.Manifest.Name}", planetGO, ref sector, info);
 
             var slideReel = slideReelObj.GetComponent<SlideReelItem>();
             slideReel.SetSector(sector);
@@ -358,7 +358,7 @@ namespace NewHorizons.Builder.Props
 
             if (_autoPrefab == null) return null;
 
-            var projectorObj = GeneralPropBuilder.MakeFromPrefab(_autoPrefab, $"Prefab_IP_AutoProjector_{mod.ModHelper.Manifest.Name}", planetGO, sector, info);
+            var projectorObj = GeneralPropBuilder.MakeFromPrefab(_autoPrefab, $"Prefab_IP_AutoProjector_{mod.ModHelper.Manifest.Name}", planetGO, ref sector, info);
 
             var autoProjector = projectorObj.GetComponent<AutoSlideProjector>();
             autoProjector._sector = sector;
@@ -421,7 +421,7 @@ namespace NewHorizons.Builder.Props
             if (_visionTorchDetectorPrefab == null) return null;
 
             // spawn a trigger for the vision torch
-            var visionTorchTargetGO = DetailBuilder.Make(planetGO, sector, mod, _visionTorchDetectorPrefab, new DetailInfo(info) { scale = 2, rename = !string.IsNullOrEmpty(info.rename) ? info.rename : "VisionStaffDetector" });
+            var visionTorchTargetGO = DetailBuilder.Make(planetGO, ref sector, mod, _visionTorchDetectorPrefab, new DetailInfo(info) { scale = 2, rename = !string.IsNullOrEmpty(info.rename) ? info.rename : "VisionStaffDetector" });
 
             if (visionTorchTargetGO == null)
             {
@@ -466,7 +466,7 @@ namespace NewHorizons.Builder.Props
 
             // Spawn the torch itself
             var prefab = info.reelCondition == ProjectionInfo.SlideReelCondition.Pristine ? _standingVisionTorchCleanPrefab : _standingVisionTorchPrefab;
-            var standingTorch = DetailBuilder.Make(planetGO, sector, mod, prefab, new DetailInfo(info));
+            var standingTorch = DetailBuilder.Make(planetGO, ref sector, mod, prefab, new DetailInfo(info));
 
             if (standingTorch == null)
             {

@@ -121,6 +121,11 @@ namespace NewHorizons.External.Configs
         /// </summary>
         public VesselModule Vessel;
 
+        /// <summary>
+        /// Configure how this system will appear in the Interstellar Mode in the ship log.
+        /// </summary>
+        public StarChartModule StarChart;
+
         [Obsolete("coords is deprecated, please use Vessel.coords instead")]
         public NomaiCoordinates coords;
 
@@ -221,6 +226,38 @@ namespace NewHorizons.External.Configs
         }
 
         [JsonObject]
+        public class StarChartModule
+        {
+            /// <summary>
+            /// The position of the system on the star chart.
+            /// This applies regardless of any other settings.
+            /// </summary>
+            public MVector2 position;
+
+            /// <summary>
+            /// The color of the star as it appears on the star chart.
+            /// If specified, it will override any custom generation we do.
+            /// </summary>
+            public MColor color;
+
+            /// <summary>
+            /// Filepath to a texture that will replace the default texture used to display this star in the star map.
+            /// If you use this, it's probably best to leave the <see cref="color"/> field blank, unless you have a white texture that you'd like to tint a different color.
+            /// If specified, it will override any custom generation we do.
+            /// </summary>
+            public string starTexturePath;
+
+            /// <summary>
+            /// Time in the loop (in minutes) that this system will disappear.
+            /// If not specified, the time is calculated automatically based on the stars and singularities in the system.
+            /// If specified, this value takes priority over automatic calculations.
+            /// If <see cref="color"/> or <see cref="starTexturePath"/> is specified but this is not, it will default to 0 meaning players can warp to your system at any point.
+            /// A 22 minutes and 40 seconds (22.667) disappearance time will make the system unavailable to warp to at the exact moment the vanilla loop ends.
+            /// </summary>
+            public float? disappearanceTime;
+        }
+
+        [JsonObject]
         public class VesselModule
         {
             /// <summary>
@@ -307,6 +344,7 @@ namespace NewHorizons.External.Configs
             canExitViaWarpDrive = canExitViaWarpDrive && otherConfig.canExitViaWarpDrive;
             destroyStockPlanets = destroyStockPlanets && otherConfig.destroyStockPlanets;
             enableTimeLoop = enableTimeLoop && otherConfig.enableTimeLoop;
+            allowOutsideItems = allowOutsideItems && otherConfig.allowOutsideItems;
 
             // False by default
             returnToSolarSystemWhenTooFar = returnToSolarSystemWhenTooFar || otherConfig.returnToSolarSystemWhenTooFar;
@@ -314,6 +352,7 @@ namespace NewHorizons.External.Configs
             loopDuration = loopDuration == 22f ? otherConfig.loopDuration : loopDuration;
 
             // If current one is null take the other
+            shipLogStartingPlanetID = string.IsNullOrEmpty(shipLogStartingPlanetID) ? otherConfig.shipLogStartingPlanetID : shipLogStartingPlanetID;
             factRequiredForWarp = string.IsNullOrEmpty(factRequiredForWarp) ? otherConfig.factRequiredForWarp : factRequiredForWarp;
             factRequiredToExitViaWarpDrive = string.IsNullOrEmpty(factRequiredToExitViaWarpDrive) ? otherConfig.factRequiredToExitViaWarpDrive : factRequiredToExitViaWarpDrive;
             Skybox = Skybox == null ? otherConfig.Skybox : Skybox;
@@ -322,9 +361,14 @@ namespace NewHorizons.External.Configs
             mapRestricted = mapRestricted || otherConfig.mapRestricted;
             respawnHere = respawnHere || otherConfig.respawnHere;
             startHere = startHere || otherConfig.startHere;
+            freeMapAngle = freeMapAngle || otherConfig.freeMapAngle;
 
             if (Vessel != null && otherConfig.Vessel != null)
             {
+                Vessel.coords ??= otherConfig.Vessel.coords;
+                Vessel.promptFact = string.IsNullOrEmpty(Vessel.promptFact) ? otherConfig.Vessel.promptFact : Vessel.promptFact;
+                Vessel.vesselSpawn ??= otherConfig.Vessel.vesselSpawn;
+                Vessel.warpExit ??= otherConfig.Vessel.warpExit;
                 Vessel.spawnOnVessel = Vessel.spawnOnVessel || otherConfig.Vessel.spawnOnVessel;
                 Vessel.alwaysPresent = Vessel.alwaysPresent || otherConfig.Vessel.alwaysPresent;
                 Vessel.hasPhysics = Vessel.hasPhysics ?? otherConfig.Vessel.hasPhysics;
@@ -348,6 +392,18 @@ namespace NewHorizons.External.Configs
             else
             {
                 GlobalMusic ??= otherConfig.GlobalMusic;
+            }
+
+            if (StarChart != null && otherConfig.StarChart != null)
+            {
+                StarChart.position = StarChart.position ?? otherConfig.StarChart.position;
+                StarChart.color = StarChart.color ?? otherConfig.StarChart.color;
+                StarChart.starTexturePath = string.IsNullOrEmpty(StarChart.starTexturePath) ? otherConfig.StarChart.starTexturePath : StarChart.starTexturePath;
+                StarChart.disappearanceTime = StarChart.disappearanceTime ?? otherConfig.StarChart.disappearanceTime;
+            }
+            else
+            {
+                StarChart ??= otherConfig.StarChart;
             }
 
             if (conditionalChecks != null && otherConfig.conditionalChecks != null)

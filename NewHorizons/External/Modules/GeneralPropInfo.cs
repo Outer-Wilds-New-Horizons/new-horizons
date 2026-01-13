@@ -8,9 +8,14 @@ namespace NewHorizons.External.Modules
     public abstract class BasePropInfo
     {
         /// <summary>
-        /// The relative path from the planet to the parent of this object. Optional (will default to the root sector).
+        /// The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector).
         /// </summary>
         public string parentPath;
+
+        /// <summary>
+        /// The relative path from the planet to the sector that this object will be linked to. The special value "auto" will use the most specific sector in the parent path. Optional (will default to the planet's root sector).
+        /// </summary>
+        public string sectorPath;
 
         /// <summary>
         /// An optional rename of this object

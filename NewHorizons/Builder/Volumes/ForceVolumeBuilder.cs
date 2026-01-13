@@ -100,7 +100,7 @@ namespace NewHorizons.Builder.Volumes
 
         public static TVolume Make<TVolume>(GameObject planetGO, Sector sector, ForceVolumeInfo info) where TVolume : ForceVolume
         {
-            var forceVolume = PriorityVolumeBuilder.Make<TVolume>(planetGO, sector, info);
+            var forceVolume = PriorityVolumeBuilder.Make<TVolume>(planetGO, ref sector, info);
 
             forceVolume._alignmentPriority = info.alignmentPriority;
             forceVolume._inheritable = info.inheritable;

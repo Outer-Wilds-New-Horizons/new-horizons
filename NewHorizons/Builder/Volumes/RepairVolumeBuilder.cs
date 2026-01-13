@@ -17,7 +17,7 @@ namespace NewHorizons.Builder.Volumes
         {
             // Repair receivers aren't technically volumes (no OWTriggerVolume) so we don't use the VolumeBuilder
 
-            var go = GeneralPropBuilder.MakeNew("RepairVolume", planetGO, sector, info);
+            var go = GeneralPropBuilder.MakeNew("RepairVolume", planetGO, ref sector, info);
 
             if (info.shape != null)
             {

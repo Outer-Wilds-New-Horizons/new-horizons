@@ -44,7 +44,7 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
 
             if (_prefab == null || sector == null) return null;
 
-            var totemObj = DetailBuilder.Make(planetGO, sector, mod, _prefab, new DetailInfo(info));
+            var totemObj = DetailBuilder.Make(planetGO, ref sector, mod, _prefab, new DetailInfo(info));
 
             var projector = totemObj.GetComponent<DreamObjectProjector>();
 
