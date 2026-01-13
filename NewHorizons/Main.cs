@@ -13,7 +13,9 @@ using NewHorizons.Components.Ship;
 using NewHorizons.Components.SizeControllers;
 using NewHorizons.External;
 using NewHorizons.External.Configs;
+using NewHorizons.External.SerializableData;
 using NewHorizons.Handlers;
+using NewHorizons.OtherMods;
 using NewHorizons.OtherMods.AchievementsPlus;
 using NewHorizons.OtherMods.MenuFramework;
 using NewHorizons.OtherMods.OWRichPresence;
@@ -49,6 +51,7 @@ namespace NewHorizons
         public static bool VisualizeBrambleVolumeNames { get; private set; }
         public static bool VerboseLogs { get; private set; }
         public static bool SequentialPreCaching { get; private set; }
+        public static bool UseLegacyStarChart { get; private set; }
         public static bool CustomTitleScreen { get; private set; }
         public static string DefaultSystemOverride { get; private set; }
         private static bool _wasConfigured = false;
@@ -93,8 +96,8 @@ namespace NewHorizons
         public bool WearingSuit { get; private set; } = false;
 
         public bool IsChangingStarSystem { get; private set; } = false;
-
-        public static bool HasWarpDrive { get; private set; } = false;
+        public static bool HasWarpDriveVisuals { get; private set; } = false;
+        public static bool HasWarpDriveFunctionality { get; private set; } = false;
 
         private string _defaultStarSystem = "SolarSystem";
 
@@ -142,6 +145,7 @@ namespace NewHorizons
             VisualizeBrambleVolumeNames = config.GetSettingsValue<bool>(nameof(VisualizeBrambleVolumeNames));
             VerboseLogs = config.GetSettingsValue<bool>(nameof(VerboseLogs));
             SequentialPreCaching = config.GetSettingsValue<bool>(nameof(SequentialPreCaching));
+            UseLegacyStarChart = config.GetSettingsValue<bool>(nameof(UseLegacyStarChart));
 
             if (currentScene == "SolarSystem")
             {
@@ -186,11 +190,13 @@ namespace NewHorizons
 
             BodyDict["SolarSystem"] = new List<NewHorizonsBody>();
             BodyDict["EyeOfTheUniverse"] = new List<NewHorizonsBody>(); // Keep this empty tho fr
+            var vanillaLoopDuration = OtherModUtil.IsEnabled("dnlwtsn.SlowTime") ? 60 : 22;
             SystemDict["SolarSystem"] = new NewHorizonsSystem("SolarSystem", new StarSystemConfig() { name = "SolarSystem" }, "", Instance)
             {
                 Config =
                 {
                     destroyStockPlanets = false,
+                    loopDuration = vanillaLoopDuration,
                     Vessel = new StarSystemConfig.VesselModule()
                     {
                         coords = new StarSystemConfig.NomaiCoordinates
@@ -199,6 +205,11 @@ namespace NewHorizons
                             y = new int[5]{ 4,5,3,2,1 },
                             z = new int[5]{ 4,1,2,5,0 }
                         }
+                    },
+                    StarChart = new StarSystemConfig.StarChartModule()
+                    {
+                        position = new MVector2(0, 0),
+                        disappearanceTime = vanillaLoopDuration + (40/60)
                     }
                 }
             };
@@ -217,7 +228,13 @@ namespace NewHorizons
                             z = new int[6] { 1, 2, 3, 0, 5, 4 }
                         }
                     },
-                    canEnterViaWarpDrive = false
+                    canEnterViaWarpDrive = false,
+                    StarChart = new StarSystemConfig.StarChartModule()
+                    {
+                        position = new MVector2(0, 5),
+                        starTexturePath = "Assets/eye symbol starchart.png",
+                        disappearanceTime = 0
+                    }
                 }
             };
 
@@ -500,15 +517,20 @@ namespace NewHorizons
                 if (isSolarSystem)
                 {
                     // Warp drive
-                    HasWarpDrive = StarChartHandler.CanWarp();
+                    HasWarpDriveVisuals = StarChartHandler.CanEverWarp();
+                    HasWarpDriveFunctionality = StarChartHandler.CanWarp();
                     if (ShipWarpController == null)
                     {
                         ShipWarpController = SearchUtilities.Find("Ship_Body").AddComponent<ShipWarpController>();
                         ShipWarpController.Init();
                     }
-                    if (HasWarpDrive == true)
+                    if (HasWarpDriveVisuals)
                     {
-                        EnableWarpDrive();
+                        EnableWarpDriveVisuals();
+                    }
+                    if (HasWarpDriveFunctionality)
+                    {
+                        EnableWarpDriveFunctionality();
                     }
 
                     var shouldWarpInFromShip = IsWarpingFromShip && ShipWarpController != null;
@@ -633,9 +655,29 @@ namespace NewHorizons
             }
         }
 
-        public void EnableWarpDrive()
+        public void EnableWarpDriveVisuals()
         {
-            NHLogger.LogVerbose("Setting up warp drive");
+            NHLogger.LogVerbose("Setting up warp drive visuals");
+
+            GameObject shipObject = AssetBundleUtilities.NHPrivateAssetBundle.LoadAsset<GameObject>("Assets/StarChart/WarpDrive.prefab");
+            GameObject shipWarpDrive = Instantiate(shipObject, GameObject.Find("Ship_Body").transform);
+            shipWarpDrive.name = "WarpDrive";
+            AssetBundleUtilities.ReplaceShaders(shipWarpDrive);
+
+            if (ShipWarpController != null)
+            {
+                ShipWarpController.InitializeWarpDriveVisuals(
+                    enableObj: shipWarpDrive.transform.Find("EnableOnWarp").gameObject,
+                    disableObj: shipWarpDrive.transform.Find("DisableOnWarp").gameObject
+                );
+            }
+
+            HasWarpDriveVisuals = true;
+        }
+
+        public void EnableWarpDriveFunctionality()
+        {
+            NHLogger.LogVerbose("Setting up warp drive functionality");
 
             // In weird edge case when starting in another system on a new expedition, don't want it to briefly pop up during warp
             if (!IsWarpingFromShip)
@@ -644,7 +686,7 @@ namespace NewHorizons
                 PlanetCreationHandler.LoadBody(LoadConfig(this, "Assets/WarpDriveConfig.json"));
             }
 
-            HasWarpDrive = true;
+            HasWarpDriveFunctionality = true;
         }
 
         /// <summary>

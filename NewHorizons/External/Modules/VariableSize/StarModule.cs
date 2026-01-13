@@ -22,7 +22,7 @@ namespace NewHorizons.External.Modules.VariableSize
         [Obsolete("goSupernova is deprecated, please use stellarDeathType instead")] [DefaultValue(true)] public bool goSupernova = true;
 
         /// <summary>
-        /// How long in minutes this star will last until it supernovas.
+        /// How long in minutes this star will last until it dies. This value is ignored if <see cref="stellarDeathType"/> is set to <see cref="StellarDeathType.None"/>.
         /// </summary>
         [DefaultValue(22f)]
         public float lifespan = 22f;
@@ -151,7 +151,8 @@ namespace NewHorizons.External.Modules.VariableSize
     [JsonConverter(typeof(StringEnumConverter))]
     public enum StellarRemnantType
     {
-        [EnumMember(Value = @"default")] Default,
+        [EnumMember(Value = @"none")] None = -1,
+        [EnumMember(Value = @"default")] Default = 0,
         [EnumMember(Value = @"whiteDwarf")] WhiteDwarf,
         [EnumMember(Value = @"neutronStar")] NeutronStar,
         [Obsolete] Pulsar,

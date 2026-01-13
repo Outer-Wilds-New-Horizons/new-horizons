@@ -592,6 +592,9 @@ namespace NewHorizons.Utility.Files
                     catch (Exception) { }
                 }
 
+                var procGenColor = body.Config.ProcGen?.color;
+                if (procGenColor != null) return procGenColor.ToColor();
+
                 var waterColor = body.Config.Water?.tint;
                 if (waterColor != null) return waterColor.ToColor();
 

@@ -5272,7 +5272,7 @@
         },
         "lifespan": {
           "type": "number",
-          "description": "How long in minutes this star will last until it supernovas.",
+          "description": "How long in minutes this star will last until it dies. This value is ignored if stellarDeathType is set to None.",
           "format": "float",
           "default": 22.0
         },
@@ -5381,14 +5381,16 @@
         "WhiteDwarf",
         "NeutronStar",
         "BlackHole",
-        "Custom"
+        "Custom",
+        "None"
       ],
       "enum": [
         "default",
         "whiteDwarf",
         "neutronStar",
         "blackHole",
-        "custom"
+        "custom",
+        "none"
       ]
     },
     "SolarFlareModule": {

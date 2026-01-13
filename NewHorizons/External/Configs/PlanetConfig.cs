@@ -1,3 +1,4 @@
+using NewHorizons.Builder.Body;
 using NewHorizons.External.Modules;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.Props.Audio;
@@ -253,6 +254,16 @@ namespace NewHorizons.External.Configs
 
             // Stars and focal points shouldnt be destroyed by stars
             if (Star != null || FocalPoint != null) Base.hasFluidDetector = false;
+
+            if (Star != null)
+            {
+                // some mods just set the star lifespans to be crazy values when they could have just set stellarDeathType to None
+                if (Star.lifespan >= 999) Star.stellarDeathType = StellarDeathType.None;
+
+                if (isStellarRemnant) Star.stellarDeathType = StellarDeathType.None;
+
+                if (Star.stellarDeathType == StellarDeathType.None) Star.stellarRemnantType = StellarRemnantType.None;
+            }
 
             // Disable map marker for dream dimensions
             if (Dream != null && Dream.inDreamWorld) MapMarker.enabled = false;
