@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 
 namespace NewHorizons.External.Modules
@@ -18,7 +19,7 @@ namespace NewHorizons.External.Modules
         public ParticleFieldType type;
 
         /// <summary>
-        /// What the particle field activates based on.
+        /// Should the field be centered around the player or the probe.
         /// </summary>
         [DefaultValue("player")] public FollowTarget followTarget = FollowTarget.Player;
 
@@ -33,6 +34,18 @@ namespace NewHorizons.External.Modules
         /// </summary>
         public string rename;
 
+        /// <summary>
+        /// Ignore the particle count limit.
+        /// The maximum is otherwise dependent on type. See "density" for a list.
+        /// </summary>
+        [DefaultValue(false)] public bool overrideParticleLimit = false;
+
+        /// <summary>
+        /// Sets the radius of the field around the player or probe. Strongly effects visual density, due to how volume works.
+        /// The radius is otherwise what the base game uses for the type.
+        /// </summary>
+        public float? overrideFieldRadius;
+
         [JsonObject]
         public class HeightDensityPair
         {
@@ -42,9 +55,27 @@ namespace NewHorizons.External.Modules
             public float height;
 
             /// <summary>
-            /// The particle count for this radius.
+            /// The amount of particles at this height, within a radius given by the type or by "overrideFieldRadius"
+            /// The intended/default densities (and the limits unless "overrideParticleLimit" is true):
+            /// Rain: 50 (100)
+            /// SnowflakesHeavy: 50 (25)
+            /// SnowflakesLight: 5 (100)
+            /// Embers: 50 (25)
+            /// Clouds: 600 (1000)
+            /// Leaves: 10 (150)
+            /// Bubbles: 10 (50)
+            /// Fog: 50 (250)
+            /// CrystalMotes: 2 (5)
+            /// RockMotes: 3 (5)
+            /// IceMotes: 2 (5)
+            /// SandMotes: 5 (20)
+            /// Crawlies: 2 (5)
+            /// Fireflies: 15 (1000)
+            /// Plankton: 50 (200)
+            /// Pollen: 3 (50)
+            /// Current: 200 (1000)
             /// </summary>
-            public float density;
+            [Range(0f, 1000f)]public float density;
         }
 
         [JsonConverter(typeof(StringEnumConverter))]
