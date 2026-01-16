@@ -107,26 +107,31 @@ namespace NewHorizons.Builder.Atmosphere
                     {
                         vfe.fieldRadius = particleField.overrideFieldRadius.Value;
                     }
+                    var max = 0;
                     var curve = particleField.densityByHeightCurve?.ToAnimationCurve();
-                    if (curve != null && particleField.overrideParticleLimit)
+                    if (curve != null)
                     {
-                        var max = 0;
                         foreach (var key in curve.keys)
                         {
                             max = Mathf.Max(max, (int)key.value);
                         }
-                        var settings = emitter.GetComponent<ParticleSystem>().main;
-                        settings.maxParticles = max;
                     }
+                    else
+                    {
+                        max = GetDefaultDensityByType(particleField.type);
+                        curve = new AnimationCurve(new Keyframe[]
+                        {
+                            new Keyframe(minHeight - 0.5f, 0),
+                            new Keyframe(minHeight, max),
+                            new Keyframe(maxHeight, 0f)
+                        });
+                    }
+                    var settings = emitter.GetComponent<ParticleSystem>().main;
+                    settings.maxParticles = max;
 
                     var pvc = emitter.GetComponent<PlanetaryVectionController>();
                     pvc._vectionFieldEmitter = vfe;
-                    pvc._densityByHeight = curve ?? new AnimationCurve(new Keyframe[]
-                    {
-                        new Keyframe(minHeight - 0.5f, 0),
-                        new Keyframe(minHeight, GetDefaultDensityByType(particleField.type)),
-                        new Keyframe(maxHeight, 0f)
-                    });
+                    pvc._densityByHeight = curve;
                     pvc._followTarget = particleField.followTarget == ParticleFieldModule.FollowTarget.Probe ? PlanetaryVectionController.FollowTarget.Probe : PlanetaryVectionController.FollowTarget.Player;
                     pvc._activeInSector = sector;
                     pvc._exclusionSectors = new Sector[] { };
