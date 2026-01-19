@@ -52,6 +52,7 @@ namespace NewHorizons
         public static bool VerboseLogs { get; private set; }
         public static bool SequentialPreCaching { get; private set; }
         public static bool UseLegacyStarChart { get; private set; }
+        public static bool WarpDriveVisuals { get; private set; }
         public static bool CustomTitleScreen { get; private set; }
         public static string DefaultSystemOverride { get; private set; }
         private static bool _wasConfigured = false;
@@ -518,7 +519,7 @@ namespace NewHorizons
                 if (isSolarSystem)
                 {
                     // Warp drive
-                    HasWarpDriveVisuals = StarChartHandler.CanEverWarp();
+                    HasWarpDriveVisuals = WarpDriveVisuals && StarChartHandler.CanEverWarp();
                     HasWarpDriveFunctionality = StarChartHandler.CanWarp();
                     if (ShipWarpController == null)
                     {

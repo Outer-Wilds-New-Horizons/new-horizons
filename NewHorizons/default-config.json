@@ -46,6 +46,12 @@
       "value": false,
       "tooltip": "Enable this if you prefer the classic card-based mode."
     },
+    "WarpDriveVisuals": {
+      "title": "Warp Drive Visuals",
+      "type": "toggle",
+      "value": true,
+      "tooltip": "Disable this if you prefer no model on the ship for the warp drive."
+    },
     "DefaultSystemOverride": {
       "title": "Default System Override",
       "type": "text",
