@@ -109,6 +109,7 @@ namespace NewHorizons.Handlers
         {
             foreach (var system in _systems)
             {
+                if (system.UniqueID == "SolarSystem") continue;
                 if (CanEverWarpToSystem(system.UniqueID))
                 {
                     return true;
