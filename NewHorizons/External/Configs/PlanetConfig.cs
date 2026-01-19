@@ -349,6 +349,7 @@ namespace NewHorizons.External.Configs
                 if (Atmosphere.clouds != null && Atmosphere.clouds.useBasicCloudShader)
                     Atmosphere.clouds.cloudsPrefab = CloudPrefabType.Basic;
 
+                // Formerly density 10, but default density 50 is better
                 if (Atmosphere.hasRain)
                 {
                     if (ParticleFields == null) ParticleFields = new ParticleFieldModule[0];
@@ -359,17 +360,15 @@ namespace NewHorizons.External.Configs
                     }).ToArray();
                 }
 
+                // Formerly 5 copies with density 10, now default density is 50
                 if (Atmosphere.hasSnow)
                 {
                     if (ParticleFields == null) ParticleFields = new ParticleFieldModule[0];
-                    for (int i = 0; i < 5; i++)
+                    ParticleFields = ParticleFields.Append(new ParticleFieldModule
                     {
-                        ParticleFields = ParticleFields.Append(new ParticleFieldModule
-                        {
-                            type = ParticleFieldModule.ParticleFieldType.SnowflakesHeavy,
-                            rename = "SnowEmitter"
-                        }).ToArray();
-                    }
+                        type = ParticleFieldModule.ParticleFieldType.SnowflakesHeavy,
+                        rename = "SnowEmitter"
+                    }).ToArray();
                 }
             }
 
