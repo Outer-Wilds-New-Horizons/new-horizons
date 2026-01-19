@@ -35,8 +35,25 @@ namespace NewHorizons.External.Modules
         public string rename;
 
         /// <summary>
-        /// Sets the radius of the field around the player or probe. Strongly effects visual density, due to how volume works.
-        /// The radius is otherwise what the base game uses for the type.
+        /// Overrides the radius of the field around the player or probe. Strongly effects visual density, due to how volume works.
+        /// The intended/default radii if not defined:
+        /// Rain: 20
+        /// SnowflakesHeavy: 20
+        /// SnowflakesLight: 10
+        /// Embers: 30
+        /// Clouds: 60
+        /// Leaves: 30
+        /// Bubbles: 40
+        /// Fog: 60
+        /// CrystalMotes: 30
+        /// RockMotes: 30
+        /// IceMotes: 30
+        /// SandMotes: 10
+        /// Crawlies: 20
+        /// Fireflies: 30
+        /// Plankton: 20
+        /// Pollen: 20
+        /// Current: 30
         /// </summary>
         public float? overrideFieldRadius;
 
@@ -50,7 +67,7 @@ namespace NewHorizons.External.Modules
 
             /// <summary>
             /// The amount of particles at this height, within a radius given by the type or by "overrideFieldRadius"
-            /// The intended/default densities:
+            /// The intended/default densities if "densityByHeightCurve" isn't defined:
             /// Rain: 50
             /// SnowflakesHeavy: 50
             /// SnowflakesLight: 5
