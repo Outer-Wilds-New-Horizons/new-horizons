@@ -5471,7 +5471,7 @@
           "$ref": "#/definitions/ParticleFieldType"
         },
         "followTarget": {
-          "description": "What the particle field activates based on.",
+          "description": "Should the field be centered around the player or the probe.",
           "default": "player",
           "$ref": "#/definitions/FollowTarget"
         },
@@ -5485,6 +5485,14 @@
         "rename": {
           "type": "string",
           "description": "An optional rename of this object"
+        },
+        "overrideFieldRadius": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "description": "Overrides the radius of the field around the player or probe. Strongly effects visual density, due to how volume works.\nThe intended/default radii if not defined:\nRain: 20\nSnowflakesHeavy: 20\nSnowflakesLight: 10\nEmbers: 30\nClouds: 60\nLeaves: 30\nBubbles: 40\nFog: 60\nCrystalMotes: 30\nRockMotes: 30\nIceMotes: 30\nSandMotes: 10\nCrawlies: 20\nFireflies: 30\nPlankton: 20\nPollen: 20\nCurrent: 30",
+          "format": "float"
         }
       }
     },
@@ -5553,7 +5561,7 @@
         },
         "density": {
           "type": "number",
-          "description": "The particle count for this radius.",
+          "description": "The amount of particles at this height, within a radius given by the type or by \"overrideFieldRadius\"\nThe intended/default densities if \"densityByHeightCurve\" isn't defined:\nRain: 50\nSnowflakesHeavy: 50\nSnowflakesLight: 5\nEmbers: 25\nClouds: 600\nLeaves: 10\nBubbles: 10\nFog: 50\nCrystalMotes: 2\nRockMotes: 3\nIceMotes: 2\nSandMotes: 5\nCrawlies: 2\nFireflies: 15\nPlankton: 50\nPollen: 3\nCurrent: 200",
           "format": "float"
         }
       }
