@@ -92,6 +92,7 @@ namespace NewHorizons.Builder.Props
                     }
                     // That way, even if often not valid, it still won't loop much more than propInfo.count * 1000 per prop
                 }
+
                 for (int i = 0; i < propInfo.count; i++)
                 {
                     Vector3 point;

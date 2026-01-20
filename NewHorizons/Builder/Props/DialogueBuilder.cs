@@ -290,6 +290,10 @@ namespace NewHorizons.Builder.Props
 
             interact._interactRange = info.range;
 
+            // If a dialogue is on the ship, make sure its usable
+            // Assumes these are inside the ship and not outside, not sure if thats an issue
+            interact._usableInShip = planetGO.name == "Ship_Body";
+
             if (info.radius <= 0)
             {
                 sphere.enabled = false;
