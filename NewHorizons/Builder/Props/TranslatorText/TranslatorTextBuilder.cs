@@ -1,3 +1,4 @@
+using NewHorizons.Components.Props;
 using NewHorizons.External;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.TranslatorText;
@@ -633,8 +634,12 @@ namespace NewHorizons.Builder.Props.TranslatorText
                 arc.GetComponent<MeshFilter>().sharedMesh = overrideMesh;
 
             if (overrideColor != null)
-                arc.GetComponent<NomaiTextLine>()._targetColor = (Color)overrideColor;
+            {
+                NHTranslatorTextLineColorizer colorizer = arc.AddComponent<NHTranslatorTextLineColorizer>();
+                colorizer.unreadColor = (Color)overrideColor;
+            }
 
+            arc.GetComponent<NomaiTextLine>().enabled = true;
             arc.SetActive(true);
 
             if (arcInfo != null) arcInfoToCorrespondingSpawnedGameObject[arcInfo] = arc;
