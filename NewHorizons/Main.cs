@@ -210,7 +210,7 @@ namespace NewHorizons
                     StarChart = new StarSystemConfig.StarChartModule()
                     {
                         position = new MVector2(0, 0),
-                        disappearanceTime = vanillaLoopDuration + (40/60)
+                        disappearanceTime = vanillaLoopDuration + (40f/60f)
                     }
                 }
             };
