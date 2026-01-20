@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 1673475312
+CRC: 3484766858
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: e56974a170540e9920546af86c46e4e9
+    Hash: 7baf4ec158677a3afb1b82a1c072713f
   TypeTreeHash:
     serializedVersion: 2
     Hash: d4339e878b9f11da7579ca6f11bd4ebb
@@ -192,6 +192,7 @@ Assets:
 - Assets/SlideReels/Prefab_IP_Reel_Rusted_8.prefab
 - Assets/StarChart/star.png
 - Assets/SlideReels/Prefab_DW_Reel_6.prefab
+- Assets/AmbientLight_STAR.png
 - Assets/SlideReels/Prefab_IP_Reel_8.prefab
 - Assets/StarChart/Audio/select star.ogg
 - Assets/StarChart/WarpDrive.prefab
