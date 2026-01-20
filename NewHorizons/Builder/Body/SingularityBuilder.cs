@@ -1,5 +1,6 @@
 using NewHorizons.Builder.Props;
 using NewHorizons.Builder.Volumes;
+using NewHorizons.Components;
 using NewHorizons.Components.SizeControllers;
 using NewHorizons.Components.Volumes;
 using NewHorizons.External.Configs;
@@ -72,7 +73,13 @@ namespace NewHorizons.Builder.Body
             _pairsToLink = new List<(string, string)>();
         }
 
+        [Obsolete]
         public static void Make(GameObject go, Sector sector, OWRigidbody OWRB, PlanetConfig config, SingularityModule singularity)
+        {
+            Make(go, sector, config, singularity);
+        }
+
+        public static GameObject MakeWithNoUniqueID(GameObject go, Sector sector, SingularityModule singularity)
         {
             var horizonRadius = singularity.horizonRadius;
             var distortRadius = singularity.distortRadius != 0f ? singularity.distortRadius : horizonRadius * 2.5f;
@@ -86,8 +93,17 @@ namespace NewHorizons.Builder.Body
             Vector3 localPosition = singularity?.position == null ? Vector3.zero : singularity.position;
             Vector3 localRotation = singularity?.rotation == null ? Vector3.zero : singularity.rotation;
 
-            GameObject newSingularity = MakeSingularity(go, sector, localPosition, localRotation, polarity, horizonRadius, distortRadius, 
+            return MakeSingularity(go, sector, localPosition, localRotation, polarity, horizonRadius, distortRadius,
                 hasHazardVolume, singularity.targetStarSystem, singularity.spawnPointID, singularity.curve, singularity.hasWarpEffects, singularity.renderQueueOverride, singularity.rename, singularity.parentPath, singularity.isRelativeToParent);
+        }
+
+        public static void Make(GameObject go, Sector sector, PlanetConfig config, SingularityModule singularity)
+        {
+            var pairedSingularity = singularity.pairedSingularity;
+
+            bool polarity = singularity.type == SingularityModule.SingularityType.BlackHole;
+
+            var newSingularity = MakeWithNoUniqueID(go, sector, singularity);
 
             var uniqueID = string.IsNullOrEmpty(singularity.uniqueID) ? config.name : singularity.uniqueID;
             
@@ -103,7 +119,6 @@ namespace NewHorizons.Builder.Body
                     _pairsToLink.Add((pairedSingularity, uniqueID));
                 }
             }
-
         }
 
         public static void PairAllSingularities()
@@ -145,7 +160,8 @@ namespace NewHorizons.Builder.Body
                         var sphereCollider = blackHoleVolume.GetComponent<SphereCollider>();
                         // Shouldn't ever be null but doesn't hurt ig
                         var loadRadius = sphereCollider == null ? 100f : sphereCollider.radius + 50f;
-                        var streamingVolume = VolumeBuilder.Make<StreamingWarpVolume>(blackHoleVolume.GetAttachedOWRigidbody().gameObject, blackHoleVolume.GetComponentInParent<Sector>(),
+                        var blackHoleSector = blackHoleVolume.GetComponentInParent<Sector>();
+                        var streamingVolume = VolumeBuilder.Make<StreamingWarpVolume>(blackHoleVolume.GetAttachedOWRigidbody().gameObject, ref blackHoleSector,
                             new External.Modules.Volumes.VolumeInfos.VolumeInfo() { radius = loadRadius });
                         streamingVolume.streamingGroup = streamingGroup;
                         streamingVolume.transform.parent = blackHoleVolume.transform;
@@ -174,7 +190,7 @@ namespace NewHorizons.Builder.Body
                 rename = rename,
             };
 
-            var singularity = GeneralPropBuilder.MakeNew(polarity ? "BlackHole" : "WhiteHole", planetGO, sector, info);
+            var singularity = GeneralPropBuilder.MakeNew(polarity ? "BlackHole" : "WhiteHole", planetGO, ref sector, info);
 
             var singularityRenderer = MakeSingularityGraphics(singularity, polarity, horizon, distort, renderQueue);
 
@@ -337,6 +353,12 @@ namespace NewHorizons.Builder.Body
             meshRenderer.material.renderQueue = queue;
 
             return meshRenderer;
+        }
+
+        public static GameObject MakeSingularityProxy(GameObject rootObject, SingularityModule singularity)
+        {
+            var polarity = singularity.type == SingularityModule.SingularityType.BlackHole;
+            return MakeSingularityProxy(rootObject, singularity.position, polarity, singularity.horizonRadius, singularity.distortRadius, singularity.curve, singularity.renderQueueOverride);
         }
 
         public static GameObject MakeSingularityProxy(GameObject rootObject, MVector3 position, bool polarity, float horizon, float distort, TimeValuePair[] curve = null, int queue = 2985)

@@ -19,7 +19,7 @@ namespace NewHorizons.Builder.Props
 {
     public static class DetailBuilder
     {
-        private static readonly Dictionary<(Sector, string), (GameObject prefab, bool isItem)> _fixedPrefabCache = new();
+        private static readonly Dictionary<(Sector, string, string), (GameObject prefab, bool isItem)> _fixedPrefabCache = new();
         private static GameObject _emptyPrefab;
 
         private static readonly Dictionary<DetailInfo, GameObject> _detailInfoToGameObject = new();
@@ -46,12 +46,20 @@ namespace NewHorizons.Builder.Props
         // In particular, Outer Wives needs this method signature
         [Obsolete]
         public static GameObject Make(GameObject go, Sector sector, GameObject prefab, DetailInfo detail)
-            => Make(go, sector, mod: null, prefab, detail);
+            => Make(go, ref sector, mod: null, prefab, detail);
 
         // Dreamstalker needed this one
         [Obsolete]
         public static GameObject Make(GameObject go, Sector sector, DetailInfo detail)
-            => Make(go, sector, mod: null, detail);
+            => Make(go, ref sector, mod: null, detail);
+
+        // Changed to ref sector
+        [Obsolete]
+        public static GameObject Make(GameObject go, Sector sector, IModBehaviour mod, GameObject prefab, DetailInfo detail)
+            => Make(go, ref sector, mod, prefab, detail);
+        // Intentionally not marking this one Obsolete because it's only used by PropBuildManager and would clutter that code
+        public static GameObject Make(GameObject planetGO, Sector sector, IModBehaviour mod, DetailInfo info)
+            => Make(planetGO, ref sector, mod, info);
         #endregion
 
         private static void SceneManager_sceneUnloaded(Scene scene)
@@ -68,7 +76,7 @@ namespace NewHorizons.Builder.Props
         /// <summary>
         /// Create a detail using an asset bundle or a path in the scene hierarchy of the item to copy.
         /// </summary>
-        public static GameObject Make(GameObject planetGO, Sector sector, IModBehaviour mod, DetailInfo info)
+        public static GameObject Make(GameObject planetGO, ref Sector sector, IModBehaviour mod, DetailInfo info)
         {
             if (sector == null) info.keepLoaded = true;
 
@@ -77,7 +85,7 @@ namespace NewHorizons.Builder.Props
                 // Shouldn't happen
                 if (mod == null) return null;
 
-                return Make(planetGO, sector, mod, AssetBundleUtilities.LoadPrefab(info.assetBundle, info.path, mod), info);
+                return Make(planetGO, ref sector, mod, AssetBundleUtilities.LoadPrefab(info.assetBundle, info.path, mod), info);
             }
 
             if (_emptyPrefab == null) _emptyPrefab = new GameObject("Empty");
@@ -92,14 +100,14 @@ namespace NewHorizons.Builder.Props
             }
             else
             {
-                return Make(planetGO, sector, mod, prefab, info);
+                return Make(planetGO, ref sector, mod, prefab, info);
             }
         }
 
         /// <summary>
         /// Create a detail using a prefab.
         /// </summary>
-        public static GameObject Make(GameObject go, Sector sector, IModBehaviour mod, GameObject prefab, DetailInfo detail)
+        public static GameObject Make(GameObject go, ref Sector sector, IModBehaviour mod, GameObject prefab, DetailInfo detail)
         {
             if (prefab == null) return null;
 
@@ -111,14 +119,14 @@ namespace NewHorizons.Builder.Props
             bool isFromAssetBundle = !string.IsNullOrEmpty(detail.assetBundle);
 
             // We save copies with all their components fixed, good if the user is placing the same detail more than once
-            if (detail?.path != null && _fixedPrefabCache.TryGetValue((sector, detail.path), out var storedPrefab))
+            if (detail?.path != null && _fixedPrefabCache.TryGetValue((sector, detail.path, detail.sectorPath), out var storedPrefab))
             {
-                prop = GeneralPropBuilder.MakeFromPrefab(storedPrefab.prefab, prefab.name, go, sector, detail);
+                prop = GeneralPropBuilder.MakeFromPrefab(storedPrefab.prefab, prefab.name, go, ref sector, detail);
                 isItem = storedPrefab.isItem;
             }
             else
             {
-                prop = GeneralPropBuilder.MakeFromPrefab(prefab, prefab.name, go, sector, detail);
+                prop = GeneralPropBuilder.MakeFromPrefab(prefab, prefab.name, go, ref sector, detail);
 
                 StreamingHandler.SetUpStreaming(prop, detail.keepLoaded ? null : sector);
 
@@ -194,7 +202,7 @@ namespace NewHorizons.Builder.Props
                 if (detail.path != null)
                 {
                     // We put these in DontDestroyOnLoad so that QSB will ignore them and so they don't clutter up the scene.
-                    _fixedPrefabCache.Add((sector, detail.path), (prop.InstantiateInactive().DontDestroyOnLoad(), isItem));
+                    _fixedPrefabCache.Add((sector, detail.path, detail.sectorPath), (prop.InstantiateInactive().DontDestroyOnLoad(), isItem));
                 }
             }
 

@@ -7,7 +7,7 @@ namespace NewHorizons.Builder.Volumes.Rulesets
     {
         public static ThrustRuleset Make(GameObject planetGO, Sector sector, RulesetModule.ThrustRulesetInfo info)
         {
-            var volume = VolumeBuilder.Make<ThrustRuleset>(planetGO, sector, info);
+            var volume = VolumeBuilder.Make<ThrustRuleset>(planetGO, ref sector, info);
 
             volume._thrustLimit = info.thrustLimit;
             volume._nerfJetpackBooster = info.nerfJetpackBooster;

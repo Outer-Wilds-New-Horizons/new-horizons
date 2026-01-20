@@ -7,7 +7,7 @@ namespace NewHorizons.Builder.Volumes.Rulesets
     {
         public static PlayerImpactRuleset Make(GameObject planetGO, Sector sector, RulesetModule.PlayerImpactRulesetInfo info)
         {
-            var volume = VolumeBuilder.Make<PlayerImpactRuleset>(planetGO, sector, info);
+            var volume = VolumeBuilder.Make<PlayerImpactRuleset>(planetGO, ref sector, info);
 
             volume.minImpactSpeed = info.minImpactSpeed;
             volume.maxImpactSpeed = info.maxImpactSpeed;

@@ -2,7 +2,7 @@
 	<NameField>New Horizons</NameField>
 
 	<DialogueNode>
-		<Name></Name>
+		<Name>NEW_HORIZONS_WARP_DRIVE_DIALOGUE</Name>
 		<EntryCondition>DEFAULT</EntryCondition>
 		<Dialogue>
 			<Page>NEW_HORIZONS_WARP_DRIVE_DIALOGUE_1</Page>

@@ -14,12 +14,12 @@ namespace NewHorizons.Patches.WarpPatches
         [HarmonyPatch(nameof(ShipCockpitController.Update))]
         public static bool ShipCockpitController_Update(ShipCockpitController __instance)
         {
-            if (!Main.HasWarpDrive) return true;
+            if (!Main.HasWarpDriveFunctionality) return true;
 
-            StarChartHandler.ShipLogStarChartMode.UpdateWarpPromptVisibility();
+            StarChartHandler.CurrentMode.UpdateWarpPromptVisibility();
             if (__instance._playerAtFlightConsole && OWInput.IsNewlyPressed(InputLibrary.autopilot, InputMode.ShipCockpit))
             {
-                var targetSystem = StarChartHandler.ShipLogStarChartMode.GetTargetStarSystem();
+                var targetSystem = StarChartHandler.CurrentMode.GetTargetStarSystem();
                 if (targetSystem != null)
                 {
                     Main.Instance.ChangeCurrentStarSystem(targetSystem, true);

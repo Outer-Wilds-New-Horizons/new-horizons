@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 
 namespace NewHorizons.External.Modules
@@ -18,7 +19,7 @@ namespace NewHorizons.External.Modules
         public ParticleFieldType type;
 
         /// <summary>
-        /// What the particle field activates based on.
+        /// Should the field be centered around the player or the probe.
         /// </summary>
         [DefaultValue("player")] public FollowTarget followTarget = FollowTarget.Player;
 
@@ -33,6 +34,29 @@ namespace NewHorizons.External.Modules
         /// </summary>
         public string rename;
 
+        /// <summary>
+        /// Overrides the radius of the field around the player or probe. Strongly effects visual density, due to how volume works.
+        /// The intended/default radii if not defined:
+        /// Rain: 20
+        /// SnowflakesHeavy: 20
+        /// SnowflakesLight: 10
+        /// Embers: 30
+        /// Clouds: 60
+        /// Leaves: 30
+        /// Bubbles: 40
+        /// Fog: 60
+        /// CrystalMotes: 30
+        /// RockMotes: 30
+        /// IceMotes: 30
+        /// SandMotes: 10
+        /// Crawlies: 20
+        /// Fireflies: 30
+        /// Plankton: 20
+        /// Pollen: 20
+        /// Current: 30
+        /// </summary>
+        public float? overrideFieldRadius;
+
         [JsonObject]
         public class HeightDensityPair
         {
@@ -42,7 +66,25 @@ namespace NewHorizons.External.Modules
             public float height;
 
             /// <summary>
-            /// The particle count for this radius.
+            /// The amount of particles at this height, within a radius given by the type or by "overrideFieldRadius"
+            /// The intended/default densities if "densityByHeightCurve" isn't defined:
+            /// Rain: 50
+            /// SnowflakesHeavy: 50
+            /// SnowflakesLight: 5
+            /// Embers: 25
+            /// Clouds: 600
+            /// Leaves: 10
+            /// Bubbles: 10
+            /// Fog: 50
+            /// CrystalMotes: 2
+            /// RockMotes: 3
+            /// IceMotes: 2
+            /// SandMotes: 5
+            /// Crawlies: 2
+            /// Fireflies: 15
+            /// Plankton: 50
+            /// Pollen: 3
+            /// Current: 200
             /// </summary>
             public float density;
         }

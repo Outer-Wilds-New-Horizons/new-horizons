@@ -11,7 +11,7 @@ namespace NewHorizons.Builder.Volumes
     {
         public static NHNotificationVolume Make(GameObject planetGO, Sector sector, NotificationVolumeInfo info, IModBehaviour mod)
         {
-            var notificationVolume = VolumeBuilder.Make<NHNotificationVolume>(planetGO, sector, info);
+            var notificationVolume = VolumeBuilder.Make<NHNotificationVolume>(planetGO, ref sector, info);
 
             // Preserving name for backwards compatibility
             notificationVolume.gameObject.name = string.IsNullOrEmpty(info.rename) ? "NotificationVolume" : info.rename;

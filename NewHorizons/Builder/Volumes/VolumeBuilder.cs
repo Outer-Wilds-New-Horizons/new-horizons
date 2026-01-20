@@ -2,13 +2,27 @@ using NewHorizons.Builder.Props;
 using NewHorizons.External.Modules.Volumes.VolumeInfos;
 using NewHorizons.Utility.OuterWilds;
 using NewHorizons.Utility.OWML;
+using System;
 using UnityEngine;
 
 namespace NewHorizons.Builder.Volumes
 {
     public static class VolumeBuilder
     {
+        #region obsolete
+        // Changed to ref sector
+        [Obsolete]
         public static TVolume MakeExisting<TVolume>(GameObject go, GameObject planetGO, Sector sector, VolumeInfo info) where TVolume : MonoBehaviour
+            => MakeExisting<TVolume>(go, planetGO, ref sector, info);
+        [Obsolete]
+        public static TVolume Make<TVolume>(GameObject planetGO, Sector sector, VolumeInfo info) where TVolume : MonoBehaviour
+            => Make<TVolume>(planetGO, ref sector, info);
+        // Intentionally not marking this one Obsolete because it's only used by VolumesBuildManager and would clutter that code
+        public static TVolume MakeAndEnable<TVolume>(GameObject planetGO, Sector sector, VolumeInfo info) where TVolume : MonoBehaviour
+            => MakeAndEnable<TVolume>(planetGO, ref sector, info);
+        #endregion
+
+        public static TVolume MakeExisting<TVolume>(GameObject go, GameObject planetGO, ref Sector sector, VolumeInfo info) where TVolume : MonoBehaviour
         {
             // Backwards compat for the two possible radii settings
             // Both radii default to 1
@@ -45,15 +59,15 @@ namespace NewHorizons.Builder.Volumes
             return volume;
         }
 
-        public static TVolume Make<TVolume>(GameObject planetGO, Sector sector, VolumeInfo info) where TVolume : MonoBehaviour // Could be BaseVolume but I need to create vanilla volumes too.
+        public static TVolume Make<TVolume>(GameObject planetGO, ref Sector sector, VolumeInfo info) where TVolume : MonoBehaviour // Could be BaseVolume but I need to create vanilla volumes too.
         {
-            var go = GeneralPropBuilder.MakeNew(typeof(TVolume).Name, planetGO, sector, info);
-            return MakeExisting<TVolume>(go, planetGO, sector, info);
+            var go = GeneralPropBuilder.MakeNew(typeof(TVolume).Name, planetGO, ref sector, info);
+            return MakeExisting<TVolume>(go, planetGO, ref sector, info);
         }
 
-        public static TVolume MakeAndEnable<TVolume>(GameObject planetGO, Sector sector, VolumeInfo info) where TVolume : MonoBehaviour
+        public static TVolume MakeAndEnable<TVolume>(GameObject planetGO, ref Sector sector, VolumeInfo info) where TVolume : MonoBehaviour
         {
-            var volume = Make<TVolume>(planetGO, sector, info);
+            var volume = Make<TVolume>(planetGO, ref sector, info);
             volume.gameObject.SetActive(true);
             return volume;
         }

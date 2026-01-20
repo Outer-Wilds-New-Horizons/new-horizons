@@ -8,7 +8,7 @@ namespace NewHorizons.Builder.Volumes
     {
         public static WarpVolume Make(GameObject planetGO, Sector sector, ChangeStarSystemVolumeInfo info)
         {
-            var volume = VolumeBuilder.Make<WarpVolume>(planetGO, sector, info);
+            var volume = VolumeBuilder.Make<WarpVolume>(planetGO, ref sector, info);
 
             volume.TargetSolarSystem = info.targetStarSystem;
             volume.TargetSpawnID = info.spawnPointID;
