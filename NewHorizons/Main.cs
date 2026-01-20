@@ -80,6 +80,7 @@ namespace NewHorizons
                 {
                     NHLogger.LogError($"System \"{value}\" does not exist!");
                     _currentStarSystem = DefaultStarSystem;
+                    return;
                 }
                 _currentStarSystem = value;
             }
