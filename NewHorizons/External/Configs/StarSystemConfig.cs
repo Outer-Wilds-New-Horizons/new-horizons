@@ -62,7 +62,7 @@ namespace NewHorizons.External.Configs
         [DefaultValue(true)] public bool canExitViaWarpDrive = true;
 
         /// <summary>
-        /// The FactID that must be revealed for you to warp back to the main solar system from here. Don't set `canWarpHome`
+        /// The FactID that must be revealed for you to warp back to the main solar system from here. Don't set `canExitViaWarpDrive`
         /// to `false` if you're using this, because it will be overwritten.
         /// </summary>
         public string factRequiredToExitViaWarpDrive;
