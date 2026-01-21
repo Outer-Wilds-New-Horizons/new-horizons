@@ -43,7 +43,7 @@
     },
     "factRequiredToExitViaWarpDrive": {
       "type": "string",
-      "description": "The FactID that must be revealed for you to warp back to the main solar system from here. Don't set `canWarpHome`\nto `false` if you're using this, because it will be overwritten."
+      "description": "The FactID that must be revealed for you to warp back to the main solar system from here. Don't set `canExitViaWarpDrive`\nto `false` if you're using this, because it will be overwritten."
     },
     "destroyStockPlanets": {
       "type": "boolean",
