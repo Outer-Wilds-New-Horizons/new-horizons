@@ -232,6 +232,7 @@ namespace NewHorizons
                         }
                     },
                     canEnterViaWarpDrive = false,
+                    canExitViaWarpDrive = false,
                     StarChart = new StarSystemConfig.StarChartModule()
                     {
                         position = new MVector2(0, 5),
