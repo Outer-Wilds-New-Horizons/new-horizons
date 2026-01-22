@@ -148,6 +148,7 @@ namespace NewHorizons
             VerboseLogs = config.GetSettingsValue<bool>(nameof(VerboseLogs));
             SequentialPreCaching = config.GetSettingsValue<bool>(nameof(SequentialPreCaching));
             UseLegacyStarChart = config.GetSettingsValue<bool>(nameof(UseLegacyStarChart));
+            WarpDriveVisuals = config.GetSettingsValue<bool>(nameof(WarpDriveVisuals));
 
             if (currentScene == "SolarSystem")
             {
