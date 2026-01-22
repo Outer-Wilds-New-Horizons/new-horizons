@@ -7,6 +7,18 @@
       "value": true,
       "tooltip": "Displays planets from installed mods on the title screen."
     },
+    "UseLegacyStarChart": {
+      "title": "Use Legacy Star Chart Mode",
+      "type": "toggle",
+      "value": false,
+      "tooltip": "Enable this if you prefer the classic card-based mode."
+    },
+    "WarpDriveVisuals": {
+      "title": "Warp Drive Visuals",
+      "type": "toggle",
+      "value": true,
+      "tooltip": "Disable this if you prefer no model on the ship for the warp drive."
+    },
     "DebugSeparator": {
       "type": "separator"
     },
@@ -39,18 +51,6 @@
       "type": "toggle",
       "value": false,
       "tooltip": "This is a debug option intended for mod creators. Prevents running out of memory when computing slide reel caches, but is slower and will cause in-game lag."
-    },
-    "UseLegacyStarChart": {
-      "title": "Use Legacy Star Chart Mode",
-      "type": "toggle",
-      "value": false,
-      "tooltip": "Enable this if you prefer the classic card-based mode."
-    },
-    "WarpDriveVisuals": {
-      "title": "Warp Drive Visuals",
-      "type": "toggle",
-      "value": true,
-      "tooltip": "Disable this if you prefer no model on the ship for the warp drive."
     },
     "DefaultSystemOverride": {
       "title": "Default System Override",
