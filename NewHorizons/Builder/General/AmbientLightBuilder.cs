@@ -21,7 +21,7 @@ namespace NewHorizons.Builder.General
             var intensity = config.intensity;
             var outerRadius = config.outerRadius ?? surfaceSize * 2;
             var innerRadius = config.innerRadius ?? surfaceSize;
-            innerRadius = Mathf.Sqrt(innerRadius / light.range);
+            innerRadius = Mathf.Sqrt(innerRadius / outerRadius);
             var isShell = config.isShell;
             SetAmbientLightProperties(light, intensity, outerRadius, innerRadius, isShell, 0.0225f/*from timber hearth*/);
 
