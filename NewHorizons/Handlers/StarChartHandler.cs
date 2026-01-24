@@ -1,11 +1,13 @@
 using NewHorizons.Components.ShipLog;
 using NewHorizons.External;
+using NewHorizons.External.Configs;
 using NewHorizons.OtherMods.CustomShipLogModes;
 using NewHorizons.Utility;
 using NewHorizons.Utility.Files;
 using NewHorizons.Utility.OWML;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 
 namespace NewHorizons.Handlers
@@ -119,6 +121,38 @@ namespace NewHorizons.Handlers
         }
 
         /// <summary>
+        /// Whether there exists at least one system that can ever exit via warp drive and a different system that can ever be entered via warp drive.
+        /// This is used to determine whether the ship's warp drive model should be shown.
+        /// Systems with <see cref="StarSystemConfig.optOutWarpDriveModel"/> are ignored for this check.
+        /// </summary>
+        /// <returns></returns>
+        public static bool CanShowWarpDriveModel()
+        {
+            var optInSystems = _systems.Where(s => !s.Config.optOutWarpDriveModel);
+            var canToSystems = optInSystems.Where(s => CanEverWarpToSystem(s.UniqueID)).Select(s => s.UniqueID).ToList();
+            var canFromSystems = optInSystems.Where(s => CanEverWarpFromSystem(s.UniqueID)).Select(s => s.UniqueID).ToList();
+
+            NHLogger.LogVerbose($"CanShowWarpDriveModel - canToSystems: {string.Join(", ", canToSystems)}");
+            NHLogger.LogVerbose($"CanShowWarpDriveModel - canFromSystems: {string.Join(", ", canFromSystems)}");
+
+            // We need at least one pair where from != to
+            foreach (var from in canFromSystems)
+            {
+                foreach (var to in canToSystems)
+                {
+                    if (from != to)
+                    {
+                        NHLogger.Log($"CanShowWarpDriveModel - Can exit [{from}] and enter [{to}]");
+                        return true;
+                    }
+                }
+            }
+
+            NHLogger.Log($"CanShowWarpDriveModel - Cannot find valid enter/exit system pair.");
+            return false;
+        }
+
+        /// <summary>
         /// Do they have the fact required for a system
         /// </summary>
         /// <param name="system"></param>
@@ -152,8 +186,11 @@ namespace NewHorizons.Handlers
             return canWarpTo;
         }
 
-        public static bool CanEnterViaWarpDrive(string system) => system == "SolarSystem" ||
+        public static bool CanEverEnterViaWarpDrive(string system) => system == "SolarSystem" ||
             Main.SystemDict[system].Config.canEnterViaWarpDrive;
+
+        public static bool CanEverExitViaWarpDrive(string system) => system == "SolarSystem" ||
+            Main.SystemDict[system].Config.canExitViaWarpDrive;
 
         public static bool CanExitViaWarpDrive() => Main.Instance.CurrentStarSystem == "SolarSystem" || (_canExitViaWarpDrive
                 && (string.IsNullOrEmpty(_factRequiredToExitViaWarpDrive) || ShipLogHandler.KnowsFact(_factRequiredToExitViaWarpDrive)));
@@ -173,12 +210,14 @@ namespace NewHorizons.Handlers
             if (Main.Instance.CurrentStarSystem == "SolarSystem")
                 canExitViaWarpDrive = true;
 
-            NHLogger.LogVerbose(system, canWarpTo, canExitViaWarpDrive, HasUnlockedSystem(system));
+            var hasUnlockedSystem = HasUnlockedSystem(system);
+
+            NHLogger.LogVerbose($"[{nameof(CanWarpToSystem)}]", system, canWarpTo, canExitViaWarpDrive, hasUnlockedSystem);
 
             return canWarpTo
                     && canExitViaWarpDrive
                     && system != Main.Instance.CurrentStarSystem
-                    && HasUnlockedSystem(system);
+                    && hasUnlockedSystem;
         }
 
         /// <summary>
@@ -189,11 +228,22 @@ namespace NewHorizons.Handlers
         public static bool CanEverWarpToSystem(string system)
         {
             var hasShipSpawn = HasShipSpawn(system);
-            var canEnterViaWarpDrive = CanEnterViaWarpDrive(system);
-
-            NHLogger.LogVerbose(system, hasShipSpawn, canEnterViaWarpDrive);
+            var canEnterViaWarpDrive = CanEverEnterViaWarpDrive(system);
 
             return hasShipSpawn && canEnterViaWarpDrive;
+        }
+
+        /// <summary>
+        /// Is it actually a valid warp target ever
+        /// </summary>
+        /// <param name="system"></param>
+        /// <returns></returns>
+        public static bool CanEverWarpFromSystem(string system)
+        {
+            var hasShipSpawn = HasShipSpawn(system);
+            var canExitViaWarpDrive = CanEverExitViaWarpDrive(system);
+
+            return hasShipSpawn && canExitViaWarpDrive;
         }
 
         public static void OnRevealFact(string factID)

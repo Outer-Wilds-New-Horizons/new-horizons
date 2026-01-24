@@ -521,9 +521,8 @@ namespace NewHorizons
                 if (isSolarSystem)
                 {
                     // Warp drive
-                    var canWarp = StarChartHandler.CanWarp();
-                    HasWarpDriveVisuals = WarpDriveVisuals && (StarChartHandler.CanEverWarp() || canWarp);
-                    HasWarpDriveFunctionality = canWarp;
+                    HasWarpDriveVisuals = WarpDriveVisuals && StarChartHandler.CanShowWarpDriveModel();
+                    HasWarpDriveFunctionality = StarChartHandler.CanWarp();
                     if (ShipWarpController == null)
                     {
                         ShipWarpController = SearchUtilities.Find("Ship_Body").AddComponent<ShipWarpController>();
