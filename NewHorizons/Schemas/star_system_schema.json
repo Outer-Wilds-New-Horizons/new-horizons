@@ -29,7 +29,7 @@
     },
     "canEnterViaWarpDrive": {
       "type": "boolean",
-      "description": "Whether this system can be warped to via the warp drive. If you set `factRequiredForWarp`, this will be true.\nDoes NOT effect the base SolarSystem. For that, see `canExitViaWarpDrive` and `factRequiredToExitViaWarpDrive`",
+      "description": "Whether this system can be warped to via the warp drive. If you set `factRequiredForWarp`, this should be true.\nDoes NOT effect the base SolarSystem. For that, see `canExitViaWarpDrive` and `factRequiredToExitViaWarpDrive`",
       "default": true
     },
     "factRequiredForWarp": {
@@ -38,7 +38,7 @@
     },
     "canExitViaWarpDrive": {
       "type": "boolean",
-      "description": "Can you use the warp drive to leave this system? If you set `factRequiredToExitViaWarpDrive`\nthis will be true.",
+      "description": "Can you use the warp drive to leave this system? If you set `factRequiredToExitViaWarpDrive`\nthis should be true.",
       "default": true
     },
     "factRequiredToExitViaWarpDrive": {
@@ -76,6 +76,10 @@
     "respawnHere": {
       "type": "boolean",
       "description": "Set to `true` if you want the player to stay in this star system if they die in it."
+    },
+    "optOutWarpDriveModel": {
+      "type": "boolean",
+      "description": "Whether to disable the warp drive model on the ship in your system. (and ignore your system in the warp drive model visibility logic for other systems)"
     },
     "GlobalMusic": {
       "description": "Replace music that plays globally",
