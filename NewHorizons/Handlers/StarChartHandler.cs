@@ -128,6 +128,12 @@ namespace NewHorizons.Handlers
         /// <returns></returns>
         public static bool CanShowWarpDriveModel()
         {
+            if (Main.SystemDict[Main.Instance.CurrentStarSystem].Config.optOutWarpDriveModel)
+            {
+                NHLogger.Log($"CanShowWarpDriveModel - Current system [{Main.Instance.CurrentStarSystem}] has opted out of warp drive model.");
+                return false;
+            }
+
             var optInSystems = _systems.Where(s => !s.Config.optOutWarpDriveModel);
             var canToSystems = optInSystems.Where(s => CanEverWarpToSystem(s.UniqueID)).Select(s => s.UniqueID).ToList();
             var canFromSystems = optInSystems.Where(s => CanEverWarpFromSystem(s.UniqueID)).Select(s => s.UniqueID).ToList();
