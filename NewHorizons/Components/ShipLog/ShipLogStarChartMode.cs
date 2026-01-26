@@ -27,9 +27,11 @@ namespace NewHorizons.Components.ShipLog
         private Font _fontToUse;
 
         private ScreenPromptList _centerPromptList;
+        private ScreenPromptList _upperRightPromptList;
 
         private ScreenPrompt _targetSystemPrompt;
         private ScreenPrompt _warpPrompt = new ScreenPrompt(InputLibrary.autopilot, "<CMD> Warp to system");
+        private ScreenPrompt _zoomPrompt;
 
         private ShipLogWarpableStarSystem _targetSystem = null;
         private ShipLogWarpableStarSystem _thisSystem = null;
@@ -1003,9 +1005,14 @@ namespace NewHorizons.Components.ShipLog
             CreateCard();
             LoadAssets();
             InitializeStars();
+
             _oneShotSource = oneShotSource;
+
             _centerPromptList = centerPromptList;
+            _upperRightPromptList = upperRightPromptList;
             _targetSystemPrompt = new ScreenPrompt(InputLibrary.markEntryOnHUD, TranslationHandler.GetTranslation("LOCK_AUTOPILOT_WARP", TranslationHandler.TextType.UI), 0, ScreenPrompt.DisplayState.Normal, false);
+            _zoomPrompt = new ScreenPrompt(InputLibrary.mapZoomIn, InputLibrary.mapZoomOut, UITextLibrary.GetString(UITextType.LogZoomPrompt), ScreenPrompt.MultiCommandType.POS_NEG, 0, ScreenPrompt.DisplayState.Normal, false);
+
             GlobalMessenger<ReferenceFrame>.AddListener("TargetReferenceFrame", new Callback<ReferenceFrame>(OnTargetReferenceFrame));
         }
 
@@ -1031,6 +1038,7 @@ namespace NewHorizons.Components.ShipLog
             gameObject.SetActive(true);
             _oneShotSource.PlayOneShot(_onOpenClip, _volumeScale);
             Locator.GetPromptManager().AddScreenPrompt(_targetSystemPrompt, _centerPromptList, TextAnchor.MiddleCenter, -1, false);
+            Locator.GetPromptManager().AddScreenPrompt(_zoomPrompt, _upperRightPromptList, TextAnchor.MiddleRight, -1, false, false);
         }
 
         public override void ExitMode()
@@ -1041,6 +1049,7 @@ namespace NewHorizons.Components.ShipLog
             cameraPivot.localEulerAngles = new Vector3(-5, 0, 0);
             cameraPivot.localScale = Vector3.zero;
             Locator.GetPromptManager().RemoveScreenPrompt(_targetSystemPrompt);
+            Locator.GetPromptManager().RemoveScreenPrompt(_zoomPrompt);
             gameObject.SetActive(false);
         }
 
@@ -1192,6 +1201,7 @@ namespace NewHorizons.Components.ShipLog
 
         private void UpdatePrompts()
         {
+            _zoomPrompt.SetVisibility(true);
         }
 
         public static string UniqueIDToName(string uniqueID)

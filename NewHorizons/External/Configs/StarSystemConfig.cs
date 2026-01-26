@@ -1,12 +1,13 @@
+using NewHorizons.External.Modules;
+using NewHorizons.External.Modules.Conditionals;
+using NewHorizons.External.SerializableData;
+using Newtonsoft.Json;
 using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Xml;
-using NewHorizons.External.Modules;
-using NewHorizons.External.Modules.Conditionals;
-using NewHorizons.External.SerializableData;
-using Newtonsoft.Json;
+using UnityEngine;
 using static NewHorizons.External.Modules.ShipLogModule;
 
 namespace NewHorizons.External.Configs
@@ -44,7 +45,7 @@ namespace NewHorizons.External.Configs
         public float farClipPlaneOverride;
 
         /// <summary>
-        /// Whether this system can be warped to via the warp drive. If you set `factRequiredForWarp`, this will be true.
+        /// Whether this system can be warped to via the warp drive. If you set `factRequiredForWarp`, this should be true.
         /// Does NOT effect the base SolarSystem. For that, see `canExitViaWarpDrive` and `factRequiredToExitViaWarpDrive`
         /// </summary>
         [DefaultValue(true)] public bool canEnterViaWarpDrive = true;
@@ -57,12 +58,12 @@ namespace NewHorizons.External.Configs
 
         /// <summary>
         /// Can you use the warp drive to leave this system? If you set `factRequiredToExitViaWarpDrive`
-        /// this will be true.
+        /// this should be true.
         /// </summary>
         [DefaultValue(true)] public bool canExitViaWarpDrive = true;
 
         /// <summary>
-        /// The FactID that must be revealed for you to warp back to the main solar system from here. Don't set `canWarpHome`
+        /// The FactID that must be revealed for you to warp back to the main solar system from here. Don't set `canExitViaWarpDrive`
         /// to `false` if you're using this, because it will be overwritten.
         /// </summary>
         public string factRequiredToExitViaWarpDrive;
@@ -101,6 +102,11 @@ namespace NewHorizons.External.Configs
         /// Set to `true` if you want the player to stay in this star system if they die in it.
         /// </summary>
         public bool respawnHere;
+
+        /// <summary>
+        /// Whether to disable the warp drive model on the ship in your system. (and ignore your system in the warp drive model visibility logic for other systems)
+        /// </summary>
+        public bool optOutWarpDriveModel = false;
 
         [Obsolete("travelAudioClip is deprecated, please use travelAudio instead")]
         public string travelAudioClip;

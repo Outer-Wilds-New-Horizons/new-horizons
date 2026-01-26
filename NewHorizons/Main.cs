@@ -52,6 +52,7 @@ namespace NewHorizons
         public static bool VerboseLogs { get; private set; }
         public static bool SequentialPreCaching { get; private set; }
         public static bool UseLegacyStarChart { get; private set; }
+        public static bool WarpDriveVisuals { get; private set; }
         public static bool CustomTitleScreen { get; private set; }
         public static string DefaultSystemOverride { get; private set; }
         private static bool _wasConfigured = false;
@@ -76,7 +77,7 @@ namespace NewHorizons
             set
             {
                 // Prevent invalid values
-                if (value != "SolarSystem" && value != "EyeOfTheUniverse" && !SystemDict.ContainsKey(value) && !BodyDict.ContainsKey(value))
+                if (value != "SolarSystem" && value != "EyeOfTheUniverse" && value != DefaultStarSystem && !SystemDict.ContainsKey(value) && !BodyDict.ContainsKey(value))
                 {
                     NHLogger.LogError($"System \"{value}\" does not exist!");
                     _currentStarSystem = DefaultStarSystem;
@@ -147,6 +148,7 @@ namespace NewHorizons
             VerboseLogs = config.GetSettingsValue<bool>(nameof(VerboseLogs));
             SequentialPreCaching = config.GetSettingsValue<bool>(nameof(SequentialPreCaching));
             UseLegacyStarChart = config.GetSettingsValue<bool>(nameof(UseLegacyStarChart));
+            WarpDriveVisuals = config.GetSettingsValue<bool>(nameof(WarpDriveVisuals));
 
             if (currentScene == "SolarSystem")
             {
@@ -210,7 +212,7 @@ namespace NewHorizons
                     StarChart = new StarSystemConfig.StarChartModule()
                     {
                         position = new MVector2(0, 0),
-                        disappearanceTime = vanillaLoopDuration + (40/60)
+                        disappearanceTime = vanillaLoopDuration + (40f/60f)
                     }
                 }
             };
@@ -230,6 +232,7 @@ namespace NewHorizons
                         }
                     },
                     canEnterViaWarpDrive = false,
+                    canExitViaWarpDrive = false,
                     StarChart = new StarSystemConfig.StarChartModule()
                     {
                         position = new MVector2(0, 5),
@@ -518,7 +521,7 @@ namespace NewHorizons
                 if (isSolarSystem)
                 {
                     // Warp drive
-                    HasWarpDriveVisuals = StarChartHandler.CanEverWarp();
+                    HasWarpDriveVisuals = WarpDriveVisuals && StarChartHandler.CanShowWarpDriveModel();
                     HasWarpDriveFunctionality = StarChartHandler.CanWarp();
                     if (ShipWarpController == null)
                     {
