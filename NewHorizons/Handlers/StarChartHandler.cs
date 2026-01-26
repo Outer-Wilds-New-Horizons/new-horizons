@@ -218,7 +218,7 @@ namespace NewHorizons.Handlers
 
             var hasUnlockedSystem = HasUnlockedSystem(system);
 
-            NHLogger.LogVerbose($"[{nameof(CanWarpToSystem)}]", system, canWarpTo, canExitViaWarpDrive, hasUnlockedSystem);
+            NHLogger.LogVerbose("CanWarpToSystem - ", system, canWarpTo, canExitViaWarpDrive, hasUnlockedSystem);
 
             return canWarpTo
                     && canExitViaWarpDrive
