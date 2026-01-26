@@ -77,7 +77,7 @@ namespace NewHorizons
             set
             {
                 // Prevent invalid values
-                if (value != "SolarSystem" && value != "EyeOfTheUniverse" && !SystemDict.ContainsKey(value) && !BodyDict.ContainsKey(value))
+                if (value != "SolarSystem" && value != "EyeOfTheUniverse" && value != DefaultStarSystem && !SystemDict.ContainsKey(value) && !BodyDict.ContainsKey(value))
                 {
                     NHLogger.LogError($"System \"{value}\" does not exist!");
                     _currentStarSystem = DefaultStarSystem;
