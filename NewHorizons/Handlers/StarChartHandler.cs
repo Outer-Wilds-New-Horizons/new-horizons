@@ -104,23 +104,6 @@ namespace NewHorizons.Handlers
         }
 
         /// <summary>
-        /// Can the player ever warp to any system at all
-        /// </summary>
-        /// <returns></returns>
-        public static bool CanEverWarp()
-        {
-            foreach (var system in _systems)
-            {
-                if (system.UniqueID == "SolarSystem") continue;
-                if (CanEverWarpToSystem(system.UniqueID))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        /// <summary>
         /// Whether there exists at least one system that can ever exit via warp drive and a different system that can ever be entered via warp drive.
         /// This is used to determine whether the ship's warp drive model should be shown.
         /// Systems with <see cref="StarSystemConfig.optOutWarpDriveModel"/> are ignored for this check.
