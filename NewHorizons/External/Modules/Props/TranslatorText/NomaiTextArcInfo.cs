@@ -49,6 +49,11 @@ namespace NewHorizons.External.Modules.TranslatorText
         /// </summary>
         [Obsolete("only used in old nomai text")]
         [DefaultValue(-1)] public int variation = -1;
+
+        /// <summary>
+        /// Allows you to create custom alien language text by overriding the displayed image
+        /// </summary>
+        public string customTextImage = null;
     }
 
 }

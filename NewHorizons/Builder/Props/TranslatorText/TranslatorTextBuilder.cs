@@ -5,9 +5,11 @@ using NewHorizons.External.Modules.TranslatorText;
 using NewHorizons.External.SerializableData;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
+using NewHorizons.Utility.Files;
 using NewHorizons.Utility.Geometry;
 using NewHorizons.Utility.OWML;
 using Newtonsoft.Json;
+using OWML.Common;
 using OWML.Utils;
 using System;
 using System.Collections.Generic;
@@ -504,7 +506,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
                     arcReadFromCache.transform.localEulerAngles = new Vector3(0, 0, cachedData[i].zRotation);
                 }
 
-                GameObject arc = MakeArc(arcInfo, conversationZone, parent, textEntryID, arcReadFromCache);
+                GameObject arc = MakeArc(nhBody.Mod, arcInfo, conversationZone, parent, textEntryID, arcReadFromCache);
                 arc.name = $"Arc {textEntryID} - Child of {parentID}";
 
                 arcsByID.Add(textEntryID, arc);
@@ -563,10 +565,19 @@ namespace NewHorizons.Builder.Props.TranslatorText
             }
         }
 
-        internal static GameObject MakeArc(NomaiTextArcInfo arcInfo, GameObject conversationZone, GameObject parent, int textEntryID, GameObject prebuiltArc = null)
+        internal static GameObject MakeArc(IModBehaviour mod, NomaiTextArcInfo arcInfo, GameObject conversationZone, GameObject parent, int textEntryID, GameObject prebuiltArc = null)
         {
             GameObject arc;
             var type = arcInfo != null ? arcInfo.type : NomaiTextArcInfo.NomaiTextArcType.Adult;
+
+            var hasCustomImage = !string.IsNullOrEmpty(arcInfo?.customTextImage);
+
+            // Just works better this way since this also expects just an image and not a dynamic spiral
+            if (hasCustomImage)
+            {
+                type = NomaiTextArcInfo.NomaiTextArcType.Stranger;
+            }
+
             NomaiTextArcBuilder.SpiralProfile profile;
             Material mat;
             Mesh overrideMesh = null;
@@ -598,7 +609,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
                     mat = _adultArcMaterial;
                     break;
             }
-            
+
             if (prebuiltArc != null) 
             {
                 arc = prebuiltArc;
@@ -631,7 +642,9 @@ namespace NewHorizons.Builder.Props.TranslatorText
             arc.GetComponent<MeshRenderer>().enabled = false;
 
             if (overrideMesh != null)
+            {
                 arc.GetComponent<MeshFilter>().sharedMesh = overrideMesh;
+            }
 
             if (overrideColor != null)
             {
@@ -643,6 +656,12 @@ namespace NewHorizons.Builder.Props.TranslatorText
             arc.SetActive(true);
 
             if (arcInfo != null) arcInfoToCorrespondingSpawnedGameObject[arcInfo] = arc;
+
+            if (hasCustomImage)
+            {
+                var img = ImageUtilities.GetTexture(mod, arcInfo.customTextImage);
+                arc.GetComponent<MeshRenderer>().material.mainTexture = img;
+            }
 
             return arc;
         }
