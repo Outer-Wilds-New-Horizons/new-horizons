@@ -2763,6 +2763,10 @@
             "null"
           ],
           "description": "Whether to flip the spiral from left-curling to right-curling or vice versa. If specified, auto spiral will not touch this arc."
+        },
+        "customTextImage": {
+          "type": "string",
+          "description": "Allows you to create custom alien language text by overriding the displayed image"
         }
       }
     },
