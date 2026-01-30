@@ -59,6 +59,11 @@ namespace NewHorizons.External.Modules.TranslatorText
         /// Makes this text require a persistent condition to be known before it can be translated
         /// </summary>
         public string legiblePersistentCondition = null;
+
+        /// <summary>
+        /// Replaces the "Nomai" part in "Untranslated Nomai writing". Translated in the OtherDictionary.
+        /// </summary>
+        public string customLanguageName = null;
     }
 
 }

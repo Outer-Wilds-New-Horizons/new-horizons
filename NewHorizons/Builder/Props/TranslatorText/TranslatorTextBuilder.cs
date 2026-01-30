@@ -664,9 +664,11 @@ namespace NewHorizons.Builder.Props.TranslatorText
                 arc.GetComponent<MeshRenderer>().material.mainTexture = img;
             }
 
-            if (!string.IsNullOrEmpty(arcInfo?.legiblePersistentCondition))
+            if (!string.IsNullOrEmpty(arcInfo?.legiblePersistentCondition) || !string.IsNullOrEmpty(arcInfo?.customLanguageName))
             {
-                arc.AddComponent<ConditionalNomaiTextTranslatable>().legiblePersistentCondition = arcInfo.legiblePersistentCondition;
+                var customTranslatableComponent = arc.AddComponent<ConditionalNomaiTextTranslatable>();
+                customTranslatableComponent.legiblePersistentCondition = arcInfo.legiblePersistentCondition;
+                customTranslatableComponent.customLanguageName = arcInfo.customLanguageName;
             }
 
             return arc;

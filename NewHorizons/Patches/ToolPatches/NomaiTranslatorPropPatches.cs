@@ -9,13 +9,13 @@ public static class NomaiTranslatorPropPatches
 {
     [HarmonyPrefix]
     [HarmonyPatch(typeof(NomaiTranslatorProp), nameof(NomaiTranslatorProp.DisplayTextNode))]
-    public static bool NomaiTranslatorProp_DisplayTextNode(NomaiTranslatorProp __instance)
+    public static bool NomaiTranslatorProp_DisplayTextNode_Prefix(NomaiTranslatorProp __instance)
     {
         // Adapted from Forgotten Castaways. Thanks coderCleric! I love stealing!
-        bool illegible = __instance._scanBeams.FirstOrDefault()?._nomaiTextLine?.gameObject?.GetComponent<ConditionalNomaiTextTranslatable>()?.IsIllegible() ?? false;
+        var component = __instance._scanBeams.FirstOrDefault()?._nomaiTextLine?.gameObject?.GetComponent<ConditionalNomaiTextTranslatable>();
 
         // Hide the text
-        if (illegible)
+        if (component != null && component.IsIllegible())
         {
             __instance._textField.text = UITextLibrary.GetString(UITextType.TranslatorUntranslatableWarning);
             return false;
@@ -23,5 +23,18 @@ public static class NomaiTranslatorPropPatches
 
         // Otherwise, run normally
         return true;
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(NomaiTranslatorProp), nameof(NomaiTranslatorProp.DisplayTextNode))]
+    public static void NomaiTranslatorProp_DisplayTextNode_Postfix(NomaiTranslatorProp __instance)
+    {
+        // Adapted from Forgotten Castaways. Thanks coderCleric! I love stealing!
+        var component = __instance._scanBeams.FirstOrDefault()?._nomaiTextLine?.gameObject?.GetComponent<ConditionalNomaiTextTranslatable>();
+
+        if (component != null && !component.IsIllegible() && !__instance._nomaiTextComponent.IsTranslated(__instance._currentTextID) && __instance._translationTimeElapsed == 0f)
+        {
+            __instance._textField.text = component.GetUntranslatedPrompt();
+        }
     }
 }
