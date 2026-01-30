@@ -54,6 +54,11 @@ namespace NewHorizons.External.Modules.TranslatorText
         /// Allows you to create custom alien language text by overriding the displayed image
         /// </summary>
         public string customTextImage = null;
+
+        /// <summary>
+        /// Makes this text require a persistent condition to be known before it can be translated
+        /// </summary>
+        public string legiblePersistentCondition = null;
     }
 
 }

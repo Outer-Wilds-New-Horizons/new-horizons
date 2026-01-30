@@ -1,3 +1,4 @@
+using NewHorizons.Components;
 using NewHorizons.Components.Props;
 using NewHorizons.External;
 using NewHorizons.External.Modules.Props;
@@ -661,6 +662,11 @@ namespace NewHorizons.Builder.Props.TranslatorText
             {
                 var img = ImageUtilities.GetTexture(mod, arcInfo.customTextImage);
                 arc.GetComponent<MeshRenderer>().material.mainTexture = img;
+            }
+
+            if (!string.IsNullOrEmpty(arcInfo?.legiblePersistentCondition))
+            {
+                arc.AddComponent<ConditionalNomaiTextTranslatable>().legiblePersistentCondition = arcInfo.legiblePersistentCondition;
             }
 
             return arc;
