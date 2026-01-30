@@ -2767,6 +2767,14 @@
         "customTextImage": {
           "type": "string",
           "description": "Allows you to create custom alien language text by overriding the displayed image"
+        },
+        "legiblePersistentCondition": {
+          "type": "string",
+          "description": "Makes this text require a persistent condition to be known before it can be translated"
+        },
+        "customLanguageName": {
+          "type": "string",
+          "description": "Replaces the \"Nomai\" part in \"Untranslated Nomai writing\". Translated in the OtherDictionary."
         }
       }
     },
