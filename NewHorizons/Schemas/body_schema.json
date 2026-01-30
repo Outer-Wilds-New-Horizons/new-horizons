@@ -2785,13 +2785,15 @@
         "Adult",
         "Child",
         "Stranger",
-        "Teenager"
+        "Teenager",
+        "Custom"
       ],
       "enum": [
         "adult",
         "child",
         "stranger",
-        "teenager"
+        "teenager",
+        "custom"
       ]
     },
     "MVector2": {
