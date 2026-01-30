@@ -573,10 +573,9 @@ namespace NewHorizons.Builder.Props.TranslatorText
 
             var hasCustomImage = !string.IsNullOrEmpty(arcInfo?.customTextImage);
 
-            // Just works better this way since this also expects just an image and not a dynamic spiral
             if (hasCustomImage)
             {
-                type = NomaiTextArcInfo.NomaiTextArcType.Stranger;
+                type = NomaiTextArcInfo.NomaiTextArcType.Custom;
             }
 
             NomaiTextArcBuilder.SpiralProfile profile;
@@ -593,7 +592,12 @@ namespace NewHorizons.Builder.Props.TranslatorText
                     profile = NomaiTextArcBuilder.adultSpiralProfile;
                     mat = _childArcMaterial;
                     break;
+                case NomaiTextArcInfo.NomaiTextArcType.Custom:
                 case NomaiTextArcInfo.NomaiTextArcType.Stranger when _ghostArcMaterial != null:
+                    if (type != NomaiTextArcInfo.NomaiTextArcType.Custom)
+                    {
+                        overrideColor = new Color(0.0158f, 1.0f, 0.5601f, 1f);
+                    }
                     profile = NomaiTextArcBuilder.strangerSpiralProfile;
                     mat = _ghostArcMaterial;
                     overrideMesh = MeshUtilities.RectangleMeshFromCorners(new Vector3[]{ 
@@ -602,7 +606,6 @@ namespace NewHorizons.Builder.Props.TranslatorText
                         new Vector3(-0.9f, 2.0f, 0.0f), 
                         new Vector3(0.9f, 2.0f, 0.0f) 
                     });
-                    overrideColor = new Color(0.0158f, 1.0f, 0.5601f, 1f);
                     break;
                 case NomaiTextArcInfo.NomaiTextArcType.Adult:
                 default:
@@ -622,7 +625,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
             }
 
             // Hardcoded stranger point fix
-            if (type == NomaiTextArcInfo.NomaiTextArcType.Stranger)
+            if (type == NomaiTextArcInfo.NomaiTextArcType.Stranger || type == NomaiTextArcInfo.NomaiTextArcType.Custom)
             {
                 Delay.FireOnNextUpdate(() =>
                 {

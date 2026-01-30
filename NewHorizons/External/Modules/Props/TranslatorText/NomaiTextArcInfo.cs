@@ -21,7 +21,9 @@ namespace NewHorizons.External.Modules.TranslatorText
 
             [EnumMember(Value = @"stranger")] Stranger = 2,
 
-            [EnumMember(Value = @"teenager")] Teenager = 3
+            [EnumMember(Value = @"teenager")] Teenager = 3,
+            
+            [EnumMember(Value = @"custom")] Custom = 4,
         }
 
         /// <summary>
