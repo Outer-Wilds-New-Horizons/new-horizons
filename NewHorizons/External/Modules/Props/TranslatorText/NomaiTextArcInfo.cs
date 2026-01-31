@@ -53,17 +53,19 @@ namespace NewHorizons.External.Modules.TranslatorText
         [DefaultValue(-1)] public int variation = -1;
 
         /// <summary>
-        /// Allows you to create custom alien language text by overriding the displayed image
+        /// Allows you to create custom alien language text by overriding the displayed image. This will automatically set the <see cref="type"/> to <see cref="NomaiTextArcType.Custom"/>.
         /// </summary>
         public string customTextImage = null;
 
         /// <summary>
-        /// Makes this text require a persistent condition to be known before it can be translated
+        /// Makes this text require a persistent condition to be known before it can be translated. 
+        /// If you want it to always be untranslatable, use a condition that you will never set like "UNTRANSLATABLE".
         /// </summary>
         public string legiblePersistentCondition = null;
 
         /// <summary>
         /// Replaces the "Nomai" part in "Untranslated Nomai writing". Translated in the OtherDictionary.
+        /// If <see cref="type"/> is set to <see cref="NomaiTextArcType.Custom"/>, this will default to "unknown".
         /// </summary>
         public string customLanguageName = null;
 
