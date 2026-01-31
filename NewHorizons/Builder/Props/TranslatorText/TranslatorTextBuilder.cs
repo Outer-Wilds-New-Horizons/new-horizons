@@ -650,6 +650,11 @@ namespace NewHorizons.Builder.Props.TranslatorText
                 arc.GetComponent<MeshFilter>().sharedMesh = overrideMesh;
             }
 
+            if (arcInfo?.overrideColor != null)
+            {
+                overrideColor = arcInfo.overrideColor.ToColor();
+            }
+
             if (overrideColor != null)
             {
                 NHTranslatorTextLineColorizer colorizer = arc.AddComponent<NHTranslatorTextLineColorizer>();

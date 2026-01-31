@@ -66,6 +66,11 @@ namespace NewHorizons.External.Modules.TranslatorText
         /// Replaces the "Nomai" part in "Untranslated Nomai writing". Translated in the OtherDictionary.
         /// </summary>
         public string customLanguageName = null;
+
+        /// <summary>
+        /// Overrides the default color of the text arc.
+        /// </summary>
+        public MColor overrideColor;
     }
 
 }
