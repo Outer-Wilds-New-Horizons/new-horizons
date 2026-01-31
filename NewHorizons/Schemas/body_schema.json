@@ -2763,6 +2763,26 @@
             "null"
           ],
           "description": "Whether to flip the spiral from left-curling to right-curling or vice versa. If specified, auto spiral will not touch this arc."
+        },
+        "customTextImage": {
+          "type": "string",
+          "description": "Allows you to create custom alien language text by overriding the displayed image. This will automatically set the type to Custom."
+        },
+        "legiblePersistentCondition": {
+          "type": "string",
+          "description": "Makes this text require a persistent condition to be known before it can be translated. \nIf you want it to always be untranslatable, use a condition that you will never set like \"UNTRANSLATABLE\"."
+        },
+        "customLanguageName": {
+          "type": "string",
+          "description": "Replaces the \"Nomai\" part in \"Untranslated Nomai writing\". Translated in the OtherDictionary.\nIf type is set to Custom, this will default to \"unknown\"."
+        },
+        "overrideUnreadColor": {
+          "description": "Overrides the default unread color of the text arc.",
+          "$ref": "#/definitions/MColor"
+        },
+        "overrideTranslatedColor": {
+          "description": "Overrides the default translated color of the text arc. This requires that overrideUnreadColor is also set. \nIf overrideUnreadColor is set but this is not, the translated color will be a desaturated version of the unread color.",
+          "$ref": "#/definitions/MColor"
         }
       }
     },
@@ -2773,13 +2793,15 @@
         "Adult",
         "Child",
         "Stranger",
-        "Teenager"
+        "Teenager",
+        "Custom"
       ],
       "enum": [
         "adult",
         "child",
         "stranger",
-        "teenager"
+        "teenager",
+        "custom"
       ]
     },
     "MVector2": {

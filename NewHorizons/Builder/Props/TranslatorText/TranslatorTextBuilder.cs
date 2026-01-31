@@ -1,3 +1,4 @@
+using NewHorizons.Components;
 using NewHorizons.Components.Props;
 using NewHorizons.External;
 using NewHorizons.External.Modules.Props;
@@ -5,9 +6,11 @@ using NewHorizons.External.Modules.TranslatorText;
 using NewHorizons.External.SerializableData;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
+using NewHorizons.Utility.Files;
 using NewHorizons.Utility.Geometry;
 using NewHorizons.Utility.OWML;
 using Newtonsoft.Json;
+using OWML.Common;
 using OWML.Utils;
 using System;
 using System.Collections.Generic;
@@ -504,7 +507,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
                     arcReadFromCache.transform.localEulerAngles = new Vector3(0, 0, cachedData[i].zRotation);
                 }
 
-                GameObject arc = MakeArc(arcInfo, conversationZone, parent, textEntryID, arcReadFromCache);
+                GameObject arc = MakeArc(nhBody.Mod, arcInfo, conversationZone, parent, textEntryID, arcReadFromCache);
                 arc.name = $"Arc {textEntryID} - Child of {parentID}";
 
                 arcsByID.Add(textEntryID, arc);
@@ -563,14 +566,23 @@ namespace NewHorizons.Builder.Props.TranslatorText
             }
         }
 
-        internal static GameObject MakeArc(NomaiTextArcInfo arcInfo, GameObject conversationZone, GameObject parent, int textEntryID, GameObject prebuiltArc = null)
+        internal static GameObject MakeArc(IModBehaviour mod, NomaiTextArcInfo arcInfo, GameObject conversationZone, GameObject parent, int textEntryID, GameObject prebuiltArc = null)
         {
             GameObject arc;
             var type = arcInfo != null ? arcInfo.type : NomaiTextArcInfo.NomaiTextArcType.Adult;
+
+            var hasCustomImage = !string.IsNullOrEmpty(arcInfo?.customTextImage);
+
+            if (hasCustomImage)
+            {
+                type = NomaiTextArcInfo.NomaiTextArcType.Custom;
+            }
+
             NomaiTextArcBuilder.SpiralProfile profile;
             Material mat;
             Mesh overrideMesh = null;
-            Color? overrideColor = null;
+            Color? overrideUnreadColor = null;
+            Color? overrideTranslatedColor = null;
             switch (type)
             {
                 case NomaiTextArcInfo.NomaiTextArcType.Child:
@@ -581,7 +593,18 @@ namespace NewHorizons.Builder.Props.TranslatorText
                     profile = NomaiTextArcBuilder.adultSpiralProfile;
                     mat = _childArcMaterial;
                     break;
+                case NomaiTextArcInfo.NomaiTextArcType.Custom:
                 case NomaiTextArcInfo.NomaiTextArcType.Stranger when _ghostArcMaterial != null:
+                    if (type == NomaiTextArcInfo.NomaiTextArcType.Stranger)
+                    {
+                        overrideUnreadColor = new Color(0.0158f, 1.0f, 0.5601f, 1f);
+                        overrideTranslatedColor = new Color(0.4f, 0.6f, 0.5f, 1f);
+                    }
+                    else
+                    {
+                        overrideUnreadColor = Color.white;
+                        overrideTranslatedColor = Color.gray;
+                    }
                     profile = NomaiTextArcBuilder.strangerSpiralProfile;
                     mat = _ghostArcMaterial;
                     overrideMesh = MeshUtilities.RectangleMeshFromCorners(new Vector3[]{ 
@@ -590,7 +613,6 @@ namespace NewHorizons.Builder.Props.TranslatorText
                         new Vector3(-0.9f, 2.0f, 0.0f), 
                         new Vector3(0.9f, 2.0f, 0.0f) 
                     });
-                    overrideColor = new Color(0.0158f, 1.0f, 0.5601f, 1f);
                     break;
                 case NomaiTextArcInfo.NomaiTextArcType.Adult:
                 default:
@@ -598,7 +620,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
                     mat = _adultArcMaterial;
                     break;
             }
-            
+
             if (prebuiltArc != null) 
             {
                 arc = prebuiltArc;
@@ -610,7 +632,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
             }
 
             // Hardcoded stranger point fix
-            if (type == NomaiTextArcInfo.NomaiTextArcType.Stranger)
+            if (type == NomaiTextArcInfo.NomaiTextArcType.Stranger || type == NomaiTextArcInfo.NomaiTextArcType.Custom)
             {
                 Delay.FireOnNextUpdate(() =>
                 {
@@ -631,12 +653,47 @@ namespace NewHorizons.Builder.Props.TranslatorText
             arc.GetComponent<MeshRenderer>().enabled = false;
 
             if (overrideMesh != null)
+            {
                 arc.GetComponent<MeshFilter>().sharedMesh = overrideMesh;
+            }
 
-            if (overrideColor != null)
+            if (arcInfo?.overrideUnreadColor != null)
+            {
+                overrideUnreadColor = arcInfo.overrideUnreadColor.ToColor();
+                overrideTranslatedColor = null;
+            }
+
+            if (arcInfo?.overrideTranslatedColor != null)
+            {
+                overrideTranslatedColor = arcInfo.overrideTranslatedColor.ToColor();
+            }
+
+            if (overrideUnreadColor != null)
             {
                 NHTranslatorTextLineColorizer colorizer = arc.AddComponent<NHTranslatorTextLineColorizer>();
-                colorizer.unreadColor = (Color)overrideColor;
+                colorizer.unreadColor = (Color)overrideUnreadColor;
+                if (overrideTranslatedColor != null)
+                {
+                    colorizer.calculateTranslatedColor = false;
+                    colorizer.translatedColor = (Color)overrideTranslatedColor;
+                }
+            }
+
+            if (hasCustomImage)
+            {
+                var img = ImageUtilities.GetTexture(mod, arcInfo.customTextImage);
+                arc.GetComponent<MeshRenderer>().material.mainTexture = img;
+            }
+
+            // Make stranger have default language name (unless overridden) and custom be unknown (unless specified)
+            if (type is NomaiTextArcInfo.NomaiTextArcType.Stranger or NomaiTextArcInfo.NomaiTextArcType.Custom 
+                || !string.IsNullOrEmpty(arcInfo?.legiblePersistentCondition) || !string.IsNullOrEmpty(arcInfo?.customLanguageName))
+            {
+                var customTranslatableComponent = arc.AddComponent<ConditionalNomaiTextTranslatable>();
+                customTranslatableComponent.legiblePersistentCondition = arcInfo?.legiblePersistentCondition;
+                customTranslatableComponent.customLanguageName = !string.IsNullOrEmpty(arcInfo?.customLanguageName)
+                    ? arcInfo.customLanguageName
+                    : (type == NomaiTextArcInfo.NomaiTextArcType.Stranger ? "LANGUAGE_NAME_GHOSTBIRD" : null);
             }
 
             arc.GetComponent<NomaiTextLine>().enabled = true;
