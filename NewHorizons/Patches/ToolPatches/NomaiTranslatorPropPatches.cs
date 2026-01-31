@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace NewHorizons.Patches.ToolPatches;
 
-[HarmonyPatch(typeof(ProbeLauncher))]
+[HarmonyPatch(typeof(NomaiTranslatorProp))]
 public static class NomaiTranslatorPropPatches
 {
     [HarmonyPrefix]
