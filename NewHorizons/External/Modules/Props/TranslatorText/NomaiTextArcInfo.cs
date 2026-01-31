@@ -68,9 +68,15 @@ namespace NewHorizons.External.Modules.TranslatorText
         public string customLanguageName = null;
 
         /// <summary>
-        /// Overrides the default color of the text arc.
+        /// Overrides the default unread color of the text arc.
         /// </summary>
-        public MColor overrideColor;
+        public MColor overrideUnreadColor;
+
+        /// <summary>
+        /// Overrides the default translated color of the text arc. This requires that <see cref="overrideUnreadColor"/> is also set. 
+        /// If <see cref="overrideUnreadColor"/> is set but this is not, the translated color will be a desaturated version of the unread color.
+        /// </summary>
+        public MColor overrideTranslatedColor;
     }
 
 }

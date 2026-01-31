@@ -581,7 +581,8 @@ namespace NewHorizons.Builder.Props.TranslatorText
             NomaiTextArcBuilder.SpiralProfile profile;
             Material mat;
             Mesh overrideMesh = null;
-            Color? overrideColor = null;
+            Color? overrideUnreadColor = null;
+            Color? overrideTranslatedColor = null;
             switch (type)
             {
                 case NomaiTextArcInfo.NomaiTextArcType.Child:
@@ -596,11 +597,13 @@ namespace NewHorizons.Builder.Props.TranslatorText
                 case NomaiTextArcInfo.NomaiTextArcType.Stranger when _ghostArcMaterial != null:
                     if (type == NomaiTextArcInfo.NomaiTextArcType.Stranger)
                     {
-                        overrideColor = new Color(0.0158f, 1.0f, 0.5601f, 1f);
+                        overrideUnreadColor = new Color(0.0158f, 1.0f, 0.5601f, 1f);
+                        overrideTranslatedColor = new Color(0.4f, 0.6f, 0.5f, 1f);
                     }
                     else
                     {
-                        overrideColor = Color.white;
+                        overrideUnreadColor = Color.white;
+                        overrideTranslatedColor = Color.gray;
                     }
                     profile = NomaiTextArcBuilder.strangerSpiralProfile;
                     mat = _ghostArcMaterial;
@@ -654,15 +657,26 @@ namespace NewHorizons.Builder.Props.TranslatorText
                 arc.GetComponent<MeshFilter>().sharedMesh = overrideMesh;
             }
 
-            if (arcInfo?.overrideColor != null)
+            if (arcInfo?.overrideUnreadColor != null)
             {
-                overrideColor = arcInfo.overrideColor.ToColor();
+                overrideUnreadColor = arcInfo.overrideUnreadColor.ToColor();
+                overrideTranslatedColor = null;
             }
 
-            if (overrideColor != null)
+            if (arcInfo?.overrideTranslatedColor != null)
+            {
+                overrideTranslatedColor = arcInfo.overrideTranslatedColor.ToColor();
+            }
+
+            if (overrideUnreadColor != null)
             {
                 NHTranslatorTextLineColorizer colorizer = arc.AddComponent<NHTranslatorTextLineColorizer>();
-                colorizer.unreadColor = (Color)overrideColor;
+                colorizer.unreadColor = (Color)overrideUnreadColor;
+                if (overrideTranslatedColor != null)
+                {
+                    colorizer.calculateTranslatedColor = false;
+                    colorizer.translatedColor = (Color)overrideTranslatedColor;
+                }
             }
 
             if (hasCustomImage)
