@@ -656,11 +656,6 @@ namespace NewHorizons.Builder.Props.TranslatorText
                 colorizer.unreadColor = (Color)overrideColor;
             }
 
-            arc.GetComponent<NomaiTextLine>().enabled = true;
-            arc.SetActive(true);
-
-            if (arcInfo != null) arcInfoToCorrespondingSpawnedGameObject[arcInfo] = arc;
-
             if (hasCustomImage)
             {
                 var img = ImageUtilities.GetTexture(mod, arcInfo.customTextImage);
@@ -673,6 +668,11 @@ namespace NewHorizons.Builder.Props.TranslatorText
                 customTranslatableComponent.legiblePersistentCondition = arcInfo.legiblePersistentCondition;
                 customTranslatableComponent.customLanguageName = arcInfo.customLanguageName;
             }
+
+            arc.GetComponent<NomaiTextLine>().enabled = true;
+            arc.SetActive(true);
+
+            if (arcInfo != null) arcInfoToCorrespondingSpawnedGameObject[arcInfo] = arc;
 
             return arc;
         }
