@@ -594,9 +594,13 @@ namespace NewHorizons.Builder.Props.TranslatorText
                     break;
                 case NomaiTextArcInfo.NomaiTextArcType.Custom:
                 case NomaiTextArcInfo.NomaiTextArcType.Stranger when _ghostArcMaterial != null:
-                    if (type != NomaiTextArcInfo.NomaiTextArcType.Custom)
+                    if (type == NomaiTextArcInfo.NomaiTextArcType.Stranger)
                     {
                         overrideColor = new Color(0.0158f, 1.0f, 0.5601f, 1f);
+                    }
+                    else
+                    {
+                        overrideColor = Color.white;
                     }
                     profile = NomaiTextArcBuilder.strangerSpiralProfile;
                     mat = _ghostArcMaterial;
