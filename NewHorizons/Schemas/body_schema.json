@@ -2775,6 +2775,14 @@
         "customLanguageName": {
           "type": "string",
           "description": "Replaces the \"Nomai\" part in \"Untranslated Nomai writing\". Translated in the OtherDictionary."
+        },
+        "overrideUnreadColor": {
+          "description": "Overrides the default unread color of the text arc.",
+          "$ref": "#/definitions/MColor"
+        },
+        "overrideTranslatedColor": {
+          "description": "Overrides the default translated color of the text arc. This requires that overrideUnreadColor is also set. \nIf overrideUnreadColor is set but this is not, the translated color will be a desaturated version of the unread color.",
+          "$ref": "#/definitions/MColor"
         }
       }
     },
