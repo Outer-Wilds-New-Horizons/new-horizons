@@ -685,11 +685,15 @@ namespace NewHorizons.Builder.Props.TranslatorText
                 arc.GetComponent<MeshRenderer>().material.mainTexture = img;
             }
 
-            if (!string.IsNullOrEmpty(arcInfo?.legiblePersistentCondition) || !string.IsNullOrEmpty(arcInfo?.customLanguageName))
+            // Make stranger have default language name (unless overridden) and custom be unknown (unless specified)
+            if (type is NomaiTextArcInfo.NomaiTextArcType.Stranger or NomaiTextArcInfo.NomaiTextArcType.Custom 
+                || !string.IsNullOrEmpty(arcInfo?.legiblePersistentCondition) || !string.IsNullOrEmpty(arcInfo?.customLanguageName))
             {
                 var customTranslatableComponent = arc.AddComponent<ConditionalNomaiTextTranslatable>();
-                customTranslatableComponent.legiblePersistentCondition = arcInfo.legiblePersistentCondition;
-                customTranslatableComponent.customLanguageName = arcInfo.customLanguageName;
+                customTranslatableComponent.legiblePersistentCondition = arcInfo?.legiblePersistentCondition;
+                customTranslatableComponent.customLanguageName = !string.IsNullOrEmpty(arcInfo?.customLanguageName)
+                    ? arcInfo.customLanguageName
+                    : (type == NomaiTextArcInfo.NomaiTextArcType.Stranger ? "LANGUAGE_NAME_GHOSTBIRD" : null);
             }
 
             arc.GetComponent<NomaiTextLine>().enabled = true;

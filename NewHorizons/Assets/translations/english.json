@@ -30,7 +30,8 @@
   "OtherDictionary": {
     "NOMAI_SHUTTLE_COMPUTER": "The <![CDATA[<color=orange>shuttle</color>]]> is currently resting at <![CDATA[<color=lightblue>{0}</color>]]>.",
     "UNKNOWN_LANGUAGE_UNTRANSLATED": "<!> Untranslated unknown writing <!>",
-    "KNOWN_LANGUAGE_UNTRANSLATED": "<!> Untranslated {0} writing <!>"
+    "KNOWN_LANGUAGE_UNTRANSLATED": "<!> Untranslated {0} writing <!>",
+    "LANGUAGE_NAME_GHOSTBIRD": "Inhabitant"
   },
   "AchievementTranslations": {
     "NH_EATEN_OUTSIDE_BRAMBLE": {
