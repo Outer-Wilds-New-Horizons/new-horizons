@@ -172,7 +172,7 @@
     },
     "SimplifiedDetailInfo": {
       "type": "object",
-      "description": "A lesser form of DetailInfo used for the title screen since that supports fewer features",
+      "description": "A lesser form of DetailInfo used for the title screen and proxies since that supports fewer features",
       "additionalProperties": false,
       "properties": {
         "rotation": {
@@ -234,6 +234,14 @@
         "stretch": {
           "description": "Scale each axis of the prop. Overrides `scale`.",
           "$ref": "#/definitions/MVector3"
+        },
+        "activationCondition": {
+          "type": "string",
+          "description": "Activates this game object when the dialogue condition is met"
+        },
+        "deactivationCondition": {
+          "type": "string",
+          "description": "Deactivates this game object when the dialogue condition is met"
         }
       }
     },
