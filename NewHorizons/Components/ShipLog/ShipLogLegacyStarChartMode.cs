@@ -117,7 +117,7 @@ namespace NewHorizons.Components.ShipLog
             var newCard = Instantiate(_cardTemplate, parent);
             var textComponent = newCard.transform.Find("EntryCardRoot/NameBackground/Name").GetComponent<Text>();
 
-            var name = UniqueIDToName(uniqueID);
+            var name = ShipLogStarChartMode.UniqueIDToName(uniqueID);
 
             textComponent.text = name;
             if (name.Length > 17) textComponent.fontSize = 10;
@@ -241,22 +241,6 @@ namespace NewHorizons.Components.ShipLog
             }
         }
 
-        public static string UniqueIDToName(string uniqueID)
-        {
-            var name = TranslationHandler.GetTranslation(uniqueID, TranslationHandler.TextType.UI);
-
-            // If it can't find a translation it just returns the key
-            if (!name.Equals(uniqueID)) return name;
-
-            // Else we return a default name
-            if (uniqueID.Equals("SolarSystem")) return "The Outer Wilds";
-
-            var splitString = uniqueID.Split('.');
-            if (splitString.Length > 1) splitString = splitString.Skip(1).ToArray();
-            name = string.Join("", splitString).SplitCamelCase();
-            return name;
-        }
-
         private int Posmod(int a, int b)
         {
             return (a % b + b) % b;
@@ -283,7 +267,7 @@ namespace NewHorizons.Components.ShipLog
             Locator._rfTracker.UntargetReferenceFrame();
             GlobalMessenger.FireEvent("UntargetReferenceFrame");
 
-            var name = UniqueIDToName(shipLogEntryCard.name);
+            var name = ShipLogStarChartMode.UniqueIDToName(shipLogEntryCard.name);
 
             var warpNotificationDataText = TranslationHandler.GetTranslation("WARP_LOCKED", TranslationHandler.TextType.UI).Replace("{0}", name.ToUpperFixed());
             _warpNotificationData = new NotificationData(warpNotificationDataText);
