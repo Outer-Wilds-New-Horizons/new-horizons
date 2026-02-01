@@ -27,8 +27,12 @@ namespace NewHorizons.Handlers
         internal static bool reloaded = false;
         internal static bool reopenProfile = false;
 
+        internal static TitleScreenInfo CurrentTitleScreenConfig { get; private set; }
+
         public static void Init()
         {
+            CurrentTitleScreenConfig = null;
+
             var scene = SearchUtilities.Find("Scene");
             var background = SearchUtilities.Find("Scene/Background");
             var planetPivot = SearchUtilities.Find("Scene/Background/PlanetPivot");
@@ -136,6 +140,8 @@ namespace NewHorizons.Handlers
 
         public static void BuildConfig(IModBehaviour mod, TitleScreenInfo config)
         {
+            CurrentTitleScreenConfig = config;
+
             if (config.menuTextTint != null)
             {
                 TitleScreenColourHandler.SetColour(config.menuTextTint.ToColor());
@@ -160,14 +166,22 @@ namespace NewHorizons.Handlers
             {
                 var musicSource = SearchUtilities.Find("Scene/AudioSource_Music").GetComponent<OWAudioSource>();
                 var audioType = AudioTypeHandler.GetAudioType(config.music, mod);
-                Delay.FireOnNextUpdate(() => musicSource.AssignAudioLibraryClip(audioType));
+                Delay.FireOnNextUpdate(() =>
+                {
+                    musicSource.AssignAudioLibraryClip(audioType);
+                    musicSource.SetMaxVolume(config.musicVolume);
+                });
             }
 
             if (!string.IsNullOrEmpty(config.ambience))
             {
                 var ambienceSource = SearchUtilities.Find("Scene/AudioSource_Ambience").GetComponent<OWAudioSource>();
                 var audioType = AudioTypeHandler.GetAudioType(config.ambience, mod);
-                Delay.FireOnNextUpdate(() => ambienceSource.AssignAudioLibraryClip(audioType));
+                Delay.FireOnNextUpdate(() =>
+                {
+                    ambienceSource.AssignAudioLibraryClip(audioType);
+                    ambienceSource.SetMaxVolume(config.ambienceVolume);
+                });
             }
 
             var background = SearchUtilities.Find("Scene/Background");
@@ -469,6 +483,8 @@ namespace NewHorizons.Handlers
             {
                 builderList.list.RemoveAll(builder => builder is TitleScreenConfigBuilder);
             }
+
+            CurrentTitleScreenConfig = null;
         }
 
         internal class TitleScreenBuilderList

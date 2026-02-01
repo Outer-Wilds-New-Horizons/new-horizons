@@ -41,4 +41,22 @@ internal static class TitleScenePatches
             }
         }
     }
+
+    [HarmonyPrefix, HarmonyPatch(typeof(TitleScreenAnimation), nameof(TitleScreenAnimation.FadeInMusic))]
+    public static bool TitleScreenAnimation_FadeInMusic(TitleScreenAnimation __instance)
+    {
+        if (!__instance._musicSource.isPlaying)
+        {
+            float fadeTime = TitleSceneHandler.CurrentTitleScreenConfig?.musicFadeInTime ?? 8f;
+            if (fadeTime <= 0f)
+            {
+                __instance._musicSource.SetLocalVolume(1f);
+                __instance._musicSource.Play();
+                __instance._musicSource.UpdateSourceVolume();
+            }
+            else
+                __instance._musicSource.FadeIn(fadeDuration: fadeTime, fadeFromNothing: true);
+        }
+        return false;
+    }
 }
