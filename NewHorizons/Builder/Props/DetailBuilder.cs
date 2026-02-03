@@ -462,9 +462,20 @@ namespace NewHorizons.Builder.Props
 
             // If it's not a moving ghostbird (ie Prefab_IP_GhostBird/Ghostbird_IP_ANIM) make sure it doesnt spam NREs
             // Manual parent chain so we can find inactive
-            else if (component is GhostIK or GhostEffects && component.transform.parent.GetComponent<GhostBrain>() == null)
+            else if (component is GhostIK or GhostEffects or ProxyGhostController && component.transform.parent.GetComponent<GhostBrain>() == null)
             {
-                UnityEngine.Object.DestroyImmediate(component);
+                // Disable all IK by default bc the targets are going to be on the stranger (fixes ghost birds having broken arms #1136)
+                if (component is ProxyGhostController proxyGhostController)
+                {
+                    proxyGhostController._leftFootIK = false;
+                    proxyGhostController._rightFootIK = false;
+                    proxyGhostController._leftHandIK = false;
+                    proxyGhostController._rightHandIK = false;
+                }
+                else
+                {
+                    UnityEngine.Object.DestroyImmediate(component);
+                }
             }
             // If it's not a moving anglerfish (ie Anglerfish_Body/Beast_Anglerfish) make sure the anim controller is regular
             // Manual parent chain so we can find inactive
