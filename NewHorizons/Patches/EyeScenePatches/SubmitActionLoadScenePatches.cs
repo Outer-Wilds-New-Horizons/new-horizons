@@ -28,6 +28,9 @@ namespace NewHorizons.Patches.EyeScenePatches
                 __instance._sceneToLoad = SubmitActionLoadScene.LoadableScenes.GAME;
             }
 
+            // Credits doesn't need to load any assets, so just let it do its thing
+            if (__instance._sceneToLoad == SubmitActionLoadScene.LoadableScenes.CREDITS) return true;
+
             // Don't bother going through this stuff if we don't have to
             if (AssetBundleUtilities.AreRequiredAssetsLoaded()) return true;
             
