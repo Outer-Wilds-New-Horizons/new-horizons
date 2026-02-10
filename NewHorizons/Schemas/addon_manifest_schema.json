@@ -62,7 +62,11 @@
         },
         "secret": {
           "type": "boolean",
-          "description": "Should the name and description of the achievement be hidden until it is unlocked. Good for hiding spoilers!"
+          "description": "Should the name and description of the achievement be hidden until it is unlocked. Good for hiding spoilers! This should be false if showDescriptionNotAchieved is true."
+        },
+        "showDescriptionNotAchieved": {
+          "type": "boolean",
+          "description": "Should an alternate description be shown before the achievement is unlocked. Good for giving hints on how to unlock the achievement without outright spoiling it. Ignored if secret is true."
         },
         "factIDs": {
           "type": "array",
