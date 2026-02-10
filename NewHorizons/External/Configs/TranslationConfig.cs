@@ -45,9 +45,14 @@ namespace NewHorizons.External.Configs
             public string Name;
 
             /// <summary>
-            /// The short description for this achievement.
+            /// The short description for this achievement. (If showDescriptionNotAchieved is true in the achievement info this is shown AFTER the player gets the achievement)
             /// </summary>
             public string Description;
+
+            /// <summary>
+            /// The short description for this achievement shown BEFORE the player gets the achievement. (Only if showDescriptionNotAchieved is true in the achievement info)
+            /// </summary>
+            public string DescriptionNotAchieved;
         }
 #pragma warning restore 0169
         #endregion
