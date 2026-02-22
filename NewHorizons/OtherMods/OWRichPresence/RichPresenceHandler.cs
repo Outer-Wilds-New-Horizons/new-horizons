@@ -38,7 +38,7 @@ namespace NewHorizons.OtherMods.OWRichPresence
         {
             if (!Enabled) return;
 
-            NHLogger.LogVerbose($"Registering {go.name} to OWRichPresence");
+            NHLogger.LogVerbose($"Registering {name} to OWRichPresence");
 
             var localizedName = TranslationHandler.GetTranslation(name, TranslationHandler.TextType.UI);
             var message = TranslationHandler.GetTranslation("RICH_PRESENCE_EXPLORING", TranslationHandler.TextType.UI).Replace("{0}", localizedName);
@@ -47,7 +47,10 @@ namespace NewHorizons.OtherMods.OWRichPresence
             if (isStar) fallbackKey = "defaultstar";
             else if (hasAtmosphere) fallbackKey = "defaultplanetatmosphere";
 
-            API.CreateTrigger(go, sector, message, name.Replace(" ", "").Replace("'", "").Replace("-", "").ToLowerInvariant(), fallbackKey);
+            string imageKey = name.Replace(" ", "").Replace("'", "").Replace("-", "").ToLowerInvariant();
+            NHLogger.LogVerbose($"Using image key {imageKey} with a fallback key of {fallbackKey} for OWRichPresence");
+
+            API.CreateTrigger(go, sector, message, imageKey, fallbackKey);
         }
 
         public static void OnStarSystemLoaded(string name)
