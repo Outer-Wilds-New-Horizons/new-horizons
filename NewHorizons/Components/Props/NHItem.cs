@@ -94,18 +94,23 @@ namespace NewHorizons.Components.Props
             }
         }
 
-        void PlayCustomSound(AudioType audioType)
+        private void PlayCustomSound(AudioType audioType)
         {
-            if (audioType == AudioType.None) return;
             if (ItemBuilder.IsCustomItemType(ItemType))
             {
-                Locator.GetPlayerAudioController()._oneShotExternalSource.PlayOneShot(audioType);
+                PlayOneShot(audioType);
             }
             else
             {
                 // Vanilla items play sounds via hard-coded ItemType switch statements
                 // in the PlayerAudioController code, so there's no clean way to override them
             }
+        }
+
+        public void PlayOneShot(AudioType audioType)
+        {
+            if (audioType == AudioType.None) return;
+            Locator.GetPlayerAudioController()._oneShotExternalSource.PlayOneShot(audioType);
         }
     }
 }
