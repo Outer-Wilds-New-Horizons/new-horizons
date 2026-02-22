@@ -20,7 +20,7 @@ namespace NewHorizons.Components.Props
         public bool ClearPickupConditionOnDrop;
         public string PickupFact;
 
-        string _translatedName;
+        protected string _translatedName;
 
         public ItemType ItemType
         {
