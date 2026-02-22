@@ -7,7 +7,7 @@ namespace NewHorizons.Components.Props
     public class NHItem : OWItem
     {
         public string DisplayName;
-        public bool Droppable;
+        public bool Droppable = true;
         public AudioType PickupAudio;
         public AudioType DropAudio;
         public AudioType SocketAudio;
