@@ -261,6 +261,8 @@ namespace NewHorizons.Handlers
                             var orbit = body.Config.Orbit.semiMajorAxis == 0 ? quantumPlanet.groundState.orbit : body.Config.Orbit;
 
                             quantumPlanet.states.Add(new QuantumPlanet.State(sector, orbit));
+
+                            RichPresenceHandler.SetUpPlanet(body.Config.name, existingPlanet, sector, body.Config.Star != null, body.Config.Atmosphere != null);
                         }
                         catch (Exception ex)
                         {
