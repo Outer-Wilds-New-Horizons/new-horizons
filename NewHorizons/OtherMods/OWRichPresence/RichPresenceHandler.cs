@@ -47,7 +47,7 @@ namespace NewHorizons.OtherMods.OWRichPresence
             if (isStar) fallbackKey = "defaultstar";
             else if (hasAtmosphere) fallbackKey = "defaultplanetatmosphere";
 
-            string imageKey = name.Replace(" ", "").Replace("'", "").Replace("-", "").ToLowerInvariant();
+            string imageKey = name.Replace(" ", "").Replace("'", "").Replace("-", "").Replace(".", "_").ToLowerInvariant();
             NHLogger.LogVerbose($"Using image key {imageKey} with a fallback key of {fallbackKey} for OWRichPresence");
 
             API.CreateTrigger(go, sector, message, imageKey, fallbackKey);
