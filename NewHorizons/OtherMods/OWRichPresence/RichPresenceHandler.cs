@@ -34,6 +34,11 @@ namespace NewHorizons.OtherMods.OWRichPresence
             }
         }
 
+        public static string NameToImageKey(string name)
+        {
+            return name.Replace(" ", "").Replace("'", "").Replace("-", "").Replace(".", "_").ToLowerInvariant();
+        }
+
         public static void SetUpPlanet(string name, GameObject go, Sector sector, bool isStar = false, bool hasAtmosphere = false)
         {
             if (!Enabled) return;
@@ -47,7 +52,7 @@ namespace NewHorizons.OtherMods.OWRichPresence
             if (isStar) fallbackKey = "defaultstar";
             else if (hasAtmosphere) fallbackKey = "defaultplanetatmosphere";
 
-            string imageKey = name.Replace(" ", "").Replace("'", "").Replace("-", "").Replace(".", "_").ToLowerInvariant();
+            string imageKey = NameToImageKey(name);
             NHLogger.LogVerbose($"Using image key {imageKey} with a fallback key of {fallbackKey} for OWRichPresence");
 
             API.CreateTrigger(go, sector, message, imageKey, fallbackKey);
