@@ -36,7 +36,7 @@ namespace NewHorizons.OtherMods.OWRichPresence
 
         public static string NameToImageKey(string name)
         {
-            return name.Replace(" ", "").Replace("'", "").Replace("-", "").Replace(".", "_").ToLowerInvariant();
+            return name.Replace(" ", "").Replace("'", "").Replace("-", "").Replace(".", "_").Replace("#", "_").ToLowerInvariant();
         }
 
         public static void SetUpPlanet(string name, GameObject go, Sector sector, bool isStar = false, bool hasAtmosphere = false)
