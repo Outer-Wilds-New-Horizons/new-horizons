@@ -458,6 +458,22 @@ namespace NewHorizons.Utility
             return ao._name == AstroObject.Name.CustomString ? ao.GetCustomName() : ao._name.ToString();
         }
 
+        public static bool IsPlayerSpawn(this SpawnPoint spawnPoint) => !spawnPoint.IsShipSpawn();
+
+        public static SpawnPoint GetPlayerSpawnPoint(this PlayerSpawner playerSpawner, SpawnLocation location)
+        {
+            return playerSpawner._spawnList
+                .Where(IsPlayerSpawn)
+                .FirstOrDefault(spawnPoint => spawnPoint.GetSpawnLocation() == location);
+        }
+
+        public static SpawnPoint GetShipSpawnPoint(this PlayerSpawner playerSpawner, SpawnLocation location)
+        {
+            return playerSpawner._spawnList
+                .Where(sp => sp.IsShipSpawn())
+                .FirstOrDefault(spawnPoint => spawnPoint.GetSpawnLocation() == location);
+        }
+
         public static CodeMatcher LogInstructions(this CodeMatcher matcher, string prefix)
         {
             matcher.InstructionEnumeration().LogInstructions(prefix);
