@@ -262,5 +262,14 @@ namespace NewHorizons
         /// </summary>
         /// <param name="name"></param>
         void ClearSystem(string name);
+
+        /// <summary>
+        /// When resuming to the eye from title screen, the game briefly loads the solar system before warping the player to the eye in order to grab prefabs and other assets that are only in the solar system.
+        /// That can cause problems for mods if they try to do things when the solar system scene is finished loading, so this method allows you to check if that's currently happening and adjust accordingly.
+        /// </summary>
+        /// <returns>
+        /// <see langword="true"/> if the game is currently in the process of warping back to the eye from the solar system, <see langword="false"/> otherwise.
+        /// </returns>
+        bool IsWarpingBackToEye();
     }
 }

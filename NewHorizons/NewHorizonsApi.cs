@@ -379,5 +379,7 @@ namespace NewHorizons
                 Main.BodyDict.Remove(name);
             }
         }
+
+        public bool IsWarpingBackToEye() => Main.Instance.IsWarpingBackToEye;
     }
 }
