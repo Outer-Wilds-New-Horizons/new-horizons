@@ -25,6 +25,9 @@
     "DEBUG_REDO": "重做",
     "Vessel": "飞船"
   },
+  "OtherDictionary": {
+    "NOMAI_SHUTTLE_COMPUTER": "<![CDATA[<color=orange>穿梭机</color>]]>目前停泊在<![CDATA[<color=lightblue>{0}</color>]]>。"
+  },
   "AchievementTranslations": {
     "NH_EATEN_OUTSIDE_BRAMBLE": {
       "Name": "收容失效",
