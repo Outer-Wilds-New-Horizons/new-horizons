@@ -7,7 +7,7 @@ If you want to create a New Horizons project, you have a few options, depending 
 
 ## Using the New Horizons Template
 
-Use this method if you **are not  planning** to use any custom scripts in your mod. This is helpful if you'd prefer to avoid installing Visual Studio, but also limits what you can do in your mod.
+Use this method if you **are not  planning** to use any custom scripts in your mod. This is helpful if you'd prefer to avoid installing Visual Studio, but also limits what you can do in your mod. You will be limited to features of the base game like character dialogue, Nomai text, tornados, black holes, or whatever else you might find in the [New Horizons Examples Mod](https://outerwildsmods.com/mods/newhorizonsexamples/).
 
 ### Making a GitHub Repository
 
