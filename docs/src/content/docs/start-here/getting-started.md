@@ -109,6 +109,10 @@ If you run into issues please make sure:
 
 ## Creating An Addon
 
+This is a guide for setting up New Horizons **without custom code**. This means you will only be writing `json` and `xml` files and will be limited to features of the base game like character dialogue, Nomai text, tornados, black holes, or whatever else you might find in the [New Horizons Examples Mod](https://outerwildsmods.com/mods/newhorizonsexamples/). If you already know you want to implement custom code, follow the [Outer Wilds Mod Loader getting started guide](https://owml.outerwildsmods.com/guides/getting_started.html) instead. When you set up your mod project using the OWML template **you must enable "Use New Horizons" in order for it to work with New Horizons**. 
+
+If you want to add custom code to a project at a later date simply follow the guide above and copy over all `json` and `xml` files to the new project.
+
 ### Making a GitHub Repository
 
 To get started, you'll need to click the green "Use This Template" button on [the New Horizons addon template](https://github.com/xen-42/ow-new-horizons-config-template) GitHub repository.

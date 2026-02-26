@@ -37,7 +37,7 @@ this is ideal for simple projects and people just starting out.
 
 The [Outer Wilds Mod Template](https://github.com/ow-mods/ow-mod-template) is used for mods that use custom code,
 **you must enable "Use New Horizons" in order for it to work with New Horizons**.
-This is ideal for people that want to expand on New Horizons and add custom behaviour.
+This is for people who want to make a regular mod **with custom code** allowing them to implement new features on top of what New Horizons already offers them. Find out more with the [OWML getting started guide](https://owml.outerwildsmods.com/guides/getting_started.html).
 
 ## Texturing
 
