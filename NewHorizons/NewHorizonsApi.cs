@@ -381,6 +381,16 @@ namespace NewHorizons
             }
         }
 
+        public Transform GetPlayerSpawnPoint()
+        {
+            return PlayerSpawnHandler.GetDefaultPlayerSpawn().transform;
+        }
+
+        public Transform GetShipSpawnPoint()
+        {
+            return PlayerSpawnHandler.GetDefaultShipSpawn().transform;
+        }
+
         public GameObject GetCenterOfStarSystem() => AstroObjectBuilder.CenterOfUniverse;
 
         public bool IsWarpingBackToEye() => Main.Instance.IsWarpingBackToEye;

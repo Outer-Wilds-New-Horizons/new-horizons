@@ -264,6 +264,18 @@ namespace NewHorizons
         void ClearSystem(string name);
 
         /// <summary>
+        /// Gets the transform of the player's spawn point.
+        /// </summary>
+        /// <returns>The transform of the player's spawn point.</returns>
+        Transform GetPlayerSpawnPoint();
+
+        /// <summary>
+        /// Gets the transform of the ship's spawn point.
+        /// </summary>
+        /// <returns>The transform of the ship's spawn point.</returns>
+        Transform GetShipSpawnPoint();
+
+        /// <summary>
         /// Gets the center body of the current star system.
         /// </summary>
         GameObject GetCenterOfStarSystem();

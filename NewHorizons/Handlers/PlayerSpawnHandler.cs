@@ -16,9 +16,9 @@ namespace NewHorizons.Handlers
 
         public static void SetUpPlayerSpawn()
         {
-            if (UsingCustomSpawn())
+            if (UsingCustomPlayerSpawn())
             {
-                var spawn = GetDefaultSpawn();
+                var spawn = GetDefaultPlayerSpawn();
                 SearchUtilities.Find("Player_Body").GetComponent<MatchInitialMotion>().SetBodyToMatch(spawn.GetAttachedOWRigidbody());
                 GetPlayerSpawner().SetInitialSpawnPoint(spawn);
             }
@@ -30,7 +30,7 @@ namespace NewHorizons.Handlers
 
         public static void OnSystemReady(bool shouldWarpInFromShip, bool shouldWarpInFromVessel)
         {
-            NHLogger.Log($"OnSystemReady {shouldWarpInFromVessel}, {shouldWarpInFromShip}, {UsingCustomSpawn()}");
+            NHLogger.Log($"OnSystemReady {shouldWarpInFromVessel}, {shouldWarpInFromShip}, {UsingCustomPlayerSpawn()}");
             if (shouldWarpInFromShip)
             {
                 Main.Instance.ShipWarpController.WarpIn(Main.Instance.WearingSuit);
@@ -39,7 +39,7 @@ namespace NewHorizons.Handlers
             {
                 VesselWarpHandler.TeleportToVessel();
             }
-            else if (UsingCustomSpawn())
+            else if (UsingCustomPlayerSpawn())
             {
                 InvulnerabilityHandler.MakeInvulnerable(true);
 
@@ -53,7 +53,7 @@ namespace NewHorizons.Handlers
 
 
             // It was NREing in here when it was all ?. so explicit null checks
-            var spawn = GetDefaultSpawn();
+            var spawn = GetDefaultPlayerSpawn();
             if (spawn != null)
             {
                 var attachedOWRigidBody = spawn.GetAttachedOWRigidbody();
@@ -71,7 +71,7 @@ namespace NewHorizons.Handlers
             // Spawn ship
             Delay.FireInNUpdates(SpawnShip, 30);
 
-            if (UsingCustomSpawn() || shouldWarpInFromShip || shouldWarpInFromVessel)
+            if (UsingCustomPlayerSpawn() || shouldWarpInFromShip || shouldWarpInFromVessel)
             {
                 // Have had bug reports (#1034, #975) where sometimes after spawning via vessel warp or ship warp you die from impact velocity after being flung
                 // Something weird must be happening with velocity.
@@ -82,7 +82,7 @@ namespace NewHorizons.Handlers
 
         private static void FixVelocity(bool shouldWarpInFromVessel, bool shouldWarpInFromShip)
         {
-            var spawnOWRigidBody = GetDefaultSpawn().GetAttachedOWRigidbody();
+            var spawnOWRigidBody = GetDefaultPlayerSpawn().GetAttachedOWRigidbody();
             if (shouldWarpInFromVessel) spawnOWRigidBody = VesselWarpHandler.VesselSpawnPoint.GetAttachedOWRigidbody();
             if (shouldWarpInFromShip) spawnOWRigidBody = Locator.GetShipBody();
 
@@ -97,15 +97,16 @@ namespace NewHorizons.Handlers
         {
             var ship = SearchUtilities.Find("Ship_Body");
 
-            if (SpawnPointBuilder.ShipSpawn != null)
+            if (UsingCustomShipSpawn())
             {
                 NHLogger.Log("Spawning player ship");
 
-                if (ship != null)
+                var spawn = GetDefaultShipSpawn();
+                if (ship != null && spawn != null)
                 {
                     ship.SetActive(true);
 
-                    var pos = SpawnPointBuilder.ShipSpawn.transform.position;
+                    var pos = spawn.transform.position;
 
                     // #748 Before moving the ship, reset all its landing pad sensors
                     // Else they might think its still touching TH
@@ -186,7 +187,7 @@ namespace NewHorizons.Handlers
             var playerBody = SearchUtilities.Find("Player_Body").GetAttachedOWRigidbody();
             var resources = playerBody.GetComponent<PlayerResources>();
 
-            SpawnBody(playerBody, GetDefaultSpawn(), recenter: recenter);
+            SpawnBody(playerBody, GetDefaultPlayerSpawn(), recenter: recenter);
 
             resources._currentHealth = 100f;
         }
@@ -233,8 +234,12 @@ namespace NewHorizons.Handlers
             return vector;
         }
 
-        public static bool UsingCustomSpawn() => SpawnPointBuilder.PlayerSpawn != null;
+        public static bool UsingCustomPlayerSpawn() => SpawnPointBuilder.PlayerSpawn != null;
+        public static bool UsingCustomShipSpawn() => SpawnPointBuilder.ShipSpawn != null;
         public static PlayerSpawner GetPlayerSpawner() => GameObject.FindObjectOfType<PlayerSpawner>();
-        public static SpawnPoint GetDefaultSpawn() => SpawnPointBuilder.PlayerSpawn ?? GetPlayerSpawner().GetSpawnPoint(SpawnLocation.TimberHearth);
+        public static SpawnPoint GetVanillaPlayerSpawn() => GetPlayerSpawner().GetPlayerSpawnPoint(SpawnLocation.TimberHearth);
+        public static SpawnPoint GetVanillaShipSpawn() => GetPlayerSpawner().GetShipSpawnPoint(SpawnLocation.TimberHearth);
+        public static SpawnPoint GetDefaultPlayerSpawn() => UsingCustomPlayerSpawn() ? SpawnPointBuilder.PlayerSpawn : GetVanillaPlayerSpawn();
+        public static SpawnPoint GetDefaultShipSpawn() => UsingCustomShipSpawn() ? SpawnPointBuilder.ShipSpawn : GetVanillaShipSpawn();
     }
 }
