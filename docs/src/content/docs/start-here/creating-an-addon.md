@@ -34,6 +34,16 @@ Now clone the repository to your local computer and open it in your favorite edi
     - You can leave `version`, `owmlVersion`, and `dependencies` alone
 - NewHorizonsConfig.dll: This is the heart of your addon, make sure to never move or rename it.
 
+### Testing The Addon
+
+In order for the addon to show up in the manager and subsequently be loaded into the game, you'll need to ensure that it's located in `%APPDATA%\OuterWildsModManager\OWML\Mods` (or `~/.local/share/OuterWildsModManager` on Linux). How you choose to do this is up to you, you could manually copy the mod folder over every time, you could setup an automated [VSCode Launch Configuration](https://code.visualstudio.com/Docs/editor/debugging#_launch-configurations) to do it every time you press F5, or you could simply keep your mod in that folder. The last option while although the easiest is not recommended as downloading another version of your mod can overwrite your current working copy.
+
+Once put in the Mods folder, the manager will display your mod without a description or download count, you can then launch the game to see if your planets load in.
+
+#### Checking In-Game
+
+Now when you click "Start Game" and load into the solar system, you should be able to notice that the quantum moon is gone entirely, this means that your addon and its configs were successfully loaded. You may now delete the existing example config planet for the Quantum Moon if you'd like, assuming your goal wasn't to delete it.
+
 ### Adding support for custom scripts later
 
 If you later decide you want to use custom scripts, follow the guide below for using the standard OWML template. Then, copy all your `.json` and `.xml` files into your new project. You may wish to move all your existing files in your GitHub repository into a new branch, then force push your existing project into your repository, or alternatively make a brand new repository.

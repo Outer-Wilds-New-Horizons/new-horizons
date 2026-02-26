@@ -107,16 +107,4 @@ If you run into issues please make sure:
 - You placed the JSON file in a folder called `planets` in the New Horizons mod folder
 - There are no red or yellow squiggly lines in your file
 
-## Creating An Addon
-
-For actually setting up an addon project, you'll want to check out the [Creating an Addon Guide](/docs/src/content/docs/start-here/creating-an-addon.md). Follow that and come back here to test your addon.
-
-### Testing The Addon
-
-In order for the addon to show up in the manager and subsequently be loaded into the game, you'll need to ensure that it's located in `%APPDATA%\OuterWildsModManager\OWML\Mods` (or `~/.local/share/OuterWildsModManager` on Linux). How you choose to do this is up to you, you could manually copy the mod folder over every time, you could setup an automated [VSCode Launch Configuration](https://code.visualstudio.com/Docs/editor/debugging#_launch-configurations) to do it every time you press F5, or you could simply keep your mod in that folder. The last option while although the easiest is not recommended as downloading another version of your mod can overwrite your current working copy.
-
-Once put in the Mods folder, the manager will display your mod without a description or download count, you can then launch the game to see if your planets load in.
-
-#### Checking In-Game
-
-Now when you click "Start Game" and load into the solar system, you should be able to notice that the quantum moon is gone entirely, this means that your addon and its configs were successfully loaded.
+Now that you are familiar with the basics, it's time to [create an addon](/docs/src/content/docs/start-here/creating-an-addon.md)!
