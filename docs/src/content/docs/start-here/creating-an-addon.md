@@ -1,6 +1,6 @@
 ---
-title:Creating an Addon Project
-description:A guide for creating a project with New Horizons support
+title: Creating an Addon Project
+description: A guide for creating a project with New Horizons support
 ---
 
 If you want to create a New Horizons project, you have a few options, depending on your use case.
