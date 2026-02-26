@@ -20,6 +20,9 @@ namespace NewHorizons.Builder.General
         // Ship
         public static SpawnModule.ShipSpawnPoint ShipSpawnInfo { get; private set; }
         public static SpawnPoint ShipSpawn { get; private set; }
+
+        // Marked as obsolete instead of removing to avoid breaking Ship Enhancements mod.
+        [Obsolete]
         public static Vector3 ShipSpawnOffset { get; private set; }
 
         // Player
@@ -83,7 +86,8 @@ namespace NewHorizons.Builder.General
                     playerSpawn._triggerVolumes = new OWTriggerVolume[0];
 
                     // This was a stupid hack to stop players getting stuck in the ground and now we have to keep it forever
-                    spawnGO.transform.position += spawnGO.transform.TransformDirection(point.offset ?? Vector3.up * 4f);
+                    var playerSpawnOffset = point.offset ?? Vector3.up * 4f;
+                    spawnGO.transform.position += spawnGO.transform.TransformDirection(playerSpawnOffset);
 
                     var flagUseTHSpawn = false;
                     if (Main.Instance.CurrentStarSystem == "SolarSystem")
@@ -124,12 +128,13 @@ namespace NewHorizons.Builder.General
                     // #601 we need to actually set the right trigger volumes here
                     shipSpawn._triggerVolumes = new OWTriggerVolume[0];
 
+                    // Move it up a bit more when aligning to surface
                     var shipSpawnOffset = point.offset ?? (point.alignRadial.GetValueOrDefault() ? Vector3.up * 4 : Vector3.zero);
+                    spawnGO.transform.position += spawnGO.transform.TransformDirection(shipSpawnOffset);
 
                     if (ShipSpawn == null || point.GetPriority() > ShipSpawnInfo.GetPriority())
                     {
                         ShipSpawn = shipSpawn;
-                        ShipSpawnOffset = shipSpawnOffset;
                         ShipSpawnInfo = point;
                     }
 

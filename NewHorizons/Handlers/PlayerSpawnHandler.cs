@@ -107,12 +107,6 @@ namespace NewHorizons.Handlers
 
                     var pos = SpawnPointBuilder.ShipSpawn.transform.position;
 
-                    // Move it up a bit more when aligning to surface
-                    if (SpawnPointBuilder.ShipSpawnOffset != null)
-                    {
-                        pos += SpawnPointBuilder.ShipSpawn.transform.TransformDirection(SpawnPointBuilder.ShipSpawnOffset);
-                    }
-
                     // #748 Before moving the ship, reset all its landing pad sensors
                     // Else they might think its still touching TH
                     // Doing this before moving the ship so that if they start contacting in the new spawn point then that gets preserved
