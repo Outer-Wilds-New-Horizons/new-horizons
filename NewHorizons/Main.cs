@@ -505,6 +505,8 @@ namespace NewHorizons
                     {
                         SupernovaEffectBuilder.ReplaceVanillaWithNH(supernovaPlanetEffectController);
                     }
+
+                    SpawnPointBuilder.MakeVanillaShipSpawn();
                 }
 
                 PlanetCreationHandler.Init(BodyDict[CurrentStarSystem]);
