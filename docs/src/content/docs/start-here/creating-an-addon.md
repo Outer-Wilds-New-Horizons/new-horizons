@@ -44,25 +44,6 @@ If you'd like the ability to use custom scripts, then you'll want to make a typi
 
 Follow the [OWML Getting Started Guide](https://owml.outerwildsmods.com/guides/getting_started.html). However, when following the project creation wizard, make sure to tick the "Use New Horizons" checkbox when it shows up.
 
-Next, create a `planets`, `systems`, `dialogue` and `translations` folder inside your mod project, in the **root** folder of your mod. You'll also want to make a few edits to your .csproj file in order to automatically copy those to your build. Open the .csproj file with a text editor or click the entry at the top of the Solution Explorer with the name of your mod. In the same `<ItemGroup>` that includes instructions to copy your manifest files, add these:
-
-```xml
-    <None Include="planets\**\*.*">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="systems\**\*.*">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="dialogue\**\*.*">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="translations\**\*.*">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-```
-
-Now, whenever you run a build action, any files in these folders will be copied over, keeping whichever file is more recent in case of conflicts.
-
 ## Adding New Horizons to an existing mod
 
 If you have an existing mod that was made without New Horizons, adding New Horizons compatibility is very easy.
