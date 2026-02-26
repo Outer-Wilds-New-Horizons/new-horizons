@@ -109,16 +109,7 @@ If you run into issues please make sure:
 
 ## Creating An Addon
 
-For creating an addon project from scratch, you have three options:
-
-If you **do not** plan to use custom scripts: [Making an addon using the New Horizons Addon Template](/docs/src/content/docs/start-here/create-addon-with-template.md)
-
-If you **do** wish to use custom scripts: [OWML Getting Started Guide](https://owml.outerwildsmods.com/guides/getting_started.html)
-
-> [!IMPORTANT]
-> When making a project this way, make sure to tick the checkbox saying "Use New Horizons" when it shows up.
-
-If you want to add New Horizons to an existing Outer Wilds mod: [Adding New Horizons to an Existing Mod](/docs/src/content/docs/start-here/adding-to-existing-mod.md)
+For actually setting up an addon project, you'll want to check out the [Creating an Addon Guide](/docs/src/content/docs/start-here/creating-an-addon.md). Follow that and come back here to test your addon.
 
 ### Testing The Addon
 
