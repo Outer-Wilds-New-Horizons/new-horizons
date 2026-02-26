@@ -1,3 +1,4 @@
+using NewHorizons.Builder.General;
 using NewHorizons.Builder.Props;
 using NewHorizons.Builder.Props.Audio;
 using NewHorizons.Builder.Props.TranslatorText;
@@ -379,6 +380,8 @@ namespace NewHorizons
                 Main.BodyDict.Remove(name);
             }
         }
+
+        public GameObject GetCenterOfStarSystem() => AstroObjectBuilder.CenterOfUniverse;
 
         public bool IsWarpingBackToEye() => Main.Instance.IsWarpingBackToEye;
     }
