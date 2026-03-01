@@ -4,11 +4,6 @@ using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OWML;
 using OWML.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace NewHorizons.Builder.Props.EchoesOfTheEye
@@ -33,6 +28,7 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
                     var campfire = _prefab.GetComponentInChildren<DreamCampfire>();
                     campfire._dreamArrivalLocation = DreamArrivalPoint.Location.Undefined;
                     campfire._sector = null;
+                    campfire._playerInSector = false;
                     campfire._entrywayVolumes = new OWTriggerVolume[0];
                 }
             }
@@ -48,6 +44,7 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
 
             var campfire = campfireObj.GetComponentInChildren<DreamCampfire>();
             campfire._dreamArrivalLocation = DreamHandler.GetDreamArrivalLocation(info.id);
+            CampfireBuilder.SetupCampfire(campfire, info);
 
             // The streaming groups on DreamCampfires get set on Start() so we wait until after to change it again
             Delay.FireInNUpdates(() => {
