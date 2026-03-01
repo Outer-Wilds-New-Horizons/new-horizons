@@ -2383,6 +2383,13 @@
             "$ref": "#/definitions/LightningQuantumInfo"
           }
         },
+        "campfires": {
+          "type": "array",
+          "description": "Add campfires that allow you to sleep or roast marshmallows.",
+          "items": {
+            "$ref": "#/definitions/CampfireInfo"
+          }
+        },
         "dreamCampfires": {
           "type": "array",
           "description": "Add campfires that allow you to enter the dream world/simulation (requires Echoes of the Eye DLC). Must be paired with a dream arrival point, which can be placed on this planet or elsewhere.",
@@ -4490,10 +4497,91 @@
         }
       }
     },
+    "CampfireInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "initialState": {
+          "description": "The initial state of the campfire.",
+          "default": "lit",
+          "$ref": "#/definitions/State"
+        },
+        "canSleepHere": {
+          "type": "boolean",
+          "description": "Whether the player to sleep at this campfire.",
+          "default": true
+        },
+        "lookUpWhileSleeping": {
+          "type": "boolean",
+          "description": "Whether the player should look up at the sky while sleeping at this campfire.",
+          "default": false
+        }
+      }
+    },
+    "State": {
+      "type": "integer",
+      "description": "",
+      "x-enumNames": [
+        "Unlit",
+        "Smoldering",
+        "Lit"
+      ],
+      "enum": [
+        0,
+        1,
+        2
+      ]
+    },
     "DreamCampfireInfo": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "initialState": {
+          "description": "The initial state of the campfire.",
+          "default": "lit",
+          "$ref": "#/definitions/State"
+        },
+        "canSleepHere": {
+          "type": "boolean",
+          "description": "Whether the player to sleep at this campfire.",
+          "default": true
+        },
+        "lookUpWhileSleeping": {
+          "type": "boolean",
+          "description": "Whether the player should look up at the sky while sleeping at this campfire.",
+          "default": false
+        },
         "rotation": {
           "description": "Rotation of the object",
           "$ref": "#/definitions/MVector3"
