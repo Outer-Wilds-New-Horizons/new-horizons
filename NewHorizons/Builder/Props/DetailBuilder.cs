@@ -369,6 +369,11 @@ namespace NewHorizons.Builder.Props
                     singleLightSensor._sector.OnSectorOccupantsUpdated += singleLightSensor.OnSectorOccupantsUpdated;
                 }
             }
+
+            else if (component is Campfire campfire)
+            {
+                campfire._sector = sector;
+            }
         }
 
         /// <summary>
