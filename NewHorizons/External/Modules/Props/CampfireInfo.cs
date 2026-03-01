@@ -10,7 +10,7 @@ namespace NewHorizons.External.Modules.Props
         /// <summary>
         /// The initial state of the campfire.
         /// </summary>
-        [DefaultValue("lit")] public State initialState = State.Lit;
+        [DefaultValue("lit")] public State initialState = State.LIT;
 
         /// <summary>
         /// Whether the player to sleep at this campfire.
@@ -24,11 +24,11 @@ namespace NewHorizons.External.Modules.Props
 
         public enum State
         {
-            [EnumMember(Value = @"unlit")] Unlit = 0,
+            [EnumMember(Value = @"unlit")] UNLIT = 0,
 
-            [EnumMember(Value = @"smoldering")] Smoldering = 1,
+            [EnumMember(Value = @"smoldering")] SMOLDERING = 1,
 
-            [EnumMember(Value = @"lit")] Lit = 2,
+            [EnumMember(Value = @"lit")] LIT = 2,
         }
     }
 }
