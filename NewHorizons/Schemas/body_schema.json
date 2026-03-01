@@ -5823,9 +5823,9 @@
             "$ref": "#/definitions/PriorityVolumeInfo"
           }
         },
-        "solarSystemVolume": {
+        "starSystemVolumes": {
           "type": "array",
-          "description": "Entering this volume will load a new solar system.",
+          "description": "Entering this volume will load a new star system.",
           "items": {
             "$ref": "#/definitions/ChangeStarSystemVolumeInfo"
           }
