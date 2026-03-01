@@ -4553,9 +4553,9 @@
       "type": "integer",
       "description": "",
       "x-enumNames": [
-        "Unlit",
-        "Smoldering",
-        "Lit"
+        "UNLIT",
+        "SMOLDERING",
+        "LIT"
       ],
       "enum": [
         0,
