@@ -264,11 +264,11 @@ namespace NewHorizons.Builder.Volumes
                     VolumeBuilder.MakeAndEnable<LightlessLightSourceVolume>(go, sector, lightSourceVolume);
                 }
             }
-            if (config.Volumes.solarSystemVolume != null)
+            if (config.Volumes.starSystemVolumes != null)
             {
-                foreach (var solarSystemVolume in config.Volumes.solarSystemVolume)
+                foreach (var starSystemVolume in config.Volumes.starSystemVolumes)
                 {
-                    ChangeStarSystemVolumeBuilder.Make(go, sector, solarSystemVolume);
+                    ChangeStarSystemVolumeBuilder.Make(go, sector, starSystemVolume);
                 }
             }
             if (config.Volumes.creditsVolume != null)

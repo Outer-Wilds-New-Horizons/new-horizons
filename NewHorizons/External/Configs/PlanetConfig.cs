@@ -690,6 +690,12 @@ namespace NewHorizons.External.Configs
                 }
             }
 
+            if (Volumes?.solarSystemVolume != null)
+            {
+                if (Volumes.starSystemVolumes == null) Volumes.starSystemVolumes = new ChangeStarSystemVolumeInfo[0];
+                Volumes.starSystemVolumes = Volumes.starSystemVolumes.Concat(Volumes.solarSystemVolume).ToArray();
+            }
+
             if (Base.invulnerableToSun)
             {
                 Base.hasFluidDetector = false;
