@@ -30,6 +30,7 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
                     campfire._sector = null;
                     campfire._playerInSector = false;
                     campfire._entrywayVolumes = new OWTriggerVolume[0];
+                    campfire.enabled = true;
                 }
             }
         }

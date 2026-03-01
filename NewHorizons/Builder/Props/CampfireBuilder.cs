@@ -18,6 +18,7 @@ namespace NewHorizons.Builder.Props
                 var campfire = _prefab.GetComponentInChildren<Campfire>();
                 campfire._sector = null;
                 campfire._playerInSector = false;
+                campfire.enabled = true;
             }
         }
 
@@ -26,9 +27,9 @@ namespace NewHorizons.Builder.Props
             if (campfire == null) return;
             campfire._canSleepHere = info.canSleepHere;
             campfire._lookUpWhileSleeping = info.lookUpWhileSleeping;
-            var initialState = EnumUtils.Parse<Campfire.State>(info.initialState.ToString());
+            var initialState = EnumUtils.Parse(info.initialState.ToString(), Campfire.State.LIT);
             campfire.SetInitialState(initialState);
-            campfire.SetState(initialState, true);
+            //campfire.SetState(initialState, true);
         }
 
         public static GameObject Make(GameObject planetGO, Sector sector, CampfireInfo info, IModBehaviour mod)
