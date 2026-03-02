@@ -82,9 +82,10 @@ namespace NewHorizons.Handlers
 
         private static void FixVelocity(bool shouldWarpInFromVessel, bool shouldWarpInFromShip)
         {
-            var spawnOWRigidBody = GetDefaultPlayerSpawn().GetAttachedOWRigidbody();
+            OWRigidbody spawnOWRigidBody;
             if (shouldWarpInFromVessel) spawnOWRigidBody = VesselWarpHandler.VesselSpawnPoint.GetAttachedOWRigidbody();
-            if (shouldWarpInFromShip) spawnOWRigidBody = Locator.GetShipBody();
+            else if (shouldWarpInFromShip) spawnOWRigidBody = Locator.GetShipBody();
+            else spawnOWRigidBody = GetDefaultPlayerSpawn().GetAttachedOWRigidbody();
 
             var spawnVelocity = spawnOWRigidBody.GetVelocity();
             var spawnAngularVelocity = spawnOWRigidBody.GetPointTangentialVelocity(Locator.GetPlayerBody().GetPosition());
