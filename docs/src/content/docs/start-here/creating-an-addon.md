@@ -58,7 +58,7 @@ Follow the [OWML Getting Started Guide](https://owml.outerwildsmods.com/guides/g
 
 If you have an existing mod that was made without New Horizons, adding New Horizons compatibility is very easy.
 
-First, create a `planets`, `systems`, `dialogue` and `translations` folder inside your mod project, in the **root** folder of your mod. You'll also want to make a few edits to your .csproj file in order to automatically copy those to your build. Open the .csproj file with a text editor or click the entry at the top of the Solution Explorer with the name of your mod. In the same `<ItemGroup>` that includes instructions to copy your manifest files, add these:
+First, create a `planets`, `systems`, and `translations` folder inside your mod project, in the **root** folder of your mod. You'll also want to make a few edits to your .csproj file in order to automatically copy those to your build. Open the .csproj file with a text editor or click the entry at the top of the Solution Explorer with the name of your mod. In the same `<ItemGroup>` that includes instructions to copy your manifest files, add these:
 
 ```xml
     <None Include="planets\**\*.*">
@@ -67,9 +67,6 @@ First, create a `planets`, `systems`, `dialogue` and `translations` folder insid
     <None Include="systems\**\*.*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="dialogue\**\*.*">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="translations\**\*.*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -77,7 +74,7 @@ First, create a `planets`, `systems`, `dialogue` and `translations` folder insid
 
 Then, you'll need to add some code for actually loading your planets and systems into your mod.
 
-1. Download [INewHorizons.cs](/NewHorizons/INewHorizons.cs) and save it into your mod project somewhere.
+1. Download [INewHorizons.cs](https://github.com/Outer-Wilds-New-Horizons/new-horizons/blob/main/NewHorizons/INewHorizons.cs) and save it into your mod project somewhere.
 2. Open your main mod file (ModName.cs) and add `public INewHorizons NewHorizons;` to your field definitions.
 3. Add the following code to your `Start()` method:
 
