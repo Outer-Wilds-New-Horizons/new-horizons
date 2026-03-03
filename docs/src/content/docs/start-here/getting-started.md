@@ -109,4 +109,4 @@ If you run into issues please make sure:
 - You placed the JSON file in a folder called `planets` in the New Horizons mod folder
 - There are no red or yellow squiggly lines in your file
 
-Now that you are familiar with the basics, it's time to [create an addon](/start-here/creating-an-addon.md)!
+Now that you are familiar with the basics, it's time to [create an addon](/start-here/creating-an-addon)!
