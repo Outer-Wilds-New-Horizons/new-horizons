@@ -740,6 +740,31 @@ namespace NewHorizons
 
             var starSystemName = starSystemConfig.name;
 
+            if (starSystemName != "SolarSystem" && starSystemName != "EyeOfTheUniverse")
+            {
+                bool hasSpaces = starSystemName.Contains(" ");
+                bool missingNamespace = !starSystemName.Contains(".");
+
+                if (hasSpaces || missingNamespace)
+                {
+                    var message = $"Invalid star system name [{starSystemName}] in file [{relativePath}].\n";
+
+                    if (hasSpaces)
+                    {
+                        message += "Star system names should NOT contain spaces.\n";
+                    }
+
+                    if (missingNamespace)
+                    {
+                        message += "Star system names should be namespaced to prevent conflicts.\n";
+                    }
+
+                    message += "Use a namespaced format like \"Author.SystemName\" (example: \"Ernesto.AnglerfishNest\").";
+
+                    NHLogger.LogWarning(message);
+                }
+            }
+
             starSystemConfig.Migrate();
             starSystemConfig.FixCoordinates();
 
