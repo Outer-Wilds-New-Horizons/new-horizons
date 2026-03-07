@@ -37,6 +37,20 @@ namespace NewHorizons.Builder.Props
             return owTriggerVolume;
         }
 
+        public static Component AddShapeOrCollider(GameObject go, ShapeInfo info, float defaultRadius)
+        {
+            if (info != null)
+            {
+                return AddShapeOrCollider(go, info);
+            }
+            else
+            {
+                var shape = go.AddComponent<SphereShape>();
+                shape.radius = defaultRadius;
+                return shape;
+            }
+        }
+
         public static Component AddShapeOrCollider(GameObject go, ShapeInfo info)
         {
             if (info.useShape.HasValue)

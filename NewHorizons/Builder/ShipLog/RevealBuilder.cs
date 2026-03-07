@@ -1,5 +1,7 @@
 using NewHorizons.Builder.Props;
+using NewHorizons.Builder.Volumes;
 using NewHorizons.Components.Achievement;
+using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.Volumes.VolumeInfos;
 using NewHorizons.Utility.OuterWilds;
 using NewHorizons.Utility.OWML;
@@ -10,19 +12,19 @@ namespace NewHorizons.Builder.ShipLog
 {
     public static class RevealBuilder
     {
-        public static void Make(GameObject go, Sector sector, RevealVolumeInfo info, IModBehaviour mod)
+        public static void Make(GameObject planetGO, Sector sector, RevealVolumeInfo info, IModBehaviour mod)
         {
-            var newRevealGO = GeneralPropBuilder.MakeNew("Reveal Volume (" + info.revealOn + ")", go, ref sector, info);
+            var newRevealGO = GeneralPropBuilder.MakeNew("Reveal Volume (" + info.revealOn + ")", planetGO, ref sector, info);
             switch (info.revealOn)
             {
                 case RevealVolumeInfo.RevealVolumeType.Enter:
-                    MakeTrigger(newRevealGO, sector, info, mod);
+                    MakeTrigger(newRevealGO, planetGO, sector, info, mod);
                     break;
                 case RevealVolumeInfo.RevealVolumeType.Observe:
-                    MakeObservable(newRevealGO, sector, info, mod);
+                    MakeObservable(newRevealGO, planetGO, sector, info, mod);
                     break;
                 case RevealVolumeInfo.RevealVolumeType.Snapshot:
-                    MakeSnapshot(newRevealGO, sector, info, mod);
+                    MakeSnapshot(newRevealGO, planetGO, sector, info, mod);
                     break;
                 default:
                     NHLogger.LogError("Invalid revealOn: " + info.revealOn);
@@ -31,20 +33,11 @@ namespace NewHorizons.Builder.ShipLog
             newRevealGO.SetActive(true);
         }
 
-        private static SphereShape MakeShape(GameObject go, RevealVolumeInfo info, Shape.CollisionMode collisionMode)
+        private static void MakeTrigger(GameObject go, GameObject planetGO, Sector sector, RevealVolumeInfo info, IModBehaviour mod)
         {
-            SphereShape newShape = go.AddComponent<SphereShape>();
-            newShape.radius = info.radius;
-            newShape.SetCollisionMode(collisionMode);
-            return newShape;
-        }
+            var trigger = VolumeBuilder.MakeTriggerVolume<ShipLogFactListTriggerVolume>(go, planetGO, ref sector, info);
 
-        private static void MakeTrigger(GameObject go, Sector sector, RevealVolumeInfo info, IModBehaviour mod)
-        {
-            var shape = MakeShape(go, info, Shape.CollisionMode.Volume);
-
-            var volume = go.AddComponent<OWTriggerVolume>();
-            volume._shape = shape;
+            go.layer = Layer.Default;
 
             if (info.reveals != null)
             {
@@ -92,14 +85,21 @@ namespace NewHorizons.Builder.ShipLog
             }
         }
 
-        private static void MakeObservable(GameObject go, Sector sector, RevealVolumeInfo info, IModBehaviour mod)
+        private static void MakeObservable(GameObject go, GameObject planetGO, Sector sector, RevealVolumeInfo info, IModBehaviour mod)
         {
+            if (info.shape != null && info.shape?.useShape == false)
+            {
+                NHLogger.LogError($"Observe reveal volumes only support colliders. Affects planet [{planetGO.name}]. Set useShape to false.");
+            }
+
+            // ObserveTrigger is only compatible with colliders
+            // If info.shape was null, it will still default to using a sphere with info.radius, just make sure it does so with a collider
+            info.shape ??= new();
+            info.shape.useShape = false;
+
+            var collider = VolumeBuilder.MakeShapeOrCollider<ShipLogFactObserveTrigger>(go, info).GetComponent<OWCollider>();
+
             go.layer = Layer.Interactible;
-
-            var sphere = go.AddComponent<SphereCollider>();
-            sphere.radius = info.radius;
-
-            var collider = go.AddComponent<OWCollider>();
 
             var maxDistance = info.maxDistance == -1f ? 2f : info.maxDistance;
 
@@ -123,9 +123,22 @@ namespace NewHorizons.Builder.ShipLog
             }
         }
 
-        private static void MakeSnapshot(GameObject go, Sector sector, RevealVolumeInfo info, IModBehaviour mod)
+        private static void MakeSnapshot(GameObject go, GameObject planetGO, Sector sector, RevealVolumeInfo info, IModBehaviour mod)
         {
-            var shape = MakeShape(go, info, Shape.CollisionMode.Manual);
+            if (info.shape != null && info.shape?.useShape == false)
+            {
+                NHLogger.LogError($"Snapshot reveal volumes only support shapes. Affects planet [{planetGO.name}]. Set useShape to true.");
+            }
+
+            // SnapshotTrigger is only compatible with shapes
+            // If info.shape was null, it will still default to using a sphere with info.radius, just make sure it does so with a shape
+            info.shape ??= new();
+            info.shape.useShape = true;
+
+            var shape = VolumeBuilder.MakeShapeOrCollider<ShipLogFactSnapshotTrigger>(go, info) as Shape;
+            shape.SetCollisionMode(Shape.CollisionMode.Manual);
+
+            go.layer = Layer.Default;
 
             var visibilityTracker = go.AddComponent<ShapeVisibilityTracker>();
             visibilityTracker._shapes = new Shape[] { shape };
