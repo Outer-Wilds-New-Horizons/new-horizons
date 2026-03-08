@@ -26,6 +26,7 @@ using NewHorizons.Utility.DebugTools;
 using NewHorizons.Utility.Files;
 using NewHorizons.Utility.OuterWilds;
 using NewHorizons.Utility.OWML;
+using Newtonsoft.Json.Linq;
 using OWML.Common;
 using OWML.ModHelper;
 using OWML.Utils;
@@ -65,7 +66,13 @@ namespace NewHorizons
 
         public static float SecondsElapsedInLoop = -1;
 
-        public static bool IsSystemReady { get; private set; }    
+        public static bool IsSystemReady { get; private set; }
+
+        public static bool IsInvalidStarSystem(string starSystem)
+        {
+            return starSystem != "SolarSystem" && starSystem != "EyeOfTheUniverse" 
+                && (!SystemDict.ContainsKey(starSystem) || !BodyDict.ContainsKey(starSystem));
+        }
 
         public string DefaultStarSystem => SystemDict.ContainsKey(DefaultSystemOverride) ? DefaultSystemOverride : _defaultStarSystem;
         public string CurrentStarSystem
@@ -77,10 +84,17 @@ namespace NewHorizons
             set
             {
                 // Prevent invalid values
-                if (value != "SolarSystem" && value != "EyeOfTheUniverse" && value != DefaultStarSystem && !SystemDict.ContainsKey(value) && !BodyDict.ContainsKey(value))
+                if (IsInvalidStarSystem(value))
                 {
                     NHLogger.LogError($"System \"{value}\" does not exist!");
-                    _currentStarSystem = DefaultStarSystem;
+                    if (value != DefaultStarSystem)
+                    {
+                        _currentStarSystem = DefaultStarSystem;
+                    }
+                    else
+                    {
+                        _currentStarSystem = "SolarSystem";
+                    }
                     return;
                 }
                 _currentStarSystem = value;
