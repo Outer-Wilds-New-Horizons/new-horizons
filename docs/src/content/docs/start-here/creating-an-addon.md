@@ -3,11 +3,11 @@ title: Creating an Addon Project
 description: A guide for creating a project with New Horizons support
 ---
 
-If you want to create a New Horizons project, you have a few options, depending on your use case.
+If you want to create a New Horizons project you have a few options, depending on your use case.
 
 ## Using the New Horizons Template
 
-Use this method if you **are not  planning** to use any custom scripts in your mod. This is helpful if you'd prefer to avoid installing Visual Studio, but also limits what you can do in your mod. You will be limited to features of the base game like character dialogue, Nomai text, tornados, black holes, or whatever else you might find in the [New Horizons Examples Mod](https://outerwildsmods.com/mods/newhorizonsexamples/).
+Use this method if you **are not planning** to use any custom scripts in your mod. This is helpful if you'd prefer to avoid installing Visual Studio, but also limits what you can do in your mod. You will be limited to features of the base game like character dialogue, Nomai text, tornados, black holes, or whatever else you might find in the [New Horizons Examples Mod](https://outerwildsmods.com/mods/newhorizonsexamples/).
 
 ### Making a GitHub Repository
 
@@ -26,23 +26,23 @@ Now clone the repository to your local computer and open it in your favorite edi
 - .github: This folder contains special files for use on GitHub, they aren't useful right now but will be when we go to publish the mod
 - planets: This folder contains a single example config file that destroys the Quantum Moon, we'll keep it for now so we can test our addon later.
 - .gitattributes: This is another file that will be useful when publishing
-- default-config.json: This file is used in C#-based mods to allow a custom options menu, New Horizons doesn't support a custom options menu, but we still need the file here in order for the addon to work.
+- default-config.json: This file is used in C#-based mods to allow a custom options menu. New Horizons doesn't support a custom options menu, but we still need the file here in order for the addon to work.
 - manifest.json: This is the first file we're going to edit, we need to fill it out with information about our mod
-    - First you're going to set `author` to your author name, this should be the same name that you used when creating the GitHub repo.
+    - First you're going to set `author` to your author name. This should be the same name that you used when creating the GitHub repo.
     - Next, set `name` to the name you want to appear in the mod manager and website.
     - Now set `uniqueName` to the name of your GitHub Repo.
     - You can leave `version`, `owmlVersion`, and `dependencies` alone
-- NewHorizonsConfig.dll: This is the heart of your addon, make sure to never move or rename it.
+- NewHorizonsConfig.dll: This is the heart of your addon. Make sure to never move or rename it.
 
 ### Testing The Addon
 
-In order for the addon to show up in the manager and subsequently be loaded into the game, you'll need to ensure that it's located in `%APPDATA%\OuterWildsModManager\OWML\Mods` (or `~/.local/share/OuterWildsModManager` on Linux). How you choose to do this is up to you, you could manually copy the mod folder over every time, you could setup an automated [VSCode Launch Configuration](https://code.visualstudio.com/Docs/editor/debugging#_launch-configurations) to do it every time you press F5, or you could simply keep your mod in that folder. The last option while although the easiest is not recommended as downloading another version of your mod can overwrite your current working copy.
+In order for the addon to show up in the manager and subsequently be loaded into the game you'll need to ensure that it's located in `%APPDATA%\OuterWildsModManager\OWML\Mods` (or `~/.local/share/OuterWildsModManager` on Linux). How you choose to do this is up to you. You could manually copy the mod folder over every time, you could setup an automated [VSCode Launch Configuration](https://code.visualstudio.com/Docs/editor/debugging#_launch-configurations) to do it every time you press F5, or you could simply keep your mod in that folder. The last option, while the easiest, is not recommended as downloading another version of your mod can overwrite your current working copy.
 
-Once put in the Mods folder, the manager will display your mod without a description or download count, you can then launch the game to see if your planets load in.
+Once put in the Mods folder the manager will display your mod without a description or download count. You can then launch the game to see if your planets load in.
 
 #### Checking In-Game
 
-Now when you click "Start Game" and load into the solar system, you should be able to notice that the quantum moon is gone entirely, this means that your addon and its configs were successfully loaded. You may now delete the existing example config planet for the Quantum Moon if you'd like, assuming your goal wasn't to delete it.
+Now when you click "Start Game" and load into the solar system, you should be able to notice that the Quantum Moon is gone entirely. This means that your addon and its configs were successfully loaded. You may now delete the existing example config planet for the Quantum Moon if you'd like, assuming your goal wasn't to delete it.
 
 ### Adding support for custom scripts later
 
@@ -50,7 +50,7 @@ If you later decide you want to use custom scripts, follow the guide below for u
 
 ## Using the standard OWML Template
 
-If you'd like the ability to use custom scripts, then you'll want to make a typical Outer Wilds mod and make sure to include the support for New Horizons. This will require Visual Studio and is a little more complicated, but will give you far more power over your mod.
+If you'd like the ability to use custom scripts, then you'll want to make a typical Outer Wilds mod while making sure to include support for New Horizons. This will require Visual Studio and is a little more complicated, but will give you far more power over your mod.
 
 Follow the [OWML Getting Started Guide](https://owml.outerwildsmods.com/guides/getting_started.html). However, when following the project creation wizard, make sure to tick the "Use New Horizons" checkbox when it shows up.
 
@@ -72,7 +72,7 @@ First, create a `planets`, `systems`, and `translations` folder inside your mod 
     </None>
 ```
 
-Then, you'll need to add some code for actually loading your planets and systems into your mod.
+Then you'll need to add some code for actually loading your planets and systems into your mod.
 
 1. Download [INewHorizons.cs](https://github.com/Outer-Wilds-New-Horizons/new-horizons/blob/main/NewHorizons/INewHorizons.cs) and save it into your mod project somewhere.
 2. Open your main mod file (ModName.cs) and add `public INewHorizons NewHorizons;` to your field definitions.
