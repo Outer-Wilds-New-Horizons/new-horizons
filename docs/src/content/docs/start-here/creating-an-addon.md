@@ -13,7 +13,7 @@ Use this method if you **are not planning** to use any custom scripts in your mo
 
 To get started, you'll need to click the green "Use This Template" button on [the New Horizons addon template](https://github.com/xen-42/ow-new-horizons-config-template) GitHub repository.
 
-- Set the Name to your username followed by a dot (`.`), followed by your mod's name in PascalCase (no spaces, new words have capital letters). So for example if my username was "Test" and my mod's name was "Really Cool Addon", I would name the repo `Test.ReallyCoolAddon`.
+- Set the name to be something informative, likely the name of your mod. Once you submit your mod to the Outer Wilds Mod Database it is best to not change this name, so choose wisely. Note that this name will not appear in the mod manager or website, that comes later.
 - The description is what will appear in the mod manager under the mod's name, you can always edit this later
 - You can set the visibility to what you want; But when you go to publish your mod, it will need to be public
 
@@ -30,8 +30,8 @@ Now clone the repository to your local computer and open it in your favorite edi
 - manifest.json: This is the first file we're going to edit, we need to fill it out with information about our mod
     - First you're going to set `author` to your author name. This should be the same name that you used when creating the GitHub repo.
     - Next, set `name` to the name you want to appear in the mod manager and website.
-    - Now set `uniqueName` to the name of your GitHub Repo.
-    - You can leave `version`, `owmlVersion`, and `dependencies` alone
+    - Now set `uniqueName` to your username followed by a dot (`.`), followed by your mod's name in PascalCase (no spaces and new words have capital letters). For example if my username was "Test" and my mod's name was "Really Cool Addon", I would make the unique name `Test.ReallyCoolAddon`. Once you have submitted your mod to the Outer Wilds Mods Database you should never change this unique name.
+    - You can leave `version`, `owmlVersion`, and `dependencies` alone.
 - NewHorizonsConfig.dll: This is the heart of your addon. Make sure to never move or rename it.
 
 ### Testing The Addon
