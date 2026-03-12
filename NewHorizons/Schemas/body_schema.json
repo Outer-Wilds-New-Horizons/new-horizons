@@ -4550,7 +4550,7 @@
       }
     },
     "State": {
-      "type": "integer",
+      "type": "string",
       "description": "",
       "x-enumNames": [
         "UNLIT",
@@ -4558,9 +4558,9 @@
         "LIT"
       ],
       "enum": [
-        0,
-        1,
-        2
+        "unlit",
+        "smoldering",
+        "lit"
       ]
     },
     "DreamCampfireInfo": {
