@@ -4,11 +4,11 @@ using static AnglerfishController;
 
 namespace NewHorizons.Patches
 {
-    [HarmonyPatch(typeof(AnglerfishAudioController))]
-    public static class AnglerfishAudioControllerPatches
+    [HarmonyPatch]
+    public static class AnglerfishPatches
     {
         [HarmonyPrefix]
-        [HarmonyPatch(nameof(AnglerfishAudioController.OnChangeAnglerState))]
+        [HarmonyPatch(typeof(AnglerfishAudioController), nameof(AnglerfishAudioController.OnChangeAnglerState))]
         public static bool AnglerfishAudioController_OnChangeAnglerState(AnglerfishAudioController __instance, AnglerState anglerState)
         {
             var scale = __instance.transform.parent.localScale.x;
