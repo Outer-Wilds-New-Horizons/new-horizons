@@ -24,7 +24,7 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
                 _prefab = SearchUtilities.Find("DreamWorld_Body/Sector_DreamWorld/Sector_Underground/IslandsRoot/IslandPivot_C/Island_C/Interactibles_Island_C/Prefab_IP_AlarmTotem").InstantiateInactive().Rename("Prefab_AlarmTotem").DontDestroyOnLoad();
                 if (_prefab == null)
                 {
-                    NHLogger.LogWarning($"Tried to make a grapple totem but couldn't. Do you have the DLC installed?");
+                    NHLogger.LogWarning($"Tried to make an alarm totem but couldn't. Do you have the DLC installed?");
                     return;
                 }
                 else
