@@ -2438,6 +2438,13 @@
           "items": {
             "$ref": "#/definitions/ProjectionTotemInfo"
           }
+        },
+        "fuelTanks": {
+          "type": "array",
+          "description": "Adds tanks that allow you to refuel.",
+          "items": {
+            "$ref": "#/definitions/FuelTankInfo"
+          }
         }
       }
     },
@@ -5049,6 +5056,60 @@
         }
       }
     },
+    "FuelTankInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "type": {
+          "description": "The type of fuel tank this is.",
+          "default": "hearthianTank",
+          "$ref": "#/definitions/FuelTankType"
+        }
+      }
+    },
+    "FuelTankType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "HearthianTank",
+        "DLCTorch"
+      ],
+      "enum": [
+        "hearthianTank",
+        "dlcTorch"
+      ]
+    },
     "ReferenceFrameModule": {
       "type": "object",
       "additionalProperties": false,
@@ -5806,6 +5867,13 @@
           "description": "Add interaction volumes to this planet.\nThey can be interacted with by the player to trigger various effects.",
           "items": {
             "$ref": "#/definitions/InteractionVolumeInfo"
+          }
+        },
+        "playerRecoveryVolumes": {
+          "type": "array",
+          "description": "Add player recovery volumes to this planet.\nThey can be interacted with by the player to refuel or heal.",
+          "items": {
+            "$ref": "#/definitions/PlayerRecoveryVolumeInfo"
           }
         },
         "interferenceVolumes": {
@@ -7055,6 +7123,24 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "range": {
+          "type": "number",
+          "description": "The range at which the volume can be interacted with.",
+          "format": "float",
+          "default": 2.0
+        },
+        "maxViewAngle": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "description": "The max view angle (in degrees) the player can see the volume with to interact with it. This will effectively be a cone extending from the volume's center forwards (along the Z axis) based on the volume's rotation.\nIf not specified, no view angle restriction will be applied.",
+          "format": "float"
+        },
+        "usableInShip": {
+          "type": "boolean",
+          "description": "Whether the volume can be interacted with while in the ship."
+        },
         "radius": {
           "type": "number",
           "description": "The radius of this volume, if a shape is not specified.",
@@ -7100,24 +7186,6 @@
           "type": "string",
           "description": "The prompt to display when the volume is interacted with."
         },
-        "range": {
-          "type": "number",
-          "description": "The range at which the volume can be interacted with.",
-          "format": "float",
-          "default": 2.0
-        },
-        "maxViewAngle": {
-          "type": [
-            "null",
-            "number"
-          ],
-          "description": "The max view angle (in degrees) the player can see the volume with to interact with it. This will effectively be a cone extending from the volume's center forwards (along the Z axis) based on the volume's rotation.\nIf not specified, no view angle restriction will be applied.",
-          "format": "float"
-        },
-        "usableInShip": {
-          "type": "boolean",
-          "description": "Whether the volume can be interacted with while in the ship."
-        },
         "reusable": {
           "type": "boolean",
           "description": "Whether the volume can be interacted with multiple times."
@@ -7141,6 +7209,88 @@
         "animationTrigger": {
           "type": "string",
           "description": "The name of an animation trigger to set on the animator when the volume is interacted with."
+        }
+      }
+    },
+    "PlayerRecoveryVolumeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "range": {
+          "type": "number",
+          "description": "The range at which the volume can be interacted with.",
+          "format": "float",
+          "default": 2.0
+        },
+        "maxViewAngle": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "description": "The max view angle (in degrees) the player can see the volume with to interact with it. This will effectively be a cone extending from the volume's center forwards (along the Z axis) based on the volume's rotation.\nIf not specified, no view angle restriction will be applied.",
+          "format": "float"
+        },
+        "usableInShip": {
+          "type": "boolean",
+          "description": "Whether the volume can be interacted with while in the ship."
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume, if a shape is not specified.",
+          "format": "float",
+          "default": 1.0
+        },
+        "shape": {
+          "description": "The shape of this volume. Defaults to a sphere with a radius of `radius` if not specified.",
+          "$ref": "#/definitions/ShapeInfo"
+        },
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "refuels": {
+          "type": "boolean",
+          "description": "Whether interacting with this volume refuels the player's jetpack.",
+          "default": true
+        },
+        "heals": {
+          "type": "boolean",
+          "description": "Whether interacting with this volume heals the player."
+        },
+        "cleansVisor": {
+          "type": "boolean",
+          "description": "Whether interacting with this volume cleans dirt off the helmet visor."
+        },
+        "dlcFuel": {
+          "type": "boolean",
+          "description": "Whether the fuel fire color would be green."
         }
       }
     },
