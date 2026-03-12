@@ -163,7 +163,7 @@ namespace NewHorizons.Builder.ShipLog
             transform.localPosition = position;
             transform.localRotation = Quaternion.identity;
             transform.localScale = Vector3.one * scale;
-            transform.SetAsLastSibling();
+            transform.SetAsFirstSibling();
             return newGameObject;
         }
 
