@@ -114,6 +114,7 @@ namespace NewHorizons.Builder.Props
                 MakeGeneralProps(go, config.Props.portholes, (porthole) => PortholeBuilder.Make(go, sector, porthole, mod));
                 MakeGeneralProps(go, config.Props.alarmTotems, (totem) => AlarmTotemBuilder.Make(go, sector, totem, mod));
                 MakeGeneralProps(go, config.Props.grappleTotems, (totem) => GrappleTotemBuilder.Make(go, sector, totem, mod));
+                MakeGeneralProps(go, config.Props.alarmBells, (bell) => AlarmBellBuilder.Make(go, sector, bell, mod));
                 MakeGeneralProps(go, config.Props.dreamCampfires, (campfire) => DreamCampfireBuilder.Make(go, sector, campfire, mod), (campfire) => campfire.id);
                 MakeGeneralProps(go, config.Props.dreamArrivalPoints, (point) => DreamArrivalPointBuilder.Make(go, sector, point, mod), (point) => point.id);
                 MakeGeneralProps(go, config.Props.raftDocks, (dock) => RaftDockBuilder.Make(go, sector, dock, mod));

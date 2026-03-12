@@ -38,6 +38,7 @@ namespace NewHorizons.External
                     || Config?.Props?.slideShows != null
                     || Config?.Props?.dreamArrivalPoints != null
                     || Config?.Props?.dreamCampfires != null
+                    || Config?.Props?.alarmBells != null
                     || Config?.Props?.alarmTotems != null
                     || Config?.Props?.dreamCandles != null
                     || Config?.Props?.grappleTotems != null

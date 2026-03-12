@@ -150,6 +150,11 @@ namespace NewHorizons.External.Modules
         public DreamCampfireInfo[] dreamCampfires;
 
         /// <summary>
+        /// Adds dream world alarm totems to this planet (requires Echoes of the Eye DLC).
+        /// </summary>
+        public AlarmBellInfo[] alarmBells;
+
+        /// <summary>
         /// Add the points you will arrive at when entering the dream world/simulation from a paired dream campfire (requires Echoes of the Eye DLC). The planet with the arrival point should be statically positioned to avoid issues with the simulation view materials.
         /// </summary>
         public DreamArrivalPointInfo[] dreamArrivalPoints;

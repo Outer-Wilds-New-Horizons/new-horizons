@@ -421,6 +421,7 @@ namespace NewHorizons
                         CloakBuilder.InitPrefab();
                         RaftBuilder.InitPrefab();
                         RaftDockBuilder.InitPrefab();
+                        AlarmBellBuilder.InitPrefab();
                         DreamCampfireBuilder.InitPrefab();
                         DreamArrivalPointBuilder.InitPrefab();
                         DreamCandleBuilder.InitPrefabs();
