@@ -14,17 +14,9 @@ namespace NewHorizons.Patches.MapPatches
         {
             var ao = __instance.GetAstroObject();
 
-            if (ao is NHAstroObject nhao)
+            if (ao is NHAstroObject nhao && nhao.HasCustomDisplayName() && nhao.TryGetTranslatedCustomName(out string translatedCustomName))
             {
-                if (nhao.HideDisplayName) return;
-
-                if (nhao is EyeAstroObject || !nhao.isVanilla)
-                {
-                    if (nhao.TryGetTranslatedCustomName(out string translatedCustomName))
-                    {
-                        __result = translatedCustomName;
-                    }
-                }
+                __result = translatedCustomName;
             }
         }
     }

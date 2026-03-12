@@ -184,25 +184,53 @@ namespace NewHorizons.Utility.OuterWilds
             return otherChildren.ToArray();
         }
 
+        public static bool IsHidingVanillaReferenceFrameName(AstroObject.Name astroObjectName)
+        {
+            return astroObjectName switch
+            {
+                AstroObject.Name.Sun
+                or AstroObject.Name.CaveTwin
+                or AstroObject.Name.TowerTwin
+                or AstroObject.Name.TimberHearth
+                or AstroObject.Name.BrittleHollow
+                or AstroObject.Name.GiantsDeep
+                or AstroObject.Name.DarkBramble
+                or AstroObject.Name.Comet
+                or AstroObject.Name.TimberMoon
+                or AstroObject.Name.VolcanicMoon
+                    => false,
+
+                _ => true
+            };
+        }
+
+        public static bool TryGetVanillaDisplayName(AstroObject astroObject, out string displayName)
+        {
+            if (astroObject != null)
+            {
+                AstroObject.Name astroObjectName = astroObject.GetAstroObjectName();
+                displayName = AstroObject.AstroObjectNameToString(astroObjectName);
+                if (displayName == "ERROR") displayName = string.Empty;
+                return !string.IsNullOrEmpty(displayName);
+            }
+            else
+            {
+                displayName = string.Empty;
+                return false;
+            }
+        }
+
         public static string GetPlanetName(AstroObject astroObject)
         {
             if (astroObject != null)
             {
-                if (astroObject is NHAstroObject nhAstroObject)
+                if (astroObject is NHAstroObject nhAstroObject && nhAstroObject.HasCustomDisplayName() && nhAstroObject.TryGetTranslatedCustomName(out string translatedCustomName))
                 {
-                    if (nhAstroObject.TryGetTranslatedCustomName(out string translatedCustomName))
-                    {
-                        return translatedCustomName;
-                    }
+                    return translatedCustomName;
                 }
-                else
+                else if (TryGetVanillaDisplayName(astroObject, out string translatedVanillaName))
                 {
-                    AstroObject.Name astroObjectName = astroObject.GetAstroObjectName();
-
-                    if (astroObjectName - AstroObject.Name.Sun <= 7 || astroObjectName - AstroObject.Name.TimberMoon <= 1)
-                    {
-                        return AstroObject.AstroObjectNameToString(astroObject.GetAstroObjectName());
-                    }
+                    return translatedVanillaName;
                 }
             }
 

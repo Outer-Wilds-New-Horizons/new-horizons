@@ -29,5 +29,10 @@ namespace NewHorizons.Components.EyeOfTheUniverse
             }
             return base.TryGetTranslatedCustomName(out translatedCustomName);
         }
+
+        public override bool HasCustomDisplayName()
+        {
+            return true;
+        }
     }
 }

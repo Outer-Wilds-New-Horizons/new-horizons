@@ -1,5 +1,7 @@
+using NewHorizons.Components.EyeOfTheUniverse;
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
+using System;
 namespace NewHorizons.Components.Orbital
 {
     public class NHAstroObject : AstroObject, IOrbitalParameters
@@ -59,6 +61,18 @@ namespace NewHorizons.Components.Orbital
                 translatedCustomName = null;
                 return false;
             }
+        }
+
+        public string GetTranslatedCustomName()
+        {
+            if (TryGetTranslatedCustomName(out string translatedCustomName)) 
+                return translatedCustomName;
+            return null;
+        }
+
+        public virtual bool HasCustomDisplayName()
+        {
+            return !isVanilla && !HideDisplayName;
         }
     }
 }
