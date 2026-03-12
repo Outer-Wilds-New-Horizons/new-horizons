@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System.ComponentModel;
 using System.Runtime.Serialization;
 
@@ -22,6 +23,7 @@ namespace NewHorizons.External.Modules.Props
         /// </summary>
         [DefaultValue(false)] public bool lookUpWhileSleeping = false;
 
+        [JsonConverter(typeof(StringEnumConverter))]
         public enum State
         {
             [EnumMember(Value = @"unlit")] UNLIT = 0,
