@@ -421,6 +421,11 @@ namespace NewHorizons
                         RaftDockBuilder.InitPrefab();
                         DreamCampfireBuilder.InitPrefab();
                         DreamArrivalPointBuilder.InitPrefab();
+                        DreamCandleBuilder.InitPrefabs();
+                        PortholeBuilder.InitPrefabs();
+                        AlarmTotemBuilder.InitPrefab();
+                        GrappleTotemBuilder.InitPrefab();
+                        ProjectionTotemBuilder.InitPrefab();
                     }
 
                     WarpPadBuilder.InitPrefabs();

@@ -33,9 +33,15 @@ namespace NewHorizons.External
                 return Config?.Cloak != null
                     || Config?.Dream != null
                     || Config?.Props?.rafts != null
+                    || Config?.Props?.raftDocks != null
                     || Config?.Props?.slideShows != null
                     || Config?.Props?.dreamArrivalPoints != null
                     || Config?.Props?.dreamCampfires != null
+                    || Config?.Props?.alarmTotems != null
+                    || Config?.Props?.dreamCandles != null
+                    || Config?.Props?.grappleTotems != null
+                    || Config?.Props?.portholes != null
+                    || Config?.Props?.projectionTotems != null
                     || detailPaths.Any(x => x.StartsWith("RingWorld_Body") || x.StartsWith("DreamWorld_Body"));
             }
             catch
