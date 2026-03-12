@@ -33,6 +33,7 @@ namespace NewHorizons.Components
         public VesselSpawnPoint()
         {
             _eyeState = EyeState.AboardVessel;
+            _spawnLocation = SpawnLocation.None;
         }
 
         public int index = 0;
