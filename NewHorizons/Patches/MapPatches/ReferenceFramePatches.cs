@@ -14,31 +14,16 @@ namespace NewHorizons.Patches.MapPatches
         {
             var ao = __instance.GetAstroObject();
 
-            if (ao is EyeAstroObject eyeao && !eyeao.HideDisplayName)
+            if (ao is NHAstroObject nhao)
             {
-                var name = eyeao.GetAstroObjectName();
+                if (nhao.HideDisplayName) return;
 
-                if (name == AstroObject.Name.Eye)
+                if (nhao is EyeAstroObject || !nhao.isVanilla)
                 {
-                    __result = UITextLibrary.GetString(UITextType.LocationEye);
-                }
-                else
-                {
-                    var customName = eyeao.GetCustomName();
-
-                    if (!string.IsNullOrWhiteSpace(customName))
+                    if (nhao.TryGetTranslatedCustomName(out string translatedCustomName))
                     {
-                        __result = TranslationHandler.GetTranslation(customName, TranslationHandler.TextType.UI, false);
+                        __result = translatedCustomName;
                     }
-                }
-            }
-            else if (ao is NHAstroObject nhao && !nhao.isVanilla && !nhao.HideDisplayName)
-            {
-                var customName = nhao.GetCustomName();
-
-                if (!string.IsNullOrWhiteSpace(customName))
-                {
-                    __result = TranslationHandler.GetTranslation(customName, TranslationHandler.TextType.UI, false);
                 }
             }
         }

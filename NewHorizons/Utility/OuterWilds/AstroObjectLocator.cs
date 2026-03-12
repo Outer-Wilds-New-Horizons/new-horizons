@@ -190,11 +190,9 @@ namespace NewHorizons.Utility.OuterWilds
             {
                 if (astroObject is NHAstroObject nhAstroObject)
                 {
-                    var customName = nhAstroObject.GetCustomName();
-
-                    if (!string.IsNullOrWhiteSpace(customName))
+                    if (nhAstroObject.TryGetTranslatedCustomName(out string translatedCustomName))
                     {
-                        return TranslationHandler.GetTranslation(customName, TranslationHandler.TextType.UI, false);
+                        return translatedCustomName;
                     }
                 }
                 else
