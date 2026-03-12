@@ -43,5 +43,38 @@ namespace NewHorizons.Patches
                 return false;
             }
         }
+
+        [HarmonyPrefix]
+        [HarmonyPriority(Priority.Last)] // So any other mod can set the controller before we check
+        [HarmonyPatch(typeof(AnglerfishAnimController), nameof(AnglerfishAnimController.Awake))]
+        public static bool AnglerfishAnimController_Awake(AnglerfishAnimController __instance)
+        {
+            if (__instance._anglerfishController == null)
+            {
+                __instance._animator = __instance.GetComponent<Animator>();
+                __instance._lastStateChangeTime = 0f;
+                __instance._moveCurrent = (__instance._moveTarget = (__instance._moveStart = 0f));
+                __instance._jawCurrent = (__instance._jawTarget = (__instance._jawStart = 0.33f));
+                __instance._spinesTarget = 0f;
+                __instance._spinesCurrent = new float[__instance._spines.Length];
+                __instance._spinesStart = new float[__instance._spines.Length];
+                __instance._spineRotations = new Quaternion[__instance._spines.Length];
+                __instance._spineOffsets = new float[__instance._spines.Length];
+                for (int i = 0; i < __instance._spines.Length; i++)
+                {
+                    __instance._spinesCurrent[i] = (__instance._spinesStart[i] = 0f);
+                    __instance._spineRotations[i] = __instance._spines[i].localRotation;
+                    __instance._spineOffsets[i] = Random.value * __instance._spinesFlareVariation;
+                }
+
+                __instance.enabled = false;
+                __instance.OnChangeAnglerState(AnglerfishController.AnglerState.Lurking);
+                __instance._animator.SetFloat("MoveSpeed", __instance._moveCurrent);
+                __instance._animator.SetFloat("Jaw", __instance._jawCurrent);
+
+                return false;
+            }
+            return true;
+        }
     }
 }

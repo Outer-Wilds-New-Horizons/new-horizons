@@ -482,12 +482,6 @@ namespace NewHorizons.Builder.Props
                     UnityEngine.Object.DestroyImmediate(component);
                 }
             }
-            // If it's not a moving anglerfish (ie Anglerfish_Body/Beast_Anglerfish) make sure the anim controller is regular
-            // Manual parent chain so we can find inactive
-            else if(component is AnglerfishAnimController && component.transform.parent.GetComponent<AnglerfishController>() == null)
-            {
-                component.gameObject.AddComponent<AnglerAnimFixer>();
-            }
             // Add custom logic to NH-spawned rafts to handle fluid changes
             else if (component is RaftController raft)
             {
@@ -505,39 +499,6 @@ namespace NewHorizons.Builder.Props
                 {
                     Component.DestroyImmediate(floodSensor);
                 }
-            }
-        }
-
-        /// <summary>
-        /// Has to happen after AnglerfishAnimController awake to remove the events it has set up.
-        /// Otherwise results in the anglerfish 1) having its animations controlled by an actual fish 2) randomly having different animations on solarsystem load
-        /// Can't do delay because it needs to work with scatter (copies a prefab made using MakeDetail).
-        /// </summary>
-        [RequireComponent(typeof(AnglerfishAnimController))]
-        private class AnglerAnimFixer : MonoBehaviour
-        {
-            public void Start()
-            {
-                var angler = GetComponent<AnglerfishAnimController>();
-
-                NHLogger.LogVerbose("Fixing anglerfish animation");
-
-                // Remove any event reference to its angler so that they dont change its state
-                if (angler._anglerfishController)
-                {
-                    angler._anglerfishController.OnChangeAnglerState -= angler.OnChangeAnglerState;
-                    angler._anglerfishController.OnAnglerTurn -= angler.OnAnglerTurn;
-                    angler._anglerfishController.OnAnglerSuspended -= angler.OnAnglerSuspended;
-                    angler._anglerfishController.OnAnglerUnsuspended -= angler.OnAnglerUnsuspended;
-                }
-                // Disable the angler anim controller because we don't want Update or LateUpdate to run, just need it to set the initial Animator state
-                angler.enabled = false;
-                angler.OnChangeAnglerState(AnglerfishController.AnglerState.Lurking);
-
-                angler._animator.SetFloat("MoveSpeed", angler._moveCurrent);
-                angler._animator.SetFloat("Jaw", angler._jawCurrent);
-
-                Destroy(this);
             }
         }
 
