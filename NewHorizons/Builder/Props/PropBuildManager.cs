@@ -107,6 +107,7 @@ namespace NewHorizons.Builder.Props
             MakeGeneralProps(go, config.Props.details, (detail) => DetailBuilder.Make(go, sector, mod, detail), (detail) => detail.path);
             MakeGeneralProps(go, config.Props.geysers, (geyser) => GeyserBuilder.Make(go, sector, geyser));
             MakeGeneralProps(go, config.Props.campfires, (campfire) => CampfireBuilder.Make(go, sector, campfire, mod));
+            MakeGeneralProps(go, config.Props.fuelTanks, (fuelTank) => FuelTankBuilder.Make(go, sector, fuelTank, mod));
             if (Main.HasDLC)
             {
                 MakeGeneralProps(go, config.Props.dreamCandles, (candle) => DreamCandleBuilder.Make(go, sector, candle, mod));

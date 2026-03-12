@@ -77,6 +77,13 @@ namespace NewHorizons.Builder.Volumes
                     InteractionVolumeBuilder.Make(go, sector, interactionVolume, mod);
                 }
             }
+            if (config.Volumes.playerRecoveryVolumes != null)
+            {
+                foreach (var playerRecoveryVolume in config.Volumes.playerRecoveryVolumes)
+                {
+                    PlayerRecoveryVolumeBuilder.Make(go, sector, playerRecoveryVolume, mod);
+                }
+            }
             if (config.Volumes.interferenceVolumes != null)
             {
                 foreach (var interferenceVolume in config.Volumes.interferenceVolumes)

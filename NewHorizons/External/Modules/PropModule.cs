@@ -179,6 +179,11 @@ namespace NewHorizons.External.Modules
         /// </summary>
         public ProjectionTotemInfo[] projectionTotems;
 
+        /// <summary>
+        /// Adds tanks that allow you to refuel.
+        /// </summary>
+        public FuelTankInfo[] fuelTanks;
+
         [Obsolete("reveal is deprecated. Use Volumes->revealVolumes instead.")] public RevealVolumeInfo[] reveal;
 
         [Obsolete("audioVolumes is deprecated. Use Volumes->audioVolumes instead.")] public AudioVolumeInfo[] audioVolumes;

@@ -10,9 +10,9 @@ using UnityEngine;
 
 namespace NewHorizons.Builder.Volumes
 {
-    internal static class InteractionVolumeBuilder
+    public static class InteractionVolumeBuilder
     {
-        public static InteractReceiver Make(GameObject planetGO, Sector sector, InteractionVolumeInfo info, IModBehaviour mod)
+        public static InteractReceiver MakeReceiver(GameObject planetGO, Sector sector, BaseInteractionVolumeInfo info, IModBehaviour mod)
         {
             // Interaction volumes must use colliders because the first-person interaction system uses raycasting
             if (info.shape != null && info.shape?.useShape == false)
@@ -31,6 +31,13 @@ namespace NewHorizons.Builder.Volumes
             receiver._checkViewAngle = info.maxViewAngle.HasValue;
             receiver._maxViewAngle = info.maxViewAngle ?? 180f;
             receiver._usableInShip = info.usableInShip;
+
+            return receiver;
+        }
+
+        public static NHInteractionVolume Make(GameObject planetGO, Sector sector, InteractionVolumeInfo info, IModBehaviour mod)
+        {
+            var receiver = MakeReceiver(planetGO, sector, info, mod);
 
             var volume = receiver.gameObject.AddComponent<NHInteractionVolume>();
 
@@ -85,7 +92,7 @@ namespace NewHorizons.Builder.Volumes
                 receiver.ChangePrompt(text);
             });
 
-            return receiver;
+            return volume;
         }
     }
 }

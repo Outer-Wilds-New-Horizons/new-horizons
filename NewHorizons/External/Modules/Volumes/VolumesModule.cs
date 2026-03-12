@@ -51,6 +51,12 @@ namespace NewHorizons.External.Modules.Volumes
         public InteractionVolumeInfo[] interactionVolumes;
 
         /// <summary>
+        /// Add player recovery volumes to this planet.
+        /// They can be interacted with by the player to refuel or heal.
+        /// </summary>
+        public PlayerRecoveryVolumeInfo[] playerRecoveryVolumes;
+
+        /// <summary>
         /// Add interference volumes to this planet.
         /// Hides HUD markers of ship scout/probe and prevents scout photos if you are not inside the volume together with ship or scout probe.
         /// </summary>

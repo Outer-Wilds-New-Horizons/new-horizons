@@ -412,9 +412,11 @@ namespace NewHorizons
                     GravityCannonBuilder.InitPrefab();
                     ShuttleBuilder.InitPrefab();
                     CampfireBuilder.InitPrefab();
+                    FuelTankBuilder.InitPrefab();
 
                     if (HasDLC)
                     {
+                        FuelTankBuilder.InitDLCPrefab();
                         ProjectionBuilder.InitPrefabs();
                         CloakBuilder.InitPrefab();
                         RaftBuilder.InitPrefab();

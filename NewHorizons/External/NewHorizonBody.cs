@@ -1,4 +1,5 @@
 using NewHorizons.External.Configs;
+using NewHorizons.External.Modules.Props;
 using NewHorizons.Utility.Files;
 using NewHorizons.Utility.OWML;
 using OWML.Common;
@@ -42,6 +43,7 @@ namespace NewHorizons.External
                     || Config?.Props?.grappleTotems != null
                     || Config?.Props?.portholes != null
                     || Config?.Props?.projectionTotems != null
+                    || (Config?.Props?.fuelTanks != null && Config.Props.fuelTanks.Any(info => info.type == FuelTankInfo.FuelTankType.DLCTorch))
                     || detailPaths.Any(x => x.StartsWith("RingWorld_Body") || x.StartsWith("DreamWorld_Body"));
             }
             catch
