@@ -8,6 +8,7 @@ namespace NewHorizons.Patches.ToolPatches;
 public static class NomaiTranslatorPropPatches
 {
     [HarmonyPrefix]
+    [HarmonyPriority(Priority.First)]
     [HarmonyPatch(typeof(NomaiTranslatorProp), nameof(NomaiTranslatorProp.DisplayTextNode))]
     public static bool NomaiTranslatorProp_DisplayTextNode_Prefix(NomaiTranslatorProp __instance)
     {
@@ -26,13 +27,14 @@ public static class NomaiTranslatorPropPatches
     }
 
     [HarmonyPostfix]
+    [HarmonyPriority(Priority.First)]
     [HarmonyPatch(typeof(NomaiTranslatorProp), nameof(NomaiTranslatorProp.DisplayTextNode))]
     public static void NomaiTranslatorProp_DisplayTextNode_Postfix(NomaiTranslatorProp __instance)
     {
         // Adapted from Forgotten Castaways. Thanks coderCleric! I love stealing!
         var component = __instance._scanBeams.FirstOrDefault()?._nomaiTextLine?.gameObject?.GetComponent<ConditionalNomaiTextTranslatable>();
 
-        if (component != null && !component.IsIllegible() && !__instance._nomaiTextComponent.IsTranslated(__instance._currentTextID) && __instance._translationTimeElapsed == 0f)
+        if (component != null && !(component.IsIllegible() || __instance._textField.text == UITextLibrary.GetString(UITextType.TranslatorUntranslatableWarning)) && !__instance._nomaiTextComponent.IsTranslated(__instance._currentTextID) && __instance._translationTimeElapsed == 0f)
         {
             __instance._textField.text = component.GetUntranslatedPrompt();
         }
