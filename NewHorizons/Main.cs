@@ -84,7 +84,7 @@ namespace NewHorizons
             set
             {
                 // Prevent invalid values
-                if (IsInvalidStarSystem(value))
+                if (IsInvalidStarSystem(value) && value != DefaultStarSystem)
                 {
                     NHLogger.LogError($"System \"{value}\" does not exist!");
                     if (value != DefaultStarSystem)
