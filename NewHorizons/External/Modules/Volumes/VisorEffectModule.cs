@@ -18,6 +18,11 @@ namespace NewHorizons.External.Modules.Volumes
         /// </summary>
         public RainEffectVolumeInfo[] rainEffectVolumes;
 
+        /// <summary>
+        /// Add visor dirt effect volumes to this planet.
+        /// </summary>
+        public DirtEffectVolumeInfo[] dirtEffectVolumes;
+
         [JsonObject]
         public class FrostEffectVolumeInfo : PriorityVolumeInfo
         {
@@ -49,6 +54,16 @@ namespace NewHorizons.External.Modules.Volumes
             /// </summary>
             [DefaultValue(1f)]
             public float streakRate = 1f;
+        }
+
+        [JsonObject]
+        public class DirtEffectVolumeInfo : PriorityVolumeInfo
+        {
+            /// <summary>
+            /// The rate at which the dirt effect will accumulate
+            /// </summary>
+            [DefaultValue(1f)]
+            public float dirtAccumulationRate = 1f;
         }
     }
 

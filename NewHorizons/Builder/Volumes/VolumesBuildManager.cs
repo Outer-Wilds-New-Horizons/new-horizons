@@ -197,6 +197,13 @@ namespace NewHorizons.Builder.Volumes
                         VisorRainEffectVolumeBuilder.Make(go, sector, rainEffectVolume);
                     }
                 }
+                if (config.Volumes.visorEffects.dirtEffectVolumes != null)
+                {
+                    foreach (var dirtEffectVolume in config.Volumes.visorEffects.dirtEffectVolumes)
+                    {
+                        VisorDirtEffectVolumeBuilder.Make(go, sector, dirtEffectVolume);
+                    }
+                }
             }
             if (config.Volumes.rulesets != null)
             {
