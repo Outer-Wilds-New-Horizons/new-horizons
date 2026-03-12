@@ -2397,6 +2397,13 @@
             "$ref": "#/definitions/DreamCampfireInfo"
           }
         },
+        "alarmBells": {
+          "type": "array",
+          "description": "Adds dream world alarm totems to this planet (requires Echoes of the Eye DLC).",
+          "items": {
+            "$ref": "#/definitions/AlarmBellInfo"
+          }
+        },
         "dreamArrivalPoints": {
           "type": "array",
           "description": "Add the points you will arrive at when entering the dream world/simulation from a paired dream campfire (requires Echoes of the Eye DLC). The planet with the arrival point should be statically positioned to avoid issues with the simulation view materials.",
@@ -4623,6 +4630,47 @@
         "id": {
           "type": "string",
           "description": "Unique ID for this dream-world campfire"
+        },
+        "alarmBellPath": {
+          "type": "string",
+          "description": "Path to the alarm bell this campfire is connected to."
+        }
+      }
+    },
+    "AlarmBellInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
         }
       }
     },
