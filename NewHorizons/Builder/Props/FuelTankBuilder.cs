@@ -40,7 +40,7 @@ namespace NewHorizons.Builder.Props
         {
             if (_dlcPrefab == null)
             {
-                _dlcPrefab = SearchUtilities.Find("RingWorld_Body/Sector_RingInterior/Sector_Zone1/Sector_SlideBurningRoom_Zone1/Interactables_SlideBurningRoom_Zone1/TorchRoot/Prefab_IP_FuelTorch").InstantiateInactive().Rename("Prefab_IP_FuelTorch").DontDestroyOnLoad();
+                _dlcPrefab = SearchUtilities.Find("RingWorld_Body/Sector_RingInterior/Sector_Zone4/Sector_BlightedShore/Sector_JammingControlRoom_Zone4/Interactables_JammingControlRoom_Zone4/Prefab_IP_FuelTorch").InstantiateInactive().Rename("Prefab_IP_FuelTorch").DontDestroyOnLoad();
                 if (_dlcPrefab == null)
                 {
                     NHLogger.LogWarning($"Tried to make a DLC fuel tank but couldn't. Do you have the DLC installed?");
