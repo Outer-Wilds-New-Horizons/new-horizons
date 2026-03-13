@@ -5151,10 +5151,14 @@
       "description": "",
       "x-enumNames": [
         "HearthianTank",
+        "NomaiTank",
+        "PreCrashNomaiTank",
         "DLCTorch"
       ],
       "enum": [
         "hearthianTank",
+        "nomaiTank",
+        "preCrashNomaiTank",
         "dlcTorch"
       ]
     },
