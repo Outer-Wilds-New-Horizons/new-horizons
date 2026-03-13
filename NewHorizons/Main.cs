@@ -445,8 +445,8 @@ namespace NewHorizons
             }
             else if (IsWarpingBackToEye)
             {
-                IsWarpingBackToEye = false;
                 ManualOnStartSceneLoad(OWScene.EyeOfTheUniverse);
+                IsWarpingBackToEye = false;
                 // LoadSceneImmediate doesn't cover the screen and you see the solar system for a frame without this
                 LoadManager.s_instance._fadeCanvas.enabled = true;
                 LoadManager.s_instance._fadeImage.color = Color.black;
