@@ -1,12 +1,13 @@
+using NewHorizons.External.Modules;
+using NewHorizons.External.Modules.Conditionals;
+using NewHorizons.External.SerializableData;
+using Newtonsoft.Json;
 using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Xml;
-using NewHorizons.External.Modules;
-using NewHorizons.External.Modules.Conditionals;
-using NewHorizons.External.SerializableData;
-using Newtonsoft.Json;
+using UnityEngine;
 using static NewHorizons.External.Modules.ShipLogModule;
 
 namespace NewHorizons.External.Configs
@@ -44,7 +45,7 @@ namespace NewHorizons.External.Configs
         public float farClipPlaneOverride;
 
         /// <summary>
-        /// Whether this system can be warped to via the warp drive. If you set `factRequiredForWarp`, this will be true.
+        /// Whether this system can be warped to via the warp drive. If you set `factRequiredForWarp`, this should be true.
         /// Does NOT effect the base SolarSystem. For that, see `canExitViaWarpDrive` and `factRequiredToExitViaWarpDrive`
         /// </summary>
         [DefaultValue(true)] public bool canEnterViaWarpDrive = true;
@@ -57,15 +58,21 @@ namespace NewHorizons.External.Configs
 
         /// <summary>
         /// Can you use the warp drive to leave this system? If you set `factRequiredToExitViaWarpDrive`
-        /// this will be true.
+        /// this should be true.
         /// </summary>
         [DefaultValue(true)] public bool canExitViaWarpDrive = true;
 
         /// <summary>
-        /// The FactID that must be revealed for you to warp back to the main solar system from here. Don't set `canWarpHome`
+        /// The FactID that must be revealed for you to warp back to the main solar system from here. Don't set `canExitViaWarpDrive`
         /// to `false` if you're using this, because it will be overwritten.
         /// </summary>
         public string factRequiredToExitViaWarpDrive;
+
+        /// <summary>
+        /// If you want the warp spawn point to be different from the respawn point, set the ID of the ship's spawn point you want to use.
+        /// Otherwise, will use the default spawn
+        /// </summary>
+        public string warpDriveSpawnPointID;
 
         /// <summary>
         /// Do you want a clean slate for this star system? Or will it be a modified version of the original.
@@ -102,6 +109,11 @@ namespace NewHorizons.External.Configs
         /// </summary>
         public bool respawnHere;
 
+        /// <summary>
+        /// Whether to disable the warp drive model on the ship in your system. (and ignore your system in the warp drive model visibility logic for other systems)
+        /// </summary>
+        public bool optOutWarpDriveModel = false;
+
         [Obsolete("travelAudioClip is deprecated, please use travelAudio instead")]
         public string travelAudioClip;
 
@@ -120,6 +132,11 @@ namespace NewHorizons.External.Configs
         /// Configure warping to this system with the vessel
         /// </summary>
         public VesselModule Vessel;
+
+        /// <summary>
+        /// Configure how this system will appear in the Interstellar Mode in the ship log.
+        /// </summary>
+        public StarChartModule StarChart;
 
         [Obsolete("coords is deprecated, please use Vessel.coords instead")]
         public NomaiCoordinates coords;
@@ -221,6 +238,38 @@ namespace NewHorizons.External.Configs
         }
 
         [JsonObject]
+        public class StarChartModule
+        {
+            /// <summary>
+            /// The position of the system on the star chart.
+            /// This applies regardless of any other settings.
+            /// </summary>
+            public MVector2 position;
+
+            /// <summary>
+            /// The color of the star as it appears on the star chart.
+            /// If specified, it will override any custom generation we do.
+            /// </summary>
+            public MColor color;
+
+            /// <summary>
+            /// Filepath to a texture that will replace the default texture used to display this star in the star map.
+            /// If you use this, it's probably best to leave the <see cref="color"/> field blank, unless you have a white texture that you'd like to tint a different color.
+            /// If specified, it will override any custom generation we do.
+            /// </summary>
+            public string starTexturePath;
+
+            /// <summary>
+            /// Time in the loop (in minutes) that this system will disappear.
+            /// If not specified, the time is calculated automatically based on the stars and singularities in the system.
+            /// If specified, this value takes priority over automatic calculations.
+            /// If <see cref="color"/> or <see cref="starTexturePath"/> is specified but this is not, it will default to 0 meaning players can warp to your system at any point.
+            /// A 22 minutes and 40 seconds (22.667) disappearance time will make the system unavailable to warp to at the exact moment the vanilla loop ends.
+            /// </summary>
+            public float? disappearanceTime;
+        }
+
+        [JsonObject]
         public class VesselModule
         {
             /// <summary>
@@ -304,21 +353,34 @@ namespace NewHorizons.External.Configs
 
             // True by default so if one is false go false
             canEnterViaWarpDrive = canEnterViaWarpDrive && otherConfig.canEnterViaWarpDrive;
+            canExitViaWarpDrive = canExitViaWarpDrive && otherConfig.canExitViaWarpDrive;
             destroyStockPlanets = destroyStockPlanets && otherConfig.destroyStockPlanets;
             enableTimeLoop = enableTimeLoop && otherConfig.enableTimeLoop;
+            allowOutsideItems = allowOutsideItems && otherConfig.allowOutsideItems;
+
+            // False by default
+            returnToSolarSystemWhenTooFar = returnToSolarSystemWhenTooFar || otherConfig.returnToSolarSystemWhenTooFar;
+
             loopDuration = loopDuration == 22f ? otherConfig.loopDuration : loopDuration;
 
             // If current one is null take the other
+            shipLogStartingPlanetID = string.IsNullOrEmpty(shipLogStartingPlanetID) ? otherConfig.shipLogStartingPlanetID : shipLogStartingPlanetID;
             factRequiredForWarp = string.IsNullOrEmpty(factRequiredForWarp) ? otherConfig.factRequiredForWarp : factRequiredForWarp;
+            factRequiredToExitViaWarpDrive = string.IsNullOrEmpty(factRequiredToExitViaWarpDrive) ? otherConfig.factRequiredToExitViaWarpDrive : factRequiredToExitViaWarpDrive;
             Skybox = Skybox == null ? otherConfig.Skybox : Skybox;
 
             // False by default so if one is true go true
             mapRestricted = mapRestricted || otherConfig.mapRestricted;
             respawnHere = respawnHere || otherConfig.respawnHere;
             startHere = startHere || otherConfig.startHere;
+            freeMapAngle = freeMapAngle || otherConfig.freeMapAngle;
 
             if (Vessel != null && otherConfig.Vessel != null)
             {
+                Vessel.coords ??= otherConfig.Vessel.coords;
+                Vessel.promptFact = string.IsNullOrEmpty(Vessel.promptFact) ? otherConfig.Vessel.promptFact : Vessel.promptFact;
+                Vessel.vesselSpawn ??= otherConfig.Vessel.vesselSpawn;
+                Vessel.warpExit ??= otherConfig.Vessel.warpExit;
                 Vessel.spawnOnVessel = Vessel.spawnOnVessel || otherConfig.Vessel.spawnOnVessel;
                 Vessel.alwaysPresent = Vessel.alwaysPresent || otherConfig.Vessel.alwaysPresent;
                 Vessel.hasPhysics = Vessel.hasPhysics ?? otherConfig.Vessel.hasPhysics;
@@ -342,6 +404,18 @@ namespace NewHorizons.External.Configs
             else
             {
                 GlobalMusic ??= otherConfig.GlobalMusic;
+            }
+
+            if (StarChart != null && otherConfig.StarChart != null)
+            {
+                StarChart.position = StarChart.position ?? otherConfig.StarChart.position;
+                StarChart.color = StarChart.color ?? otherConfig.StarChart.color;
+                StarChart.starTexturePath = string.IsNullOrEmpty(StarChart.starTexturePath) ? otherConfig.StarChart.starTexturePath : StarChart.starTexturePath;
+                StarChart.disappearanceTime = StarChart.disappearanceTime ?? otherConfig.StarChart.disappearanceTime;
+            }
+            else
+            {
+                StarChart ??= otherConfig.StarChart;
             }
 
             if (conditionalChecks != null && otherConfig.conditionalChecks != null)

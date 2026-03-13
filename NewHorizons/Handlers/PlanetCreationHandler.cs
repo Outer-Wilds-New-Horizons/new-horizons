@@ -42,6 +42,16 @@ namespace NewHorizons.Handlers
 
         public static void Init(List<NewHorizonsBody> bodies)
         {
+            // TH gets preloaded in title screen. custom systems dont need this
+            if (Main.Instance.CurrentStarSystem is not ("SolarSystem" or "EyeOfTheUniverse"))
+            {
+                foreach (var bundle in StreamingManager.s_activeBundles)
+                {
+                    // save memory NOW instead of next frame when other stuff has loaded and taken memory
+                    bundle.UnloadImmediate();
+                }
+            }
+            
             // Start by destroying all planets if need be
             if (Main.SystemDict[Main.Instance.CurrentStarSystem].Config.destroyStockPlanets)
             {
@@ -251,6 +261,8 @@ namespace NewHorizons.Handlers
                             var orbit = body.Config.Orbit.semiMajorAxis == 0 ? quantumPlanet.groundState.orbit : body.Config.Orbit;
 
                             quantumPlanet.AddState(new QuantumPlanet.State(sector, orbit));
+
+                            //RichPresenceHandler.SetUpPlanet(body.Config.name, existingPlanet, sector, body.Config.Star != null, body.Config.Atmosphere != null);
                         }
                         catch (Exception ex)
                         {

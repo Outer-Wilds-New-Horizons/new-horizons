@@ -1,3 +1,4 @@
+using NewHorizons.Builder.General;
 using NewHorizons.Components.SizeControllers;
 using NewHorizons.Components.Stars;
 using NewHorizons.External.Modules.VariableSize;
@@ -121,7 +122,7 @@ namespace NewHorizons.Builder.Body
             ambientLightGO.SetActive(true);
 
             Light ambientLight = ambientLightGO.GetComponent<Light>();
-            ambientLight.range = starModule.size * OuterRadiusRatio;
+            AmbientLightBuilder.SetAmbientLightProperties(ambientLight, starModule.solarLuminosity, starModule.size * OuterRadiusRatio, 0.9129f/*from sun*/, false, 0.04f/*from sun*/);
 
             var heatVolume = new GameObject("HeatVolume");
             heatVolume.transform.SetParent(starGO.transform, false);
@@ -176,7 +177,7 @@ namespace NewHorizons.Builder.Body
             if (starModule.lightTint != null) lightColour = starModule.lightTint.ToColor();
 
             light.color = lightColour;
-            ambientLight.color = new Color(lightColour.r, lightColour.g, lightColour.b, lightColour.a == 0 ? 0.0001f : lightColour.a);
+            AmbientLightBuilder.SetCookieFromBundleCubemap(ambientLight, "AmbientLight_STAR", lightColour);
 
             // used to use CopyPropertiesFrom, but that doesnt work here. instead, just copy settings from unity explorer
             var faceActiveCamera = sunLight.AddComponent<FaceActiveCamera>();

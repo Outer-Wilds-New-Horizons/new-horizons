@@ -51,9 +51,31 @@
           "type": "string",
           "description": "The music audio that will play on the title screen. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
         },
+        "musicFadeInTime": {
+          "type": "number",
+          "description": "How long (in seconds) it should take for the music to fade in from 0 to the configured volume.\n0 disables fade-in and music will be at full volume immediately.\nVanilla is 8.",
+          "format": "float",
+          "default": 8.0
+        },
+        "musicVolume": {
+          "type": "number",
+          "description": "Volume multiplier for the music (0.0 - 1.0). Vanilla is 0.1.",
+          "format": "float",
+          "default": 0.1,
+          "maximum": 1.0,
+          "minimum": 0.0
+        },
         "ambience": {
           "type": "string",
           "description": "The ambience audio that will play on the title screen. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+        },
+        "ambienceVolume": {
+          "type": "number",
+          "description": "Volume multiplier for the ambience (0.0 - 1.0). Vanilla is 0.7.",
+          "format": "float",
+          "default": 0.7,
+          "maximum": 1.0,
+          "minimum": 0.0
         },
         "Background": {
           "description": "Edit properties of the background",
@@ -172,7 +194,7 @@
     },
     "SimplifiedDetailInfo": {
       "type": "object",
-      "description": "A lesser form of DetailInfo used for the title screen since that supports fewer features",
+      "description": "A lesser form of DetailInfo used for the title screen and proxies since that supports fewer features",
       "additionalProperties": false,
       "properties": {
         "rotation": {
@@ -196,7 +218,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -230,6 +256,14 @@
         "stretch": {
           "description": "Scale each axis of the prop. Overrides `scale`.",
           "$ref": "#/definitions/MVector3"
+        },
+        "activationCondition": {
+          "type": "string",
+          "description": "Activates this game object when the dialogue condition is met"
+        },
+        "deactivationCondition": {
+          "type": "string",
+          "description": "Deactivates this game object when the dialogue condition is met"
         }
       }
     },

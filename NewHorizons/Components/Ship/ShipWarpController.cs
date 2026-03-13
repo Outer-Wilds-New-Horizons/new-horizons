@@ -12,6 +12,9 @@ namespace NewHorizons.Components.Ship
         private SingularityController _whitehole;
         private OWAudioSource _oneShotSource;
 
+        private GameObject _enableOnTargetVisuals;
+        private GameObject _disableOnTargetVisuals;
+
         private bool _isWarpingIn;
         private bool _wearingSuit;
         private bool _waitingToBeSeated;
@@ -199,6 +202,20 @@ namespace NewHorizons.Components.Ship
 
             PlayerSpawnHandler.SpawnShip();
             OWInput.ChangeInputMode(InputMode.ShipCockpit);
+        }
+
+        public void InitializeWarpDriveVisuals(GameObject enableObj, GameObject disableObj)
+        {
+            _enableOnTargetVisuals = enableObj;
+            _disableOnTargetVisuals = disableObj;
+            UpdateWarpDriveVisuals();
+        }
+
+        public void UpdateWarpDriveVisuals()
+        {
+            bool lockedOn = StarChartHandler.IsWarpDriveLockedOn();
+            if (_enableOnTargetVisuals != null) _enableOnTargetVisuals.SetActive(lockedOn);
+            if (_disableOnTargetVisuals != null) _disableOnTargetVisuals.SetActive(!lockedOn);
         }
     }
 }

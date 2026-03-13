@@ -34,11 +34,14 @@ namespace NewHorizons.Components.Volumes
 
         public void FixedUpdate()
         {
-            foreach (var trackedBody in _trackedBodies)
+            for (int i = _trackedBodies.Count - 1; i >= 0; i--)
             {
+                var trackedBody = _trackedBodies[i];
                 bool slowed = false;
+
                 Vector3 velocity = trackedBody.body.GetVelocity() - _parentBody.GetVelocity();
                 float magnitude = velocity.magnitude;
+
                 if (magnitude <= maxSpeed)
                 {
                     slowed = true;
@@ -48,11 +51,13 @@ namespace NewHorizons.Components.Volumes
                     bool needsSlowing = true;
                     float velocityReduction = trackedBody.deceleration * Time.deltaTime;
                     float requiredReduction = maxSpeed - magnitude;
+
                     if (requiredReduction > velocityReduction)
                     {
                         velocityReduction = requiredReduction;
                         slowed = true;
                     }
+
                     if (trackedBody.name == Detector.Name.Ship)
                     {
                         Autopilot component = Locator.GetShipTransform().GetComponent<Autopilot>();
@@ -61,23 +66,31 @@ namespace NewHorizons.Components.Volumes
                             needsSlowing = false;
                         }
                     }
+
                     if (needsSlowing)
                     {
                         Vector3 velocityChange = velocityReduction * velocity.normalized;
                         trackedBody.body.AddVelocityChange(velocityChange);
+
                         if (trackedBody.name == Detector.Name.Ship && PlayerState.IsInsideShip())
                         {
                             Locator.GetPlayerBody().AddVelocityChange(velocityChange);
                         }
                     }
                 }
+
                 if (slowed)
                 {
                     if (trackedBody.name == Detector.Name.Ship)
                         GlobalMessenger.FireEvent("ShipExitSpeedLimiter");
-                    _trackedBodies.Remove(trackedBody);
+
+                    _trackedBodies.RemoveAt(i);
+
                     if (_trackedBodies.Count == 0)
+                    {
                         enabled = false;
+                        break;
+                    }
                 }
             }
         }

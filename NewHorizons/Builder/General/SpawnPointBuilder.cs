@@ -1,8 +1,10 @@
 using NewHorizons.Builder.Props;
 using NewHorizons.External.Modules;
+using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OuterWilds;
 using NewHorizons.Utility.OWML;
+using OWML.Utils;
 using System;
 using System.Collections;
 using System.Linq;
@@ -18,11 +20,45 @@ namespace NewHorizons.Builder.General
         // Ship
         public static SpawnModule.ShipSpawnPoint ShipSpawnInfo { get; private set; }
         public static SpawnPoint ShipSpawn { get; private set; }
+
+        // Marked as obsolete instead of removing to avoid breaking Ship Enhancements mod.
+        [Obsolete]
         public static Vector3 ShipSpawnOffset { get; private set; }
 
         // Player
         public static SpawnModule.PlayerSpawnPoint PlayerSpawnInfo { get; private set; }
         public static SpawnPoint PlayerSpawn { get; private set; }
+
+        /// <summary>
+        /// Makes a ship spawn at the place it spawns in vanilla.
+        /// </summary>
+        internal static void MakeVanillaShipSpawn()
+        {
+            // Mark mobius's test spawn as the alt enum value (that one just spawns the ship high above the village for some reason)
+            var altShipSpawn = SearchUtilities.Find("TimberHearth_Body/SPAWN_TH/ShipSpawn_TH");
+            altShipSpawn.GetComponent<SpawnPoint>().SetSpawnLocation(SpawnLocation.TimberHearth_Alt);
+            altShipSpawn.name = "ShipSpawn_TH_Alt";
+
+            var timberHearth = altShipSpawn.transform.root.gameObject;
+            var owRigidBody = timberHearth.GetComponent<OWRigidbody>();
+
+            Sector spawnSector = null;
+            var spawnGO = GeneralPropBuilder.MakeNew("ShipSpawn_TH", timberHearth, ref spawnSector, new GeneralPropInfo
+            {
+                position = new Vector3(-16.45f, -52.67f, 227.39f),
+                rotation = new Vector3(283.0626f, 1.0617f, 174.9344f)
+            });
+            spawnGO.transform.SetParent(altShipSpawn.transform.parent, true);
+            spawnGO.layer = Layer.PlayerSafetyCollider;
+
+            var shipSpawn = spawnGO.AddComponent<SpawnPoint>();
+            shipSpawn._isShipSpawn = true;
+            shipSpawn._attachedBody = owRigidBody;
+            shipSpawn._spawnLocation = SpawnLocation.TimberHearth;
+            shipSpawn._triggerVolumes = new OWTriggerVolume[0];
+
+            spawnGO.SetActive(true);
+        }
 
         public static void OverridePlayerSpawn(SpawnPoint newSpawn)
         {
@@ -39,7 +75,8 @@ namespace NewHorizons.Builder.General
             {
                 foreach (var point in module.playerSpawnPoints)
                 {
-                    GameObject spawnGO = GeneralPropBuilder.MakeNew("PlayerSpawnPoint", planetGO, null, point);
+                    Sector spawnSector = null;
+                    GameObject spawnGO = GeneralPropBuilder.MakeNew("PlayerSpawnPoint", planetGO, ref spawnSector, point);
                     spawnGO.layer = Layer.PlayerSafetyCollider;
 
                     playerSpawn = spawnGO.AddComponent<SpawnPoint>();
@@ -49,7 +86,8 @@ namespace NewHorizons.Builder.General
                     playerSpawn._triggerVolumes = new OWTriggerVolume[0];
 
                     // This was a stupid hack to stop players getting stuck in the ground and now we have to keep it forever
-                    spawnGO.transform.position += spawnGO.transform.TransformDirection(point.offset ?? Vector3.up * 4f);
+                    var playerSpawnOffset = point.offset ?? Vector3.up * 4f;
+                    spawnGO.transform.position += spawnGO.transform.TransformDirection(playerSpawnOffset);
 
                     var flagUseTHSpawn = false;
                     if (Main.Instance.CurrentStarSystem == "SolarSystem")
@@ -78,7 +116,8 @@ namespace NewHorizons.Builder.General
             {
                 foreach (var point in module.shipSpawnPoints)
                 {
-                    var spawnGO = GeneralPropBuilder.MakeNew("ShipSpawnPoint", planetGO, null, point);
+                    Sector spawnSector = null;
+                    var spawnGO = GeneralPropBuilder.MakeNew("ShipSpawnPoint", planetGO, ref spawnSector, point);
                     spawnGO.layer = Layer.PlayerSafetyCollider;
 
                     var shipSpawn = spawnGO.AddComponent<SpawnPoint>();
@@ -89,12 +128,13 @@ namespace NewHorizons.Builder.General
                     // #601 we need to actually set the right trigger volumes here
                     shipSpawn._triggerVolumes = new OWTriggerVolume[0];
 
+                    // Move it up a bit more when aligning to surface
                     var shipSpawnOffset = point.offset ?? (point.alignRadial.GetValueOrDefault() ? Vector3.up * 4 : Vector3.zero);
+                    spawnGO.transform.position += spawnGO.transform.TransformDirection(shipSpawnOffset);
 
                     if (ShipSpawn == null || point.GetPriority() > ShipSpawnInfo.GetPriority())
                     {
                         ShipSpawn = shipSpawn;
-                        ShipSpawnOffset = shipSpawnOffset;
                         ShipSpawnInfo = point;
                     }
 

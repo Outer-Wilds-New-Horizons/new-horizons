@@ -29,7 +29,7 @@
     },
     "canEnterViaWarpDrive": {
       "type": "boolean",
-      "description": "Whether this system can be warped to via the warp drive. If you set `factRequiredForWarp`, this will be true.\nDoes NOT effect the base SolarSystem. For that, see `canExitViaWarpDrive` and `factRequiredToExitViaWarpDrive`",
+      "description": "Whether this system can be warped to via the warp drive. If you set `factRequiredForWarp`, this should be true.\nDoes NOT effect the base SolarSystem. For that, see `canExitViaWarpDrive` and `factRequiredToExitViaWarpDrive`",
       "default": true
     },
     "factRequiredForWarp": {
@@ -38,12 +38,16 @@
     },
     "canExitViaWarpDrive": {
       "type": "boolean",
-      "description": "Can you use the warp drive to leave this system? If you set `factRequiredToExitViaWarpDrive`\nthis will be true.",
+      "description": "Can you use the warp drive to leave this system? If you set `factRequiredToExitViaWarpDrive`\nthis should be true.",
       "default": true
     },
     "factRequiredToExitViaWarpDrive": {
       "type": "string",
-      "description": "The FactID that must be revealed for you to warp back to the main solar system from here. Don't set `canWarpHome`\nto `false` if you're using this, because it will be overwritten."
+      "description": "The FactID that must be revealed for you to warp back to the main solar system from here. Don't set `canExitViaWarpDrive`\nto `false` if you're using this, because it will be overwritten."
+    },
+    "warpDriveSpawnPointID": {
+      "type": "string",
+      "description": "If you want the warp spawn point to be different from the respawn point, set the ID of the ship's spawn point you want to use.\nOtherwise, will use the default spawn"
     },
     "destroyStockPlanets": {
       "type": "boolean",
@@ -77,6 +81,10 @@
       "type": "boolean",
       "description": "Set to `true` if you want the player to stay in this star system if they die in it."
     },
+    "optOutWarpDriveModel": {
+      "type": "boolean",
+      "description": "Whether to disable the warp drive model on the ship in your system. (and ignore your system in the warp drive model visibility logic for other systems)"
+    },
     "GlobalMusic": {
       "description": "Replace music that plays globally",
       "$ref": "#/definitions/GlobalMusicModule"
@@ -84,6 +92,10 @@
     "Vessel": {
       "description": "Configure warping to this system with the vessel",
       "$ref": "#/definitions/VesselModule"
+    },
+    "StarChart": {
+      "description": "Configure how this system will appear in the Interstellar Mode in the ship log.",
+      "$ref": "#/definitions/StarChartModule"
     },
     "entryPositions": {
       "type": "array",
@@ -311,7 +323,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -366,7 +382,11 @@
         },
         "parentPath": {
           "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
         },
         "rename": {
           "type": "string",
@@ -378,17 +398,29 @@
         }
       }
     },
-    "EntryPositionInfo": {
+    "StarChartModule": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "The name of the entry to apply the position to."
-        },
         "position": {
-          "description": "Position of the entry",
+          "description": "The position of the system on the star chart.\nThis applies regardless of any other settings.",
           "$ref": "#/definitions/MVector2"
+        },
+        "color": {
+          "description": "The color of the star as it appears on the star chart.\nIf specified, it will override any custom generation we do.",
+          "$ref": "#/definitions/MColor"
+        },
+        "starTexturePath": {
+          "type": "string",
+          "description": "Filepath to a texture that will replace the default texture used to display this star in the star map.\nIf you use this, it's probably best to leave the color field blank, unless you have a white texture that you'd like to tint a different color.\nIf specified, it will override any custom generation we do."
+        },
+        "disappearanceTime": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "description": "Time in the loop (in minutes) that this system will disappear.\nIf not specified, the time is calculated automatically based on the stars and singularities in the system.\nIf specified, this value takes priority over automatic calculations.\nIf color or starTexturePath is specified but this is not, it will default to 0 meaning players can warp to your system at any point.\nA 22 minutes and 40 seconds (22.667) disappearance time will make the system unavailable to warp to at the exact moment the vanilla loop ends.",
+          "format": "float"
         }
       }
     },
@@ -403,24 +435,6 @@
         "y": {
           "type": "number",
           "format": "float"
-        }
-      }
-    },
-    "CuriosityColorInfo": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "color": {
-          "description": "The color to apply to entries with this curiosity.",
-          "$ref": "#/definitions/MColor"
-        },
-        "highlightColor": {
-          "description": "The color to apply to highlighted entries with this curiosity.",
-          "$ref": "#/definitions/MColor"
-        },
-        "id": {
-          "type": "string",
-          "description": "The ID of the curiosity to apply the color to."
         }
       }
     },
@@ -456,6 +470,38 @@
           "default": 255,
           "maximum": 255.0,
           "minimum": 0.0
+        }
+      }
+    },
+    "EntryPositionInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "The name of the entry to apply the position to."
+        },
+        "position": {
+          "description": "Position of the entry",
+          "$ref": "#/definitions/MVector2"
+        }
+      }
+    },
+    "CuriosityColorInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "color": {
+          "description": "The color to apply to entries with this curiosity.",
+          "$ref": "#/definitions/MColor"
+        },
+        "highlightColor": {
+          "description": "The color to apply to highlighted entries with this curiosity.",
+          "$ref": "#/definitions/MColor"
+        },
+        "id": {
+          "type": "string",
+          "description": "The ID of the curiosity to apply the color to."
         }
       }
     },

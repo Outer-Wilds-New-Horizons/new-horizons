@@ -112,7 +112,7 @@ namespace NewHorizons.Utility.DebugTools
             NHLogger.Log($"Raycast hit\n\n\"position\": {posText},\n\"rotation\": {rotText},\n\"normal\": {normText}\n\non collider [{data.colliderPath}] " +
                        (data.bodyPath != null ? $"at rigidbody [{data.bodyPath}]" : "not attached to a rigidbody"));
         }
-        internal DebugRaycastData Raycast()
+        public DebugRaycastData Raycast()
         {
             var data = new DebugRaycastData();
 

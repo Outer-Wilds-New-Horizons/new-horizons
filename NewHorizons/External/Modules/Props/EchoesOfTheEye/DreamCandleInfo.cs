@@ -20,5 +20,10 @@ namespace NewHorizons.External.Modules.Props.EchoesOfTheEye
         /// Whether the candle should start lit or extinguished.
         /// </summary>
         public bool startLit;
+
+        /// <summary>
+        /// A condition to set when the candle is lit.
+        /// </summary>
+        public DreamLightConditionInfo condition;
     }
 }

@@ -11,7 +11,7 @@ namespace NewHorizons.Patches.SignalPatches
         [HarmonyPatch(nameof(Signalscope.Awake))]
         public static void Signalscope_Awake(Signalscope __instance)
         {
-            __instance._strongestSignals = new AudioSignal[8];
+            __instance._strongestSignals = new AudioSignal[32];
         }
 
         [HarmonyPrefix]

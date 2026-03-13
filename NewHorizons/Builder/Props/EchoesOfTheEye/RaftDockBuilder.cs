@@ -45,7 +45,7 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
 
             if (_prefab == null || sector == null) return null;
 
-            var dockObject = DetailBuilder.Make(planetGO, sector, mod, _prefab, new DetailInfo(info));
+            var dockObject = DetailBuilder.Make(planetGO, ref sector, mod, _prefab, new DetailInfo(info));
 
             //var raftDock = dockObject.GetComponent<RaftDock>();
 

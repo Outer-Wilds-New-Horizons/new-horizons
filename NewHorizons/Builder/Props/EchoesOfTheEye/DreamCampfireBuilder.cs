@@ -1,14 +1,10 @@
+using NewHorizons.Components.Props;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.Props.EchoesOfTheEye;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OWML;
 using OWML.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace NewHorizons.Builder.Props.EchoesOfTheEye
@@ -33,7 +29,10 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
                     var campfire = _prefab.GetComponentInChildren<DreamCampfire>();
                     campfire._dreamArrivalLocation = DreamArrivalPoint.Location.Undefined;
                     campfire._sector = null;
+                    campfire._playerInSector = false;
                     campfire._entrywayVolumes = new OWTriggerVolume[0];
+                    campfire._alarmBell = null;
+                    campfire.enabled = true;
                 }
             }
         }
@@ -44,13 +43,14 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
 
             if (_prefab == null || sector == null) return null;
 
-            var campfireObj = DetailBuilder.Make(planetGO, sector, mod, _prefab, new DetailInfo(info));
+            var campfireObj = DetailBuilder.Make(planetGO, ref sector, mod, _prefab, new DetailInfo(info));
 
             var campfire = campfireObj.GetComponentInChildren<DreamCampfire>();
             campfire._dreamArrivalLocation = DreamHandler.GetDreamArrivalLocation(info.id);
+            CampfireBuilder.SetupCampfire(campfire, info);
 
-            // The streaming groups on DreamCampfires get set on Start() so we wait until after to change it again
             Delay.FireInNUpdates(() => {
+                // The streaming groups on DreamCampfires get set on Start() so we wait until after to change it again
                 var streaming = campfireObj.GetComponentInChildren<DreamCampfireStreaming>();
                 if (streaming != null)
                 {
@@ -62,6 +62,20 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
                         {
                             streaming._streamingGroup = streamingGroup;
                         }
+                    }
+                }
+
+                // Alarm bell isn't needed immediately, so we can wait to grab it
+                if (planetGO != null && !string.IsNullOrEmpty(info.alarmBellPath))
+                {
+                    var alarmBellTransform = planetGO.transform.Find(info.alarmBellPath);
+                    if (alarmBellTransform != null && alarmBellTransform.TryGetComponent(out AlarmBell alarmBell))
+                    {
+                        campfire._alarmBell = alarmBell;
+                    }
+                    else
+                    {
+                        NHLogger.LogError($"Cannot find alarm bell object at path: {planetGO.name}/{info.alarmBellPath}");
                     }
                 }
             }, 2);

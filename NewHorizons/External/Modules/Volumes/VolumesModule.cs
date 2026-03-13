@@ -1,5 +1,6 @@
 using NewHorizons.External.Modules.Volumes.VolumeInfos;
 using Newtonsoft.Json;
+using System;
 
 namespace NewHorizons.External.Modules.Volumes
 {
@@ -10,6 +11,11 @@ namespace NewHorizons.External.Modules.Volumes
         /// Add audio volumes to this planet.
         /// </summary>
         public AudioVolumeInfo[] audioVolumes;
+
+        /// <summary>
+        /// Add condition trigger volumes to this planet. Sets a condition when the player, scout, or ship enters this volume.
+        /// </summary>
+        public ConditionTriggerVolumeInfo[] conditionTriggerVolumes;
 
         /// <summary>
         /// Add day night audio volumes to this planet. These volumes play a different clip depending on the time of day.
@@ -37,6 +43,18 @@ namespace NewHorizons.External.Modules.Volumes
         /// Causes damage to player when inside this volume.
         /// </summary>
         public HazardVolumeInfo[] hazardVolumes;
+
+        /// <summary>
+        /// Add interaction volumes to this planet.
+        /// They can be interacted with by the player to trigger various effects.
+        /// </summary>
+        public InteractionVolumeInfo[] interactionVolumes;
+
+        /// <summary>
+        /// Add player recovery volumes to this planet.
+        /// They can be interacted with by the player to refuel or heal.
+        /// </summary>
+        public PlayerRecoveryVolumeInfo[] playerRecoveryVolumes;
 
         /// <summary>
         /// Add interference volumes to this planet.
@@ -86,6 +104,11 @@ namespace NewHorizons.External.Modules.Volumes
         public VolumeInfo[] referenceFrameBlockerVolumes;
 
         /// <summary>
+        /// Add repair volumes to this planet.
+        /// </summary>
+        public RepairVolumeInfo[] repairVolumes;
+
+        /// <summary>
         /// Add triggers that reveal parts of the ship log on this planet.
         /// </summary>
         public RevealVolumeInfo[] revealVolumes;
@@ -125,13 +148,18 @@ namespace NewHorizons.External.Modules.Volumes
         public PriorityVolumeInfo[] zeroGravityVolumes;
 
         /// <summary>
-        /// Entering this volume will load a new solar system.
+        /// Entering this volume will load a new star system.
         /// </summary>
-        public ChangeStarSystemVolumeInfo[] solarSystemVolume;
+        public ChangeStarSystemVolumeInfo[] starSystemVolumes;
 
         /// <summary>
         /// Enter this volume to be sent to the end credits scene
         /// </summary>
         public LoadCreditsVolumeInfo[] creditsVolume;
+
+        #region Obsolete
+        [Obsolete("Use starSystemVolumes instead")]
+        public ChangeStarSystemVolumeInfo[] solarSystemVolume;
+        #endregion
     }
 }

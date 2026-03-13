@@ -24,7 +24,7 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
                 _prefab = SearchUtilities.Find("DreamWorld_Body/Sector_DreamWorld/Sector_Underground/IslandsRoot/IslandPivot_C/Island_C/Interactibles_Island_C/Prefab_IP_AlarmTotem").InstantiateInactive().Rename("Prefab_AlarmTotem").DontDestroyOnLoad();
                 if (_prefab == null)
                 {
-                    NHLogger.LogWarning($"Tried to make a grapple totem but couldn't. Do you have the DLC installed?");
+                    NHLogger.LogWarning($"Tried to make an alarm totem but couldn't. Do you have the DLC installed?");
                     return;
                 }
                 else
@@ -42,7 +42,7 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
 
             if (_prefab == null || sector == null) return null;
 
-            var totemObj = DetailBuilder.Make(planetGO, sector, mod, _prefab, new DetailInfo(info));
+            var totemObj = DetailBuilder.Make(planetGO, ref sector, mod, _prefab, new DetailInfo(info));
 
             var alarmTotem = totemObj.GetComponent<AlarmTotem>();
             alarmTotem._sightAngle = info.sightAngle;

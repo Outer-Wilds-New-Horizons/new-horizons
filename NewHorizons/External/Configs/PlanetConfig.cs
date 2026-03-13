@@ -1,3 +1,4 @@
+using NewHorizons.Builder.Body;
 using NewHorizons.External.Modules;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.Props.Audio;
@@ -254,6 +255,16 @@ namespace NewHorizons.External.Configs
             // Stars and focal points shouldnt be destroyed by stars
             if (Star != null || FocalPoint != null) Base.hasFluidDetector = false;
 
+            if (Star != null)
+            {
+                // some mods just set the star lifespans to be crazy values when they could have just set stellarDeathType to None
+                if (Star.lifespan >= 999) Star.stellarDeathType = StellarDeathType.None;
+
+                if (isStellarRemnant) Star.stellarDeathType = StellarDeathType.None;
+
+                if (Star.stellarDeathType == StellarDeathType.None) Star.stellarRemnantType = StellarRemnantType.None;
+            }
+
             // Disable map marker for dream dimensions
             if (Dream != null && Dream.inDreamWorld) MapMarker.enabled = false;
 
@@ -338,6 +349,7 @@ namespace NewHorizons.External.Configs
                 if (Atmosphere.clouds != null && Atmosphere.clouds.useBasicCloudShader)
                     Atmosphere.clouds.cloudsPrefab = CloudPrefabType.Basic;
 
+                // Formerly density 10, but default density 50 is better
                 if (Atmosphere.hasRain)
                 {
                     if (ParticleFields == null) ParticleFields = new ParticleFieldModule[0];
@@ -348,17 +360,15 @@ namespace NewHorizons.External.Configs
                     }).ToArray();
                 }
 
+                // Formerly 5 copies with density 10, now default density is 50
                 if (Atmosphere.hasSnow)
                 {
                     if (ParticleFields == null) ParticleFields = new ParticleFieldModule[0];
-                    for (int i = 0; i < 5; i++)
+                    ParticleFields = ParticleFields.Append(new ParticleFieldModule
                     {
-                        ParticleFields = ParticleFields.Append(new ParticleFieldModule
-                        {
-                            type = ParticleFieldModule.ParticleFieldType.SnowflakesHeavy,
-                            rename = "SnowEmitter"
-                        }).ToArray();
-                    }
+                        type = ParticleFieldModule.ParticleFieldType.SnowflakesHeavy,
+                        rename = "SnowEmitter"
+                    }).ToArray();
                 }
             }
 
@@ -678,6 +688,12 @@ namespace NewHorizons.External.Configs
                         volume.gameOver.creditsType = (SerializableEnums.NHCreditsType)volume.creditsType;
                     }
                 }
+            }
+
+            if (Volumes?.solarSystemVolume != null)
+            {
+                if (Volumes.starSystemVolumes == null) Volumes.starSystemVolumes = new ChangeStarSystemVolumeInfo[0];
+                Volumes.starSystemVolumes = Volumes.starSystemVolumes.Concat(Volumes.solarSystemVolume).ToArray();
             }
 
             if (Base.invulnerableToSun)

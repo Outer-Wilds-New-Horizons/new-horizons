@@ -55,7 +55,11 @@
         },
         "Description": {
           "type": "string",
-          "description": "The short description for this achievement."
+          "description": "The short description for this achievement. (If showDescriptionNotAchieved is true in the achievement info this is shown AFTER the player gets the achievement)"
+        },
+        "DescriptionNotAchieved": {
+          "type": "string",
+          "description": "The short description for this achievement shown BEFORE the player gets the achievement. (Only if showDescriptionNotAchieved is true in the achievement info)"
         }
       }
     }

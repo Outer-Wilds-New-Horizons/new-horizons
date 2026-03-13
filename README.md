@@ -79,6 +79,7 @@ New Horizons was made with help from:
 -   [FreezeDriedMangos](https://github.com/FreezeDriedMangos)
 -   [Trifid](https://github.com/TerrificTrifid)
 -   [Hawkbar](https://github.com/Hawkbat)
+-   [Lezzlebit] (https://github.com/lezzlebit)
 -   And many others, see the [contributors](https://github.com/Outer-Wilds-New-Horizons/new-horizons/graphs/contributors) page.
 
 Translation credits:

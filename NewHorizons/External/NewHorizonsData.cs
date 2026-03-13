@@ -191,6 +191,7 @@ namespace NewHorizons.External
             if (_activeProfile != null && !_activeProfile.PopupsRead.Contains(id))
             {
                 _activeProfile.PopupsRead.Add(id);
+                Save();
             }
         }
 

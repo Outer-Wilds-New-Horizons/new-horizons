@@ -51,7 +51,7 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// Details which will be shown from 50km away. Meant to be lower resolution.
         /// </summary>
-        public DetailInfo[] proxyDetails;
+        public SimplifiedDetailInfo[] proxyDetails;
 
         /// <summary>
         /// Add rafts to this planet (requires Echoes of the Eye DLC)
@@ -140,9 +140,19 @@ namespace NewHorizons.External.Modules
         public LightningQuantumInfo[] lightningQuantumGroups;
 
         /// <summary>
+        /// Add campfires that allow you to sleep or roast marshmallows.
+        /// </summary>
+        public CampfireInfo[] campfires;
+
+        /// <summary>
         /// Add campfires that allow you to enter the dream world/simulation (requires Echoes of the Eye DLC). Must be paired with a dream arrival point, which can be placed on this planet or elsewhere.
         /// </summary>
         public DreamCampfireInfo[] dreamCampfires;
+
+        /// <summary>
+        /// Adds dream world alarm totems to this planet (requires Echoes of the Eye DLC).
+        /// </summary>
+        public AlarmBellInfo[] alarmBells;
 
         /// <summary>
         /// Add the points you will arrive at when entering the dream world/simulation from a paired dream campfire (requires Echoes of the Eye DLC). The planet with the arrival point should be statically positioned to avoid issues with the simulation view materials.
@@ -173,6 +183,11 @@ namespace NewHorizons.External.Modules
         /// Adds dream world projection totems (requires Echoes of the Eye DLC).
         /// </summary>
         public ProjectionTotemInfo[] projectionTotems;
+
+        /// <summary>
+        /// Adds tanks that allow you to refuel.
+        /// </summary>
+        public FuelTankInfo[] fuelTanks;
 
         [Obsolete("reveal is deprecated. Use Volumes->revealVolumes instead.")] public RevealVolumeInfo[] reveal;
 

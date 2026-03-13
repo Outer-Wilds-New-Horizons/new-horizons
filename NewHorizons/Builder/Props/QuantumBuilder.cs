@@ -41,9 +41,13 @@ namespace NewHorizons.Builder.Props
 
         public static void MakeQuantumLightning(GameObject planetGO, Sector sector, IModBehaviour mod, LightningQuantumInfo quantumGroup)
         {
-            (GameObject go, DetailInfo detail)[] propsInGroup = quantumGroup.details.Select(x => (DetailBuilder.Make(planetGO, sector, mod, x), x)).ToArray();
+            (GameObject go, DetailInfo detail)[] propsInGroup = quantumGroup.details.Select(info => {
+                var propSector = sector;
+                var prop = DetailBuilder.Make(planetGO, ref propSector, mod, info);
+                return (prop, info);
+            }).ToArray();
 
-            var lightning = DetailBuilder.Make(planetGO, sector, Main.Instance, AssetBundleUtilities.NHPrivateAssetBundle.LoadAsset<GameObject>("Prefab_EYE_QuantumLightningObject"), new DetailInfo(quantumGroup));
+            var lightning = DetailBuilder.Make(planetGO, ref sector, Main.Instance, AssetBundleUtilities.NHPrivateAssetBundle.LoadAsset<GameObject>("Prefab_EYE_QuantumLightningObject"), new DetailInfo(quantumGroup));
             AssetBundleUtilities.ReplaceShaders(lightning);
 
             foreach (var (go, _) in propsInGroup)
@@ -95,7 +99,7 @@ namespace NewHorizons.Builder.Props
             {
                 var socketInfo = quantumGroup.sockets[i];
 
-                var socket = GeneralPropBuilder.MakeNew("Socket " + i, planetGO, sector, socketInfo, defaultParent: groupRoot.transform);
+                var socket = GeneralPropBuilder.MakeNew("Socket " + i, planetGO, ref sector, socketInfo, defaultParent: groupRoot.transform);
 
                 sockets[i] = socket.AddComponent<QuantumSocket>();
                 sockets[i]._lightSources = new Light[0]; // TODO: make this customizable?
@@ -126,8 +130,9 @@ namespace NewHorizons.Builder.Props
                 // Can't have 4 objects in 4 slots
                 // Instead we have a duplicate of the final object for each slot, which appears when that slot is "empty"
                 for (int i = 0; i < sockets.Length; i++)
-                {                    
-                    var emptySocketObject = DetailBuilder.Make(planetGO, sector, mod, new DetailInfo(specialInfo));
+                {
+                    var socketSector = sector;
+                    var emptySocketObject = DetailBuilder.Make(planetGO, ref socketSector, mod, new DetailInfo(specialInfo));
                     var socket = sockets[i];
                     socket._emptySocketObject = emptySocketObject;
                     emptySocketObject.SetActive(socket._quantumObject == null);
