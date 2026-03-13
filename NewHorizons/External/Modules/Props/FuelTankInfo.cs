@@ -18,6 +18,10 @@ namespace NewHorizons.External.Modules.Props
         {
             [EnumMember(Value = @"hearthianTank")] HearthianTank,
 
+            [EnumMember(Value = @"nomaiTank")] NomaiTank,
+
+            [EnumMember(Value = @"preCrashNomaiTank")] PreCrashNomaiTank,
+
             [EnumMember(Value = @"dlcTorch")] DLCTorch,
         }
     }

@@ -5,27 +5,39 @@ using NewHorizons.Utility.OWML;
 using OWML.Common;
 using OWML.Utils;
 using UnityEngine;
+using static NewHorizons.Utility.Files.AssetBundleUtilities;
 
 namespace NewHorizons.Builder.Props
 {
     public static class FuelTankBuilder
     {
-        private static GameObject _prefab;
+        private static GameObject _hearthianPrefab;
+        private static GameObject _nomaiPrefab;
+        private static GameObject _nomaiPreCrashPrefab;
         private static GameObject _dlcPrefab;
 
-        internal static void InitPrefab()
+        private static bool _isInit;
+
+        internal static void InitPrefabs()
         {
-            if (_prefab == null)
+            if (_hearthianPrefab == null)
             {
-                _prefab = SearchUtilities.Find("Moon_Body/Sector_THM/Interactables_THM/Prefab_HEA_FuelTank").InstantiateInactive().Rename("Prefab_FuelTank").DontDestroyOnLoad();
+                _hearthianPrefab = SearchUtilities.Find("Moon_Body/Sector_THM/Interactables_THM/Prefab_HEA_FuelTank").InstantiateInactive().Rename("Prefab_HEA_FuelTank").DontDestroyOnLoad();
             }
+
+            if (_isInit) return;
+
+            _isInit = true;
+
+            _nomaiPrefab = NHPrivateAssetBundle.LoadAsset<GameObject>("Prefab_NOM_FuelTank");
+            _nomaiPreCrashPrefab = NHPrivateAssetBundle.LoadAsset<GameObject>("Prefab_NOM_Vessel_FuelTank");
         }
 
         internal static void InitDLCPrefab()
         {
             if (_dlcPrefab == null)
             {
-                _dlcPrefab = SearchUtilities.Find("RingWorld_Body/Sector_RingInterior/Sector_Zone1/Sector_SlideBurningRoom_Zone1/Interactables_SlideBurningRoom_Zone1/TorchRoot/Prefab_IP_FuelTorch").InstantiateInactive().Rename("Prefab_FuelTorch").DontDestroyOnLoad();
+                _dlcPrefab = SearchUtilities.Find("RingWorld_Body/Sector_RingInterior/Sector_Zone1/Sector_SlideBurningRoom_Zone1/Interactables_SlideBurningRoom_Zone1/TorchRoot/Prefab_IP_FuelTorch").InstantiateInactive().Rename("Prefab_IP_FuelTorch").DontDestroyOnLoad();
                 if (_dlcPrefab == null)
                 {
                     NHLogger.LogWarning($"Tried to make a DLC fuel tank but couldn't. Do you have the DLC installed?");
@@ -43,7 +55,11 @@ namespace NewHorizons.Builder.Props
             switch (type)
             {
                 case FuelTankInfo.FuelTankType.HearthianTank:
-                    return _prefab;
+                    return _hearthianPrefab;
+                case FuelTankInfo.FuelTankType.NomaiTank:
+                    return _nomaiPrefab;
+                case FuelTankInfo.FuelTankType.PreCrashNomaiTank:
+                    return _nomaiPreCrashPrefab;
                 case FuelTankInfo.FuelTankType.DLCTorch:
                     InitDLCPrefab();
                     return _dlcPrefab;
@@ -54,7 +70,7 @@ namespace NewHorizons.Builder.Props
 
         public static GameObject Make(GameObject planetGO, Sector sector, FuelTankInfo info, IModBehaviour mod)
         {
-            InitPrefab();
+            InitPrefabs();
 
             if (sector == null) return null;
 
