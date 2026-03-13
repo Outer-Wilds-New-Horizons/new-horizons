@@ -49,8 +49,8 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
             campfire._dreamArrivalLocation = DreamHandler.GetDreamArrivalLocation(info.id);
             CampfireBuilder.SetupCampfire(campfire, info);
 
-            // The streaming groups on DreamCampfires get set on Start() so we wait until after to change it again
             Delay.FireInNUpdates(() => {
+                // The streaming groups on DreamCampfires get set on Start() so we wait until after to change it again
                 var streaming = campfireObj.GetComponentInChildren<DreamCampfireStreaming>();
                 if (streaming != null)
                 {
@@ -64,22 +64,23 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
                         }
                     }
                 }
+
+                // Alarm bell isn't needed immediately, so we can wait to grab it
+                if (planetGO != null && !string.IsNullOrEmpty(info.alarmBellPath))
+                {
+                    var alarmBellTransform = planetGO.transform.Find(info.alarmBellPath);
+                    if (alarmBellTransform != null && alarmBellTransform.TryGetComponent(out AlarmBell alarmBell))
+                    {
+                        campfire._alarmBell = alarmBell;
+                    }
+                    else
+                    {
+                        NHLogger.LogError($"Cannot find alarm bell object at path: {planetGO.name}/{info.alarmBellPath}");
+                    }
+                }
             }, 2);
 
             Locator.RegisterDreamCampfire(campfire, campfire._dreamArrivalLocation);
-
-            if (planetGO != null && !string.IsNullOrEmpty(info.alarmBellPath))
-            {
-                var alarmBellTransform = planetGO.transform.Find(info.alarmBellPath);
-                if (alarmBellTransform != null && alarmBellTransform.TryGetComponent(out AlarmBell alarmBell))
-                {
-                    campfire._alarmBell = alarmBell;
-                }
-                else
-                {
-                    NHLogger.LogError($"Cannot find alarm bell object at path: {planetGO.name}/{info.alarmBellPath}");
-                }
-            }
 
             return campfireObj;
         }
