@@ -1,6 +1,7 @@
 using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.Props.EchoesOfTheEye;
 using NewHorizons.Utility;
+using NewHorizons.Utility.Files;
 using NewHorizons.Utility.OWML;
 using OWML.Common;
 using OWML.Utils;
@@ -31,6 +32,8 @@ namespace NewHorizons.Builder.Props
 
             _nomaiPrefab = NHPrivateAssetBundle.LoadAsset<GameObject>("Prefab_NOM_FuelTank");
             _nomaiPreCrashPrefab = NHPrivateAssetBundle.LoadAsset<GameObject>("Prefab_NOM_Vessel_FuelTank");
+            AssetBundleUtilities.ReplaceShaders(_nomaiPrefab);
+            AssetBundleUtilities.ReplaceShaders(_nomaiPreCrashPrefab);
         }
 
         internal static void InitDLCPrefab()
