@@ -72,6 +72,22 @@ namespace NewHorizons.Builder.Props
             SlideReel6PristinePrefab = NHPrivateAssetBundle.LoadAsset<GameObject>("Prefab_DW_Reel_6");
             SlideReel6RustedPrefab = NHPrivateAssetBundle.LoadAsset<GameObject>("Prefab_IP_Reel_Rusted_6");
             SlideReel6DestroyedPrefab = NHPrivateAssetBundle.LoadAsset<GameObject>("Prefab_IP_Reel_Destroyed_6");
+            AssetBundleUtilities.ReplaceShaders(SlideReelWholePrefab);
+            AssetBundleUtilities.ReplaceShaders(SlideReelWholePristinePrefab);
+            AssetBundleUtilities.ReplaceShaders(SlideReelWholeRustedPrefab);
+            AssetBundleUtilities.ReplaceShaders(SlideReelWholeDestroyedPrefab);
+            AssetBundleUtilities.ReplaceShaders(SlideReel8Prefab);
+            AssetBundleUtilities.ReplaceShaders(SlideReel8PristinePrefab);
+            AssetBundleUtilities.ReplaceShaders(SlideReel8RustedPrefab);
+            AssetBundleUtilities.ReplaceShaders(SlideReel8DestroyedPrefab);
+            AssetBundleUtilities.ReplaceShaders(SlideReel7Prefab);
+            AssetBundleUtilities.ReplaceShaders(SlideReel7PristinePrefab);
+            AssetBundleUtilities.ReplaceShaders(SlideReel7RustedPrefab);
+            AssetBundleUtilities.ReplaceShaders(SlideReel7DestroyedPrefab);
+            AssetBundleUtilities.ReplaceShaders(SlideReel6Prefab);
+            AssetBundleUtilities.ReplaceShaders(SlideReel6PristinePrefab);
+            AssetBundleUtilities.ReplaceShaders(SlideReel6RustedPrefab);
+            AssetBundleUtilities.ReplaceShaders(SlideReel6DestroyedPrefab);
 
             if (_autoPrefab == null)
             {

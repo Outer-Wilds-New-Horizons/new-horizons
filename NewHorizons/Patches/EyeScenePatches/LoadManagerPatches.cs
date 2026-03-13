@@ -19,6 +19,10 @@ namespace NewHorizons.Patches.EyeScenePatches
         }
 
         [HarmonyPrefix]
+        [HarmonyPatch(nameof(LoadManager.OnSceneLoaded))]
+        public static bool LoadManager_OnSceneLoaded() => !Main.Instance.IsWarpingBackToEye;
+
+        [HarmonyPrefix]
         [HarmonyPatch(nameof(LoadManager.LoadSceneImmediate))]
         public static void LoadManager_LoadSceneImmediate(OWScene scene) => OnLoadScene(scene);
 

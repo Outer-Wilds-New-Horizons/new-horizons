@@ -22,7 +22,7 @@ namespace NewHorizons.Builder.Volumes
             => MakeAndEnable<TVolume>(planetGO, ref sector, info);
         #endregion
 
-        public static TVolume MakeExisting<TVolume>(GameObject go, GameObject planetGO, ref Sector sector, VolumeInfo info) where TVolume : MonoBehaviour
+        public static void ValidateVolumeInfo<TVolume>(GameObject go, VolumeInfo info) where TVolume : MonoBehaviour
         {
             // Backwards compat for the two possible radii settings
             // Both radii default to 1
@@ -40,6 +40,17 @@ namespace NewHorizons.Builder.Volumes
             {
                 NHLogger.LogError($"Volume [{typeof(TVolume).Name}] on [{go.name}] has a radius value set but it's shape is [{info.shape.type}]");
             }
+        }
+
+        public static Component MakeShapeOrCollider<TVolume>(GameObject go, VolumeInfo info) where TVolume : MonoBehaviour
+        {
+            ValidateVolumeInfo<TVolume>(go, info);
+            return ShapeBuilder.AddShapeOrCollider(go, info.shape, info.radius);
+        }
+
+        public static OWTriggerVolume MakeTriggerVolume<TVolume>(GameObject go, GameObject planetGO, ref Sector sector, VolumeInfo info) where TVolume : MonoBehaviour
+        {
+            ValidateVolumeInfo<TVolume>(go, info);
 
             // Respect existing layer if set to a valid volume layer
             if (go.layer != Layer.AdvancedEffectVolume)
@@ -51,8 +62,15 @@ namespace NewHorizons.Builder.Volumes
             var trigger = go.GetComponent<OWTriggerVolume>();
             if (trigger == null || (trigger._shape == null && trigger._owCollider == null) || info.shape != null || info.radius > 0f)
             {
-                ShapeBuilder.AddTriggerVolume(go, info.shape, info.radius);
+                trigger = ShapeBuilder.AddTriggerVolume(go, info.shape, info.radius);
             }
+
+            return trigger;
+        }
+
+        public static TVolume MakeExisting<TVolume>(GameObject go, GameObject planetGO, ref Sector sector, VolumeInfo info) where TVolume : MonoBehaviour
+        {
+            MakeTriggerVolume<TVolume>(go, planetGO, ref sector, info);
 
             var volume = go.AddComponent<TVolume>();
             

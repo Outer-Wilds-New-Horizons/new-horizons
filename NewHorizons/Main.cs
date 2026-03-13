@@ -26,6 +26,7 @@ using NewHorizons.Utility.DebugTools;
 using NewHorizons.Utility.Files;
 using NewHorizons.Utility.OuterWilds;
 using NewHorizons.Utility.OWML;
+using Newtonsoft.Json.Linq;
 using OWML.Common;
 using OWML.ModHelper;
 using OWML.Utils;
@@ -65,7 +66,13 @@ namespace NewHorizons
 
         public static float SecondsElapsedInLoop = -1;
 
-        public static bool IsSystemReady { get; private set; }    
+        public static bool IsSystemReady { get; private set; }
+
+        public static bool IsInvalidStarSystem(string starSystem)
+        {
+            return starSystem != "SolarSystem" && starSystem != "EyeOfTheUniverse" 
+                && (!SystemDict.ContainsKey(starSystem) || !BodyDict.ContainsKey(starSystem));
+        }
 
         public string DefaultStarSystem => SystemDict.ContainsKey(DefaultSystemOverride) ? DefaultSystemOverride : _defaultStarSystem;
         public string CurrentStarSystem
@@ -77,10 +84,17 @@ namespace NewHorizons
             set
             {
                 // Prevent invalid values
-                if (value != "SolarSystem" && value != "EyeOfTheUniverse" && value != DefaultStarSystem && !SystemDict.ContainsKey(value) && !BodyDict.ContainsKey(value))
+                if (IsInvalidStarSystem(value) && value != DefaultStarSystem)
                 {
                     NHLogger.LogError($"System \"{value}\" does not exist!");
-                    _currentStarSystem = DefaultStarSystem;
+                    if (value != DefaultStarSystem)
+                    {
+                        _currentStarSystem = DefaultStarSystem;
+                    }
+                    else
+                    {
+                        _currentStarSystem = "SolarSystem";
+                    }
                     return;
                 }
                 _currentStarSystem = value;
@@ -397,15 +411,24 @@ namespace NewHorizons
                     WaterBuilder.InitPrefabs();
                     GravityCannonBuilder.InitPrefab();
                     ShuttleBuilder.InitPrefab();
+                    CampfireBuilder.InitPrefab();
+                    FuelTankBuilder.InitPrefabs();
 
                     if (HasDLC)
                     {
+                        FuelTankBuilder.InitDLCPrefab();
                         ProjectionBuilder.InitPrefabs();
                         CloakBuilder.InitPrefab();
                         RaftBuilder.InitPrefab();
                         RaftDockBuilder.InitPrefab();
+                        AlarmBellBuilder.InitPrefab();
                         DreamCampfireBuilder.InitPrefab();
                         DreamArrivalPointBuilder.InitPrefab();
+                        DreamCandleBuilder.InitPrefabs();
+                        PortholeBuilder.InitPrefabs();
+                        AlarmTotemBuilder.InitPrefab();
+                        GrappleTotemBuilder.InitPrefab();
+                        ProjectionTotemBuilder.InitPrefab();
                     }
 
                     WarpPadBuilder.InitPrefabs();
@@ -505,6 +528,8 @@ namespace NewHorizons
                     {
                         SupernovaEffectBuilder.ReplaceVanillaWithNH(supernovaPlanetEffectController);
                     }
+
+                    SpawnPointBuilder.MakeVanillaShipSpawn();
                 }
 
                 PlanetCreationHandler.Init(BodyDict[CurrentStarSystem]);
@@ -736,6 +761,31 @@ namespace NewHorizons
             }
 
             var starSystemName = starSystemConfig.name;
+
+            if (starSystemName != "SolarSystem" && starSystemName != "EyeOfTheUniverse")
+            {
+                bool hasSpaces = starSystemName.Contains(" ");
+                bool missingNamespace = !starSystemName.Contains(".");
+
+                if (hasSpaces || missingNamespace)
+                {
+                    var message = $"Invalid star system name [{starSystemName}] in file [{relativePath}].\n";
+
+                    if (hasSpaces)
+                    {
+                        message += "Star system names should NOT contain spaces.\n";
+                    }
+
+                    if (missingNamespace)
+                    {
+                        message += "Star system names should be namespaced to prevent conflicts.\n";
+                    }
+
+                    message += "Use a namespaced format like \"Author.SystemName\" (example: \"Ernesto.AnglerfishNest\").";
+
+                    NHLogger.LogWarning(message);
+                }
+            }
 
             starSystemConfig.Migrate();
             starSystemConfig.FixCoordinates();

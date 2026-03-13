@@ -45,6 +45,10 @@
       "type": "string",
       "description": "The FactID that must be revealed for you to warp back to the main solar system from here. Don't set `canExitViaWarpDrive`\nto `false` if you're using this, because it will be overwritten."
     },
+    "warpDriveSpawnPointID": {
+      "type": "string",
+      "description": "If you want the warp spawn point to be different from the respawn point, set the ID of the ship's spawn point you want to use.\nOtherwise, will use the default spawn"
+    },
     "destroyStockPlanets": {
       "type": "boolean",
       "description": "Do you want a clean slate for this star system? Or will it be a modified version of the original.",

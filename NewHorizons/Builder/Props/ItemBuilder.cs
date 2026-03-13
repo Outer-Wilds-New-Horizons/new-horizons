@@ -203,7 +203,23 @@ namespace NewHorizons.Builder.Props
 
         public static bool IsCustomItemType(ItemType type)
         {
-            return _itemTypes.ContainsValue(type);
+            if (_itemTypes.ContainsValue(type)) return true;
+
+            switch (type)
+            {
+                case ItemType.Invalid:
+                case ItemType.Scroll:
+                case ItemType.WarpCore:
+                case ItemType.SharedStone:
+                case ItemType.ConversationStone:
+                case ItemType.Lantern:
+                case ItemType.SlideReel:
+                case ItemType.DreamLantern:
+                case ItemType.VisionTorch:
+                    return false;
+                default:
+                    return true;
+            }
         }
     }
 }

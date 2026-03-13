@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 3484766858
+CRC: 2147150083
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 7baf4ec158677a3afb1b82a1c072713f
+    Hash: 2ca2cf0fa89aed3484a0d5c3a246791a
   TypeTreeHash:
     serializedVersion: 2
-    Hash: d4339e878b9f11da7579ca6f11bd4ebb
+    Hash: 779d17773bbc2cebaffe84bb6e7234c3
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -80,6 +80,8 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 11500000, guid: 040dd594681f07a4a975890a61d44be5, type: 3}
 - Class: 114
+  Script: {fileID: 11500000, guid: bff48905f8c9a37428ca4411334856ff, type: 3}
+- Class: 114
   Script: {fileID: 11500000, guid: 327eb94566c9e284dae5d7b1cfe11ccd, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 8d56b3759dd12424c8425ed62fc02796, type: 3}
@@ -125,6 +127,8 @@ ClassTypes:
   Script: {fileID: 11500000, guid: 72d51cb9cb0325847851869e5351c34e, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 7f5f781ad5c7cb3479ad11f01f455d95, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 6e08224a0c172cf49b787f8bc8d72094, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 02ca5d8a60b7e434ea9d5340e551297e, type: 3}
 - Class: 114
@@ -183,6 +187,7 @@ ClassTypes:
   Script: {instanceID: 0}
 SerializeReferenceClassIdentifiers: []
 Assets:
+- Assets/FuelTanks/Prefab_NOM_Vessel_FuelTank.prefab
 - Assets/SlideReels/Prefab_DW_Reel_Whole.prefab
 - Assets/SlideReels/Prefab_IP_Reel_Rusted_7.prefab
 - Assets/SlideReels/Prefab_IP_Reel_Destroyed_6.prefab
@@ -205,6 +210,7 @@ Assets:
 - Assets/StarChart/Audio/deselect star.ogg
 - Assets/SlideReels/Prefab_IP_Reel_Whole.prefab
 - Assets/SlideReels/Prefab_IP_Reel_Rusted_Whole.prefab
+- Assets/FuelTanks/Prefab_NOM_FuelTank.prefab
 - Assets/BrambleCollision.prefab
 - Assets/SlideReels/Prefab_DW_Reel_8.prefab
 - Assets/Vessel_Body.prefab

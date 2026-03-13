@@ -77,6 +77,13 @@ namespace NewHorizons.Builder.Volumes
                     InteractionVolumeBuilder.Make(go, sector, interactionVolume, mod);
                 }
             }
+            if (config.Volumes.playerRecoveryVolumes != null)
+            {
+                foreach (var playerRecoveryVolume in config.Volumes.playerRecoveryVolumes)
+                {
+                    PlayerRecoveryVolumeBuilder.Make(go, sector, playerRecoveryVolume, mod);
+                }
+            }
             if (config.Volumes.interferenceVolumes != null)
             {
                 foreach (var interferenceVolume in config.Volumes.interferenceVolumes)
@@ -197,6 +204,13 @@ namespace NewHorizons.Builder.Volumes
                         VisorRainEffectVolumeBuilder.Make(go, sector, rainEffectVolume);
                     }
                 }
+                if (config.Volumes.visorEffects.dirtEffectVolumes != null)
+                {
+                    foreach (var dirtEffectVolume in config.Volumes.visorEffects.dirtEffectVolumes)
+                    {
+                        VisorDirtEffectVolumeBuilder.Make(go, sector, dirtEffectVolume);
+                    }
+                }
             }
             if (config.Volumes.rulesets != null)
             {
@@ -264,11 +278,11 @@ namespace NewHorizons.Builder.Volumes
                     VolumeBuilder.MakeAndEnable<LightlessLightSourceVolume>(go, sector, lightSourceVolume);
                 }
             }
-            if (config.Volumes.solarSystemVolume != null)
+            if (config.Volumes.starSystemVolumes != null)
             {
-                foreach (var solarSystemVolume in config.Volumes.solarSystemVolume)
+                foreach (var starSystemVolume in config.Volumes.starSystemVolumes)
                 {
-                    ChangeStarSystemVolumeBuilder.Make(go, sector, solarSystemVolume);
+                    ChangeStarSystemVolumeBuilder.Make(go, sector, starSystemVolume);
                 }
             }
             if (config.Volumes.creditsVolume != null)

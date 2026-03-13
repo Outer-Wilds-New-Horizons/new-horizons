@@ -1,21 +1,11 @@
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NewHorizons.External.Modules.Volumes.VolumeInfos
 {
     [JsonObject]
-    public class InteractionVolumeInfo : VolumeInfo
+    public class BaseInteractionVolumeInfo : VolumeInfo
     {
-        /// <summary>
-        /// The prompt to display when the volume is interacted with.
-        /// </summary>
-        public string prompt;
-
         /// <summary>
         /// The range at which the volume can be interacted with.
         /// </summary>
@@ -31,6 +21,15 @@ namespace NewHorizons.External.Modules.Volumes.VolumeInfos
         /// Whether the volume can be interacted with while in the ship.
         /// </summary>
         public bool usableInShip;
+    }
+
+    [JsonObject]
+    public class InteractionVolumeInfo : BaseInteractionVolumeInfo
+    {
+        /// <summary>
+        /// The prompt to display when the volume is interacted with.
+        /// </summary>
+        public string prompt;
 
         /// <summary>
         /// Whether the volume can be interacted with multiple times.

@@ -23,6 +23,7 @@ namespace NewHorizons.Patches.WarpPatches
                 if (targetSystem != null)
                 {
                     Main.Instance.ChangeCurrentStarSystem(targetSystem, true);
+                    PlayerSpawnHandler.TargetSpawnID = Main.SystemDict[targetSystem].Config.warpDriveSpawnPointID;
                     return false;
                 }
             }

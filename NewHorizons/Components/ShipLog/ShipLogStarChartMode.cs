@@ -24,7 +24,7 @@ namespace NewHorizons.Components.ShipLog
     public class ShipLogStarChartMode : ShipLogMode, IShipLogStarChartMode
     {
         private OWAudioSource _oneShotSource;
-        private Font _fontToUse;
+        private FontAndLanguageController _fontAndLanguageController;
 
         private ScreenPromptList _centerPromptList;
         private ScreenPromptList _upperRightPromptList;
@@ -127,7 +127,15 @@ namespace NewHorizons.Components.ShipLog
                 _card._questionMark.gameObject.SetActive(true);
                 _card._photo.gameObject.SetActive(false);
             }
-            _card._name.text = UniqueIDToName(uniqueID);
+
+            var name = UniqueIDToName(uniqueID);
+            _card._name.text = name;
+            if (name.Length > 17) _card._name.fontSize = 10;
+            else _card._name.fontSize = 14;
+
+            _card._name.SetAllDirty();
+            _card._questionMark.SetAllDirty();
+            _card._photo.SetAllDirty();
         }
 
 
@@ -148,6 +156,11 @@ namespace NewHorizons.Components.ShipLog
             _card = newCard.GetAddComponent<ShipLogEntryCard>();
             _card._moreToExploreIcon.gameObject.SetActive(false);
             _card._unreadIcon.gameObject.SetActive(false);
+            _card._origIconSize = _card._moreToExploreIcon.rectTransform.sizeDelta;
+            _card._name.font = Locator.GetUIStyleManager().GetShipLogCardFont();
+            _card._name.lineSpacing = Locator.GetUIStyleManager().GetShipLogCardSpacing();
+            _card._questionMark.color = Locator.GetUIStyleManager().GetShipLogRumorColor();
+            _fontAndLanguageController.AddTextElement(_card._name, false, true, false);
         }
 
         public void InitializeStars()
@@ -176,8 +189,6 @@ namespace NewHorizons.Components.ShipLog
             visualWarpLineImage.gameObject.name = "VisualWarpLine";
             visualWarpLine = visualWarpLineImage.gameObject.GetAddComponent<RectTransform>();
             visualWarpLine.transform.SetAsFirstSibling();
-
-            _fontToUse = FindObjectOfType<ShipLogController>().GetComponentInChildren<Text>().font;
 
             cameraPivot = new GameObject("CameraPivot").transform;
             cameraPivot.transform.SetParent(transform, false);
@@ -976,11 +987,11 @@ namespace NewHorizons.Components.ShipLog
 
             text.alignment = TextAnchor.UpperCenter;
             text.text = Text;
-            text.font = _fontToUse;
+            text.font = Locator.GetUIStyleManager().GetShipLogCardFont();
+            text.lineSpacing = TextTranslation.GetDefaultFontSpacing();
             text.fontSize = 12;
-            text.resizeTextForBestFit = true;
-            text.resizeTextMaxSize = 14;
-            text.resizeTextMinSize = 10;
+
+            _fontAndLanguageController.AddTextElement(text, false, true, false);
 
             return text;
         }
@@ -1001,6 +1012,8 @@ namespace NewHorizons.Components.ShipLog
 
         public override void Initialize(ScreenPromptList centerPromptList, ScreenPromptList upperRightPromptList, OWAudioSource oneShotSource)
         {
+            _fontAndLanguageController = GetComponentInParent<ShipLogController>().GetComponentInChildren<FontAndLanguageController>(true);
+
             _galaxyStarPoints = CreateGalaxy();
             CreateCard();
             LoadAssets();
@@ -1212,7 +1225,6 @@ namespace NewHorizons.Components.ShipLog
             if (!name.Equals(uniqueID)) return name;
 
             // Else we return a default name
-            if (uniqueID.Equals("SolarSystem")) return TranslationHandler.GetTranslation("The Outer Wilds", TranslationHandler.TextType.UI);
             if (uniqueID.Equals("EyeOfTheUniverse")) return UITextLibrary.GetString(UITextType.LocationEye);
 
             var splitString = uniqueID.Split('.');

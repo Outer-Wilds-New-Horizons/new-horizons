@@ -66,7 +66,7 @@ namespace NewHorizons.Utility.Files
             request.completed += _ =>
             {
                 _loadingBundles.Remove(request);
-                NHLogger.Log($"Finshed preloading bundle {assetBundleRelativeDir} - {_loadingBundles.Count} left");
+                NHLogger.Log($"Finished preloading bundle {assetBundleRelativeDir} - {_loadingBundles.Count} left");
                 AssetBundles[key] = (request.assetBundle, true);
             };
         }

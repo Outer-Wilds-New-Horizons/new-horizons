@@ -25,7 +25,7 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
                 _mainPrefab = SearchUtilities.Find("DreamWorld_Body/Sector_DreamWorld/Sector_DreamZone_4/Interactibles_DreamZone_4_Upper/Props_IP_Peephole_Prison").InstantiateInactive().Rename("Prefab_Porthole").DontDestroyOnLoad();
                 if (_mainPrefab == null)
                 {
-                    NHLogger.LogWarning($"Tried to make a grapple totem but couldn't. Do you have the DLC installed?");
+                    NHLogger.LogWarning($"Tried to make a porthole but couldn't. Do you have the DLC installed?");
                     return;
                 }
                 else
@@ -41,7 +41,7 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
                 _simPrefab = SearchUtilities.Find("DreamWorld_Body/Sector_DreamWorld/Sector_DreamZone_4/Simulation_DreamZone_4/Geo_DreamZone_4_Upper/Effects_IP_SIM_Porthole").InstantiateInactive().Rename("Prefab_SIM_Porthole").DontDestroyOnLoad();
                 if (_simPrefab == null)
                 {
-                    NHLogger.LogWarning($"Tried to make a grapple totem but couldn't. Do you have the DLC installed?");
+                    NHLogger.LogWarning($"Tried to make a sim porthole but couldn't. Do you have the DLC installed?");
                     return;
                 }
                 else

@@ -69,6 +69,12 @@ namespace NewHorizons.External.Configs
         public string factRequiredToExitViaWarpDrive;
 
         /// <summary>
+        /// If you want the warp spawn point to be different from the respawn point, set the ID of the ship's spawn point you want to use.
+        /// Otherwise, will use the default spawn
+        /// </summary>
+        public string warpDriveSpawnPointID;
+
+        /// <summary>
         /// Do you want a clean slate for this star system? Or will it be a modified version of the original.
         /// </summary>
         [DefaultValue(true)] public bool destroyStockPlanets = true;

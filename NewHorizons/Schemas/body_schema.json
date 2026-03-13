@@ -979,14 +979,6 @@
           "type": "boolean",
           "description": "Set to true if this object's lighting should ignore the effects of sunlight"
         },
-        "activationCondition": {
-          "type": "string",
-          "description": "Activates this game object when the dialogue condition is met"
-        },
-        "deactivationCondition": {
-          "type": "string",
-          "description": "Deactivates this game object when the dialogue condition is met"
-        },
         "blinkWhenActiveChanged": {
           "type": "boolean",
           "description": "Should the player close their eyes while the activation state changes. Only relevant if activationCondition or deactivationCondition are set.",
@@ -1028,6 +1020,14 @@
         "stretch": {
           "description": "Scale each axis of the prop. Overrides `scale`.",
           "$ref": "#/definitions/MVector3"
+        },
+        "activationCondition": {
+          "type": "string",
+          "description": "Activates this game object when the dialogue condition is met"
+        },
+        "deactivationCondition": {
+          "type": "string",
+          "description": "Deactivates this game object when the dialogue condition is met"
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -1635,14 +1635,6 @@
           "type": "boolean",
           "description": "Set to true if this object's lighting should ignore the effects of sunlight"
         },
-        "activationCondition": {
-          "type": "string",
-          "description": "Activates this game object when the dialogue condition is met"
-        },
-        "deactivationCondition": {
-          "type": "string",
-          "description": "Deactivates this game object when the dialogue condition is met"
-        },
         "blinkWhenActiveChanged": {
           "type": "boolean",
           "description": "Should the player close their eyes while the activation state changes. Only relevant if activationCondition or deactivationCondition are set.",
@@ -1684,6 +1676,14 @@
         "stretch": {
           "description": "Scale each axis of the prop. Overrides `scale`.",
           "$ref": "#/definitions/MVector3"
+        },
+        "activationCondition": {
+          "type": "string",
+          "description": "Activates this game object when the dialogue condition is met"
+        },
+        "deactivationCondition": {
+          "type": "string",
+          "description": "Deactivates this game object when the dialogue condition is met"
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -1755,14 +1755,6 @@
           "type": "boolean",
           "description": "Set to true if this object's lighting should ignore the effects of sunlight"
         },
-        "activationCondition": {
-          "type": "string",
-          "description": "Activates this game object when the dialogue condition is met"
-        },
-        "deactivationCondition": {
-          "type": "string",
-          "description": "Deactivates this game object when the dialogue condition is met"
-        },
         "blinkWhenActiveChanged": {
           "type": "boolean",
           "description": "Should the player close their eyes while the activation state changes. Only relevant if activationCondition or deactivationCondition are set.",
@@ -1804,6 +1796,14 @@
         "stretch": {
           "description": "Scale each axis of the prop. Overrides `scale`.",
           "$ref": "#/definitions/MVector3"
+        },
+        "activationCondition": {
+          "type": "string",
+          "description": "Activates this game object when the dialogue condition is met"
+        },
+        "deactivationCondition": {
+          "type": "string",
+          "description": "Deactivates this game object when the dialogue condition is met"
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -2261,7 +2261,7 @@
           "type": "array",
           "description": "Details which will be shown from 50km away. Meant to be lower resolution.",
           "items": {
-            "$ref": "#/definitions/DetailInfo"
+            "$ref": "#/definitions/SimplifiedDetailInfo"
           }
         },
         "rafts": {
@@ -2383,11 +2383,25 @@
             "$ref": "#/definitions/LightningQuantumInfo"
           }
         },
+        "campfires": {
+          "type": "array",
+          "description": "Add campfires that allow you to sleep or roast marshmallows.",
+          "items": {
+            "$ref": "#/definitions/CampfireInfo"
+          }
+        },
         "dreamCampfires": {
           "type": "array",
           "description": "Add campfires that allow you to enter the dream world/simulation (requires Echoes of the Eye DLC). Must be paired with a dream arrival point, which can be placed on this planet or elsewhere.",
           "items": {
             "$ref": "#/definitions/DreamCampfireInfo"
+          }
+        },
+        "alarmBells": {
+          "type": "array",
+          "description": "Adds dream world alarm totems to this planet (requires Echoes of the Eye DLC).",
+          "items": {
+            "$ref": "#/definitions/AlarmBellInfo"
           }
         },
         "dreamArrivalPoints": {
@@ -2431,6 +2445,13 @@
           "items": {
             "$ref": "#/definitions/ProjectionTotemInfo"
           }
+        },
+        "fuelTanks": {
+          "type": "array",
+          "description": "Adds tanks that allow you to refuel.",
+          "items": {
+            "$ref": "#/definitions/FuelTankInfo"
+          }
         }
       }
     },
@@ -2466,6 +2487,14 @@
         "stretch": {
           "description": "Scale each axis of the prop. Overrides `scale`.",
           "$ref": "#/definitions/MVector3"
+        },
+        "activationCondition": {
+          "type": "string",
+          "description": "Activates this game object when the dialogue condition is met"
+        },
+        "deactivationCondition": {
+          "type": "string",
+          "description": "Deactivates this game object when the dialogue condition is met"
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -2526,14 +2555,6 @@
         "ignoreSun": {
           "type": "boolean",
           "description": "Set to true if this object's lighting should ignore the effects of sunlight"
-        },
-        "activationCondition": {
-          "type": "string",
-          "description": "Activates this game object when the dialogue condition is met"
-        },
-        "deactivationCondition": {
-          "type": "string",
-          "description": "Deactivates this game object when the dialogue condition is met"
         },
         "blinkWhenActiveChanged": {
           "type": "boolean",
@@ -2763,6 +2784,26 @@
             "null"
           ],
           "description": "Whether to flip the spiral from left-curling to right-curling or vice versa. If specified, auto spiral will not touch this arc."
+        },
+        "customTextImage": {
+          "type": "string",
+          "description": "Allows you to create custom alien language text by overriding the displayed image. This will automatically set the type to Custom."
+        },
+        "legiblePersistentCondition": {
+          "type": "string",
+          "description": "Makes this text require a persistent condition to be known before it can be translated. \nIf you want it to always be untranslatable, use a condition that you will never set like \"UNTRANSLATABLE\"."
+        },
+        "customLanguageName": {
+          "type": "string",
+          "description": "Replaces the \"Nomai\" part in \"Untranslated Nomai writing\". Translated in the OtherDictionary.\nIf type is set to Custom, this will default to \"unknown\"."
+        },
+        "overrideUnreadColor": {
+          "description": "Overrides the default unread color of the text arc.",
+          "$ref": "#/definitions/MColor"
+        },
+        "overrideTranslatedColor": {
+          "description": "Overrides the default translated color of the text arc. This requires that overrideUnreadColor is also set. \nIf overrideUnreadColor is set but this is not, the translated color will be a desaturated version of the unread color.",
+          "$ref": "#/definitions/MColor"
         }
       }
     },
@@ -2773,13 +2814,15 @@
         "Adult",
         "Child",
         "Stranger",
-        "Teenager"
+        "Teenager",
+        "Custom"
       ],
       "enum": [
         "adult",
         "child",
         "stranger",
-        "teenager"
+        "teenager",
+        "custom"
       ]
     },
     "MVector2": {
@@ -2839,6 +2882,81 @@
         "a",
         "b"
       ]
+    },
+    "SimplifiedDetailInfo": {
+      "type": "object",
+      "description": "A lesser form of DetailInfo used for the title screen and proxies since that supports fewer features",
+      "additionalProperties": false,
+      "properties": {
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "assetBundle": {
+          "type": "string",
+          "description": "Relative filepath to an asset-bundle to load the prefab defined in `path` from"
+        },
+        "path": {
+          "type": "string",
+          "description": "Either the path in the scene hierarchy of the item to copy or the path to the object in the supplied asset bundle. \nIf empty, will make an empty game object. This can be useful for adding other props to it as its children."
+        },
+        "removeChildren": {
+          "type": "array",
+          "description": "A list of children to remove from this detail",
+          "items": {
+            "type": "string"
+          }
+        },
+        "removeComponents": {
+          "type": "boolean",
+          "description": "Do we reset all the components on this object? Useful for certain props that have dialogue components attached to\nthem."
+        },
+        "scale": {
+          "type": "number",
+          "description": "Scale the prop",
+          "format": "float",
+          "default": 1.0
+        },
+        "stretch": {
+          "description": "Scale each axis of the prop. Overrides `scale`.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "activationCondition": {
+          "type": "string",
+          "description": "Activates this game object when the dialogue condition is met"
+        },
+        "deactivationCondition": {
+          "type": "string",
+          "description": "Deactivates this game object when the dialogue condition is met"
+        }
+      }
     },
     "RaftInfo": {
       "type": "object",
@@ -4183,14 +4301,6 @@
           "type": "boolean",
           "description": "Set to true if this object's lighting should ignore the effects of sunlight"
         },
-        "activationCondition": {
-          "type": "string",
-          "description": "Activates this game object when the dialogue condition is met"
-        },
-        "deactivationCondition": {
-          "type": "string",
-          "description": "Deactivates this game object when the dialogue condition is met"
-        },
         "blinkWhenActiveChanged": {
           "type": "boolean",
           "description": "Should the player close their eyes while the activation state changes. Only relevant if activationCondition or deactivationCondition are set.",
@@ -4232,6 +4342,14 @@
         "stretch": {
           "description": "Scale each axis of the prop. Overrides `scale`.",
           "$ref": "#/definitions/MVector3"
+        },
+        "activationCondition": {
+          "type": "string",
+          "description": "Activates this game object when the dialogue condition is met"
+        },
+        "deactivationCondition": {
+          "type": "string",
+          "description": "Deactivates this game object when the dialogue condition is met"
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -4393,7 +4511,7 @@
         }
       }
     },
-    "DreamCampfireInfo": {
+    "CampfireInfo": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -4428,9 +4546,131 @@
           "type": "string",
           "description": "An optional rename of this object"
         },
+        "initialState": {
+          "description": "The initial state of the campfire.",
+          "default": "lit",
+          "$ref": "#/definitions/State"
+        },
+        "canSleepHere": {
+          "type": "boolean",
+          "description": "Whether the player to sleep at this campfire.",
+          "default": true
+        },
+        "lookUpWhileSleeping": {
+          "type": "boolean",
+          "description": "Whether the player should look up at the sky while sleeping at this campfire.",
+          "default": false
+        }
+      }
+    },
+    "State": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "UNLIT",
+        "SMOLDERING",
+        "LIT"
+      ],
+      "enum": [
+        "unlit",
+        "smoldering",
+        "lit"
+      ]
+    },
+    "DreamCampfireInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "initialState": {
+          "description": "The initial state of the campfire.",
+          "default": "lit",
+          "$ref": "#/definitions/State"
+        },
+        "canSleepHere": {
+          "type": "boolean",
+          "description": "Whether the player to sleep at this campfire.",
+          "default": true
+        },
+        "lookUpWhileSleeping": {
+          "type": "boolean",
+          "description": "Whether the player should look up at the sky while sleeping at this campfire.",
+          "default": false
+        },
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
         "id": {
           "type": "string",
           "description": "Unique ID for this dream-world campfire"
+        },
+        "alarmBellPath": {
+          "type": "string",
+          "description": "Path to the alarm bell this campfire is connected to."
+        }
+      }
+    },
+    "AlarmBellInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
         }
       }
     },
@@ -4863,6 +5103,64 @@
           "$ref": "#/definitions/DreamLightConditionInfo"
         }
       }
+    },
+    "FuelTankInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "type": {
+          "description": "The type of fuel tank this is.",
+          "default": "hearthianTank",
+          "$ref": "#/definitions/FuelTankType"
+        }
+      }
+    },
+    "FuelTankType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "HearthianTank",
+        "NomaiTank",
+        "PreCrashNomaiTank",
+        "DLCTorch"
+      ],
+      "enum": [
+        "hearthianTank",
+        "nomaiTank",
+        "preCrashNomaiTank",
+        "dlcTorch"
+      ]
     },
     "ReferenceFrameModule": {
       "type": "object",
@@ -5623,6 +5921,13 @@
             "$ref": "#/definitions/InteractionVolumeInfo"
           }
         },
+        "playerRecoveryVolumes": {
+          "type": "array",
+          "description": "Add player recovery volumes to this planet.\nThey can be interacted with by the player to refuel or heal.",
+          "items": {
+            "$ref": "#/definitions/PlayerRecoveryVolumeInfo"
+          }
+        },
         "interferenceVolumes": {
           "type": "array",
           "description": "Add interference volumes to this planet.\nHides HUD markers of ship scout/probe and prevents scout photos if you are not inside the volume together with ship or scout probe.",
@@ -5726,9 +6031,9 @@
             "$ref": "#/definitions/PriorityVolumeInfo"
           }
         },
-        "solarSystemVolume": {
+        "starSystemVolumes": {
           "type": "array",
-          "description": "Entering this volume will load a new solar system.",
+          "description": "Entering this volume will load a new star system.",
           "items": {
             "$ref": "#/definitions/ChangeStarSystemVolumeInfo"
           }
@@ -6870,6 +7175,24 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "range": {
+          "type": "number",
+          "description": "The range at which the volume can be interacted with.",
+          "format": "float",
+          "default": 2.0
+        },
+        "maxViewAngle": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "description": "The max view angle (in degrees) the player can see the volume with to interact with it. This will effectively be a cone extending from the volume's center forwards (along the Z axis) based on the volume's rotation.\nIf not specified, no view angle restriction will be applied.",
+          "format": "float"
+        },
+        "usableInShip": {
+          "type": "boolean",
+          "description": "Whether the volume can be interacted with while in the ship."
+        },
         "radius": {
           "type": "number",
           "description": "The radius of this volume, if a shape is not specified.",
@@ -6915,24 +7238,6 @@
           "type": "string",
           "description": "The prompt to display when the volume is interacted with."
         },
-        "range": {
-          "type": "number",
-          "description": "The range at which the volume can be interacted with.",
-          "format": "float",
-          "default": 2.0
-        },
-        "maxViewAngle": {
-          "type": [
-            "null",
-            "number"
-          ],
-          "description": "The max view angle (in degrees) the player can see the volume with to interact with it. This will effectively be a cone extending from the volume's center forwards (along the Z axis) based on the volume's rotation.\nIf not specified, no view angle restriction will be applied.",
-          "format": "float"
-        },
-        "usableInShip": {
-          "type": "boolean",
-          "description": "Whether the volume can be interacted with while in the ship."
-        },
         "reusable": {
           "type": "boolean",
           "description": "Whether the volume can be interacted with multiple times."
@@ -6956,6 +7261,88 @@
         "animationTrigger": {
           "type": "string",
           "description": "The name of an animation trigger to set on the animator when the volume is interacted with."
+        }
+      }
+    },
+    "PlayerRecoveryVolumeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "range": {
+          "type": "number",
+          "description": "The range at which the volume can be interacted with.",
+          "format": "float",
+          "default": 2.0
+        },
+        "maxViewAngle": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "description": "The max view angle (in degrees) the player can see the volume with to interact with it. This will effectively be a cone extending from the volume's center forwards (along the Z axis) based on the volume's rotation.\nIf not specified, no view angle restriction will be applied.",
+          "format": "float"
+        },
+        "usableInShip": {
+          "type": "boolean",
+          "description": "Whether the volume can be interacted with while in the ship."
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume, if a shape is not specified.",
+          "format": "float",
+          "default": 1.0
+        },
+        "shape": {
+          "description": "The shape of this volume. Defaults to a sphere with a radius of `radius` if not specified.",
+          "$ref": "#/definitions/ShapeInfo"
+        },
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "refuels": {
+          "type": "boolean",
+          "description": "Whether interacting with this volume refuels the player's jetpack.",
+          "default": true
+        },
+        "heals": {
+          "type": "boolean",
+          "description": "Whether interacting with this volume heals the player."
+        },
+        "cleansVisor": {
+          "type": "boolean",
+          "description": "Whether interacting with this volume cleans dirt off the helmet visor."
+        },
+        "dlcFuel": {
+          "type": "boolean",
+          "description": "Whether the fuel fire color would be green."
         }
       }
     },
@@ -7727,6 +8114,13 @@
           "items": {
             "$ref": "#/definitions/RainEffectVolumeInfo"
           }
+        },
+        "dirtEffectVolumes": {
+          "type": "array",
+          "description": "Add visor dirt effect volumes to this planet.",
+          "items": {
+            "$ref": "#/definitions/DirtEffectVolumeInfo"
+          }
         }
       }
     },
@@ -7869,6 +8263,71 @@
         "streakRate": {
           "type": "number",
           "description": "The rate at which the rain streak effect will happen",
+          "format": "float",
+          "default": 1.0
+        }
+      }
+    },
+    "DirtEffectVolumeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "layer": {
+          "type": "integer",
+          "description": "The layer of this volume.\n\nLayers separate the priority system. The priority of volumes in one layer will not affect or override volumes in another. The highest priority volume in each layer will stack like normal.\nThe exception is layer 0. A higher-priority volume in layer 0 will override lower-priority volumes in ALL other layers. A lower-priority volume in layer 0 will stack with other layers like normal.\n            \nEx: A player could be affected by the sun on layer 9 priority 0 and planet gravity on layer 3 priority 2. They would experience the gravity of both volumes since they are on different layers.\nIf there was a zero-g volume on layer 0 priority 1, since it is on layer 0 it will override the gravity from the sun (priority 0 which is less than 1) but they will still feel the \ngravity of the planet (priority 2 is greater than 1). The zero-g volume will also still be applied because it is on a different layer.\n            \nDefault value here is 0 which means this volume's priority will be evaluated against all other priority volumes regardless of their layer.",
+          "format": "int32",
+          "default": 0
+        },
+        "priority": {
+          "type": "integer",
+          "description": "The priority of this volume.\n\nVolumes of higher priority will override volumes of lower priority. Volumes of the same priority will stack like normal.\nEx: A player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.\n            \nDefault value here is 1 instead of 0 so it automatically overrides planet gravity, which is 0 by default. ",
+          "format": "int32",
+          "default": 1
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume, if a shape is not specified.",
+          "format": "float",
+          "default": 1.0
+        },
+        "shape": {
+          "description": "The shape of this volume. Defaults to a sphere with a radius of `radius` if not specified.",
+          "$ref": "#/definitions/ShapeInfo"
+        },
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "dirtAccumulationRate": {
+          "type": "number",
+          "description": "The rate at which the dirt effect will accumulate",
           "format": "float",
           "default": 1.0
         }

@@ -18,6 +18,7 @@ namespace NewHorizons.Components.ShipLog
         private GameObject _cardTemplate = null;
         private int _cardIndex = 0;
         private OWAudioSource _oneShotSource;
+        private FontAndLanguageController _fontAndLanguageController;
 
         private float _startPanTime;
         private float _panDuration;
@@ -51,6 +52,8 @@ namespace NewHorizons.Components.ShipLog
 
         public override void Initialize(ScreenPromptList centerPromptList, ScreenPromptList upperRightPromptList, OWAudioSource oneShotSource)
         {
+            _fontAndLanguageController = GetComponentInParent<ShipLogController>().GetComponentInChildren<FontAndLanguageController>(true);
+
             root = transform.Find("ScaleRoot/PanRoot");
             _oneShotSource = oneShotSource;
             LoadAssets();
@@ -115,15 +118,8 @@ namespace NewHorizons.Components.ShipLog
             }
 
             var newCard = Instantiate(_cardTemplate, parent);
-            var textComponent = newCard.transform.Find("EntryCardRoot/NameBackground/Name").GetComponent<Text>();
 
-            var name = UniqueIDToName(uniqueID);
-
-            textComponent.text = name;
-            if (name.Length > 17) textComponent.fontSize = 10;
-            // Do it next frame
-            var fontPath = "Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/ShipLogPivot/ShipLogCanvas/DetectiveMode/ScaleRoot/PanRoot/TH_VILLAGE/EntryCardRoot/NameBackground/Name";
-            Delay.FireOnNextUpdate(() => textComponent.font = SearchUtilities.Find(fontPath).GetComponent<Text>().font);
+            var name = ShipLogStarChartMode.UniqueIDToName(uniqueID);
 
             newCard.SetActive(true);
             newCard.transform.name = uniqueID;
@@ -132,17 +128,31 @@ namespace NewHorizons.Components.ShipLog
 
             var shipLogEntryCard = newCard.GetComponent<ShipLogEntryCard>();
 
+            shipLogEntryCard._name.text = name;
+            if (name.Length > 17) shipLogEntryCard._name.fontSize = 10;
+            else shipLogEntryCard._name.fontSize = 14;
+
+            shipLogEntryCard._name.font = Locator.GetUIStyleManager().GetShipLogCardFont();
+            shipLogEntryCard._name.lineSpacing = Locator.GetUIStyleManager().GetShipLogCardSpacing();
+            shipLogEntryCard._questionMark.color = Locator.GetUIStyleManager().GetShipLogRumorColor();
+
             Texture texture = StarChartHandler.GetSystemCardTexture(uniqueID);
 
             if (texture != null)
             {
                 shipLogEntryCard._photo.sprite = MakeSprite((Texture2D)texture);
-                newCard.transform.Find("EntryCardRoot/EntryCardBackground/PhotoImage").gameObject.SetActive(true);
+                shipLogEntryCard._photo.gameObject.SetActive(true);
             }
 
             shipLogEntryCard._hudMarkerIcon.gameObject.SetActive(false);
             shipLogEntryCard._moreToExploreIcon.gameObject.SetActive(false);
             shipLogEntryCard._unreadIcon.gameObject.SetActive(false);
+            shipLogEntryCard._origIconSize = shipLogEntryCard._moreToExploreIcon.rectTransform.sizeDelta;
+
+            _fontAndLanguageController.AddTextElement(shipLogEntryCard._name, false, true, false);
+            shipLogEntryCard._name.SetAllDirty();
+            shipLogEntryCard._questionMark.SetAllDirty();
+            shipLogEntryCard._photo.SetAllDirty();
 
             return newCard;
         }
@@ -241,22 +251,6 @@ namespace NewHorizons.Components.ShipLog
             }
         }
 
-        public static string UniqueIDToName(string uniqueID)
-        {
-            var name = TranslationHandler.GetTranslation(uniqueID, TranslationHandler.TextType.UI);
-
-            // If it can't find a translation it just returns the key
-            if (!name.Equals(uniqueID)) return name;
-
-            // Else we return a default name
-            if (uniqueID.Equals("SolarSystem")) return "The Outer Wilds";
-
-            var splitString = uniqueID.Split('.');
-            if (splitString.Length > 1) splitString = splitString.Skip(1).ToArray();
-            name = string.Join("", splitString).SplitCamelCase();
-            return name;
-        }
-
         private int Posmod(int a, int b)
         {
             return (a % b + b) % b;
@@ -283,7 +277,7 @@ namespace NewHorizons.Components.ShipLog
             Locator._rfTracker.UntargetReferenceFrame();
             GlobalMessenger.FireEvent("UntargetReferenceFrame");
 
-            var name = UniqueIDToName(shipLogEntryCard.name);
+            var name = ShipLogStarChartMode.UniqueIDToName(shipLogEntryCard.name);
 
             var warpNotificationDataText = TranslationHandler.GetTranslation("WARP_LOCKED", TranslationHandler.TextType.UI).Replace("{0}", name.ToUpperFixed());
             _warpNotificationData = new NotificationData(warpNotificationDataText);

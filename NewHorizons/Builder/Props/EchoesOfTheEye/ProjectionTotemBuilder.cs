@@ -26,7 +26,7 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
                 _prefab = SearchUtilities.Find("DreamWorld_Body/Sector_DreamWorld/Sector_DreamZone_3/Interactibles_DreamZone_3/Prefab_IP_DreamObjectProjector_Bridge").InstantiateInactive().Rename("Prefab_ProjectionTotem").DontDestroyOnLoad();
                 if (_prefab == null)
                 {
-                    NHLogger.LogWarning($"Tried to make a grapple totem but couldn't. Do you have the DLC installed?");
+                    NHLogger.LogWarning($"Tried to make a projection totem but couldn't. Do you have the DLC installed?");
                     return;
                 }
                 else

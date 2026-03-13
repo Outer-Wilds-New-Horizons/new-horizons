@@ -1,5 +1,6 @@
 using NewHorizons.External.Modules.Volumes.VolumeInfos;
 using Newtonsoft.Json;
+using System;
 
 namespace NewHorizons.External.Modules.Volumes
 {
@@ -48,6 +49,12 @@ namespace NewHorizons.External.Modules.Volumes
         /// They can be interacted with by the player to trigger various effects.
         /// </summary>
         public InteractionVolumeInfo[] interactionVolumes;
+
+        /// <summary>
+        /// Add player recovery volumes to this planet.
+        /// They can be interacted with by the player to refuel or heal.
+        /// </summary>
+        public PlayerRecoveryVolumeInfo[] playerRecoveryVolumes;
 
         /// <summary>
         /// Add interference volumes to this planet.
@@ -141,13 +148,18 @@ namespace NewHorizons.External.Modules.Volumes
         public PriorityVolumeInfo[] zeroGravityVolumes;
 
         /// <summary>
-        /// Entering this volume will load a new solar system.
+        /// Entering this volume will load a new star system.
         /// </summary>
-        public ChangeStarSystemVolumeInfo[] solarSystemVolume;
+        public ChangeStarSystemVolumeInfo[] starSystemVolumes;
 
         /// <summary>
         /// Enter this volume to be sent to the end credits scene
         /// </summary>
         public LoadCreditsVolumeInfo[] creditsVolume;
+
+        #region Obsolete
+        [Obsolete("Use starSystemVolumes instead")]
+        public ChangeStarSystemVolumeInfo[] solarSystemVolume;
+        #endregion
     }
 }
