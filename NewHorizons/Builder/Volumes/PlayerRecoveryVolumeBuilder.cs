@@ -9,6 +9,7 @@ namespace NewHorizons.Builder.Volumes
         public static PlayerRecoveryPoint Make(GameObject planetGO, Sector sector, PlayerRecoveryVolumeInfo info, IModBehaviour mod)
         {
             var receiver = InteractionVolumeBuilder.MakeReceiver(planetGO, sector, info, mod);
+            receiver.gameObject.name = "PlayerRecoveryPoint";
 
             var volume = receiver.gameObject.AddComponent<PlayerRecoveryPoint>();
 
