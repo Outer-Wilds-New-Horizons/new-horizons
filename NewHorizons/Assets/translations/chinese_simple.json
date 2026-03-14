@@ -26,7 +26,10 @@
     "Vessel": "飞船"
   },
   "OtherDictionary": {
-    "NOMAI_SHUTTLE_COMPUTER": "<![CDATA[<color=orange>穿梭机</color>]]>目前停泊在<![CDATA[<color=lightblue>{0}</color>]]>。"
+    "NOMAI_SHUTTLE_COMPUTER": "<![CDATA[<color=orange>穿梭机</color>]]>目前停泊在<![CDATA[<color=lightblue>{0}</color>]]>。",
+    "UNKNOWN_LANGUAGE_UNTRANSLATED": "<!> 未翻译的未知文字 <!>",
+    "KNOWN_LANGUAGE_UNTRANSLATED": "<!> 未翻译的{0}文字 <!>",
+    "LANGUAGE_NAME_GHOSTBIRD": "居民"
   },
   "AchievementTranslations": {
     "NH_EATEN_OUTSIDE_BRAMBLE": {
