@@ -78,6 +78,8 @@ namespace NewHorizons.Handlers
             {
                 validBuilders.RemoveAt(index);
 
+                NHLogger.LogVerbose("Selected title screen: " + randomBuilder.ToString());
+
                 // display nh planets if not disabled
                 if (!randomBuilder.DisableNHPlanets)
                 {
