@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using Color = UnityEngine.Color;
 
@@ -487,6 +488,17 @@ namespace NewHorizons.Handlers
             }
 
             CurrentTitleScreenConfig = null;
+        }
+
+        internal static void ReopenProfileMenu()
+        {
+            var profileButton = SearchUtilities.Find("TitleMenu/TitleCanvas/TitleLayoutGroup/MainMenuBlock/MainMenuLayoutGroup/Button-Profile");
+            var profileButtonAction = profileButton.GetComponent<SubmitActionMenu>();
+            profileButtonAction.Submit();
+            profileButtonAction._menuToOpen.OnDeactivateMenu += () =>
+            {
+                EventSystem.current.SetSelectedGameObject(profileButton);
+            };
         }
 
         internal class TitleScreenBuilderList
