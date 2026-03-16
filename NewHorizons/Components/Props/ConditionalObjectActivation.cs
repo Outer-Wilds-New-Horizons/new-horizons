@@ -34,9 +34,14 @@ namespace NewHorizons.Components.Props
             Delay.FireOnNextUpdate(LateStart);
         }
 
+        public bool GetConditionState()
+        {
+            return DialogueConditionManager.SharedInstance.GetConditionState(DialogueCondition) || PlayerData.GetPersistentCondition(DialogueCondition);
+        }
+
         private void LateStart()
         {
-            var currentConditionState = DialogueConditionManager.SharedInstance.GetConditionState(DialogueCondition);
+            var currentConditionState = GetConditionState();
 
             // Would just call OnDialogueConditionChanged but maybe theres an activator and deactivator for this object so we have to be more careful
             if (SetActiveWithCondition && !currentConditionState) GameObject.SetActive(false);
@@ -46,7 +51,8 @@ namespace NewHorizons.Components.Props
         public void Awake()
         {
             if (_playerCameraEffectController == null) _playerCameraEffectController = GameObject.FindObjectOfType<PlayerCameraEffectController>();
-            GlobalMessenger<string, bool>.AddListener("DialogueConditionChanged", OnDialogueConditionChanged);
+            GlobalMessenger<string, bool>.AddListener("DialogueConditionChanged", OnConditionChanged);
+            GlobalMessenger<string, bool>.AddListener("NHPersistentConditionChanged", OnConditionChanged);
             GlobalMessenger.AddListener("ExitConversation", OnExitConversation);
             GlobalMessenger.AddListener("EnterConversation", OnEnterConversation);
             GlobalMessenger.AddListener("WakeUp", OnWakeUp);
@@ -54,7 +60,8 @@ namespace NewHorizons.Components.Props
 
         public void OnDestroy()
         {
-            GlobalMessenger<string, bool>.RemoveListener("DialogueConditionChanged", OnDialogueConditionChanged);
+            GlobalMessenger<string, bool>.RemoveListener("DialogueConditionChanged", OnConditionChanged);
+            GlobalMessenger<string, bool>.RemoveListener("NHPersistentConditionChanged", OnConditionChanged);
             GlobalMessenger.RemoveListener("ExitConversation", OnExitConversation);
             GlobalMessenger.RemoveListener("EnterConversation", OnEnterConversation);
             GlobalMessenger.RemoveListener("WakeUp", OnWakeUp);
@@ -81,7 +88,7 @@ namespace NewHorizons.Components.Props
             _inConversation = false;
             if (_changeConditionOnExitConversation)
             {
-                OnDialogueConditionChanged(DialogueCondition, DialogueConditionManager.SharedInstance.GetConditionState(DialogueCondition));
+                UpdateActive();
                 _changeConditionOnExitConversation = false;
             }
         }
@@ -91,18 +98,25 @@ namespace NewHorizons.Components.Props
             _inConversation = true;
         }
 
-        public void OnDialogueConditionChanged(string condition, bool state)
+        public void OnConditionChanged(string condition, bool state) => OnConditionChanged(condition);
+
+        public void OnConditionChanged(string condition)
         {
             if (condition == DialogueCondition)
             {
-                if (_inConversation)
-                {
-                    _changeConditionOnExitConversation = true;
-                }
-                else
-                {
-                    SetActive(SetActiveWithCondition == state);
-                }
+                UpdateActive();
+            }
+        }
+
+        public void UpdateActive()
+        {
+            if (_inConversation)
+            {
+                _changeConditionOnExitConversation = true;
+            }
+            else
+            {
+                SetActive(SetActiveWithCondition == GetConditionState());
             }
         }
 
