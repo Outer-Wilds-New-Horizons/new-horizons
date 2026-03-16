@@ -1029,11 +1029,11 @@
         },
         "activationCondition": {
           "type": "string",
-          "description": "Activates this game object when the dialogue condition is met"
+          "description": "Activates this game object when the dialogue/persistent condition is met"
         },
         "deactivationCondition": {
           "type": "string",
-          "description": "Deactivates this game object when the dialogue condition is met"
+          "description": "Deactivates this game object when the dialogue/persistent condition is met"
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -1685,11 +1685,11 @@
         },
         "activationCondition": {
           "type": "string",
-          "description": "Activates this game object when the dialogue condition is met"
+          "description": "Activates this game object when the dialogue/persistent condition is met"
         },
         "deactivationCondition": {
           "type": "string",
-          "description": "Deactivates this game object when the dialogue condition is met"
+          "description": "Deactivates this game object when the dialogue/persistent condition is met"
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -1805,11 +1805,11 @@
         },
         "activationCondition": {
           "type": "string",
-          "description": "Activates this game object when the dialogue condition is met"
+          "description": "Activates this game object when the dialogue/persistent condition is met"
         },
         "deactivationCondition": {
           "type": "string",
-          "description": "Deactivates this game object when the dialogue condition is met"
+          "description": "Deactivates this game object when the dialogue/persistent condition is met"
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -2496,11 +2496,11 @@
         },
         "activationCondition": {
           "type": "string",
-          "description": "Activates this game object when the dialogue condition is met"
+          "description": "Activates this game object when the dialogue/persistent condition is met"
         },
         "deactivationCondition": {
           "type": "string",
-          "description": "Deactivates this game object when the dialogue condition is met"
+          "description": "Deactivates this game object when the dialogue/persistent condition is met"
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -2956,11 +2956,11 @@
         },
         "activationCondition": {
           "type": "string",
-          "description": "Activates this game object when the dialogue condition is met"
+          "description": "Activates this game object when the dialogue/persistent condition is met"
         },
         "deactivationCondition": {
           "type": "string",
-          "description": "Deactivates this game object when the dialogue condition is met"
+          "description": "Deactivates this game object when the dialogue/persistent condition is met"
         }
       }
     },
@@ -4351,11 +4351,11 @@
         },
         "activationCondition": {
           "type": "string",
-          "description": "Activates this game object when the dialogue condition is met"
+          "description": "Activates this game object when the dialogue/persistent condition is met"
         },
         "deactivationCondition": {
           "type": "string",
-          "description": "Deactivates this game object when the dialogue condition is met"
+          "description": "Deactivates this game object when the dialogue/persistent condition is met"
         },
         "rotation": {
           "description": "Rotation of the object",
