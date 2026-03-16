@@ -5969,6 +5969,13 @@
             "$ref": "#/definitions/NotificationVolumeInfo"
           }
         },
+        "quantumToggleVolumes": {
+          "type": "array",
+          "description": "Add quantum toggle volumes to this planet.\nToggles the ability for specified quantum objects to change their quantum state when entering the volume.",
+          "items": {
+            "$ref": "#/definitions/QuantumToggleVolumeInfo"
+          }
+        },
         "oxygenVolumes": {
           "type": "array",
           "description": "Add oxygen volumes to this planet.",
@@ -7486,6 +7493,70 @@
           "description": "The duration this notification will be displayed.",
           "format": "float",
           "default": 5.0
+        }
+      }
+    },
+    "QuantumToggleVolumeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume, if a shape is not specified.",
+          "format": "float",
+          "default": 1.0
+        },
+        "shape": {
+          "description": "The shape of this volume. Defaults to a sphere with a radius of `radius` if not specified.",
+          "$ref": "#/definitions/ShapeInfo"
+        },
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "quantumObjects": {
+          "type": "array",
+          "description": "Path to the quantum objects to toggle when entering the volume.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "invert": {
+          "type": "boolean",
+          "description": "Invert the toggle so it starts on but turns off when entering volume.",
+          "default": false
+        },
+        "undoOnExit": {
+          "type": "boolean",
+          "description": "Whether exiting the volume will undo the toggle that happened when entering it.",
+          "default": true
         }
       }
     },
