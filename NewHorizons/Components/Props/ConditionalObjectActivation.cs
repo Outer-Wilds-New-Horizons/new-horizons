@@ -19,6 +19,14 @@ namespace NewHorizons.Components.Props
 
         public static void SetUp(GameObject go, string condition, bool closeEyes, bool setActiveWithCondition)
         {
+            if (LoadManager.GetCurrentScene() is OWScene.TitleScreen or OWScene.PostCreditsScene)
+            {
+                var currentConditionState = GetConditionState(condition);
+
+                if (setActiveWithCondition && !currentConditionState) go.SetActive(false);
+                if (!setActiveWithCondition && currentConditionState) go.SetActive(false);
+                return;
+            }
             var conditionalObjectActivationGO = new GameObject($"{go.name}_{condition}");
             var component = conditionalObjectActivationGO.AddComponent<ConditionalObjectActivation>();
             component.transform.parent = go.transform.parent;
@@ -34,10 +42,12 @@ namespace NewHorizons.Components.Props
             Delay.FireOnNextUpdate(LateStart);
         }
 
-        public bool GetConditionState()
+        public static bool GetConditionState(string condition)
         {
-            return DialogueConditionManager.SharedInstance.GetConditionState(DialogueCondition) || PlayerData.GetPersistentCondition(DialogueCondition);
+            return DialogueConditionManager.SharedInstance.GetConditionState(condition) || PlayerData.GetPersistentCondition(condition);
         }
+
+        public bool GetConditionState() => GetConditionState(DialogueCondition);
 
         private void LateStart()
         {
