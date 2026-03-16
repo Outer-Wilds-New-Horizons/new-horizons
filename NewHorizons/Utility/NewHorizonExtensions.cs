@@ -474,6 +474,38 @@ namespace NewHorizons.Utility
                 .FirstOrDefault(spawnPoint => spawnPoint.GetSpawnLocation() == location);
         }
 
+        public static void RemoveChildren(this GameObject go, string[] paths, bool wait)
+        {
+            foreach (var childPath in paths)
+            {
+                var flag = true;
+                foreach (var childObj in go.transform.FindAll(childPath))
+                {
+                    flag = false;
+                    if (wait)
+                    {
+                        // idk why we wait here but we do
+                        Delay.FireInNUpdates(() =>
+                        {
+                            if (childObj != null && childObj.gameObject != null)
+                            {
+                                childObj.gameObject.SetActive(false);
+                            }
+                        }, 2);
+                    }
+                    else
+                    {
+                        if (childObj != null && childObj.gameObject != null)
+                        {
+                            childObj.gameObject.SetActive(false);
+                        }
+                    }
+                }
+
+                if (flag) NHLogger.LogWarning($"Couldn't find \"{childPath}\".");
+            }
+        }
+
         public static CodeMatcher LogInstructions(this CodeMatcher matcher, string prefix)
         {
             matcher.InstructionEnumeration().LogInstructions(prefix);

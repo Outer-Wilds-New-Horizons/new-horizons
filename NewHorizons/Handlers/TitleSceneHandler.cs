@@ -192,10 +192,7 @@ namespace NewHorizons.Handlers
 
             if (config.Background != null)
             {
-                if (config.Background.removeChildren != null)
-                {
-                    RemoveChildren(background, config.Background.removeChildren);
-                }
+                if (config.Background.removeChildren != null) background.RemoveChildren(config.Background.removeChildren, true);
 
                 if (config.Background.details != null)
                 {
@@ -212,10 +209,7 @@ namespace NewHorizons.Handlers
 
             if (config.MenuPlanet != null)
             {
-                if (config.MenuPlanet.removeChildren != null)
-                {
-                    RemoveChildren(menuPlanet, config.MenuPlanet.removeChildren);
-                }
+                if (config.MenuPlanet.removeChildren != null) menuPlanet.RemoveChildren(config.MenuPlanet.removeChildren, true);
 
                 if (config.MenuPlanet.details != null)
                 {
@@ -234,28 +228,6 @@ namespace NewHorizons.Handlers
                 {
                     SearchUtilities.Find("Scene/Background/PlanetPivot/PlanetRoot").SetActive(false);
                 }
-            }
-        }
-
-        private static void RemoveChildren(GameObject go, string[] paths)
-        {
-            foreach (var childPath in paths)
-            {
-                var flag = true;
-                foreach (var childObj in go.transform.FindAll(childPath))
-                {
-                    flag = false;
-                    // idk why we wait here but we do
-                    Delay.FireInNUpdates(() =>
-                    {
-                        if (childObj != null && childObj.gameObject != null)
-                        {
-                            childObj.gameObject.SetActive(false);
-                        }
-                    }, 2);
-                }
-
-                if (flag) NHLogger.LogWarning($"Couldn't find \"{childPath}\".");
             }
         }
 

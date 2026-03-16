@@ -219,20 +219,7 @@ namespace NewHorizons.Builder.Props
 
             prop.transform.localScale = detail.stretch ?? (detail.scale != 0 ? Vector3.one * detail.scale : prefab.transform.localScale);
 
-            if (detail.removeChildren != null)
-            {
-                foreach (var childPath in detail.removeChildren)
-                {
-                    var flag = true;
-                    foreach (var childObj in prop.transform.FindAll(childPath))
-                    {
-                        flag = false;
-                        childObj.gameObject.SetActive(false);
-                    }
-
-                    if (flag) NHLogger.LogWarning($"Couldn't find \"{childPath}\".");
-                }
-            }
+            if (detail.removeChildren != null) prop.RemoveChildren(detail.removeChildren, false);
 
             if (detail.removeComponents)
             {
