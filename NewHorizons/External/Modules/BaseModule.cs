@@ -68,6 +68,11 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// Optional. You can force this planet's gravity to be felt over other gravity/zero-gravity sources by increasing this number.
         /// </summary>
+        [DefaultValue(3)] public int gravityVolumeLayer = 3;
+
+        /// <summary>
+        /// Optional. You can force this planet's gravity to be felt over other gravity/zero-gravity sources by increasing this number.
+        /// </summary>
         [DefaultValue(0)] public int gravityVolumePriority = 0;
 
         /// <summary>
