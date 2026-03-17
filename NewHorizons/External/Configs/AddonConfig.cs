@@ -51,5 +51,10 @@ namespace NewHorizons.External.Configs
         /// You must set a dialogue condition for the game over sequence to run.
         /// </summary>
         public GameOverModule[] gameOver;
+
+        /// <summary>
+        /// Extra data that may be used by extension mods
+        /// </summary>
+        public object extras;
     }
 }

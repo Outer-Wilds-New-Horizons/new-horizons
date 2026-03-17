@@ -98,7 +98,7 @@ public static class SchemaExporter
                     break;
             }
 
-            if (_title is "Star System Schema" or "Celestial Body Schema")
+            if (_title is "Star System Schema" or "Celestial Body Schema" or "Addon Manifest Schema")
             {
                 schema.Properties["extras"] = new JsonSchemaProperty {
                     Type = JsonObjectType.Object,
