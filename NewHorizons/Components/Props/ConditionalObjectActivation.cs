@@ -9,7 +9,7 @@ namespace NewHorizons.Components.Props
         private bool _playerAwake, _playerDoneAwake;
 
         public GameObject GameObject;
-        public string DialogueCondition;
+        public string Condition;
         public bool CloseEyes;
         public bool SetActiveWithCondition;
 
@@ -23,7 +23,7 @@ namespace NewHorizons.Components.Props
             var component = conditionalObjectActivationGO.AddComponent<ConditionalObjectActivation>();
             component.transform.parent = go.transform.parent;
             component.GameObject = go;
-            component.DialogueCondition = condition;
+            component.Condition = condition;
             component.CloseEyes = closeEyes;
             component.SetActiveWithCondition = setActiveWithCondition;
         }
@@ -39,7 +39,7 @@ namespace NewHorizons.Components.Props
             return DialogueConditionManager.SharedInstance.GetConditionState(condition) || PlayerData.GetPersistentCondition(condition);
         }
 
-        public bool GetConditionState() => GetConditionState(DialogueCondition);
+        public bool GetConditionState() => GetConditionState(Condition);
 
         private void LateStart()
         {
@@ -104,7 +104,7 @@ namespace NewHorizons.Components.Props
 
         public void OnConditionChanged(string condition)
         {
-            if (condition == DialogueCondition)
+            if (condition == Condition)
             {
                 UpdateActive();
             }
