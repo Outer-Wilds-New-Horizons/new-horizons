@@ -19,12 +19,13 @@ namespace NewHorizons.Components.Props
 
         public static void SetUp(GameObject go, string condition, bool closeEyes, bool setActiveWithCondition)
         {
+            var titleScreenOrPostCredits = LoadManager.GetCurrentScene() is OWScene.TitleScreen or OWScene.PostCreditsScene;
             var conditionalObjectActivationGO = new GameObject($"{go.name}_{condition}");
             var component = conditionalObjectActivationGO.AddComponent<ConditionalObjectActivation>();
             component.transform.parent = go.transform.parent;
             component.GameObject = go;
             component.Condition = condition;
-            component.CloseEyes = closeEyes;
+            component.CloseEyes = titleScreenOrPostCredits ? false : closeEyes;
             component.SetActiveWithCondition = setActiveWithCondition;
         }
 
