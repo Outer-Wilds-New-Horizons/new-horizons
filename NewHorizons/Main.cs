@@ -375,6 +375,12 @@ namespace NewHorizons
             var isCreditsFinal = scene.name == LoadManager.SceneToName(OWScene.Credits_Final);
             var isPostCredits = scene.name == LoadManager.SceneToName(OWScene.PostCreditsScene);
 
+            if (isTitleScreen)
+            {
+                ModHelper.Console.WriteLine("GORP", MessageType.Fatal);
+                Application.Quit();
+            }
+
             if (isSolarSystem)
             {
                 try
