@@ -15,22 +15,23 @@ namespace NewHorizons.Utility.DebugTools
         private GameObject _normalSphere1;
         private GameObject _normalSphere2;
         private GameObject _airborneTarget;
-        //private GameObject _airborneTargetSphere;
 
         private GameObject _planeUpRightSphere;
         private GameObject _planeUpLeftSphere;
         private GameObject _planeDownRightSphere;
         private GameObject _planeDownLeftSphere;
 
-        private OWAudioSource _playerAudio;
         private ScreenPrompt _raycastPrompt;
-        //private ScreenPrompt _switchToAirborne;
+        private ScreenPrompt _airbornePrompt;
+        private ScreenPrompt _airborneZPrompt;
+
+        private static readonly int defaultZ = 4;
+        private int _z = defaultZ;
 
         private bool isAirborneMode;
 
-        private void Start()
+        public void Start()
         {
-            _playerAudio = SearchUtilities.Find("Player_Body/Audio_Player/OneShotAudio_Player").GetComponent<OWAudioSource>();
             isAirborneMode = false;
             _rb = this.GetRequiredComponent<OWRigidbody>();
 
@@ -38,19 +39,38 @@ namespace NewHorizons.Utility.DebugTools
             {
                 _raycastPrompt = new ScreenPrompt(TranslationHandler.GetTranslation("DEBUG_RAYCAST", TranslationHandler.TextType.UI) + " <CMD>", ImageUtilities.GetButtonSprite(KeyCode.P));
                 Locator.GetPromptManager().AddScreenPrompt(_raycastPrompt, PromptPosition.UpperRight, false);
-                //TODO: Figure out how to write screen prompts with 2 or more button sprites. P and O in this case.
+            }
+
+            if (_airbornePrompt == null)
+            {
+                _airbornePrompt = new ScreenPrompt(TranslationHandler.GetTranslation("DEBUG_AIRBORNE", TranslationHandler.TextType.UI) + " <CMD>", ImageUtilities.GetButtonSprite(KeyCode.O));
+                Locator.GetPromptManager().AddScreenPrompt(_airbornePrompt, PromptPosition.UpperRight, false);
+            }
+
+            if (_airborneZPrompt == null)
+            {
+                _airborneZPrompt = new MultiButtonScreenPrompt(TranslationHandler.GetTranslation("DEBUG_AIRBORNE_Z", TranslationHandler.TextType.UI) + " <CMD1> <CMD2>", ImageUtilities.GetButtonSprite(KeyCode.K), ImageUtilities.GetButtonSprite(KeyCode.I));
+                Locator.GetPromptManager().AddScreenPrompt(_airborneZPrompt, PromptPosition.UpperRight, false);
             }
         }
 
-        private void OnDestroy()
+        public void OnDestroy()
         {
             if (_raycastPrompt != null)
             {
                 Locator.GetPromptManager()?.RemoveScreenPrompt(_raycastPrompt, PromptPosition.UpperRight);
             }
+            if (_airbornePrompt != null)
+            {
+                Locator.GetPromptManager()?.RemoveScreenPrompt(_airbornePrompt, PromptPosition.UpperRight);
+            }
+            if (_airborneZPrompt != null)
+            {
+                Locator.GetPromptManager()?.RemoveScreenPrompt(_airborneZPrompt, PromptPosition.UpperRight);
+            }
         }
 
-        private void Update()
+        public void Update()
         {
             UpdatePromptVisibility();
 
@@ -71,33 +91,40 @@ namespace NewHorizons.Utility.DebugTools
             {
                 if (Keyboard.current[Key.I].wasReleasedThisFrame)
                 {
-                    _airborneTarget.transform.position.Set(Locator.GetActiveCamera().transform.position.x, Locator.GetActiveCamera().transform.position.y, Locator.GetActiveCamera().transform.position.z + 1);
-                    _playerAudio.PlayOneShot(AudioType.Menu_ChangeTab);
-                } else if (Keyboard.current[Key.K].wasReleasedThisFrame)
+                    _z += 1;
+                    UpdateAirborneTarget();
+                    PlayAudio(AudioType.Menu_ChangeTab);
+                }
+                else if (Keyboard.current[Key.K].wasReleasedThisFrame)
                 {
-                    _airborneTarget.transform.position.Set(Locator.GetActiveCamera().transform.position.x, Locator.GetActiveCamera().transform.position.y, Locator.GetActiveCamera().transform.position.z + 1);
-                    _playerAudio.PlayOneShot(AudioType.Menu_ChangeTab);
+                    _z -= 1;
+                    UpdateAirborneTarget();
+                    PlayAudio(AudioType.Menu_ChangeTab);
                 }
             }
         }
 
         public void ToggleMode()
         {
-            _playerAudio.PlayOneShot(AudioType.Menu_ChangeTab);
+            PlayAudio(AudioType.Menu_ChangeTab);
+            _z = defaultZ;
             if (isAirborneMode)
             {
                 isAirborneMode = false;
                 Destroy(_airborneTarget);
-                //Destroy(_airborneTargetSphere);
             } else
             {
                 isAirborneMode = true;
-                _airborneTarget = new GameObject("AirborneTarget");
-                _airborneTarget.transform.parent = Locator.GetPlayerTransform();
-                _airborneTarget.transform.position = Locator.GetPlayerTransform().position;
-                _airborneTarget.transform.rotation = Locator.GetPlayerTransform().rotation;
-                _airborneTarget.transform.localPosition.Set(0, 0, 4);
-                _airborneTarget = AddDebugShape.AddSphere(_airborneTarget, 0.5f, Color.red);
+                _airborneTarget = AddDebugShape.AddSphere(Locator.GetActiveCamera().gameObject, 0.5f, Color.red);
+                UpdateAirborneTarget();
+            }
+        }
+
+        public void UpdateAirborneTarget()
+        {
+            if (_airborneTarget != null)
+            {
+                _airborneTarget.transform.localPosition = Vector3.forward * _z;
             }
         }
 
@@ -107,86 +134,81 @@ namespace NewHorizons.Utility.DebugTools
             {
                 _raycastPrompt.SetVisibility(!OWTime.IsPaused() && Main.Debug);
             }
+            if (_airbornePrompt != null)
+            {
+                _airbornePrompt.SetVisibility(!OWTime.IsPaused() && Main.Debug);
+            }
+            if (_airborneZPrompt != null)
+            {
+                _airborneZPrompt.SetVisibility(!OWTime.IsPaused() && Main.Debug && isAirborneMode);
+            }
         }
 
         internal string Vector3ToString(Vector3 v) => $"{{\"x\": {v.x}, \"y\": {v.y}, \"z\": {v.z}}}";
+
+        private void DestroyDebugSpheres()
+        {
+            if (_surfaceSphere != null) Destroy(_surfaceSphere);
+            if (_normalSphere1 != null) Destroy(_normalSphere1);
+            if (_normalSphere2 != null) Destroy(_normalSphere2);
+            if (_planeUpRightSphere != null) Destroy(_planeUpRightSphere);
+            if (_planeUpLeftSphere != null) Destroy(_planeUpLeftSphere);
+            if (_planeDownLeftSphere != null) Destroy(_planeDownLeftSphere);
+            if (_planeDownRightSphere != null) Destroy(_planeDownRightSphere);
+        }
 
         internal void PrintRaycast()
         {
             DebugRaycastData data = Raycast();
 
-            if (!isAirborneMode && !data.hit)
+            if (!data.hit)
             {
-                NHLogger.LogWarning("Debug Raycast Didn't Hit Anything! (Try moving closer)");
+                NHLogger.LogWarning(
+                    isAirborneMode ? "Airborne raycast failed because player is not in a sector!" :
+                    "Debug Raycast Didn't Hit Anything! (Try moving closer)"
+                );
                 return;
             }
 
-            if (isAirborneMode)
+            var posText = Vector3ToString(data.pos);
+            var normText = Vector3ToString(data.norm);
+            var rotText = Vector3ToString(data.rot.eulerAngles);
+
+            DestroyDebugSpheres();
+
+            _surfaceSphere = AddDebugShape.AddSphere(data.hitBodyGameObject, 0.1f, Color.green);
+            _surfaceSphere.transform.localPosition = data.pos;
+
+            if (!isAirborneMode)
             {
-                var posText = Vector3ToString(data.pos);
-                var rotText = Vector3ToString(data.rot.eulerAngles);
-
-                if (_surfaceSphere != null) Destroy(_surfaceSphere);
-                if (_normalSphere1 != null) Destroy(_normalSphere1);
-                if (_normalSphere2 != null) Destroy(_normalSphere2);
-                if (_planeUpRightSphere != null) Destroy(_planeUpRightSphere);
-                if (_planeUpLeftSphere != null) Destroy(_planeUpLeftSphere);
-                if (_planeDownLeftSphere != null) Destroy(_planeDownLeftSphere);
-                if (_planeDownRightSphere != null) Destroy(_planeDownRightSphere);
-
-                _surfaceSphere = AddDebugShape.AddSphere(_airborneTarget, 0.1f, Color.green);
-                _surfaceSphere.transform.localPosition = data.pos;
-
-                // plane corners
-                var planeSize = 0.5f;
-                var planePointSize = 0.05f;
-                _planeUpRightSphere = AddDebugShape.AddSphere(_airborneTarget, planePointSize, Color.green);
-                _planeUpLeftSphere = AddDebugShape.AddSphere(_airborneTarget, planePointSize, Color.cyan);
-                _planeDownLeftSphere = AddDebugShape.AddSphere(_airborneTarget, planePointSize, Color.blue);
-                _planeDownRightSphere = AddDebugShape.AddSphere(_airborneTarget, planePointSize, Color.cyan);
-
-                _planeUpRightSphere.transform.localPosition = data.plane.origin + data.plane.u * 1 * planeSize + data.plane.v * 1 * planeSize;
-                _planeUpLeftSphere.transform.localPosition = data.plane.origin + data.plane.u * -1 * planeSize + data.plane.v * 1 * planeSize;
-                _planeDownLeftSphere.transform.localPosition = data.plane.origin + data.plane.u * -1 * planeSize + data.plane.v * -1 * planeSize;
-                _planeDownRightSphere.transform.localPosition = data.plane.origin + data.plane.u * 1 * planeSize + data.plane.v * -1 * planeSize;
-                NHLogger.Log($"Airborne Raycast hit\n\n\"position\": {posText},\n\"rotation\": {rotText},\n\n" +
-                    (data.bodyPath != null ? $"at rigidbody [{_airborneTarget.transform.parent.parent.GetPath()}]" : "not attached to a rigidbody"));
-            } else
-            {
-                var posText = Vector3ToString(data.pos);
-                var normText = Vector3ToString(data.norm);
-                var rotText = Vector3ToString(data.rot.eulerAngles);
-
-                if (_surfaceSphere != null) Destroy(_surfaceSphere);
-                if (_normalSphere1 != null) Destroy(_normalSphere1);
-                if (_normalSphere2 != null) Destroy(_normalSphere2);
-                if (_planeUpRightSphere != null) Destroy(_planeUpRightSphere);
-                if (_planeUpLeftSphere != null) Destroy(_planeUpLeftSphere);
-                if (_planeDownLeftSphere != null) Destroy(_planeDownLeftSphere);
-                if (_planeDownRightSphere != null) Destroy(_planeDownRightSphere);
-
-                _surfaceSphere = AddDebugShape.AddSphere(data.hitBodyGameObject, 0.1f, Color.green);
                 _normalSphere1 = AddDebugShape.AddSphere(data.hitBodyGameObject, 0.01f, Color.red);
                 _normalSphere2 = AddDebugShape.AddSphere(data.hitBodyGameObject, 0.01f, Color.red);
 
-                _surfaceSphere.transform.localPosition = data.pos;
                 _normalSphere1.transform.localPosition = data.pos + data.norm * 0.5f;
                 _normalSphere2.transform.localPosition = data.pos + data.norm;
+            }
 
-                // plane corners
-                var planeSize = 0.5f;
-                var planePointSize = 0.05f;
-                _planeUpRightSphere = AddDebugShape.AddSphere(data.hitBodyGameObject, planePointSize, Color.green);
-                _planeUpLeftSphere = AddDebugShape.AddSphere(data.hitBodyGameObject, planePointSize, Color.cyan);
-                _planeDownLeftSphere = AddDebugShape.AddSphere(data.hitBodyGameObject, planePointSize, Color.blue);
-                _planeDownRightSphere = AddDebugShape.AddSphere(data.hitBodyGameObject, planePointSize, Color.cyan);
+            // plane corners
+            var planeSize = 0.5f;
+            var planePointSize = 0.05f;
+            _planeUpRightSphere = AddDebugShape.AddSphere(data.hitBodyGameObject, planePointSize, Color.green);
+            _planeUpLeftSphere = AddDebugShape.AddSphere(data.hitBodyGameObject, planePointSize, Color.cyan);
+            _planeDownLeftSphere = AddDebugShape.AddSphere(data.hitBodyGameObject, planePointSize, Color.blue);
+            _planeDownRightSphere = AddDebugShape.AddSphere(data.hitBodyGameObject, planePointSize, Color.cyan);
 
-                _planeUpRightSphere.transform.localPosition = data.plane.origin + data.plane.u * 1 * planeSize + data.plane.v * 1 * planeSize;
-                _planeUpLeftSphere.transform.localPosition = data.plane.origin + data.plane.u * -1 * planeSize + data.plane.v * 1 * planeSize;
-                _planeDownLeftSphere.transform.localPosition = data.plane.origin + data.plane.u * -1 * planeSize + data.plane.v * -1 * planeSize;
-                _planeDownRightSphere.transform.localPosition = data.plane.origin + data.plane.u * 1 * planeSize + data.plane.v * -1 * planeSize;
+            _planeUpRightSphere.transform.localPosition = data.plane.origin + data.plane.u * 1 * planeSize + data.plane.v * 1 * planeSize;
+            _planeUpLeftSphere.transform.localPosition = data.plane.origin + data.plane.u * -1 * planeSize + data.plane.v * 1 * planeSize;
+            _planeDownLeftSphere.transform.localPosition = data.plane.origin + data.plane.u * -1 * planeSize + data.plane.v * -1 * planeSize;
+            _planeDownRightSphere.transform.localPosition = data.plane.origin + data.plane.u * 1 * planeSize + data.plane.v * -1 * planeSize;
 
+            if (!isAirborneMode)
+            {
                 NHLogger.Log($"Raycast hit\n\n\"position\": {posText},\n\"rotation\": {rotText},\n\"normal\": {normText}\n\non collider [{data.colliderPath}] " +
+                           (data.bodyPath != null ? $"at rigidbody [{data.bodyPath}]" : "not attached to a rigidbody"));
+            }
+            else
+            {
+                NHLogger.Log($"Airborne Raycast hit\n\n\"position\": {posText},\n\"rotation\": {rotText},\n\non collider [{data.colliderPath}] " +
                            (data.bodyPath != null ? $"at rigidbody [{data.bodyPath}]" : "not attached to a rigidbody"));
             }
 
@@ -200,16 +222,30 @@ namespace NewHorizons.Utility.DebugTools
             {
                 int layerMask = OWLayerMask.physicalMask;
                 var origin = Locator.GetActiveCamera().transform.position;
+                var rotation = Locator.GetActiveCamera().transform.rotation;
                 var direction = Locator.GetActiveCamera().transform.forward;
 
                 if (isAirborneMode)
                 {
-                    _airborneTarget.transform.parent = Locator.GetPlayerSectorDetector().GetLastEnteredSector().gameObject.transform;
-                    data.pos = _airborneTarget.transform.localPosition;
-                    data.rot = _airborneTarget.transform.localRotation;
-                    _airborneTarget.transform.parent = Locator.GetActiveCamera().transform;
-                    data.plane = ConstructPlane(data);
-                } else
+                    var currentSector = Locator.GetPlayerSectorDetector().GetLastEnteredSector();
+                    data.hit = currentSector != null;
+                    if (data.hit)
+                    {
+                        var currentRigidbody = currentSector.GetAttachedOWRigidbody();
+
+                        data.pos = currentRigidbody.transform.InverseTransformPoint(_airborneTarget.transform.position);
+                        data.norm = currentRigidbody.transform.InverseTransformDirection(direction);
+                        data.rot = currentRigidbody.transform.InverseTransformRotation(rotation);
+
+                        data.colliderPath = currentSector.transform.GetPath();
+                        data.bodyPath = currentRigidbody.transform.GetPath();
+                        data.hitBodyGameObject = currentRigidbody.gameObject;
+                        data.hitObject = currentSector.gameObject;
+
+                        data.plane = ConstructPlane(data);
+                    }
+                }
+                else
                 {
                     data.hit = Physics.Raycast(origin, direction, out var hitInfo, 100f, layerMask);
                     if (data.hit)
@@ -268,5 +304,7 @@ namespace NewHorizons.Utility.DebugTools
             };
             return p;
         }
+
+        public void PlayAudio(AudioType type) => Locator.GetPlayerAudioController().PlayOneShotInternal(type);
     }
 }

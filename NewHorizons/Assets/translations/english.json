@@ -19,6 +19,8 @@
     "OUTDATED_VERSION_WARNING": "WARNING\n\nNew Horizons only works on version {0} or higher. You're on version {1}.\n\nPlease update your game or uninstall NH.",
     "JSON_FAILED_TO_LOAD": "Invalid file(s): {0}",
     "DEBUG_RAYCAST": "Raycast",
+    "DEBUG_AIRBORNE": "Toggle Airborne Raycast",
+    "DEBUG_AIRBORNE_Z": "Adjust Airborne Distance",
     "DEBUG_PLACE": "Place Object",
     "DEBUG_PLACE_TEXT": "Place Nomai Text",
     "DEBUG_UNDO": "Undo",
