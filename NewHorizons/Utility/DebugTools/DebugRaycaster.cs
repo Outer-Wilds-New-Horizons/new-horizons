@@ -208,7 +208,7 @@ namespace NewHorizons.Utility.DebugTools
             }
             else
             {
-                NHLogger.Log($"Airborne Raycast hit\n\n\"position\": {posText},\n\"rotation\": {rotText},\n\non collider [{data.colliderPath}] " +
+                NHLogger.Log($"Airborne Raycast hit\n\n\"position\": {posText},\n\"rotation\": {rotText},\n\non sector [{data.colliderPath}] " +
                            (data.bodyPath != null ? $"at rigidbody [{data.bodyPath}]" : "not attached to a rigidbody"));
             }
 
