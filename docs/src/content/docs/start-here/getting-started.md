@@ -1,6 +1,8 @@
 ---
 title: Getting Started
 description: A guide for getting started with New Horizons
+sidebar:
+    order: 1
 ---
 
 ## What Is New Horizons?
@@ -107,39 +109,4 @@ If you run into issues please make sure:
 - You placed the JSON file in a folder called `planets` in the New Horizons mod folder
 - There are no red or yellow squiggly lines in your file
 
-## Creating An Addon
-
-### Making a GitHub Repository
-
-To get started, you'll need to click the green "Use This Template" button on [the New Horizons addon template](https://github.com/xen-42/ow-new-horizons-config-template) GitHub repository.
-
-- Set the Name to your username followed by a dot (`.`), followed by your mod's name in PascalCase (no spaces, new words have capital letters). So for example if my username was "Test" and my mod's name was "Really Cool Addon", I would name the repo `Test.ReallyCoolAddon`.
-- The description is what will appear in the mod manager under the mod's name, you can always edit this later
-- You can set the visibility to what you want; But when you go to publish your mod, it will need to be public
-
-### Open The Project
-
-Now clone the repository to your local computer and open it in your favorite editor (we recommend [VSCode](https://code.visualstudio.com/)).
-
-### Project Layout
-
-- .github: This folder contains special files for use on GitHub, they aren't useful right now but will be when we go to publish the mod
-- planets: This folder contains a single example config file that destroys the Quantum Moon, we'll keep it for now so we can test our addon later.
-- .gitattributes: This is another file that will be useful when publishing
-- default-config.json: This file is used in C#-based mods to allow a custom options menu, New Horizons doesn't support a custom options menu, but we still need the file here in order for the addon to work.
-- manifest.json: This is the first file we're going to edit, we need to fill it out with information about our mod
-    - First you're going to set `author` to your author name, this should be the same name that you used when creating the GitHub repo.
-    - Next, set `name` to the name you want to appear in the mod manager and website.
-    - Now set `uniqueName` to the name of your GitHub Repo.
-    - You can leave `version`, `owmlVersion`, and `dependencies` alone
-- NewHorizonsConfig.dll: This is the heart of your addon, make sure to never move or rename it.
-
-### Testing The Addon
-
-In order for the addon to show up in the manager and subsequently be loaded into the game, you'll need to ensure that it's located in `%APPDATA%\OuterWildsModManager\OWML\Mods` (or `~/.local/share/OuterWildsModManager` on Linux). How you choose to do this is up to you, you could manually copy the mod folder over every time, you could setup an automated [VSCode Launch Configuration](https://code.visualstudio.com/Docs/editor/debugging#_launch-configurations) to do it every time you press F5, or you could simply keep your mod in that folder. The last option while although the easiest is not recommended as downloading another version of your mod can overwrite your current working copy.
-
-Once put in the Mods folder, the manager will display your mod without a description or download count, you can then launch the game to see if your planets load in.
-
-#### Checking In-Game
-
-Now when you click "Start Game" and load into the solar system, you should be able to notice that the quantum moon is gone entirely, this means that your addon and its configs were successfully loaded.
+Now that you are familiar with the basics, it's time to [create an addon](/start-here/creating-an-addon)!
