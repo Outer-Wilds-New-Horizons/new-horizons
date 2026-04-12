@@ -507,7 +507,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
                     arcReadFromCache.transform.localEulerAngles = new Vector3(0, 0, cachedData[i].zRotation);
                 }
 
-                GameObject arc = MakeArc(nhBody.Mod, arcInfo, conversationZone, parent, textEntryID, arcReadFromCache);
+                GameObject arc = MakeArc(nhBody?.Mod, arcInfo, conversationZone, parent, textEntryID, arcReadFromCache);
                 arc.name = $"Arc {textEntryID} - Child of {parentID}";
 
                 arcsByID.Add(textEntryID, arc);
