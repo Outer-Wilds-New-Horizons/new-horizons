@@ -1974,7 +1974,7 @@
           "format": "int32",
           "default": 204,
           "maximum": 2000.0,
-          "minimum": 4.0
+          "minimum": 16.0
         },
         "textureMap": {
           "type": "string",
