@@ -94,6 +94,11 @@ namespace NewHorizons.External.Configs
         public BaseModule Base;
 
         /// <summary>
+        /// Gravity-related settings for this body. New in modular config: holds gravity surface, size, falloff, etc.
+        /// </summary>
+        public GravityModule Gravity;
+
+        /// <summary>
         /// Add bramble nodes to this planet and/or make this planet a bramble dimension
         /// </summary>
         public BrambleModule Bramble;
@@ -392,6 +397,18 @@ namespace NewHorizons.External.Configs
             }
 
             if (Base.sphereOfInfluence != 0f) Base.soiOverride = Base.sphereOfInfluence;
+
+            if (Gravity == null && (Base.surfaceSize != 0f || Base.surfaceGravity != 0f || Base.gravityVolumeLayer != 0 || Base.gravityVolumePriority != 0 || Base.soiOverride != 0f || Base.gravityAlignmentRadiusOverride != null || Base.gravityFallOff != GravityFallOff.Linear))
+            {
+                Gravity = new GravityModule()
+                {
+                    force = Base.surfaceGravity,
+                    layer = Base.gravityVolumeLayer,
+                    priority = Base.gravityVolumePriority,
+                    fallOff = Base.gravityFallOff,
+                    alignmentRadius = Base.gravityAlignmentRadiusOverride,
+                };
+            }
 
             // Moved a bunch of stuff off of shiplog module to star system module because it didnt exist when we made this
             if (ShipLog != null)

@@ -54,40 +54,11 @@ namespace NewHorizons.External.Modules
         public float soiOverride;
 
         /// <summary>
-        /// The acceleration due to gravity felt as the surfaceSize. Timber Hearth has 12 for reference
-        /// </summary>
-        public float surfaceGravity;
-
-        /// <summary>
         /// A scale height used for a number of things. Should be the approximate radius of the body.
         /// 
         /// Affected settings include: Base sector size, proxy body scaling, surface gravity
         /// </summary>
         public float surfaceSize;
-
-        /// <summary>
-        /// Optional. The layer of the gravity volume.
-        /// 
-        /// Layers separate the priority system. The priority of volumes in one layer will not affect or override volumes in another. The highest priority volume in each layer will stack like normal.
-        /// The exception is layer 0. A higher-priority volume in layer 0 will override lower-priority volumes in ALL other layers. A lower-priority volume in layer 0 will stack with other layers like normal.
-        ///
-        /// Ex: A player could be affected by the sun on layer 9 priority 0 and planet gravity on layer 3 priority 2. They would experience the gravity of both volumes since they are on different layers.
-        /// If there was a zero-g volume on layer 0 priority 1, since it is on layer 0 it will override the gravity from the sun (priority 0 which is less than 1) but they will still feel the 
-        /// gravity of the planet (priority 2 is greater than 1). The zero-g volume will also still be applied because it is on a different layer.
-        ///
-        /// Default value here is 3 which is planet gravity.
-        /// </summary>
-        [DefaultValue(3)] public int gravityVolumeLayer = 3;
-
-        /// <summary>
-        /// Optional. You can force this planet's gravity to be felt over other gravity/zero-gravity sources by increasing this number.
-        /// </summary>
-        [DefaultValue(0)] public int gravityVolumePriority = 0;
-
-        /// <summary>
-        /// Optional. Overrides how far the player must be from the planet for their feet to automatically orient towards the ground.
-        /// </summary>
-        public int? gravityAlignmentRadiusOverride = null;
 
         /// <summary>
         /// Apply physics to this planet when you bump into it. Will have a spherical collider the size of surfaceSize. 
@@ -149,6 +120,18 @@ namespace NewHorizons.External.Modules
 
         [Obsolete("cometTailRotation is deprecated, please use CometTail->rotationOverride instead")]
         public MVector3 cometTailRotation;
+
+        [Obsolete("surfaceGravity is deprecated, please use Gravity->force instead")]
+        public float surfaceGravity;
+
+        [Obsolete("gravityVolumeLayer is deprecated, please use Gravity->layer instead")]
+        [DefaultValue(3)] public int gravityVolumeLayer = 3;
+
+        [Obsolete("gravityVolumePriority is deprecated, please use Gravity->priority instead")]
+        [DefaultValue(0)] public int gravityVolumePriority = 0;
+
+        [Obsolete("gravityAlignmentRadiusOverride is deprecated, please use Gravity->alignmentRadius instead")]
+        public float? gravityAlignmentRadiusOverride = null;
 
         #endregion Obsolete
     }

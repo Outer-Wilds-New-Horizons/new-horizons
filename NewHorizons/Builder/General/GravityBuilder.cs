@@ -1,6 +1,8 @@
+using Epic.OnlineServices.Presence;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility.OuterWilds;
+using System;
 using UnityEngine;
 namespace NewHorizons.Builder.General
 {
@@ -9,7 +11,7 @@ namespace NewHorizons.Builder.General
         public static GravityVolume Make(GameObject planetGO, AstroObject ao, OWRigidbody owrb, PlanetConfig config)
         {
             var exponent = config.Base.gravityFallOff == GravityFallOff.Linear ? 1f : 2f;
-            var GM = config.Base.surfaceGravity * Mathf.Pow(config.Base.surfaceSize, exponent);
+            var GM = config.Gravity.force * Mathf.Pow(config.Base.surfaceSize, exponent);
 
             // Gravity limit will be when the acceleration it would cause is less than 0.1 m/s^2
             var gravityRadius = GM / 0.1f;
@@ -38,27 +40,30 @@ namespace NewHorizons.Builder.General
 
             // copied from th and qm
             var gravityVolume = gravityGO.AddComponent<GravityVolume>();
-            gravityVolume._cutoffAcceleration = 0f;
+            gravityVolume._cutoffAcceleration = config.Gravity.minForce;
 
-            var falloff = config.Base.gravityFallOff == GravityFallOff.Linear? GravityVolume.FalloffType.linear : GravityVolume.FalloffType.inverseSquared;
-            
-            gravityVolume._falloffType = falloff;
+            gravityVolume._falloffType = config.Gravity.fallOff switch
+            {
+                GravityFallOff.Linear => GravityVolume.FalloffType.linear,
+                GravityFallOff.InverseSquared => GravityVolume.FalloffType.inverseSquared,
+                _ => throw new NotImplementedException(),
+            };
 
             // Radius where your feet turn to the planet
             var alignmentRadius = config.Atmosphere?.clouds?.outerCloudRadius ?? 1.5f * config.Base.surfaceSize;
-            if (config.Base.surfaceGravity == 0) alignmentRadius = 0;
+            if (config.Gravity.force == 0) alignmentRadius = 0;
 
-            gravityVolume._alignmentRadius = config.Base.gravityAlignmentRadiusOverride ?? alignmentRadius;
+            gravityVolume._alignmentRadius = config.Gravity.alignmentRadius ?? alignmentRadius;
             // Nobody write any FocalPoint overriding here, those work as intended gravitationally so deal with it!
-            gravityVolume._upperSurfaceRadius = config.Base.surfaceSize; 
-            gravityVolume._lowerSurfaceRadius = 0;
-            gravityVolume._layer = config.Base.gravityVolumeLayer;
-            gravityVolume._priority = config.Base.gravityVolumePriority;
-            gravityVolume._alignmentPriority = 0;
-            gravityVolume._surfaceAcceleration = config.Base.surfaceGravity;
-            gravityVolume._inheritable = false;
+            gravityVolume._upperSurfaceRadius = config.Gravity.upperRadius; 
+            gravityVolume._lowerSurfaceRadius = config.Gravity.lowerRadius;
+            gravityVolume._layer = config.Gravity.layer;
+            gravityVolume._priority = config.Gravity.priority;
+            gravityVolume._alignmentPriority = config.Gravity.alignmentPriority;
+            gravityVolume._surfaceAcceleration = config.Gravity.force;
+            gravityVolume._inheritable = config.Gravity.inheritable;
             gravityVolume._isPlanetGravityVolume = true;
-            gravityVolume._cutoffRadius = 0f;
+            gravityVolume._cutoffRadius = config.Gravity.minRadius;
 
             // If it's a focal point dont add collision stuff
             // This is overkill

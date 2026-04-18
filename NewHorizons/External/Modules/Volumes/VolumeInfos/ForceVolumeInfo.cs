@@ -13,7 +13,8 @@ namespace NewHorizons.External.Modules.Volumes.VolumeInfos
     public class ForceVolumeInfo : PriorityVolumeInfo
     {
         /// <summary>
-        /// The force applied by this volume. Can be negative to reverse the direction.
+        /// The force applied by this volume. Can be negative to reverse the direction. 
+        /// Timber Hearth has 12 for reference
         /// </summary>
         public float force;
 
