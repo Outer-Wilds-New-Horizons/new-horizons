@@ -236,6 +236,16 @@ namespace NewHorizons.Builder.Props.TranslatorText
                         computer._nomaiTextAsset.name = Path.GetFileNameWithoutExtension(info.xmlFile);
                         AddTranslation(xmlContent);
 
+                        if (info.computerStartsOff)
+                        {
+                            computer._startActivated = false;
+                        }
+
+                        if (!string.IsNullOrEmpty(info.computerCondition))
+                        {
+                            ConditionalNomaiComputerToggle.SetUp(computerObject, info.computerCondition, info.computerStartsOff);
+                        }
+
                         // Make sure the computer model is loaded
                         StreamingHandler.SetUpStreaming(computerObject, sector);
 
@@ -266,6 +276,16 @@ namespace NewHorizons.Builder.Props.TranslatorText
                         //fifthRing._baseTextColor = new Color(0.8824, 0.9604, 2.5, 1);
                         //fifthRing._baseTextShadowColor = new Color(0.3529, 0.3843, 1, 0.25);
                         fifthRing._computer = computer;
+
+                        if (info.computerStartsOff)
+                        {
+                            computer._startActivated = false;
+                        }
+
+                        if (!string.IsNullOrEmpty(info.computerCondition))
+                        {
+                            ConditionalNomaiComputerToggle.SetUp(computerObject, info.computerCondition, info.computerStartsOff);
+                        }
 
                         computerObject.SetActive(true);
 
