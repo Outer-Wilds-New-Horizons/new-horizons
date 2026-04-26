@@ -231,6 +231,7 @@ namespace NewHorizons.Builder.Props
                     // inverted slides will be loaded for the whole loop but its fine since this is only when generating cache
                     slideCollection.slides[index]._image = ImageUtilities.InvertSlideReel(mod, tex, originalPath);
                     NHLogger.LogVerbose($"Slide reel make reel invert texture {(DateTime.Now - time).TotalMilliseconds}ms");
+
                     // Track the first 16 to put on the slide reel object
                     if (index < textures.Length)
                     {
@@ -381,7 +382,7 @@ namespace NewHorizons.Builder.Props
 
             var toDestroy = autoProjector.GetComponent<SlideCollectionContainer>();
             var slideCollectionContainer = autoProjector.gameObject.AddComponent<NHSlideCollectionContainer>();
-            slideCollectionContainer.doAsyncLoading = false;
+            // slideCollectionContainer.doAsyncLoading = false;
             autoProjector._slideCollectionItem = slideCollectionContainer;
             Component.DestroyImmediate(toDestroy);
 
@@ -395,7 +396,7 @@ namespace NewHorizons.Builder.Props
             // Autoprojector only uses the inverted images so the original can be destroyed if they are loaded (when creating the cached inverted images)
             imageLoader.deleteTexturesWhenDone = true;
 
-            // if image loader ever starts, that means we're doing cache stuff. load it from there
+            // if image loader ever starts, that means we're doing cache stuff. so we still need async loader here
             { 
                 // Create the inverted cache from existing images
                 imageLoader.imageLoadedEvent.AddListener((Texture2D tex, int index, string originalPath) =>
@@ -443,11 +444,13 @@ namespace NewHorizons.Builder.Props
             var slidesCount = slides.Length;
             var slideCollection = new SlideCollection(slidesCount); // TODO: uh I think that info.slides[i].playTimeDuration is not being read here... note to self for when I implement support for that: 0.7 is what to default to if playTimeDuration turns out to be 0
             slideCollection.streamingAssetIdentifier = string.Empty; // NREs if null
+            
+            // no async image loading here because that happens later
 
             // attach a component to store all the data for the slides that play when a vision torch scans this target
             var target = visionTorchTargetGO.AddComponent<VisionTorchTarget>();
             var slideCollectionContainer = visionTorchTargetGO.AddComponent<NHSlideCollectionContainer>();
-            slideCollectionContainer.doAsyncLoading = false;
+            // slideCollectionContainer.doAsyncLoading = false;
             slideCollectionContainer.slideCollection = slideCollection;
             target.slideCollection = visionTorchTargetGO.AddComponent<MindSlideCollection>();
             target.slideCollection._slideCollectionContainer = slideCollectionContainer;
@@ -491,13 +494,13 @@ namespace NewHorizons.Builder.Props
             var slideCollection = new SlideCollection(slidesCount);
             slideCollection.streamingAssetIdentifier = string.Empty; // NREs if null
 
-            // this used to wait for image load, now it doesnt since we defer image loading until later
+            // this used to wait for image load, now it doesnt since we do the async image loading later
             mindSlideProjector.enabled = true;
             visionBeamEffect.SetActive(true);
 
             // Set up the containers for the slides
             var slideCollectionContainer = standingTorch.AddComponent<NHSlideCollectionContainer>();
-            slideCollectionContainer.doAsyncLoading = false;
+            // slideCollectionContainer.doAsyncLoading = false;
             slideCollectionContainer.slideCollection = slideCollection;
 
             var mindSlideCollection = standingTorch.AddComponent<MindSlideCollection>();
@@ -561,7 +564,6 @@ namespace NewHorizons.Builder.Props
                     }
                     if (loadRawImages || !cacheExists)
                     {
-                        // Used to then make cached stuff
                         imageLoader.PathsToLoad.Add((i, Path.Combine(Main.Instance.ModHelper.Manifest.ModFolderPath, "Assets/textures/blank_slide_reel.png")));
                     }
                 }
