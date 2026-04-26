@@ -390,25 +390,18 @@ namespace NewHorizons.Builder.Props
             SlideCollection slideCollection = new NHSlideCollection(slidesCount, mod, info.slides.Select(x => x.imagePath).ToArray());
             slideCollection.streamingAssetIdentifier = string.Empty; // NREs if null
 
-            var (invImageLoader, _, imageLoader) = StartAsyncLoader(mod, info.slides, ref slideCollection, true, false, false);
+            var (_, _, imageLoader) = StartAsyncLoader(mod, info.slides, ref slideCollection, false, false, false);
 
             // Autoprojector only uses the inverted images so the original can be destroyed if they are loaded (when creating the cached inverted images)
             imageLoader.deleteTexturesWhenDone = true;
 
-            if (invImageLoader != null)
-            {
-                // Loaded directly from cache
-                invImageLoader.imageLoadedEvent.AddListener((Texture2D tex, int index, string originalPath) =>
-                {
-                    slideCollection.slides[index]._image = tex;
-                });
-            }
-            else
-            {
+            // if image loader ever starts, that means we're doing cache stuff. load it from there
+            { 
                 // Create the inverted cache from existing images
                 imageLoader.imageLoadedEvent.AddListener((Texture2D tex, int index, string originalPath) =>
                 {
                     var time = DateTime.Now;
+                    // inverted slides will be loaded for the whole loop but its fine since this is only when generating cache
                     slideCollection.slides[index]._image = ImageUtilities.InvertSlideReel(mod, tex, originalPath);
                     NHLogger.LogVerbose($"Slide reel invert time {(DateTime.Now - time).TotalMilliseconds}ms");
                 });
@@ -450,14 +443,6 @@ namespace NewHorizons.Builder.Props
             var slidesCount = slides.Length;
             var slideCollection = new SlideCollection(slidesCount); // TODO: uh I think that info.slides[i].playTimeDuration is not being read here... note to self for when I implement support for that: 0.7 is what to default to if playTimeDuration turns out to be 0
             slideCollection.streamingAssetIdentifier = string.Empty; // NREs if null
-
-            var (_, _, imageLoader) = StartAsyncLoader(mod, info.slides, ref slideCollection, false, false, true);
-            imageLoader.imageLoadedEvent.AddListener((Texture2D tex, int index, string originalPath) =>
-            {
-                var time = DateTime.Now;
-                slideCollection.slides[index]._image = tex;
-                NHLogger.LogVerbose($"Slide reel set time {(DateTime.Now - time).TotalMilliseconds}ms");
-            });
 
             // attach a component to store all the data for the slides that play when a vision torch scans this target
             var target = visionTorchTargetGO.AddComponent<VisionTorchTarget>();
@@ -506,28 +491,9 @@ namespace NewHorizons.Builder.Props
             var slideCollection = new SlideCollection(slidesCount);
             slideCollection.streamingAssetIdentifier = string.Empty; // NREs if null
 
-            var (_, _, imageLoader) = StartAsyncLoader(mod, slides, ref slideCollection, false, false, true);
-
-            // This variable just lets us track how many of the slides have been loaded.
-            // This way as soon as the last one is loaded (due to async loading, this may be
-            // slide 7, or slide 3, or whatever), we can enable the vision torch. This allows us
-            // to avoid doing a "is every element in the array `slideCollection.slides` not null" check every time a texture finishes loading
-            int displaySlidesLoaded = 0;
-            imageLoader.imageLoadedEvent.AddListener(
-                (Texture2D tex, int index, string originalPath) =>
-                {
-                    var time = DateTime.Now;
-                    slideCollection.slides[index]._image = tex;
-
-                    displaySlidesLoaded++;
-                    if (displaySlidesLoaded == slides.Length)
-                    {
-                        mindSlideProjector.enabled = true;
-                        visionBeamEffect.SetActive(true);
-                    }
-                    NHLogger.LogVerbose($"Slide reel another set time {(DateTime.Now - time).TotalMilliseconds}ms");
-                }
-            );
+            // this used to wait for image load, now it doesnt since we defer image loading until later
+            mindSlideProjector.enabled = true;
+            visionBeamEffect.SetActive(true);
 
             // Set up the containers for the slides
             var slideCollectionContainer = standingTorch.AddComponent<NHSlideCollectionContainer>();
@@ -593,7 +559,7 @@ namespace NewHorizons.Builder.Props
                         // Load the inverted images used when displaying slide reels to a screen
                         invertedImageLoader.PathsToLoad.Add((i, Path.Combine(Main.Instance.ModHelper.Manifest.ModFolderPath, "Assets/textures/inverted_blank_slide_reel.png")));
                     }
-                    else if (!cacheExists || loadRawImages)
+                    if (loadRawImages || !cacheExists)
                     {
                         // Used to then make cached stuff
                         imageLoader.PathsToLoad.Add((i, Path.Combine(Main.Instance.ModHelper.Manifest.ModFolderPath, "Assets/textures/blank_slide_reel.png")));
@@ -601,12 +567,12 @@ namespace NewHorizons.Builder.Props
                 }
                 else
                 {
-                    if (cacheExists && useInvertedCache)
+                    if (useInvertedCache && cacheExists)
                     {
                         // Load the inverted images used when displaying slide reels to a screen
                         invertedImageLoader.PathsToLoad.Add((i, Path.Combine(mod.ModHelper.Manifest.ModFolderPath, InvertedSlideReelCacheFolder, slideInfo.imagePath)));
                     }
-                    if (!cacheExists || loadRawImages)
+                    if (loadRawImages || !cacheExists)
                     {
                         imageLoader.PathsToLoad.Add((i, Path.Combine(mod.ModHelper.Manifest.ModFolderPath, slideInfo.imagePath)));
                     }
