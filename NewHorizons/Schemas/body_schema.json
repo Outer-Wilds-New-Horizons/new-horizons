@@ -2736,6 +2736,14 @@
             "$ref": "#/definitions/NomaiTextArcInfo"
           }
         },
+        "computerCondition": {
+          "type": "string",
+          "description": "Turns this computer off when this dialogue condition is set, and back on when it is unset, or the other way around if `computerStartsOff` is true.\nOnly revelent when type is `computer` or `preCrashComputer`."
+        },
+        "computerStartsOff": {
+          "type": "boolean",
+          "description": "Makes this computer turned off by default so the player cannot read the text.\nOnly revelent when type is `computer` or `preCrashComputer`."
+        },
         "seed": {
           "type": "integer",
           "description": "The random seed used to pick what the text arcs will look like.",
