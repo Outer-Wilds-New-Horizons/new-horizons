@@ -1,36 +1,57 @@
 {
   "$schema": "https://raw.githubusercontent.com/outer-wilds-new-horizons/new-horizons/main/NewHorizons/Schemas/translation_schema.json",
   "DialogueDictionary": {
-    "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_1": "你的宇宙飞船现在已经装备了跃迁驱动！",
-    "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_2": "你可以使用宇宙飞船日志中的\"恒星际模式\"来将你的自动驾驶目标锁定到另一个星系。",
+    "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_1": "你的宇宙飞船现在已经装备了跃迁引擎！",
+    "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_2": "你可以使用宇宙飞船日志中的“恒星际模式”来将你的自动驾驶目标锁定到另一个星系。",
     "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_3": "之后只需要系好安全带并启动自动驾驶即可进行跃迁！"
   },
   "UIDictionary": {
-    "INSTALL_OUTER_WILDS_CHINESE_FONT_FIX": "在享受故事之前，建议安装Outer Wilds Chinese Fix这个Mod来解决缺字问题。",
+    "INSTALL_OUTER_WILDS_CHINESE_FONT_FIX": "在享受故事之前，建议安装Outer Wilds Chinese Fix这个Mod来解决字符缺失问题。",
     "INTERSTELLAR_MODE": "恒星际模式",
     "FREQ_STATUE": "挪麦雕像",
     "FREQ_WARP_CORE": "反引力推进",
     "FREQ_UNKNOWN": "???",
-    "ENGAGE_WARP_PROMPT": "将要跃迁到{0}",
+    "ENGAGE_WARP_PROMPT": "即将跃迁到{0}",
     "WARP_LOCKED": "自动驾驶目标：\n{0}",
     "LOCK_AUTOPILOT_WARP": "锁定自动驾驶目标到该星系",
     "RICH_PRESENCE_EXPLORING": "探索 {0}.",
     "RICH_PRESENCE_WARPING": "正在跃迁到 {0}.",
-    "OUTDATED_VERSION_WARNING": "警告\n\nNew Horizon模组只能工作在{0}或更高版本。你的当前版本是{1}。\n\n请更新你的游戏或卸载New Horizon模组",
+    "OUTDATED_VERSION_WARNING": "警告\nNew Horizon模组只能工作在{0}或更高版本。你的当前版本是{1}。\n请更新你的游戏或卸载New Horizon模组",
     "JSON_FAILED_TO_LOAD": "无效文件: {0}",
-    "DEBUG_RAYCAST": "投射",
+    "DEBUG_RAYCAST": "调试检测线",
     "DEBUG_PLACE": "放置对象",
     "DEBUG_PLACE_TEXT": "放置挪麦文字",
     "DEBUG_UNDO": "撤销",
-    "DEBUG_REDO": "重做",
-    "Vessel": "飞船"
+    "DEBUG_REDO": "撤销撤销",
+    "Vessel": "挪麦飞船",
+    "New Horizons 1.29.4 by xen, Bwc9876, JohnCorby, MegaPiggy, and friends": "New Horizons 1.29.4 作者：xen、Bwc9876、JohnCorby、MegaPiggy和朋友们",
+    "Custom Title Screen": "自定义标题图像",
+    "Display custom title screens from installed mods.": "显示已安装模组的自定义标题图像。",
+    "Use Legacy Star Chart Mode": "使用经典星图模式",
+    "Enable this if you prefer the classic card-based mode.": "若你偏好经典的卡片式星图模式，请启用此选项。",
+    "Warp Drive Visuals": "跃迁引擎显示效果",
+    "Disable this if you prefer no model on the ship for the warp drive.": "若你不希望飞船上显示跃迁引擎模型，请禁用此选项。",
+    "Debug": "调试模式",
+    "Enables the debug raycast, visible quantum object colliders, and debug options menu.": "启用调试检测线、量子物体碰撞体积可视化及调试选项菜单。",
+    "Visualize Quantum Objects": "显示量子物体轮廓",
+    "Draws boundaries around quantum objects when Debug mode is on.": "调试模式开启时为量子物体绘制边界框。",
+    "Visualize Bramble Volume Names": "显示荆棘空间名称",
+    "Adds a label to all custom spherical fog warp volumes and entrances/exits when Debug mode is on.": "调试模式开启时为所有自定义的球形荆棘空间及出入口添加标签。",
+    "Verbose Logs": "更详细的日志",
+    "Makes logs much more detailed. Useful when debugging.": "让日志内容变得更加详细。调试时很有用。",
+    "Sequential Pre-caching": "顺序预缓存",
+    "This is a debug option intended for mod creators. Prevents running out of memory when computing slide reel caches, but is slower and will cause in-game lag.": "此为面向模组创作者的调试选项。可避免计算幻灯片缓存时出现内存不足的情况，但游戏运行速度会变慢且会造成卡顿。",
+    "Default System Override": "强制设置默认星系",
+    "Forces the player to spawn in this system after death. Must match the unique name of a system, eg, xen.NewHorizonsExamples": "强制玩家死亡后在指定星系重生。必须匹配星系的唯一名称，例如xen.NewHorizonsExamples"
   },
+
   "OtherDictionary": {
-    "NOMAI_SHUTTLE_COMPUTER": "<![CDATA[<color=orange>穿梭机</color>]]>目前停泊在<![CDATA[<color=lightblue>{0}</color>]]>。",
+    "NOMAI_SHUTTLE_COMPUTER": "<![CDATA[<color=\"orange\">]]>航天飞机<![CDATA[</color>]]>目前停泊在<![CDATA[<color=lightblue>{0}</color>]]>上。",
     "UNKNOWN_LANGUAGE_UNTRANSLATED": "<!> 未翻译的未知文字 <!>",
     "KNOWN_LANGUAGE_UNTRANSLATED": "<!> 未翻译的{0}文字 <!>",
-    "LANGUAGE_NAME_GHOSTBIRD": "居民"
+    "LANGUAGE_NAME_GHOSTBIRD": "外星站居民"
   },
+
   "AchievementTranslations": {
     "NH_EATEN_OUTSIDE_BRAMBLE": {
       "Name": "收容失效",
@@ -54,7 +75,7 @@
     },
     "NH_VESSEL_WARP": {
       "Name": "有借无还",
-      "Description": "在飞船进行跃迁以到达别的星系。"
+      "Description": "用飞船进行跃迁以到达别的星系。"
     },
     "NH_RAFTING": {
       "Name": "木筏与激情",
