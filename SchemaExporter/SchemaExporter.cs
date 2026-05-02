@@ -98,30 +98,33 @@ public static class SchemaExporter
                     break;
             }
 
+            var any = JsonObjectType.Object |
+                      JsonObjectType.Array |
+                      JsonObjectType.String |
+                      JsonObjectType.Number |
+                      JsonObjectType.Integer |
+                      JsonObjectType.Boolean |
+                      JsonObjectType.Null;
+
+            var extrasProperty = new JsonSchemaProperty
+            {
+                Type = JsonObjectType.Object,
+                Description = "Extra data that may be used by extension mods",
+                AllowAdditionalProperties = true,
+                AdditionalPropertiesSchema = new JsonSchema
+                {
+                    Type = any
+                }
+            };
+
             if (_title is "Star System Schema" or "Celestial Body Schema" or "Addon Manifest Schema")
             {
-                schema.Properties["extras"] = new JsonSchemaProperty {
-                    Type = JsonObjectType.Object,
-                    Description = "Extra data that may be used by extension mods",
-                    AllowAdditionalProperties = true,
-                    AdditionalPropertiesSchema = new JsonSchema
-                    {
-                        Type = JsonObjectType.Object
-                    }
-                };
+                schema.Properties["extras"] = extrasProperty;
             }
 
             if (_title is "Title Screen Schema")
             {
-                schema.Definitions["TitleScreenInfo"].Properties["extras"] = new JsonSchemaProperty {
-                    Type = JsonObjectType.Object,
-                    Description = "Extra data that may be used by extension mods",
-                    AllowAdditionalProperties = true,
-                    AdditionalPropertiesSchema = new JsonSchema
-                    {
-                        Type = JsonObjectType.Object
-                    }
-                };
+                schema.Definitions["TitleScreenInfo"].Properties["extras"] = extrasProperty;
             }
 
             return schema;
