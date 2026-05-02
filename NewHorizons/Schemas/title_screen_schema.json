@@ -89,7 +89,15 @@
           "type": "object",
           "description": "Extra data that may be used by extension mods",
           "additionalProperties": {
-            "type": "object"
+            "type": [
+              "array",
+              "boolean",
+              "integer",
+              "null",
+              "number",
+              "object",
+              "string"
+            ]
           }
         }
       }
