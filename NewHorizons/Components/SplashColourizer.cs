@@ -54,6 +54,18 @@ public class SplashColourizer : MonoBehaviour
             CachePrefabs(_playerDetector = Locator.GetPlayerDetector().GetComponent<DynamicFluidDetector>());
             CachePrefabs(_shipDetector = Locator.GetShipDetector().GetComponent<ShipFluidDetector>());
             CachePrefabs(_probeDetector = Locator.GetProbe().GetDetectorObject().GetComponent<ProbeFluidDetector>());
+
+            GlobalMessenger<SurveyorProbe>.AddListener("RetrieveProbe", OnRetrieveProbe);
+
+            // Check if player/ship are already inside
+            if ((_playerDetector.transform.position - transform.position).magnitude < _radius)
+            {
+                SetSplashEffects(_playerDetector, true);
+            }
+            if ((_shipDetector.transform.position - transform.position).magnitude < _radius)
+            {
+                SetSplashEffects(_shipDetector, true);
+            }
         });
     }
 
@@ -84,21 +96,6 @@ public class SplashColourizer : MonoBehaviour
             colourizer._cloudColour = cloud;
             colourizer._plasmaColour = plasma;
             colourizer._sandColour = sand;
-        }
-    }
-
-    public void Start()
-    {
-        GlobalMessenger<SurveyorProbe>.AddListener("RetrieveProbe", OnRetrieveProbe);
-
-        // Check if player/ship are already inside
-        if ((_playerDetector.transform.position - transform.position).magnitude < _radius)
-        {
-            SetSplashEffects(_playerDetector, true);
-        }
-        if ((_shipDetector.transform.position - transform.position).magnitude < _radius)
-        {
-            SetSplashEffects(_shipDetector, true);
         }
     }
 
