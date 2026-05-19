@@ -50,13 +50,17 @@ public class SplashColourizer : MonoBehaviour
         // Ideally we'd cache once staticly on scene load but that sounds annoying
         Delay.FireOnNextUpdate(() =>
         {
-            // Cache all prefabs
+            // Cache all prefabs (must happen after detector initializes)
             CachePrefabs(_playerDetector = Locator.GetPlayerDetector().GetComponent<DynamicFluidDetector>());
             CachePrefabs(_shipDetector = Locator.GetShipDetector().GetComponent<ShipFluidDetector>());
             CachePrefabs(_probeDetector = Locator.GetProbe().GetDetectorObject().GetComponent<ProbeFluidDetector>());
 
             GlobalMessenger<SurveyorProbe>.AddListener("RetrieveProbe", OnRetrieveProbe);
+        });
 
+        // Must happen after all colourizers initialized
+        Delay.FireInNUpdates(() =>
+        {
             // Check if player/ship are already inside
             if ((_playerDetector.transform.position - transform.position).magnitude < _radius)
             {
@@ -66,7 +70,7 @@ public class SplashColourizer : MonoBehaviour
             {
                 SetSplashEffects(_shipDetector, true);
             }
-        });
+        }, 2);
     }
 
     public static void Make(GameObject planet, PlanetConfig config, float soi)
