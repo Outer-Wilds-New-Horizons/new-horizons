@@ -45,6 +45,16 @@ public class SplashColourizer : MonoBehaviour
 
         _prefabHolder = new GameObject("Prefabs");
         _prefabHolder.SetActive(false);
+
+        // Force next frame and not on Start in case the game object is inactive which can cause very late initialization
+        // Ideally we'd cache once staticly on scene load but that sounds annoying
+        Delay.FireOnNextUpdate(() =>
+        {
+            // Cache all prefabs
+            CachePrefabs(_playerDetector = Locator.GetPlayerDetector().GetComponent<DynamicFluidDetector>());
+            CachePrefabs(_shipDetector = Locator.GetShipDetector().GetComponent<ShipFluidDetector>());
+            CachePrefabs(_probeDetector = Locator.GetProbe().GetDetectorObject().GetComponent<ProbeFluidDetector>());
+        });
     }
 
     public static void Make(GameObject planet, PlanetConfig config, float soi)
@@ -79,11 +89,6 @@ public class SplashColourizer : MonoBehaviour
 
     public void Start()
     {
-        // Cache all prefabs
-        CachePrefabs(_playerDetector = Locator.GetPlayerDetector().GetComponent<DynamicFluidDetector>());
-        CachePrefabs(_shipDetector = Locator.GetShipDetector().GetComponent<ShipFluidDetector>());
-        CachePrefabs(_probeDetector = Locator.GetProbe().GetDetectorObject().GetComponent<ProbeFluidDetector>());
-
         GlobalMessenger<SurveyorProbe>.AddListener("RetrieveProbe", OnRetrieveProbe);
 
         // Check if player/ship are already inside
