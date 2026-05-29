@@ -5598,7 +5598,7 @@
         },
         "hasStarController": {
           "type": "boolean",
-          "description": "Should we add a star controller to this body? If you want clouds to work on a binary brown dwarf system, set this to false.",
+          "description": "The StarController component is used to calculate atmospheric shaders (e.g., sunrise/sunset and) on planets.\nWhen there are multiple stars in a system, the closest and brightest one to the player is used to calculate these.\nSometimes you do not want a StarController, say if the star is within clouds or an atmosphere or is meant to be overpowered by a brighter star.\nIn those instances, set this to False. An atmosphere which has shaders enabled with a star inside it will appear bugged.",
           "default": true
         },
         "hasAtmosphere": {
