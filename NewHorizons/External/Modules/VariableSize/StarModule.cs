@@ -28,7 +28,10 @@ namespace NewHorizons.External.Modules.VariableSize
         public float lifespan = 22f;
 
         /// <summary>
-        /// Should we add a star controller to this body? If you want clouds to work on a binary brown dwarf system, set this to false.
+        /// The StarController component is used to calculate atmospheric shaders (e.g., sunrise/sunset and) on planets.
+        /// When there are multiple stars in a system, the closest and brightest one to the player is used to calculate these.
+        /// Sometimes you do not want a StarController, say if the star is within clouds or an atmosphere or is meant to be overpowered by a brighter star.
+        /// In those instances, set this to False. An atmosphere which has shaders enabled with a star inside it will appear bugged.
         /// </summary>
         [DefaultValue(true)] public bool hasStarController = true;
 
