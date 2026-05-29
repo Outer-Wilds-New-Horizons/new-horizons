@@ -52,7 +52,7 @@ If you later decide you want to use custom scripts, follow the guide below for u
 
 If you'd like the ability to use custom scripts, then you'll want to make a typical Outer Wilds mod while making sure to include support for New Horizons. This will require Visual Studio and is a little more complicated, but will give you far more power over your mod.
 
-Follow the [OWML Getting Started Guide](https://owml.outerwildsmods.com/guides/getting_started.html). However, when following the project creation wizard, make sure to tick the "Use New Horizons" checkbox when it shows up.
+Follow the [OWML Getting Started Guide](https://owml.outerwildsmods.com/guides/getting-started/). However, when following the project creation wizard, make sure to tick the "Use New Horizons" checkbox when it shows up.
 
 ## Adding New Horizons to an existing mod
 
