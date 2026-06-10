@@ -90,6 +90,7 @@ Translation credits:
 -   French: xen
 -   Japanese: TRSasasusu
 -   Portuguese: avengerx, loco-choco
+-   Chinese: SanBaiMing
 
 New Horizons was based off [Marshmallow](https://github.com/misternebula/Marshmallow) made by:
 
