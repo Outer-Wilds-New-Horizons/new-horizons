@@ -169,7 +169,15 @@
       "type": "object",
       "description": "Extra data that may be used by extension mods",
       "additionalProperties": {
-        "type": "object"
+        "type": [
+          "array",
+          "boolean",
+          "integer",
+          "null",
+          "number",
+          "object",
+          "string"
+        ]
       }
     },
     "$schema": {
@@ -667,6 +675,12 @@
           "description": "A scale height used for a number of things. Should be the approximate radius of the body.\n\nAffected settings include: Base sector size, proxy body scaling, surface gravity",
           "format": "float"
         },
+        "gravityVolumeLayer": {
+          "type": "integer",
+          "description": "Optional. The layer of the gravity volume.\n\nLayers separate the priority system. The priority of volumes in one layer will not affect or override volumes in another. The highest priority volume in each layer will stack like normal.\nThe exception is layer 0. A higher-priority volume in layer 0 will override lower-priority volumes in ALL other layers. A lower-priority volume in layer 0 will stack with other layers like normal.\n            \nEx: A player could be affected by the sun on layer 9 priority 0 and planet gravity on layer 3 priority 2. They would experience the gravity of both volumes since they are on different layers.\nIf there was a zero-g volume on layer 0 priority 1, since it is on layer 0 it will override the gravity from the sun (priority 0 which is less than 1) but they will still feel the \ngravity of the planet (priority 2 is greater than 1). The zero-g volume will also still be applied because it is on a different layer.\n            \nDefault value here is 3 which is planet gravity.",
+          "format": "int32",
+          "default": 3
+        },
         "gravityVolumePriority": {
           "type": "integer",
           "description": "Optional. You can force this planet's gravity to be felt over other gravity/zero-gravity sources by increasing this number.",
@@ -1023,11 +1037,11 @@
         },
         "activationCondition": {
           "type": "string",
-          "description": "Activates this game object when the dialogue condition is met"
+          "description": "Activates this game object when the dialogue/persistent condition is met"
         },
         "deactivationCondition": {
           "type": "string",
-          "description": "Deactivates this game object when the dialogue condition is met"
+          "description": "Deactivates this game object when the dialogue/persistent condition is met"
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -1679,11 +1693,11 @@
         },
         "activationCondition": {
           "type": "string",
-          "description": "Activates this game object when the dialogue condition is met"
+          "description": "Activates this game object when the dialogue/persistent condition is met"
         },
         "deactivationCondition": {
           "type": "string",
-          "description": "Deactivates this game object when the dialogue condition is met"
+          "description": "Deactivates this game object when the dialogue/persistent condition is met"
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -1799,11 +1813,11 @@
         },
         "activationCondition": {
           "type": "string",
-          "description": "Activates this game object when the dialogue condition is met"
+          "description": "Activates this game object when the dialogue/persistent condition is met"
         },
         "deactivationCondition": {
           "type": "string",
-          "description": "Deactivates this game object when the dialogue condition is met"
+          "description": "Deactivates this game object when the dialogue/persistent condition is met"
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -1968,7 +1982,7 @@
           "format": "int32",
           "default": 204,
           "maximum": 2000.0,
-          "minimum": 4.0
+          "minimum": 16.0
         },
         "textureMap": {
           "type": "string",
@@ -2490,11 +2504,11 @@
         },
         "activationCondition": {
           "type": "string",
-          "description": "Activates this game object when the dialogue condition is met"
+          "description": "Activates this game object when the dialogue/persistent condition is met"
         },
         "deactivationCondition": {
           "type": "string",
-          "description": "Deactivates this game object when the dialogue condition is met"
+          "description": "Deactivates this game object when the dialogue/persistent condition is met"
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -2730,6 +2744,14 @@
             "$ref": "#/definitions/NomaiTextArcInfo"
           }
         },
+        "computerCondition": {
+          "type": "string",
+          "description": "Turns this computer off when this dialogue condition is set, and back on when it is unset, or the other way around if `computerStartsOff` is true.\nOnly revelent when type is `computer` or `preCrashComputer`."
+        },
+        "computerStartsOff": {
+          "type": "boolean",
+          "description": "Makes this computer turned off by default so the player cannot read the text.\nOnly revelent when type is `computer` or `preCrashComputer`."
+        },
         "seed": {
           "type": "integer",
           "description": "The random seed used to pick what the text arcs will look like.",
@@ -2950,11 +2972,11 @@
         },
         "activationCondition": {
           "type": "string",
-          "description": "Activates this game object when the dialogue condition is met"
+          "description": "Activates this game object when the dialogue/persistent condition is met"
         },
         "deactivationCondition": {
           "type": "string",
-          "description": "Deactivates this game object when the dialogue condition is met"
+          "description": "Deactivates this game object when the dialogue/persistent condition is met"
         }
       }
     },
@@ -4345,11 +4367,11 @@
         },
         "activationCondition": {
           "type": "string",
-          "description": "Activates this game object when the dialogue condition is met"
+          "description": "Activates this game object when the dialogue/persistent condition is met"
         },
         "deactivationCondition": {
           "type": "string",
-          "description": "Deactivates this game object when the dialogue condition is met"
+          "description": "Deactivates this game object when the dialogue/persistent condition is met"
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -5576,7 +5598,7 @@
         },
         "hasStarController": {
           "type": "boolean",
-          "description": "Should we add a star controller to this body? If you want clouds to work on a binary brown dwarf system, set this to false.",
+          "description": "The StarController component is used to calculate atmospheric shaders (e.g., sunrise/sunset and) on planets.\nWhen there are multiple stars in a system, the closest and brightest one to the player is used to calculate these.\nSometimes you do not want a StarController, say if the star is within clouds or an atmosphere or is meant to be overpowered by a brighter star.\nIn those instances, set this to False. An atmosphere which has shaders enabled with a star inside it will appear bugged.",
           "default": true
         },
         "hasAtmosphere": {
@@ -5961,6 +5983,13 @@
           "description": "Add notification volumes to this planet.\nSends a notification to the player just like ghost matter does when you get too close\nand also to the ship just like when you damage a component on the ship.",
           "items": {
             "$ref": "#/definitions/NotificationVolumeInfo"
+          }
+        },
+        "quantumToggleVolumes": {
+          "type": "array",
+          "description": "Add quantum toggle volumes to this planet.\nToggles the ability for specified quantum objects to change their quantum state when entering the volume.",
+          "items": {
+            "$ref": "#/definitions/QuantumToggleVolumeInfo"
           }
         },
         "oxygenVolumes": {
@@ -7480,6 +7509,70 @@
           "description": "The duration this notification will be displayed.",
           "format": "float",
           "default": 5.0
+        }
+      }
+    },
+    "QuantumToggleVolumeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume, if a shape is not specified.",
+          "format": "float",
+          "default": 1.0
+        },
+        "shape": {
+          "description": "The shape of this volume. Defaults to a sphere with a radius of `radius` if not specified.",
+          "$ref": "#/definitions/ShapeInfo"
+        },
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "quantumObjects": {
+          "type": "array",
+          "description": "Path to the quantum objects to toggle when entering the volume.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "invert": {
+          "type": "boolean",
+          "description": "Invert the toggle so it starts on but turns off when entering volume.",
+          "default": false
+        },
+        "undoOnExit": {
+          "type": "boolean",
+          "description": "Whether exiting the volume will undo the toggle that happened when entering it.",
+          "default": true
         }
       }
     },

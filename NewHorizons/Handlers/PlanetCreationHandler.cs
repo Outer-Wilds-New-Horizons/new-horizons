@@ -783,7 +783,7 @@ namespace NewHorizons.Handlers
             SplashColourizer.Make(go, body.Config, sphereOfInfluence);
 
             // We allow removing children afterwards so you can also take bits off of the modules you used
-            if (body.Config.removeChildren != null) RemoveChildren(go, body);
+            if (body.Config.removeChildren != null) go.RemoveChildren(body.Config.removeChildren, true);
 
             return go;
         }
@@ -1010,28 +1010,6 @@ namespace NewHorizons.Handlers
             if (distanceToCenter > SolarSystemRadius && trackForSolarSystemRadius)
             {
                 SolarSystemRadius = distanceToCenter;
-            }
-        }
-
-        private static void RemoveChildren(GameObject go, NewHorizonsBody body)
-        {
-            foreach (var childPath in body.Config.removeChildren)
-            {
-                var flag = true;
-                foreach (var childObj in go.transform.FindAll(childPath))
-                {
-                    flag = false;
-                    // idk why we wait here but we do
-                    Delay.FireInNUpdates(() =>
-                    {
-                        if (childObj != null && childObj.gameObject != null)
-                        {
-                            childObj.gameObject.SetActive(false);
-                        }
-                    }, 2);
-                }
-
-                if (flag) NHLogger.LogWarning($"Couldn't find \"{childPath}\".");
             }
         }
     }

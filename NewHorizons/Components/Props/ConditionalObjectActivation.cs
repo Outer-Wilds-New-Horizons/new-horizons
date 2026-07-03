@@ -9,7 +9,7 @@ namespace NewHorizons.Components.Props
         private bool _playerAwake, _playerDoneAwake;
 
         public GameObject GameObject;
-        public string DialogueCondition;
+        public string Condition;
         public bool CloseEyes;
         public bool SetActiveWithCondition;
 
@@ -19,12 +19,13 @@ namespace NewHorizons.Components.Props
 
         public static void SetUp(GameObject go, string condition, bool closeEyes, bool setActiveWithCondition)
         {
+            var titleScreenOrPostCredits = LoadManager.GetCurrentScene() is OWScene.TitleScreen or OWScene.PostCreditsScene;
             var conditionalObjectActivationGO = new GameObject($"{go.name}_{condition}");
             var component = conditionalObjectActivationGO.AddComponent<ConditionalObjectActivation>();
             component.transform.parent = go.transform.parent;
             component.GameObject = go;
-            component.DialogueCondition = condition;
-            component.CloseEyes = closeEyes;
+            component.Condition = condition;
+            component.CloseEyes = titleScreenOrPostCredits ? false : closeEyes;
             component.SetActiveWithCondition = setActiveWithCondition;
         }
 
@@ -34,9 +35,16 @@ namespace NewHorizons.Components.Props
             Delay.FireOnNextUpdate(LateStart);
         }
 
+        public static bool GetConditionState(string condition)
+        {
+            return DialogueConditionManager.SharedInstance.GetConditionState(condition) || PlayerData.GetPersistentCondition(condition);
+        }
+
+        public bool GetConditionState() => GetConditionState(Condition);
+
         private void LateStart()
         {
-            var currentConditionState = DialogueConditionManager.SharedInstance.GetConditionState(DialogueCondition);
+            var currentConditionState = GetConditionState();
 
             // Would just call OnDialogueConditionChanged but maybe theres an activator and deactivator for this object so we have to be more careful
             if (SetActiveWithCondition && !currentConditionState) GameObject.SetActive(false);
@@ -46,7 +54,8 @@ namespace NewHorizons.Components.Props
         public void Awake()
         {
             if (_playerCameraEffectController == null) _playerCameraEffectController = GameObject.FindObjectOfType<PlayerCameraEffectController>();
-            GlobalMessenger<string, bool>.AddListener("DialogueConditionChanged", OnDialogueConditionChanged);
+            GlobalMessenger<string, bool>.AddListener("DialogueConditionChanged", OnConditionChanged);
+            GlobalMessenger<string, bool>.AddListener("NHPersistentConditionChanged", OnConditionChanged);
             GlobalMessenger.AddListener("ExitConversation", OnExitConversation);
             GlobalMessenger.AddListener("EnterConversation", OnEnterConversation);
             GlobalMessenger.AddListener("WakeUp", OnWakeUp);
@@ -54,7 +63,8 @@ namespace NewHorizons.Components.Props
 
         public void OnDestroy()
         {
-            GlobalMessenger<string, bool>.RemoveListener("DialogueConditionChanged", OnDialogueConditionChanged);
+            GlobalMessenger<string, bool>.RemoveListener("DialogueConditionChanged", OnConditionChanged);
+            GlobalMessenger<string, bool>.RemoveListener("NHPersistentConditionChanged", OnConditionChanged);
             GlobalMessenger.RemoveListener("ExitConversation", OnExitConversation);
             GlobalMessenger.RemoveListener("EnterConversation", OnEnterConversation);
             GlobalMessenger.RemoveListener("WakeUp", OnWakeUp);
@@ -81,7 +91,7 @@ namespace NewHorizons.Components.Props
             _inConversation = false;
             if (_changeConditionOnExitConversation)
             {
-                OnDialogueConditionChanged(DialogueCondition, DialogueConditionManager.SharedInstance.GetConditionState(DialogueCondition));
+                UpdateActive();
                 _changeConditionOnExitConversation = false;
             }
         }
@@ -91,18 +101,25 @@ namespace NewHorizons.Components.Props
             _inConversation = true;
         }
 
-        public void OnDialogueConditionChanged(string condition, bool state)
+        public void OnConditionChanged(string condition, bool state) => OnConditionChanged(condition);
+
+        public void OnConditionChanged(string condition)
         {
-            if (condition == DialogueCondition)
+            if (condition == Condition)
             {
-                if (_inConversation)
-                {
-                    _changeConditionOnExitConversation = true;
-                }
-                else
-                {
-                    SetActive(SetActiveWithCondition == state);
-                }
+                UpdateActive();
+            }
+        }
+
+        public void UpdateActive()
+        {
+            if (_inConversation)
+            {
+                _changeConditionOnExitConversation = true;
+            }
+            else
+            {
+                SetActive(SetActiveWithCondition == GetConditionState());
             }
         }
 
