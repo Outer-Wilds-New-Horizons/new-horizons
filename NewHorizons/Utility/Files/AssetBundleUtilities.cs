@@ -37,6 +37,7 @@ namespace NewHorizons.Utility.Files
 
         public static void ClearCache()
         {
+            NHLogger.Log("Clearing bundle cache.");
             foreach (var pair in AssetBundles)
             {
                 if (!pair.Value.keepLoaded)
@@ -48,11 +49,32 @@ namespace NewHorizons.Utility.Files
                     else
                     {
                         pair.Value.bundle.Unload(true);
+                        NHLogger.Log($"Unloaded asset bundle {pair.Key}");
                     }
                 }
-
             }
+
             AssetBundles = AssetBundles.Where(x => x.Value.keepLoaded).ToDictionary(x => x.Key, x => x.Value);
+            _prefabCache.Clear();
+        }
+
+        public static void UnloadAllBundles()
+        {
+            NHLogger.Log("Unloading all bundles.");
+            foreach (var pair in AssetBundles)
+            {
+                if (pair.Value.bundle == null)
+                {
+                    NHLogger.LogError($"The asset bundle for {pair.Key} was null when trying to unload");
+                }
+                else
+                {
+                    pair.Value.bundle.Unload(true);
+                    NHLogger.Log($"Unloaded asset bundle {pair.Key}");
+                }
+            }
+
+            AssetBundles.Clear();
             _prefabCache.Clear();
         }
 
@@ -76,31 +98,38 @@ namespace NewHorizons.Utility.Files
         /// </summary>
         public static bool AreRequiredAssetsLoaded() => _loadingBundles.Count == 0;
 
-        public static T Load<T>(string assetBundleRelativeDir, string pathInBundle, IModBehaviour mod) where T : UnityEngine.Object
+        public static AssetBundle LoadBundle(string assetBundleRelativeDir, IModBehaviour mod, bool keepLoaded = false)
         {
             string key = Path.GetFileName(assetBundleRelativeDir);
+            AssetBundle bundle;
+
+            if (AssetBundles.ContainsKey(key))
+            {
+                bundle = AssetBundles[key].bundle;
+            }
+            else
+            {
+                var completePath = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, assetBundleRelativeDir);
+                bundle = AssetBundle.LoadFromFile(completePath);
+                if (bundle == null)
+                {
+                    NHLogger.LogError($"Couldn't load AssetBundle at [{completePath}] for [{mod.ModHelper.Manifest.Name}]");
+                    return null;
+                }
+
+                AssetBundles[key] = (bundle, keepLoaded);
+            }
+
+            return bundle;
+        }
+
+        public static T Load<T>(string assetBundleRelativeDir, string pathInBundle, IModBehaviour mod) where T : UnityEngine.Object
+        {
             T obj;
 
             try
             {
-                AssetBundle bundle;
-
-                if (AssetBundles.ContainsKey(key))
-                {
-                    bundle = AssetBundles[key].bundle;
-                }
-                else
-                {
-                    var completePath = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, assetBundleRelativeDir);
-                    bundle = AssetBundle.LoadFromFile(completePath);
-                    if (bundle == null)
-                    {
-                        NHLogger.LogError($"Couldn't load AssetBundle at [{completePath}] for [{mod.ModHelper.Manifest.Name}]");
-                        return null;
-                    }
-
-                    AssetBundles[key] = (bundle, false);
-                }
+                AssetBundle bundle = LoadBundle(assetBundleRelativeDir, mod);
 
                 obj = bundle.LoadAsset<T>(pathInBundle);
             }

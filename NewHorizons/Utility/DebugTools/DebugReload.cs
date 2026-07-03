@@ -31,6 +31,8 @@ namespace NewHorizons.Utility.DebugTools
 
             Main.Instance.ResetConfigs();
 
+            AssetBundleUtilities.UnloadAllBundles();
+
             try
             {
                 foreach (IModBehaviour mountedAddon in Main.MountedAddons)
