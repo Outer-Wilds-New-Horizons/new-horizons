@@ -189,9 +189,7 @@ namespace NewHorizons.Builder.Props
                         // Same for translator text
                         if (isFromAssetBundle && component is NomaiText nomaiText)
                         {
-                            NHLogger.LogError("HELLO DID IT WORKED?!?!?!");
                             TranslatorTextBuilder.HandleUnityCreatedNomaiText(nomaiText);
-                            NHLogger.LogError("ERM IT SHOULD HAVE");
                         }
 
                         // copied details need their lanterns fixed
