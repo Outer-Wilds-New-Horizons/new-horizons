@@ -2,6 +2,7 @@ using NewHorizons.Handlers;
 using NewHorizons.Utility.Files;
 using NewHorizons.Utility.Geometry;
 using NewHorizons.Utility.OWML;
+using System.Globalization;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -144,7 +145,12 @@ namespace NewHorizons.Utility.DebugTools
             }
         }
 
-        internal string Vector3ToString(Vector3 v) => $"{{\"x\": {v.x}, \"y\": {v.y}, \"z\": {v.z}}}";
+        internal string Vector3ToString(Vector3 v)
+        {
+            static string DecimalString(float f) => f.ToString(CultureInfo.InvariantCulture);
+
+            return $"{{\"x\": {DecimalString(v.x)}, \"y\": {DecimalString(v.y)}, \"z\": {DecimalString(v.z)}}}";
+        } 
 
         private void DestroyDebugSpheres()
         {
