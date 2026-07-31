@@ -74,6 +74,8 @@ namespace NewHorizons.Builder.Props
             var gravityCannonController = gravityCannonObject.GetComponent<GravityCannonController>();
             var id = ShuttleHandler.GetShuttleID(info.shuttleID);
             gravityCannonController._shuttleID = id;
+            // QM gravity cannon shuttle socket is placed facing the wrong way so we rotate around #1153
+            gravityCannonController._shuttleSocket.Rotate(0f, 180f, 0f, Space.Self);
 
             // Gravity controller checks string length instead of isnullorempty
             gravityCannonController._retrieveShipLogFact = info.retrieveReveal ?? string.Empty;
