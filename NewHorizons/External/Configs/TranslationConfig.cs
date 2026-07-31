@@ -9,22 +9,22 @@ namespace NewHorizons.External.Configs
     public class TranslationConfig
     {
         /// <summary>
-        /// Translation table for dialogue
+        /// Translation table for dialogue and Nomai text.
         /// </summary>
         public Dictionary<string, string> DialogueDictionary;
 
         /// <summary>
-        /// Translation table for Ship Log (entries, facts, etc)
+        /// Translation table for Ship Log (entries, facts, etc).
         /// </summary>
         public Dictionary<string, string> ShipLogDictionary;
 
         /// <summary>
-        /// Translation table for UI elements
+        /// Translation table for UI elements e.g., item names, planet names, HUD notification. Basically anything that is not dialogue, Nomai text, or ship logs.
         /// </summary>
         public Dictionary<string, string> UIDictionary;
 
         /// <summary>
-        /// Translation table for other text, will be taken verbatim without correcting CDATA
+        /// Translation table for other text, will be taken verbatim without correcting CDATA. This is meant only for use in your custom code with the GetTranslationForOtherText API method.
         /// </summary>
         public Dictionary<string, string> OtherDictionary;
 
