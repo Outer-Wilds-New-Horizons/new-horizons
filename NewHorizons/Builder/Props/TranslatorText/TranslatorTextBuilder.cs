@@ -782,5 +782,21 @@ namespace NewHorizons.Builder.Props.TranslatorText
                 TranslationHandler.AddDialogue(text);
             }
         }
+
+        public static void HandleUnityCreatedNomaiText(NomaiText nomaiText)
+        {
+            string xml = OWUtilities.RemoveByteOrderMark(nomaiText._nomaiTextAsset);
+            XmlDocument xmlDocument = new XmlDocument();
+            xmlDocument.LoadXml(xml);
+            XmlNode xmlNode = xmlDocument.SelectSingleNode("NomaiObject");
+            XmlNodeList xmlNodeList = xmlNode.SelectNodes("TextBlock");
+
+            foreach (object obj in xmlNodeList)
+            {
+                XmlNode xmlNode2 = (XmlNode)obj;
+                var text = xmlNode2.SelectSingleNode("Text").InnerText;
+                TranslationHandler.AddDialogue(text);
+            }
+        }
     }
 }

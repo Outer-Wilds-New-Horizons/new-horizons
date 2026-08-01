@@ -6,28 +6,28 @@
   "properties": {
     "DialogueDictionary": {
       "type": "object",
-      "description": "Translation table for dialogue",
+      "description": "Translation table for dialogue and Nomai text.",
       "additionalProperties": {
         "type": "string"
       }
     },
     "ShipLogDictionary": {
       "type": "object",
-      "description": "Translation table for Ship Log (entries, facts, etc)",
+      "description": "Translation table for Ship Log (entries, facts, etc).",
       "additionalProperties": {
         "type": "string"
       }
     },
     "UIDictionary": {
       "type": "object",
-      "description": "Translation table for UI elements",
+      "description": "Translation table for UI elements e.g., item names, planet names, HUD notification. Basically anything that is not dialogue, Nomai text, or ship logs.",
       "additionalProperties": {
         "type": "string"
       }
     },
     "OtherDictionary": {
       "type": "object",
-      "description": "Translation table for other text, will be taken verbatim without correcting CDATA",
+      "description": "Translation table for other text, will be taken verbatim without correcting CDATA. This is meant only for use in your custom code with the GetTranslationForOtherText API method.",
       "additionalProperties": {
         "type": "string"
       }

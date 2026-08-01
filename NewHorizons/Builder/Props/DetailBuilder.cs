@@ -1,4 +1,5 @@
 using NewHorizons.Builder.General;
+using NewHorizons.Builder.Props.TranslatorText;
 using NewHorizons.Components;
 using NewHorizons.Components.Orbital;
 using NewHorizons.Components.Props;
@@ -12,6 +13,7 @@ using OWML.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -183,6 +185,11 @@ namespace NewHorizons.Builder.Props
                         if (isFromAssetBundle && component is CharacterDialogueTree dialogue)
                         {
                             DialogueBuilder.HandleUnityCreatedDialogue(dialogue);
+                        }
+                        // Same for translator text
+                        if (isFromAssetBundle && component is NomaiText nomaiText)
+                        {
+                            TranslatorTextBuilder.HandleUnityCreatedNomaiText(nomaiText);
                         }
 
                         // copied details need their lanterns fixed
