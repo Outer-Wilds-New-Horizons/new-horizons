@@ -350,12 +350,14 @@ namespace NewHorizons
             // Caches of other assets only have to be cleared if we changed star systems
             if (ForceClearCaches || CurrentStarSystem != _previousStarSystem)
             {
+                var shouldClearPreloadedBundles = ForceClearCaches;
+
                 ForceClearCaches = false;
                 
                 NHLogger.Log($"Changing star system from {_previousStarSystem} to {CurrentStarSystem} - Clearing system-specific caches!");
                 ImageUtilities.ClearCache();
                 AudioUtilities.ClearCache();
-                AssetBundleUtilities.ClearCache();
+                AssetBundleUtilities.ClearCache(shouldClearPreloadedBundles);
                 ProcGenBuilder.ClearCache();
             }
 

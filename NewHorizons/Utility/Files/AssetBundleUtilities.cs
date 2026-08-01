@@ -35,11 +35,11 @@ namespace NewHorizons.Utility.Files
             return bundle;
         }
 
-        public static void ClearCache()
+        public static void ClearCache(bool clearKeepLoaded = false)
         {
             foreach (var pair in AssetBundles)
             {
-                if (!pair.Value.keepLoaded)
+                if (!pair.Value.keepLoaded || clearKeepLoaded)
                 {
                     if (pair.Value.bundle == null)
                     {
@@ -52,7 +52,14 @@ namespace NewHorizons.Utility.Files
                 }
 
             }
-            AssetBundles = AssetBundles.Where(x => x.Value.keepLoaded).ToDictionary(x => x.Key, x => x.Value);
+            if (clearKeepLoaded)
+            {
+                AssetBundles.Clear();
+            }
+            else
+            {
+                AssetBundles = AssetBundles.Where(x => x.Value.keepLoaded).ToDictionary(x => x.Key, x => x.Value);
+            }
             _prefabCache.Clear();
         }
 
