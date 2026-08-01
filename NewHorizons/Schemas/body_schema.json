@@ -881,7 +881,7 @@
       "properties": {
         "radius": {
           "type": "number",
-          "description": "Radius of the cloaking field around the planet. For the Stranger this is 3000",
+          "description": "Radius of the cloaking field around the planet. For the Stranger this is 3000. \nWhen using the default proportional values, the cloak should be 6x larger than the object it's hiding in order to work nicely.",
           "format": "float"
         },
         "cloakScaleDist": {
