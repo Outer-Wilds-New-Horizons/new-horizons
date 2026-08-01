@@ -67,6 +67,10 @@
       "description": "Base Properties of this Body",
       "$ref": "#/definitions/BaseModule"
     },
+    "Gravity": {
+      "description": "Gravity-related settings for this body. New in modular config: holds gravity surface, size, falloff, etc.",
+      "$ref": "#/definitions/GravityModule"
+    },
     "Bramble": {
       "description": "Add bramble nodes to this planet and/or make this planet a bramble dimension",
       "$ref": "#/definitions/BrambleModule"
@@ -657,35 +661,10 @@
           "description": "An override for the radius of the planet's gravitational sphere of influence. Optional",
           "format": "float"
         },
-        "surfaceGravity": {
-          "type": "number",
-          "description": "The acceleration due to gravity felt as the surfaceSize. Timber Hearth has 12 for reference",
-          "format": "float"
-        },
         "surfaceSize": {
           "type": "number",
           "description": "A scale height used for a number of things. Should be the approximate radius of the body.\n\nAffected settings include: Base sector size, proxy body scaling, surface gravity",
           "format": "float"
-        },
-        "gravityVolumeLayer": {
-          "type": "integer",
-          "description": "Optional. The layer of the gravity volume.\n\nLayers separate the priority system. The priority of volumes in one layer will not affect or override volumes in another. The highest priority volume in each layer will stack like normal.\nThe exception is layer 0. A higher-priority volume in layer 0 will override lower-priority volumes in ALL other layers. A lower-priority volume in layer 0 will stack with other layers like normal.\n            \nEx: A player could be affected by the sun on layer 9 priority 0 and planet gravity on layer 3 priority 2. They would experience the gravity of both volumes since they are on different layers.\nIf there was a zero-g volume on layer 0 priority 1, since it is on layer 0 it will override the gravity from the sun (priority 0 which is less than 1) but they will still feel the \ngravity of the planet (priority 2 is greater than 1). The zero-g volume will also still be applied because it is on a different layer.\n            \nDefault value here is 3 which is planet gravity.",
-          "format": "int32",
-          "default": 3
-        },
-        "gravityVolumePriority": {
-          "type": "integer",
-          "description": "Optional. You can force this planet's gravity to be felt over other gravity/zero-gravity sources by increasing this number.",
-          "format": "int32",
-          "default": 0
-        },
-        "gravityAlignmentRadiusOverride": {
-          "type": [
-            "integer",
-            "null"
-          ],
-          "description": "Optional. Overrides how far the player must be from the planet for their feet to automatically orient towards the ground.",
-          "format": "int32"
         },
         "pushable": {
           "type": "boolean",
@@ -707,6 +686,211 @@
       "enum": [
         "linear",
         "inverseSquared"
+      ]
+    },
+    "GravityModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "upperRadius": {
+          "type": "number",
+          "description": "The upper bounds of the volume's \"surface\". Above this radius, the force applied by this volume will have falloff applied.",
+          "format": "float"
+        },
+        "lowerRadius": {
+          "type": "number",
+          "description": "The lower bounds of the volume's \"surface\". Above this radius and below the `upperRadius`, the force applied by this volume will be constant. Defaults to 0.",
+          "format": "float",
+          "default": 0.0
+        },
+        "minRadius": {
+          "type": "number",
+          "description": "The volume's force will decrease linearly from `force` to `minForce` as distance decreases from `lowerRadius` to `minRadius`. Defaults to 0.",
+          "format": "float",
+          "default": 0.0
+        },
+        "minForce": {
+          "type": "number",
+          "description": "The minimum force applied by this volume between `lowerRadius` and `minRadius`. Defaults to 0.",
+          "format": "float",
+          "default": 0.0
+        },
+        "fallOff": {
+          "description": "How the force falls off with distance. Most planets use linear but the sun and some moons use inverseSquared.",
+          "default": "linear",
+          "$ref": "#/definitions/GravityFallOff"
+        },
+        "alignmentRadius": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "description": "The radius where objects will be aligned to the volume's force. Defaults to 1.5x the `upperRadius`. Set to 0 to disable alignment.",
+          "format": "float"
+        },
+        "force": {
+          "type": "number",
+          "description": "The force applied by this volume. Can be negative to reverse the direction. \nTimber Hearth has 12 for reference",
+          "format": "float"
+        },
+        "alignmentPriority": {
+          "type": "integer",
+          "description": "The priority of this force volume for the purposes of alignment.\n\nVolumes of higher priority will override volumes of lower priority. Volumes of the same priority will stack like normal.\nEx: A player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.\n            \nDefault value here is 1 instead of 0 so it automatically overrides planet gravity, which is 0 by default. ",
+          "format": "int32",
+          "default": 1
+        },
+        "inheritable": {
+          "type": "boolean",
+          "description": "Whether this force volume is inheritable. The most recently activated inheritable force volume will stack with other force volumes even if their priorities differ."
+        },
+        "layer": {
+          "type": "integer",
+          "description": "The layer of this volume.\n\nLayers separate the priority system. The priority of volumes in one layer will not affect or override volumes in another. The highest priority volume in each layer will stack like normal.\nThe exception is layer 0. A higher-priority volume in layer 0 will override lower-priority volumes in ALL other layers. A lower-priority volume in layer 0 will stack with other layers like normal.\n            \nEx: A player could be affected by the sun on layer 9 priority 0 and planet gravity on layer 3 priority 2. They would experience the gravity of both volumes since they are on different layers.\nIf there was a zero-g volume on layer 0 priority 1, since it is on layer 0 it will override the gravity from the sun (priority 0 which is less than 1) but they will still feel the \ngravity of the planet (priority 2 is greater than 1). The zero-g volume will also still be applied because it is on a different layer.\n            \nDefault value here is 0 which means this volume's priority will be evaluated against all other priority volumes regardless of their layer.",
+          "format": "int32",
+          "default": 0
+        },
+        "priority": {
+          "type": "integer",
+          "description": "The priority of this volume.\n\nVolumes of higher priority will override volumes of lower priority. Volumes of the same priority will stack like normal.\nEx: A player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.\n            \nDefault value here is 1 instead of 0 so it automatically overrides planet gravity, which is 0 by default. ",
+          "format": "int32",
+          "default": 1
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume, if a shape is not specified.",
+          "format": "float",
+          "default": 1.0
+        },
+        "shape": {
+          "description": "The shape of this volume. Defaults to a sphere with a radius of `radius` if not specified.",
+          "$ref": "#/definitions/ShapeInfo"
+        },
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the planet's root sector)."
+        },
+        "sectorPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the sector that this object will be linked to. The special value \"auto\" will use the most specific sector in the parent path. Optional (will default to the planet's root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        }
+      }
+    },
+    "ShapeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "description": "The type of shape or collider to add. Sphere, box, and capsule colliders are more performant and support collision. Defaults to sphere.",
+          "$ref": "#/definitions/ShapeType"
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of the shape or collider. Defaults to 1 meter. Only used by spheres, capsules, cylinders, hemispheres, hemicapsules, and rings.",
+          "format": "float"
+        },
+        "height": {
+          "type": "number",
+          "description": "The height of the shape or collider. Defaults to 1 meter. Only used by capsules, cylinders, cones, hemicapsules, and rings.",
+          "format": "float"
+        },
+        "direction": {
+          "description": "The axis that the shape or collider is aligned with. Defaults to the Y axis (up). The flat bottom of the shape will be pointing towards the negative axis. Only used by capsules, cones, hemispheres, and hemicapsules.",
+          "$ref": "#/definitions/ColliderAxis"
+        },
+        "innerRadius": {
+          "type": "number",
+          "description": "The inner radius of the shape. Defaults to 0 meters. Only used by cones and rings.",
+          "format": "float"
+        },
+        "outerRadius": {
+          "type": "number",
+          "description": "The outer radius of the shape. Defaults to 0.5 meters. Only used by cones and rings.",
+          "format": "float"
+        },
+        "cap": {
+          "type": "boolean",
+          "description": "Whether the shape has an end cap. Defaults to true. Only used by hemispheres and hemicapsules."
+        },
+        "size": {
+          "description": "The size of the shape or collider. Defaults to (1,1,1). Only used by boxes.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "offset": {
+          "description": "The offset of the shape or collider from the object's origin. Defaults to (0,0,0). Supported by all collider and shape types.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "hasCollision": {
+          "type": "boolean",
+          "description": "Whether the collider should have collision enabled. If false, the collider will be a trigger. Defaults to false. Only supported for spheres, boxes, and capsules."
+        },
+        "useShape": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Setting this to false will force it to use a collider, and setting to true will force it to use a shape.\nShapes do not support collision and are less performant, but support a wider set of shapes and are required by some components. \nIf left empty it will defaults to using a shape, unless hasCollision is true in which case it defaults to using a collider."
+        }
+      }
+    },
+    "ShapeType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Sphere",
+        "Box",
+        "Capsule",
+        "Cylinder",
+        "Cone",
+        "Hemisphere",
+        "Hemicapsule",
+        "Ring"
+      ],
+      "enum": [
+        "sphere",
+        "box",
+        "capsule",
+        "cylinder",
+        "cone",
+        "hemisphere",
+        "hemicapsule",
+        "ring"
+      ]
+    },
+    "ColliderAxis": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "X",
+        "Y",
+        "Z"
+      ],
+      "enum": [
+        "x",
+        "y",
+        "z"
       ]
     },
     "BrambleModule": {
@@ -6163,101 +6347,6 @@
         }
       }
     },
-    "ShapeInfo": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "type": {
-          "description": "The type of shape or collider to add. Sphere, box, and capsule colliders are more performant and support collision. Defaults to sphere.",
-          "$ref": "#/definitions/ShapeType"
-        },
-        "radius": {
-          "type": "number",
-          "description": "The radius of the shape or collider. Defaults to 1 meter. Only used by spheres, capsules, cylinders, hemispheres, hemicapsules, and rings.",
-          "format": "float"
-        },
-        "height": {
-          "type": "number",
-          "description": "The height of the shape or collider. Defaults to 1 meter. Only used by capsules, cylinders, cones, hemicapsules, and rings.",
-          "format": "float"
-        },
-        "direction": {
-          "description": "The axis that the shape or collider is aligned with. Defaults to the Y axis (up). The flat bottom of the shape will be pointing towards the negative axis. Only used by capsules, cones, hemispheres, and hemicapsules.",
-          "$ref": "#/definitions/ColliderAxis"
-        },
-        "innerRadius": {
-          "type": "number",
-          "description": "The inner radius of the shape. Defaults to 0 meters. Only used by cones and rings.",
-          "format": "float"
-        },
-        "outerRadius": {
-          "type": "number",
-          "description": "The outer radius of the shape. Defaults to 0.5 meters. Only used by cones and rings.",
-          "format": "float"
-        },
-        "cap": {
-          "type": "boolean",
-          "description": "Whether the shape has an end cap. Defaults to true. Only used by hemispheres and hemicapsules."
-        },
-        "size": {
-          "description": "The size of the shape or collider. Defaults to (1,1,1). Only used by boxes.",
-          "$ref": "#/definitions/MVector3"
-        },
-        "offset": {
-          "description": "The offset of the shape or collider from the object's origin. Defaults to (0,0,0). Supported by all collider and shape types.",
-          "$ref": "#/definitions/MVector3"
-        },
-        "hasCollision": {
-          "type": "boolean",
-          "description": "Whether the collider should have collision enabled. If false, the collider will be a trigger. Defaults to false. Only supported for spheres, boxes, and capsules."
-        },
-        "useShape": {
-          "type": [
-            "boolean",
-            "null"
-          ],
-          "description": "Setting this to false will force it to use a collider, and setting to true will force it to use a shape.\nShapes do not support collision and are less performant, but support a wider set of shapes and are required by some components. \nIf left empty it will defaults to using a shape, unless hasCollision is true in which case it defaults to using a collider."
-        }
-      }
-    },
-    "ShapeType": {
-      "type": "string",
-      "description": "",
-      "x-enumNames": [
-        "Sphere",
-        "Box",
-        "Capsule",
-        "Cylinder",
-        "Cone",
-        "Hemisphere",
-        "Hemicapsule",
-        "Ring"
-      ],
-      "enum": [
-        "sphere",
-        "box",
-        "capsule",
-        "cylinder",
-        "cone",
-        "hemisphere",
-        "hemicapsule",
-        "ring"
-      ]
-    },
-    "ColliderAxis": {
-      "type": "string",
-      "description": "",
-      "x-enumNames": [
-        "X",
-        "Y",
-        "Z"
-      ],
-      "enum": [
-        "x",
-        "y",
-        "z"
-      ]
-    },
     "NHClipSelectionType": {
       "type": "string",
       "description": "",
@@ -6664,7 +6753,7 @@
       "properties": {
         "force": {
           "type": "number",
-          "description": "The force applied by this volume. Can be negative to reverse the direction.",
+          "description": "The force applied by this volume. Can be negative to reverse the direction. \nTimber Hearth has 12 for reference",
           "format": "float"
         },
         "alignmentPriority": {
@@ -6746,7 +6835,7 @@
       "properties": {
         "force": {
           "type": "number",
-          "description": "The force applied by this volume. Can be negative to reverse the direction.",
+          "description": "The force applied by this volume. Can be negative to reverse the direction. \nTimber Hearth has 12 for reference",
           "format": "float"
         },
         "alignmentPriority": {
@@ -6837,7 +6926,7 @@
       "properties": {
         "force": {
           "type": "number",
-          "description": "The force applied by this volume. Can be negative to reverse the direction.",
+          "description": "The force applied by this volume. Can be negative to reverse the direction. \nTimber Hearth has 12 for reference",
           "format": "float"
         },
         "alignmentPriority": {
@@ -6947,7 +7036,7 @@
       "properties": {
         "force": {
           "type": "number",
-          "description": "The force applied by this volume. Can be negative to reverse the direction.",
+          "description": "The force applied by this volume. Can be negative to reverse the direction. \nTimber Hearth has 12 for reference",
           "format": "float"
         },
         "alignmentPriority": {
@@ -7029,7 +7118,7 @@
       "properties": {
         "force": {
           "type": "number",
-          "description": "The force applied by this volume. Can be negative to reverse the direction.",
+          "description": "The force applied by this volume. Can be negative to reverse the direction. \nTimber Hearth has 12 for reference",
           "format": "float"
         },
         "alignmentPriority": {
