@@ -2,5 +2,11 @@
   "$schema": "https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/main/NewHorizons/Schemas/translation_schema.json",
   "UIDictionary": {
     "Vessel": "함선"
+  },
+  "OtherDictionary": {
+    "NOMAI_SHUTTLE_COMPUTER": "<![CDATA[<color=orange>왕복선</color>]]>은 현재 <![CDATA[<color=lightblue>{0}</color>]]>에 위치함.",
+    "UNKNOWN_LANGUAGE_UNTRANSLATED": "<!> 번역되지 않은 미지의 글 <!>",
+    "KNOWN_LANGUAGE_UNTRANSLATED": "<!> 번역되지 않은 {0} 글 <!>",
+    "LANGUAGE_NAME_GHOSTBIRD": "거주민들이"
   }
 }

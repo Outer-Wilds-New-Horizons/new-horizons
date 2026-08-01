@@ -236,6 +236,16 @@ namespace NewHorizons.Builder.Props.TranslatorText
                         computer._nomaiTextAsset.name = Path.GetFileNameWithoutExtension(info.xmlFile);
                         AddTranslation(xmlContent);
 
+                        if (info.computerStartsOff)
+                        {
+                            computer._startActivated = false;
+                        }
+
+                        if (!string.IsNullOrEmpty(info.computerCondition))
+                        {
+                            ConditionalNomaiComputerToggle.SetUp(computerObject, info.computerCondition, info.computerStartsOff);
+                        }
+
                         // Make sure the computer model is loaded
                         StreamingHandler.SetUpStreaming(computerObject, sector);
 
@@ -266,6 +276,16 @@ namespace NewHorizons.Builder.Props.TranslatorText
                         //fifthRing._baseTextColor = new Color(0.8824, 0.9604, 2.5, 1);
                         //fifthRing._baseTextShadowColor = new Color(0.3529, 0.3843, 1, 0.25);
                         fifthRing._computer = computer;
+
+                        if (info.computerStartsOff)
+                        {
+                            computer._startActivated = false;
+                        }
+
+                        if (!string.IsNullOrEmpty(info.computerCondition))
+                        {
+                            ConditionalNomaiComputerToggle.SetUp(computerObject, info.computerCondition, info.computerStartsOff);
+                        }
 
                         computerObject.SetActive(true);
 
@@ -507,7 +527,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
                     arcReadFromCache.transform.localEulerAngles = new Vector3(0, 0, cachedData[i].zRotation);
                 }
 
-                GameObject arc = MakeArc(nhBody.Mod, arcInfo, conversationZone, parent, textEntryID, arcReadFromCache);
+                GameObject arc = MakeArc(nhBody?.Mod, arcInfo, conversationZone, parent, textEntryID, arcReadFromCache);
                 arc.name = $"Arc {textEntryID} - Child of {parentID}";
 
                 arcsByID.Add(textEntryID, arc);
@@ -752,6 +772,22 @@ namespace NewHorizons.Builder.Props.TranslatorText
             XmlDocument xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(xmlPath);
 
+            XmlNode xmlNode = xmlDocument.SelectSingleNode("NomaiObject");
+            XmlNodeList xmlNodeList = xmlNode.SelectNodes("TextBlock");
+
+            foreach (object obj in xmlNodeList)
+            {
+                XmlNode xmlNode2 = (XmlNode)obj;
+                var text = xmlNode2.SelectSingleNode("Text").InnerText;
+                TranslationHandler.AddDialogue(text);
+            }
+        }
+
+        public static void HandleUnityCreatedNomaiText(NomaiText nomaiText)
+        {
+            string xml = OWUtilities.RemoveByteOrderMark(nomaiText._nomaiTextAsset);
+            XmlDocument xmlDocument = new XmlDocument();
+            xmlDocument.LoadXml(xml);
             XmlNode xmlNode = xmlDocument.SelectSingleNode("NomaiObject");
             XmlNodeList xmlNodeList = xmlNode.SelectNodes("TextBlock");
 

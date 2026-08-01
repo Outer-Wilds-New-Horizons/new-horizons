@@ -89,7 +89,15 @@
           "type": "object",
           "description": "Extra data that may be used by extension mods",
           "additionalProperties": {
-            "type": "object"
+            "type": [
+              "array",
+              "boolean",
+              "integer",
+              "null",
+              "number",
+              "object",
+              "string"
+            ]
           }
         }
       }
@@ -259,11 +267,11 @@
         },
         "activationCondition": {
           "type": "string",
-          "description": "Activates this game object when the dialogue condition is met"
+          "description": "Activates this game object when the dialogue/persistent condition is met"
         },
         "deactivationCondition": {
           "type": "string",
-          "description": "Deactivates this game object when the dialogue condition is met"
+          "description": "Deactivates this game object when the dialogue/persistent condition is met"
         }
       }
     },

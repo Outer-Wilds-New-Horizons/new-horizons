@@ -52,12 +52,12 @@ namespace NewHorizons.External.Modules.Props
         public MVector3 stretch;
 
         /// <summary>
-        /// Activates this game object when the dialogue condition is met
+        /// Activates this game object when the dialogue/persistent condition is met
         /// </summary>
         public string activationCondition;
 
         /// <summary>
-        /// Deactivates this game object when the dialogue condition is met
+        /// Deactivates this game object when the dialogue/persistent condition is met
         /// </summary>
         public string deactivationCondition;
 

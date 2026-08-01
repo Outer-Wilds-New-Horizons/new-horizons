@@ -88,6 +88,12 @@ namespace NewHorizons.External.Modules.Volumes
         public NotificationVolumeInfo[] notificationVolumes;
 
         /// <summary>
+        /// Add quantum toggle volumes to this planet.
+        /// Toggles the ability for specified quantum objects to change their quantum state when entering the volume.
+        /// </summary>
+        public QuantumToggleVolumeInfo[] quantumToggleVolumes;
+
+        /// <summary>
         /// Add oxygen volumes to this planet.
         /// </summary>
         public OxygenVolumeInfo[] oxygenVolumes;

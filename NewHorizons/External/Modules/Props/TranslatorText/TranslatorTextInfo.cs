@@ -13,6 +13,18 @@ namespace NewHorizons.External.Modules.TranslatorText
         public NomaiTextArcInfo[] arcInfo;
 
         /// <summary>
+        /// Turns this computer off when this dialogue condition is set, and back on when it is unset, or the other way around if `computerStartsOff` is true.
+        /// Only revelent when type is `computer` or `preCrashComputer`.
+        /// </summary>
+        public string computerCondition;
+
+        /// <summary>
+        /// Makes this computer turned off by default so the player cannot read the text.
+        /// Only revelent when type is `computer` or `preCrashComputer`.
+        /// </summary>
+        public bool computerStartsOff;
+
+        /// <summary>
         /// The random seed used to pick what the text arcs will look like.
         /// </summary>
         public int seed;

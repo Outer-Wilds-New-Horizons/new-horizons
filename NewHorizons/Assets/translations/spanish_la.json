@@ -14,6 +14,12 @@
     "WARP_LOCKED": "Piloto automático fijado en:\n{0}",
     "Vessel": "Nave"
   },
+  "OtherDictionary": {
+    "NOMAI_SHUTTLE_COMPUTER": "El <![CDATA[<color=orange>transbordador/color>]]> se encuentra posado sobre la <![CDATA[<color=lightblue>{0}</color>]]>.",
+    "UNKNOWN_LANGUAGE_UNTRANSLATED": "<!> Texto desconocido sin traducir <!>",
+    "KNOWN_LANGUAGE_UNTRANSLATED": "<!> Texto {0} sin traducir <!>",
+    "LANGUAGE_NAME_GHOSTBIRD": "habitant"
+  },
   "AchievementTranslations": {
     "NH_EATEN_OUTSIDE_BRAMBLE": {
       "Name": "Brecha de contención",

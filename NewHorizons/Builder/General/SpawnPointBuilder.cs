@@ -39,21 +39,21 @@ namespace NewHorizons.Builder.General
             altShipSpawn.GetComponent<SpawnPoint>().SetSpawnLocation(SpawnLocation.TimberHearth_Alt);
             altShipSpawn.name = "ShipSpawn_TH_Alt";
 
-            var timberHearth = altShipSpawn.transform.root.gameObject;
-            var owRigidBody = timberHearth.GetComponent<OWRigidbody>();
+            var timberHearth = altShipSpawn.GetAttachedOWRigidbody();
 
             Sector spawnSector = null;
-            var spawnGO = GeneralPropBuilder.MakeNew("ShipSpawn_TH", timberHearth, ref spawnSector, new GeneralPropInfo
+            var spawnGO = GeneralPropBuilder.MakeNew("ShipSpawn_TH", timberHearth.gameObject, ref spawnSector, new GeneralPropInfo
             {
                 position = new Vector3(-16.45f, -52.67f, 227.39f),
-                rotation = new Vector3(283.0626f, 1.0617f, 174.9344f)
+                rotation = new Vector3(283.0626f, 1.0617f, 174.9344f),
+                isRelativeToParent = true
             });
             spawnGO.transform.SetParent(altShipSpawn.transform.parent, true);
             spawnGO.layer = Layer.PlayerSafetyCollider;
 
             var shipSpawn = spawnGO.AddComponent<SpawnPoint>();
             shipSpawn._isShipSpawn = true;
-            shipSpawn._attachedBody = owRigidBody;
+            shipSpawn._attachedBody = timberHearth;
             shipSpawn._spawnLocation = SpawnLocation.TimberHearth;
             shipSpawn._triggerVolumes = new OWTriggerVolume[0];
 

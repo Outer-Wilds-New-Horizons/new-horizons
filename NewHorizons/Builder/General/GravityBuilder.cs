@@ -52,7 +52,7 @@ namespace NewHorizons.Builder.General
             // Nobody write any FocalPoint overriding here, those work as intended gravitationally so deal with it!
             gravityVolume._upperSurfaceRadius = config.Base.surfaceSize; 
             gravityVolume._lowerSurfaceRadius = 0;
-            gravityVolume._layer = 3;
+            gravityVolume._layer = config.Base.gravityVolumeLayer;
             gravityVolume._priority = config.Base.gravityVolumePriority;
             gravityVolume._alignmentPriority = 0;
             gravityVolume._surfaceAcceleration = config.Base.surfaceGravity;

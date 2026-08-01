@@ -129,6 +129,9 @@ namespace NewHorizons.Builder.Props
             gravityCannonController._forceVolume = platform.FindChild("ForceVolume").GetComponent<DirectionalForceVolume>();
             gravityCannonController._platformTrigger = platform.FindChild("PlatformTrigger").GetComponent<OWTriggerVolume>();
             gravityCannonController._shuttleSocket = platform.FindChild("ShuttleSocket").transform;
+            // QM gravity cannon shuttle socket is placed facing the wrong way so we rotate around #1153
+            gravityCannonController._shuttleSocket.Rotate(0f, 180f, 0f, Space.Self);
+
             gravityCannonController._warpEffect = gravityCannonController._shuttleSocket.GetComponentInChildren<SingularityWarpEffect>();
             gravityCannonController._recallProxyGeometry = gravityCannonController._shuttleSocket.gameObject.FindChild("ShuttleRecallProxy");
 

@@ -6,7 +6,7 @@
       "title": "Custom Title Screen",
       "type": "toggle",
       "value": true,
-      "tooltip": "Displays planets from installed mods on the title screen."
+      "tooltip": "Display custom title screens from installed mods."
     },
     "UseLegacyStarChart": {
       "title": "Use Legacy Star Chart Mode",

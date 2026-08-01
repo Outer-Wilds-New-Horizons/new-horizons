@@ -292,6 +292,13 @@ namespace NewHorizons.Builder.Volumes
                     CreditsVolumeBuilder.Make(go, sector, creditsVolume, mod);
                 }
             }
+            if (config.Volumes.quantumToggleVolumes != null)
+            {
+                foreach (var quantumToggleVolume in config.Volumes.quantumToggleVolumes)
+                {
+                    QuantumToggleVolumeBuilder.Make(go, sector, quantumToggleVolume, mod);
+                }
+            }
         }
     }
 }

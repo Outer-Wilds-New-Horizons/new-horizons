@@ -2,5 +2,11 @@
   "$schema": "https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/main/NewHorizons/Schemas/translation_schema.json",
   "UIDictionary": {
     "Vessel": "Tekne"
+  },
+  "OtherDictionary": {
+    "NOMAI_SHUTTLE_COMPUTER": "<![CDATA[<color=orange>Mekik/color>]]> şu anda <![CDATA[<color=lightblue>{0}</color>]]>'da.",
+    "UNKNOWN_LANGUAGE_UNTRANSLATED": "<!> Çevrilmemiş bilinmeyen yazıt <!>",
+    "KNOWN_LANGUAGE_UNTRANSLATED": "<!> Çevrilmemiş {0} yazıtı <!>",
+    "LANGUAGE_NAME_GHOSTBIRD": "Yerlilerini"
   }
 }

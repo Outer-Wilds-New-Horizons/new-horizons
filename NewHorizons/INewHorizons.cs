@@ -118,6 +118,16 @@ namespace NewHorizons
         T QueryTitleScreen<T>(IModBehaviour mod, string path);
 
         /// <summary>
+        /// Uses JSONPath to query an addon manifest
+        /// </summary>
+        object QueryAddonManifest(Type outType, IModBehaviour mod, string path);
+
+        ///<summary>
+        /// Uses JSONPath to query an addon manifest
+        /// </summary>
+        T QueryAddonManifest<T>(IModBehaviour mod, string path);
+
+        /// <summary>
         /// Register your own builder that will act on the given GameObject by reading the json string of its "extras" module
         /// </summary>
         void RegisterCustomBuilder(Action<GameObject, string> builder); 

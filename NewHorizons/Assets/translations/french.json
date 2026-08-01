@@ -20,6 +20,12 @@
     "Vessel": "Vaisseau",
     "DLC_REQUIRED": "AVERTISSEMENT\n\nVous avez installé des addons (par exemple, {0}) qui nécessitent le DLC mais il n'est pas activé.\n\nVos mods peuvent ne pas fonctionner."
   },
+  "OtherDictionary": {
+    "NOMAI_SHUTTLE_COMPUTER": "La <![CDATA[<color=orange>navette</color>]]> est actuellement stationnée sur la <![CDATA[<color=lightblue>{0}</color>]]>.",
+    "UNKNOWN_LANGUAGE_UNTRANSLATED": "<!> Écrit inconnu non traduit <!>",
+    "KNOWN_LANGUAGE_UNTRANSLATED": "<!> Écrit {0} non traduit <!>",
+    "LANGUAGE_NAME_GHOSTBIRD": "habitant"
+  },
   "AchievementTranslations": {
     "NH_EATEN_OUTSIDE_BRAMBLE": {
       "Name": "Brèche de confinement",

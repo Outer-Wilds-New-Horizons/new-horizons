@@ -1,4 +1,5 @@
 using NewHorizons.Builder.General;
+using NewHorizons.Builder.Props.TranslatorText;
 using NewHorizons.Components;
 using NewHorizons.Components.Orbital;
 using NewHorizons.Components.Props;
@@ -12,6 +13,7 @@ using OWML.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -184,6 +186,11 @@ namespace NewHorizons.Builder.Props
                         {
                             DialogueBuilder.HandleUnityCreatedDialogue(dialogue);
                         }
+                        // Same for translator text
+                        if (isFromAssetBundle && component is NomaiText nomaiText)
+                        {
+                            TranslatorTextBuilder.HandleUnityCreatedNomaiText(nomaiText);
+                        }
 
                         // copied details need their lanterns fixed
                         if (!isFromAssetBundle && component is DreamLanternController lantern)
@@ -219,20 +226,7 @@ namespace NewHorizons.Builder.Props
 
             prop.transform.localScale = detail.stretch ?? (detail.scale != 0 ? Vector3.one * detail.scale : prefab.transform.localScale);
 
-            if (detail.removeChildren != null)
-            {
-                foreach (var childPath in detail.removeChildren)
-                {
-                    var flag = true;
-                    foreach (var childObj in prop.transform.FindAll(childPath))
-                    {
-                        flag = false;
-                        childObj.gameObject.SetActive(false);
-                    }
-
-                    if (flag) NHLogger.LogWarning($"Couldn't find \"{childPath}\".");
-                }
-            }
+            if (detail.removeChildren != null) prop.RemoveChildren(detail.removeChildren, false);
 
             if (detail.removeComponents)
             {

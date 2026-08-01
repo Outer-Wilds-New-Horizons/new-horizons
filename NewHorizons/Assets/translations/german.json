@@ -11,5 +11,11 @@
     "FREQ_WARP_CORE": "Anti-Gravitations Flux",
     "FREQ_UNKNOWN": "???",
     "Vessel": "Gefährts"
+  },
+  "OtherDictionary": {
+    "NOMAI_SHUTTLE_COMPUTER": "Das <![CDATA[<color=orange>Shuttle</color>]]> ruht derzeit am <![CDATA[<color=lightblue>{0}</color>]]>.",
+    "UNKNOWN_LANGUAGE_UNTRANSLATED": "<!> Unübersetzte unbekannte Schrift <!>",
+    "KNOWN_LANGUAGE_UNTRANSLATED": "<!> Unübersetzte {0}-Schrift <!>",
+    "LANGUAGE_NAME_GHOSTBIRD": "Bewohner"
   }
 }

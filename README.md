@@ -79,7 +79,7 @@ New Horizons was made with help from:
 -   [FreezeDriedMangos](https://github.com/FreezeDriedMangos)
 -   [Trifid](https://github.com/TerrificTrifid)
 -   [Hawkbar](https://github.com/Hawkbat)
--   [Lezzlebit] (https://github.com/lezzlebit)
+-   [Lezzlebit](https://github.com/lezzlebit)
 -   And many others, see the [contributors](https://github.com/Outer-Wilds-New-Horizons/new-horizons/graphs/contributors) page.
 
 Translation credits:
@@ -90,6 +90,7 @@ Translation credits:
 -   French: xen
 -   Japanese: TRSasasusu
 -   Portuguese: avengerx, loco-choco
+-   Chinese: SanBaiMing
 
 New Horizons was based off [Marshmallow](https://github.com/misternebula/Marshmallow) made by:
 
@@ -101,3 +102,4 @@ with help from:
 -   AmazingAlek
 -   Raicuparta
 -   and the Outer Wilds discord server.
+

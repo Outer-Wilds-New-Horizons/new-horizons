@@ -4,6 +4,7 @@ using NewHorizons.Utility;
 using NewHorizons.Utility.OWML;
 using OWML.Utils;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace NewHorizons.Patches;
 
@@ -35,9 +36,7 @@ internal static class TitleScenePatches
             if (TitleSceneHandler.reopenProfile)
             {
                 TitleSceneHandler.reopenProfile = false;
-                Delay.FireOnNextUpdate(() => 
-                    SearchUtilities.Find("TitleMenu/TitleCanvas/TitleLayoutGroup/MainMenuBlock/MainMenuLayoutGroup/Button-Profile")
-                    .GetComponent<SubmitActionMenu>().Submit());
+                Delay.FireOnNextUpdate(TitleSceneHandler.ReopenProfileMenu);
             }
         }
     }

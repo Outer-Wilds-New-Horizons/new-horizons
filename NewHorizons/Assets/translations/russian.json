@@ -13,5 +13,11 @@
     "ENGAGE_WARP_PROMPT": "Телепортироваться к {0}",
     "WARP_LOCKED": "АВТОПИЛОТ ЗАКРЕПЛЁН НА:\n{0}",
     "Vessel": "Звездолёта"
+  },
+  "OtherDictionary": {
+    "NOMAI_SHUTTLE_COMPUTER": "<![CDATA[<color=orange>Шаттл/color>]]> находится на <![CDATA[<color=lightblue>{0}</color>]]>.",
+    "UNKNOWN_LANGUAGE_UNTRANSLATED": "<!> Непереведённая неизвестная надпись <!>",
+    "KNOWN_LANGUAGE_UNTRANSLATED": "<!> Непереведённая надпись {0} <!>",
+    "LANGUAGE_NAME_GHOSTBIRD": "обитатели"
   }
 }

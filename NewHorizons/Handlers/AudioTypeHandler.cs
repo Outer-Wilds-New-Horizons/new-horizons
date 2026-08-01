@@ -55,13 +55,18 @@ namespace NewHorizons.Handlers
                 }
                 else
                 {
-                    return EnumUtils.Parse<AudioType>(audio);
+                    var audioType = EnumUtils.Parse<AudioType>(audio);
+
+                    if (audioType == AudioType.None)
+                        audioType = AudioType.PLACEHOLDER; // None can throw an exception. PLACEHOLDER is silence
+
+                    return audioType;
                 }
             }
             catch (Exception e)
             {
-                NHLogger.LogError($"Couldn't load AudioType:\n{e}");
-                return AudioType.None;
+                NHLogger.LogError($"Couldn't load AudioType [{audio}]:\n{e}");
+                return AudioType.PLACEHOLDER;
             }
         }
 
@@ -78,7 +83,7 @@ namespace NewHorizons.Handlers
             if (audioClip == null)
             {
                 NHLogger.LogError($"Couldn't create audioType for {audioPath}");
-                return AudioType.None;
+                return AudioType.PLACEHOLDER;
             }
 
             return AddCustomAudioType(id, new AudioClip[] { audioClip });

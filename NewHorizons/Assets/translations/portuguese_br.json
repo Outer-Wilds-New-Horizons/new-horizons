@@ -26,7 +26,10 @@
     "DLC_REQUIRED": "AVISO\n\nVocê tem addons (ex. {0}) instalados que requerem a DLC, mas a mesma não está habilitada.\n\nSuas mods podem não funcionar como esperado."
   },
   "OtherDictionary": {
-    "NOMAI_SHUTTLE_COMPUTER": "A <![CDATA[<color=orange>exploradora</color>]]> está repousando por hora em: <![CDATA[<color=lightblue>{0}</color>]]>."
+    "NOMAI_SHUTTLE_COMPUTER": "A <![CDATA[<color=orange>exploradora</color>]]> está repousando por hora em: <![CDATA[<color=lightblue>{0}</color>]]>.",
+    "UNKNOWN_LANGUAGE_UNTRANSLATED": "<!> Escrito desconhecido não traduzido <!>",
+    "KNOWN_LANGUAGE_UNTRANSLATED": "<!> Escrito {0} não traduzido <!>",
+    "LANGUAGE_NAME_GHOSTBIRD": "Habitante"
   },
   "AchievementTranslations": {
     "NH_EATEN_OUTSIDE_BRAMBLE": {
