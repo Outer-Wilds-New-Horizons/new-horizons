@@ -3,6 +3,8 @@ title: Dialogue
 description: Guide to making dialogue in New Horizons
 ---
 
+import { Aside } from "@astrojs/starlight/components";
+
 This page goes over how to use dialogue in New Horizons.
 
 ## Understanding Dialogue
@@ -18,6 +20,10 @@ A node is a set of pages shown to the player followed by options the player can 
 ### Conditions
 
 In dialogue, the available conversation topics can be limited by what the player knows, defined using dialogue conditions, persistent conditions, and ship log facts. Dialogue can also set conditions to true or false, and reveal ship log facts to the player. This is covered in detail later on this page.
+
+<Aside title="On naming conditions">
+Consider prefixing all your dialogue conditions with the name of your mod to prevent incompatibilities with other mods! For example instead of having a condition called `SPOKE_TO_NOMAI` try `[YOUR_MOD_NAME]_SPOKE_TO_NOMAI`.
+</Aside>
 
 ### Remote Trigger
 
