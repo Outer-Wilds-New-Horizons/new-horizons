@@ -162,7 +162,8 @@ namespace NewHorizons.Utility
             // To try to be somewhat correct check that the parent is right. Fixes #1136, ensures GhostBirds and Anglerfish details are more stable
             if (!string.IsNullOrEmpty(parent))
             {
-                go = possibleMatches.FirstOrDefault(x => parent == null || x.transform.parent.name == parent);
+                // multiple enumeration but its fine
+                go = possibleMatches.FirstOrDefault(x => x.transform.parent.name == parent);
                 if (go == null)
                 {
                     go = possibleMatches.FirstOrDefault();
@@ -176,6 +177,8 @@ namespace NewHorizons.Utility
             if (go)
             {
                 CachedGameObjects.Add(path, go);
+                NHLogger.LogWarning($"Found object with name {name} at path {go.transform.GetPath()}\n" +
+                                    $"Check that this is the correct object, then use the given path in your config or code.");
                 Profiler.EndSample();
                 return go;
             }
