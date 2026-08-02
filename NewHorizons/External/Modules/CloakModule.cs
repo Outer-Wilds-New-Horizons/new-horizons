@@ -7,7 +7,8 @@ namespace NewHorizons.External.Modules
     public class CloakModule
     {
         /// <summary>
-        /// Radius of the cloaking field around the planet. For the Stranger this is 3000
+        /// Radius of the cloaking field around the planet. For the Stranger this is 3000. 
+        /// When using the default proportional values, the cloak should be 6x larger than the object it's hiding in order to work nicely.
         /// </summary>
         public float radius;
 

@@ -448,7 +448,6 @@ namespace NewHorizons.Builder.Body
             stellarDeath.enabled = false; 
             stellarDeath.surface = starGO.GetComponentInChildren<TessellatedSphereRenderer>(true);
             var duration = starModule.supernovaSize / starModule.supernovaSpeed;
-            stellarDeath.supernovaScale = new AnimationCurve(new Keyframe(0, 200, 0, 0, 1f / 3f, 1f / 3f), new Keyframe(duration, starModule.supernovaSize, 1758.508f, 1758.508f, 1f / 3f, 1f / 3f));
             stellarDeath.supernovaAlpha = new AnimationCurve(new Keyframe(duration * 0.1f, 1, 0, 0, 1f / 3f, 1f / 3f), new Keyframe(duration * 0.3f, 1.0002f, 0, 0, 1f / 3f, 1f / 3f), new Keyframe(duration, 0, -0.0578f, 1 / 3f, -0.0578f, 1 / 3f));
             stellarDeath.explosionParticles = supernova._explosionParticles;
             stellarDeath.shockwave = supernova._shockwave;
@@ -456,6 +455,11 @@ namespace NewHorizons.Builder.Body
             stellarDeath.shockwaveAlpha = supernova._shockwaveAlpha;
             stellarDeath.shockwaveScale = supernova._shockwaveScale;
             stellarDeath.supernovaMaterial = supernova._supernovaMaterial;
+
+            stellarDeath.supernovaScale = starModule.supernovaSize;
+            stellarDeath.supernovaDuration = duration;
+            stellarDeath.supernovaSpeed = starModule.supernovaSpeed;
+
             Object.Destroy(supernova);
 
             if (starModule.supernovaTint != null)

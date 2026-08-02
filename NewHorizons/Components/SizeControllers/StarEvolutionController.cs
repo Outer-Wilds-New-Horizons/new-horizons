@@ -280,7 +280,9 @@ namespace NewHorizons.Components.SizeControllers
             // Reset the scale back to normal bc now its just the supernova scaling itself + destruction and heat volumes
             transform.localScale = Vector3.one;
 
+            // Hey uh this is just 0 forever? Idk whats up with this.
             var t = Mathf.Clamp01((Time.time - (_supernovaStartTime + supernovaScaleStart)) / (supernovaScaleEnd - supernovaScaleStart));
+
             // Make the destruction volume scale slightly smaller so you really have to be in the supernova to die
             if (destructionVolume != null) destructionVolume.transform.localScale = Vector3.one * supernova.GetSupernovaRadius() * Mathf.Lerp(0.9f, 1, t);
             if (heatVolume != null) heatVolume.transform.localScale = Vector3.one * supernova.GetSupernovaRadius();

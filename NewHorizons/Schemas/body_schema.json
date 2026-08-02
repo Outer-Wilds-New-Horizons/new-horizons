@@ -881,7 +881,7 @@
       "properties": {
         "radius": {
           "type": "number",
-          "description": "Radius of the cloaking field around the planet. For the Stranger this is 3000",
+          "description": "Radius of the cloaking field around the planet. For the Stranger this is 3000. \nWhen using the default proportional values, the cloak should be 6x larger than the object it's hiding in order to work nicely.",
           "format": "float"
         },
         "cloakScaleDist": {
@@ -1129,7 +1129,7 @@
         },
         "itemType": {
           "type": "string",
-          "description": "The type of the item, which determines its orientation when held and what sockets it fits into. This can be a custom string, or a vanilla ItemType (Scroll, WarpCore, SharedStone, ConversationStone, Lantern, SlideReel, DreamLantern, or VisionTorch). Defaults to the item name."
+          "description": "The type of the item, which determines its orientation when held and what sockets it fits into. This can be a custom string, or a vanilla ItemType (Scroll, SharedStone, ConversationStone, Lantern, SlideReel, DreamLantern, or VisionTorch). Defaults to the item name. Note: This cannot be the base game WarpCore item type as those have complicated custom behaviour."
         },
         "interactRange": {
           "type": "number",

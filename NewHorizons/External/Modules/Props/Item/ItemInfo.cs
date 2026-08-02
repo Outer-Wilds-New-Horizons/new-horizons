@@ -19,7 +19,7 @@ namespace NewHorizons.External.Modules.Props.Item
         /// </summary>
         public string name;
         /// <summary>
-        /// The type of the item, which determines its orientation when held and what sockets it fits into. This can be a custom string, or a vanilla ItemType (Scroll, WarpCore, SharedStone, ConversationStone, Lantern, SlideReel, DreamLantern, or VisionTorch). Defaults to the item name.
+        /// The type of the item, which determines its orientation when held and what sockets it fits into. This can be a custom string, or a vanilla ItemType (Scroll, SharedStone, ConversationStone, Lantern, SlideReel, DreamLantern, or VisionTorch). Defaults to the item name. Note: This cannot be the base game WarpCore item type as those have complicated custom behaviour.
         /// </summary>
         public string itemType;
         /// <summary>

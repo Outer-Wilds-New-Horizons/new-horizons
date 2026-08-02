@@ -349,13 +349,11 @@ namespace NewHorizons
 
             // Caches of other assets only have to be cleared if we changed star systems
             if (ForceClearCaches || CurrentStarSystem != _previousStarSystem)
-            {
-                ForceClearCaches = false;
-                
+            {               
                 NHLogger.Log($"Changing star system from {_previousStarSystem} to {CurrentStarSystem} - Clearing system-specific caches!");
                 ImageUtilities.ClearCache();
                 AudioUtilities.ClearCache();
-                AssetBundleUtilities.ClearCache();
+                AssetBundleUtilities.ClearCache(ForceClearCaches);
                 ProcGenBuilder.ClearCache();
             }
 
@@ -374,6 +372,24 @@ namespace NewHorizons
             var isCreditsFast = scene.name == LoadManager.SceneToName(OWScene.Credits_Fast);
             var isCreditsFinal = scene.name == LoadManager.SceneToName(OWScene.Credits_Final);
             var isPostCredits = scene.name == LoadManager.SceneToName(OWScene.PostCreditsScene);
+
+            if (ForceClearCaches)
+            {
+                // When we force clear the cache we have to ensure that bundles that are normally preloaded are loaded properly
+                foreach (var mod in Main.MountedAddons)
+                {
+                    if (AddonConfigs.TryGetValue(mod, out var config) && config.preloadAssetBundles != null)
+                    {
+                        foreach (var bundle in config.preloadAssetBundles)
+                        {
+                            AssetBundleUtilities.PreloadBundleSynchronously(bundle, mod);
+                        }
+                    }
+                }
+            }
+
+            ForceClearCaches = false;
+
 
             if (isSolarSystem)
             {
@@ -762,7 +778,7 @@ namespace NewHorizons
 
             var starSystemName = starSystemConfig.name;
 
-            if (starSystemName != "SolarSystem" && starSystemName != "EyeOfTheUniverse")
+            if (starSystemName != "SolarSystem" && starSystemName != "EyeOfTheUniverse" && starSystemName != "Jam3" && starSystemName != "Jam5")
             {
                 bool hasSpaces = starSystemName.Contains(" ");
                 bool missingNamespace = !starSystemName.Contains(".");
@@ -942,7 +958,7 @@ namespace NewHorizons
             {
                 MenuHandler.RegisterOneTimePopup(mod, TranslationHandler.GetTranslation(addonConfig.popupMessage, TranslationHandler.TextType.UI), addonConfig.repeatPopup);
             }
-            if (addonConfig.preloadAssetBundles != null)
+            if (addonConfig.preloadAssetBundles != null && !ForceClearCaches)
             {
                 foreach (var bundle in addonConfig.preloadAssetBundles)
                 {
@@ -1188,12 +1204,23 @@ namespace NewHorizons
         void OnDeath(DeathType _)
         {
             VesselWarpController.s_relativeLocationSaved = false;
+
             // We reset the solar system on death
             if (!IsChangingStarSystem)
             {
                 if (SystemDict[CurrentStarSystem].Config.respawnHere) return;
 
                 ResetCurrentStarSystem();
+
+                if (CurrentStarSystem == "SolarSystem")
+                {
+                    // Go back to regular warp/spawn behaviour when respawning in regular system
+                    IsWarpingFromVessel = false;
+                    IsWarpingFromShip = false;
+                    DidWarpFromShip = false;
+                    DidWarpFromVessel = false;
+                    WearingSuit = false;
+                }
             }
         }
 

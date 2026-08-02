@@ -37,6 +37,16 @@ namespace NewHorizons.Builder.Props
 
             var itemType = GetOrCreateItemType(itemTypeName);
 
+            if (itemType == ItemType.WarpCore)
+            {
+                // WarpCores cannot be naively made by NH #1121
+                NHLogger.LogError($"Your custom item {itemName} cannot use the {ItemType.WarpCore} type. " +
+                    $"These items have more complicated code that cannot be handled by NH alone. " +
+                    $"If you really want to implement a WarpCore like the one used to power the Vessel, " +
+                    $"either just duplicate an existing warp core prop or write custom code.");
+                return null;
+            }
+
             var item = go.GetAddComponent<NHItem>();
             item._sector = sector;
             item._interactable = info.interactRange > 0f;

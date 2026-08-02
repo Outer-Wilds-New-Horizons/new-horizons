@@ -31,6 +31,8 @@ namespace NewHorizons.Utility.DebugTools
 
             Main.Instance.ResetConfigs();
 
+            Main.Instance.ForceClearCaches = true;
+
             try
             {
                 foreach (IModBehaviour mountedAddon in Main.MountedAddons)
@@ -42,9 +44,6 @@ namespace NewHorizons.Utility.DebugTools
             {
                 NHLogger.LogWarning("Error While Reloading");
             }
-
-            Main.Instance.ForceClearCaches = true;
-
 
             SearchUtilities.Find("/PauseMenu/PauseMenuManagers").GetComponent<PauseMenuManager>().OnSkipToNextTimeLoop();
 
