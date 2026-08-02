@@ -336,47 +336,48 @@ namespace NewHorizons.Handlers
 
         public static void SetupWarpController(VesselWarpController vesselWarpController, NomaiInterfaceOrb orb, bool db = false)
         {
+            NHLogger.Log("Setting up vessel warp controller");
             if (db)
             {
+                NHLogger.Log("Placing the AWC in the vessel");
                 //Make warp core
-                foreach (WarpCoreItem core in Resources.FindObjectsOfTypeAll<WarpCoreItem>())
+                var core = SearchUtilities.Find("TowerTwin_Body/Sector_TowerTwin/Sector_TimeLoopInterior/Interactables_TimeLoopInterior/WarpCoreSocket/Prefab_NOM_WarpCoreVessel").GetComponent<WarpCoreItem>();
+
+                var newCore = Object.Instantiate(core, AstroObjectLocator.GetAstroObject("Vessel Dimension")?.transform ?? Locator.GetPlayerBody()?.transform);
+                newCore._visible = true;
+                foreach (OWRenderer render in newCore._renderers)
                 {
-                    if (core.GetWarpCoreType().Equals(WarpCoreType.Vessel))
+                    if (render)
                     {
-                        var newCore = Object.Instantiate(core, AstroObjectLocator.GetAstroObject("Vessel Dimension")?.transform ?? Locator.GetPlayerBody()?.transform);
-                        newCore._visible = true;
-                        foreach (OWRenderer render in newCore._renderers)
-                        {
-                            if (render)
-                            {
-                                render.enabled = true;
-                                render.SetActivation(true);
-                                render.SetLODActivation(true);
-                                if (render.GetRenderer()) render.GetRenderer().enabled = true;
-                            }
-                        }
-                        foreach (ParticleSystem particleSystem in newCore._particleSystems)
-                        {
-                            if (particleSystem) particleSystem.Play(true);
-                        }
-                        foreach (OWLight2 light in newCore._lights)
-                        {
-                            if (light)
-                            {
-                                light.enabled = true;
-                                light.SetActivation(true);
-                                light.SetLODActivation(true);
-                                if (light.GetLight()) light.GetLight().enabled = true;
-                            }
-                        }
-                        vesselWarpController._coreSocket._socketedItem = newCore;
-                        newCore.SocketItem(vesselWarpController._coreSocket._socketTransform, vesselWarpController._coreSocket._sector);
-                        newCore.PlaySocketAnimation();
-                        vesselWarpController._coreSocket.enabled = true;
-                        vesselWarpController.SetPowered(true);
-                        break;
+                        render.enabled = true;
+                        render.SetActivation(true);
+                        render.SetLODActivation(true);
+                        if (render.GetRenderer()) render.GetRenderer().enabled = true;
                     }
                 }
+                foreach (ParticleSystem particleSystem in newCore._particleSystems)
+                {
+                    if (particleSystem) particleSystem.Play(true);
+                }
+                foreach (OWLight2 light in newCore._lights)
+                {
+                    if (light)
+                    {
+                        light.enabled = true;
+                        light.SetActivation(true);
+                        light.SetLODActivation(true);
+                        if (light.GetLight()) light.GetLight().enabled = true;
+                    }
+                }
+                vesselWarpController._coreSocket._socketedItem = newCore;
+                newCore.SocketItem(vesselWarpController._coreSocket._socketTransform, vesselWarpController._coreSocket._sector);
+                newCore.PlaySocketAnimation();
+                vesselWarpController._coreSocket.enabled = true;
+                vesselWarpController.SetPowered(true);
+
+                // Fix warp core vanishing from vessel socket when warping back to DB (#1057)
+                // It was in the right place but inactive for some reason
+                Delay.FireOnNextUpdate(() => newCore.gameObject.SetActive(true));
             }
             else
             {
@@ -408,6 +409,8 @@ namespace NewHorizons.Handlers
             // Normally the power-on sound is 2D/global, we set it to 3D/local so it isn't audible if the player isn't nearby
             vesselWarpController._audioSource.spatialBlend = 1f;
             vesselWarpController._audioSource.rolloffMode = AudioRolloffMode.Linear;
+
+            
         }
     }
 }

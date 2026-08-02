@@ -1204,12 +1204,23 @@ namespace NewHorizons
         void OnDeath(DeathType _)
         {
             VesselWarpController.s_relativeLocationSaved = false;
+
             // We reset the solar system on death
             if (!IsChangingStarSystem)
             {
                 if (SystemDict[CurrentStarSystem].Config.respawnHere) return;
 
                 ResetCurrentStarSystem();
+
+                if (CurrentStarSystem == "SolarSystem")
+                {
+                    // Go back to regular warp/spawn behaviour when respawning in regular system
+                    IsWarpingFromVessel = false;
+                    IsWarpingFromShip = false;
+                    DidWarpFromShip = false;
+                    DidWarpFromVessel = false;
+                    WearingSuit = false;
+                }
             }
         }
 
