@@ -36,10 +36,6 @@ jobs:
         with:
           name: ${{ inputs.schemas_artifact }}
           path: NewHorizons/Schemas
-      - name: Move Stuff Becuase PNPM Can't FUCKING INSTALL IF YOU DONT HAVE PACKAGE JSON IN THE ROOT
-        run: |
-          cp docs/package.json .
-          cp docs/pnpm-lock.yaml .
       - name: Build Site
         uses: withastro/action@v6
         with:
