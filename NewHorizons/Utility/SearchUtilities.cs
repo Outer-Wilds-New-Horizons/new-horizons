@@ -154,13 +154,31 @@ namespace NewHorizons.Utility
 
             Profiler.BeginSample("3");
             var name = names.Last();
-            if (warn) NHLogger.LogWarning($"Couldn't find object in path {path}, will look for potential matches for name {name}");
+            var parent = names.Length >= 2 ? names[names.Length - 2] : null;
+            if (warn) NHLogger.LogWarning($"Couldn't find object in path {path}, will look for potential matches for name {name} with parent {parent}");
             // 3: find resource to include inactive objects (but skip prefabs)
-            go = Resources.FindObjectsOfTypeAll<GameObject>()
-                .FirstOrDefault(x => x.name == name && x.scene.name != null);
+            var possibleMatches = Resources.FindObjectsOfTypeAll<GameObject>()
+                .Where(x => x.name == name && x.scene.name != null);
+            // To try to be somewhat correct check that the parent is right. Fixes #1136, ensures GhostBirds and Anglerfish details are more stable
+            if (!string.IsNullOrEmpty(parent))
+            {
+                // multiple enumeration but its fine
+                go = possibleMatches.FirstOrDefault(x => x.transform.parent.name == parent);
+                if (go == null)
+                {
+                    go = possibleMatches.FirstOrDefault();
+                }
+            }
+            else
+            {
+                go = possibleMatches.FirstOrDefault();
+            }
+
             if (go)
             {
                 CachedGameObjects.Add(path, go);
+                NHLogger.LogWarning($"Found object with name {name} at path {go.transform.GetPath()}\n" +
+                                    $"Check that this is the correct object, then use the given path in your config or code.");
                 Profiler.EndSample();
                 return go;
             }

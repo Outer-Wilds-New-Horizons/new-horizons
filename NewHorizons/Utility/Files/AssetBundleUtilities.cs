@@ -1,3 +1,4 @@
+using Epic.OnlineServices;
 using NewHorizons.Utility.OWML;
 using OWML.Common;
 using OWML.ModHelper;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace NewHorizons.Utility.Files
 {
@@ -35,11 +37,11 @@ namespace NewHorizons.Utility.Files
             return bundle;
         }
 
-        public static void ClearCache()
+        public static void ClearCache(bool clearKeepLoaded = false)
         {
             foreach (var pair in AssetBundles)
             {
-                if (!pair.Value.keepLoaded)
+                if (!pair.Value.keepLoaded || clearKeepLoaded)
                 {
                     if (pair.Value.bundle == null)
                     {
@@ -52,7 +54,14 @@ namespace NewHorizons.Utility.Files
                 }
 
             }
-            AssetBundles = AssetBundles.Where(x => x.Value.keepLoaded).ToDictionary(x => x.Key, x => x.Value);
+            if (clearKeepLoaded)
+            {
+                AssetBundles.Clear();
+            }
+            else
+            {
+                AssetBundles = AssetBundles.Where(x => x.Value.keepLoaded).ToDictionary(x => x.Key, x => x.Value);
+            }
             _prefabCache.Clear();
         }
 
@@ -69,6 +78,27 @@ namespace NewHorizons.Utility.Files
                 NHLogger.Log($"Finished preloading bundle {assetBundleRelativeDir} - {_loadingBundles.Count} left");
                 AssetBundles[key] = (request.assetBundle, true);
             };
+        }
+
+        public static void PreloadBundleSynchronously(string assetBundleRelativeDir, IModBehaviour mod)
+        {
+            // Called in the case of clearing the cache, where we need the preloading bundles loaded immediately
+            string key = Path.GetFileName(assetBundleRelativeDir);
+            var completePath = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, assetBundleRelativeDir);
+
+            if (!AssetBundles.ContainsKey(key))
+            {
+                NHLogger.Log($"Preloading bundle {assetBundleRelativeDir} synchronously");
+                var bundle = AssetBundle.LoadFromFile(completePath);
+                if (bundle == null)
+                {
+                    NHLogger.LogError($"Couldn't load AssetBundle at [{completePath}] for [{mod.ModHelper.Manifest.Name}]");
+                }
+                else
+                {
+                    AssetBundles[key] = (bundle, true);
+                }
+            }
         }
 
         /// <summary>
