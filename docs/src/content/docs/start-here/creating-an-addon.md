@@ -84,4 +84,4 @@ NewHorizons = ModHelper.Interaction.TryGetModApi<INewHorizons>("xen.NewHorizons"
 NewHorizons.LoadConfigs(this);
 ```
 
-This will make New Horizons automatically load any planets and systems you have set up, though if you're making a more complicated mod you may prefer to load config files manually. 
+This will make New Horizons automatically load any planets and systems you have set up, though if you're making a more complicated mod you may prefer to load config files manually.

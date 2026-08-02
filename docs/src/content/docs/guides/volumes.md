@@ -10,11 +10,11 @@ New Horizons makes adding volumes to your planets easy; just specify them like y
 ```json title="planets/My Cool Planet.json"
 {
     "$schema": "https://raw.githubusercontent.com/Outer-Wilds-New-Horizons/new-horizons/main/NewHorizons/Schemas/body_schema.json",
-    "name" : "My Cool Planet",
+    "name": "My Cool Planet",
     "Volumes": {
         "oxygenVolumes": [
             {
-                "position": {"x": 399.4909, "y": -1.562098, "z": 20.11444},
+                "position": { "x": 399.4909, "y": -1.562098, "z": 20.11444 },
                 "radius": 30,
                 "treeVolume": true,
                 "playRefillAudio": true
@@ -33,7 +33,7 @@ By default, volumes are spherical, and you can specify the radius of that sphere
 ```json title="planets/My Cool Planet.json"
 {
     "$schema": "https://raw.githubusercontent.com/Outer-Wilds-New-Horizons/new-horizons/main/NewHorizons/Schemas/body_schema.json",
-    "name" : "My Cool Planet",
+    "name": "My Cool Planet",
     "Volumes": {
         "forces": {
             "directionalVolumes": [

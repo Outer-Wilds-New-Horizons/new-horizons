@@ -107,13 +107,13 @@ You can convert details into custom items for the player to pick up and hold by 
     "Props": {
         "details": [
             {
-				"path": "Moon_Body/Sector_THM/Interactables_THM/Prefab_HEA_Recorder/Props_HEA_Recorder_Geo",
-				"position": {"x": -35.30206, "y": -79.12967, "z": 182.912},
-				"rotation": {"x": 300.8207, "y": 32.93826, "z": 141.4214},
-				"item": {
-					"name": "Tape Recorder",
-					"itemType": "Decoration"
-				}
+                "path": "Moon_Body/Sector_THM/Interactables_THM/Prefab_HEA_Recorder/Props_HEA_Recorder_Geo",
+                "position": { "x": -35.30206, "y": -79.12967, "z": 182.912 },
+                "rotation": { "x": 300.8207, "y": 32.93826, "z": 141.4214 },
+                "item": {
+                    "name": "Tape Recorder",
+                    "itemType": "Decoration"
+                }
             }
         ]
     }
@@ -131,36 +131,36 @@ Here's a more complex example, with every property filled out:
     "Props": {
         "details": [
             {
-				"path": "BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_HangingCity/Sector_HangingCity_BlackHoleForge/BlackHoleForgePivot/Props_BlackHoleForge/Prefab_NOM_VaseThick",
-				"position": {"x": -33.30206, "y": -79.12967, "z": 182.912},
-				"rotation": {"x": 300.8207, "y": 32.93826, "z": 141.4214},
-				"item": {
-					"name": "Nomai Vase",
-					"itemType": "Decoration",
-					"interactRange": 3,
-					"colliderRadius": 0,
+                "path": "BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_HangingCity/Sector_HangingCity_BlackHoleForge/BlackHoleForgePivot/Props_BlackHoleForge/Prefab_NOM_VaseThick",
+                "position": { "x": -33.30206, "y": -79.12967, "z": 182.912 },
+                "rotation": { "x": 300.8207, "y": 32.93826, "z": 141.4214 },
+                "item": {
+                    "name": "Nomai Vase",
+                    "itemType": "Decoration",
+                    "interactRange": 3,
+                    "colliderRadius": 0,
 
-					"droppable": true,
-					"dropOffset": {"x": 0, "y": 0, "z": 0},
-					"dropNormal": {"x":0, "y": 1, "z": 0},
+                    "droppable": true,
+                    "dropOffset": { "x": 0, "y": 0, "z": 0 },
+                    "dropNormal": { "x": 0, "y": 1, "z": 0 },
 
-					"holdOffset": {"x": 0, "y": -0.3, "z": 0},
-					"holdRotation": {"x": 0, "y": 45, "z": 0},
+                    "holdOffset": { "x": 0, "y": -0.3, "z": 0 },
+                    "holdRotation": { "x": 0, "y": 45, "z": 0 },
 
-					"socketOffset": {"x": 0, "y": 0.2, "z": 0},
-					"socketRotation": {"x": 0, "y": 45, "z": 0},
+                    "socketOffset": { "x": 0, "y": 0.2, "z": 0 },
+                    "socketRotation": { "x": 0, "y": 45, "z": 0 },
 
-					"pickupAudio": "ToolProbeRetrieve",
-					"dropAudio": "ToolProbeLaunch",
-					"socketAudio": "PlayerSuitLockOn",
-					"unsocketAudio": "PlayerSuitLockOff",
+                    "pickupAudio": "ToolProbeRetrieve",
+                    "dropAudio": "ToolProbeLaunch",
+                    "socketAudio": "PlayerSuitLockOn",
+                    "unsocketAudio": "PlayerSuitLockOff",
 
-					"pickupCondition": "VASE_PICKED_UP",
-					"clearPickupConditionOnDrop": true,
-					"pickupFact": "EXAMPLES_VASE",
+                    "pickupCondition": "VASE_PICKED_UP",
+                    "clearPickupConditionOnDrop": true,
+                    "pickupFact": "EXAMPLES_VASE",
 
-					"pathToInitialSocket": "Sector_TH/Strucutre_NOM_Shelf"
-				}
+                    "pathToInitialSocket": "Sector_TH/Strucutre_NOM_Shelf"
+                }
             }
         ]
     }
@@ -178,27 +178,27 @@ You can also designate a detail as an "item socket," which will allow certain it
     "Props": {
         "details": [
             {
-				"path": "QuantumIsland_Body/Sector_QuantumIsland/Sector_QuantumTowerInterior/Sector_QuantumTowerFinalRoom/Interactables_FinalRoom/FinalRoom_QProps/FinalRoom_Shelf/Q_Shelf/Prefab_NOM_Shelf/Strucutre_NOM_Shelf",
-				"position": {"x": -29.89541, "y": -79.87562, "z": 183.1785},
-				"rotation": {"x": 314.8642, "y": 286.1038, "z": 235.4039},
-				"itemSocket": {
-					"itemType": "Decoration",
-					"interactRange": 3,
+                "path": "QuantumIsland_Body/Sector_QuantumIsland/Sector_QuantumTowerInterior/Sector_QuantumTowerFinalRoom/Interactables_FinalRoom/FinalRoom_QProps/FinalRoom_Shelf/Q_Shelf/Prefab_NOM_Shelf/Strucutre_NOM_Shelf",
+                "position": { "x": -29.89541, "y": -79.87562, "z": 183.1785 },
+                "rotation": { "x": 314.8642, "y": 286.1038, "z": 235.4039 },
+                "itemSocket": {
+                    "itemType": "Decoration",
+                    "interactRange": 3,
                     "colliderRadius": 0.5,
-					"useGiveTakePrompts": true,
+                    "useGiveTakePrompts": true,
 
-					"insertCondition": "VASE_INSERTED",
+                    "insertCondition": "VASE_INSERTED",
                     "clearInsertConditionOnRemoval": true,
                     "insertFact": "EXAMPLES_VASE_INSERTED",
 
-					"removalCondition": "VASE_REMOVED",
+                    "removalCondition": "VASE_REMOVED",
                     "clearRemovalConditionOnInsert": true,
                     "removalFact": "EXAMPLES_VASE_REMOVED",
 
-                    "position": {"x": 0, "y": 0, "z": 0.5},
-                    "rotation": {"x": 0, "y": 0, "z": 0},
-					"isRelativeToParent": true
-				}
+                    "position": { "x": 0, "y": 0, "z": 0.5 },
+                    "rotation": { "x": 0, "y": 0, "z": 0 },
+                    "isRelativeToParent": true
+                }
             }
         ]
     }
@@ -222,20 +222,20 @@ You can use items and sockets to create simple puzzles purely with New Horizons 
     "Props": {
         "details": [
             {
-				"path": "BlahBlahBlah",
-				"item": {
-					"name": "Rusty Key",
-					"itemType": "Key"
-				}
+                "path": "BlahBlahBlah",
+                "item": {
+                    "name": "Rusty Key",
+                    "itemType": "Key"
+                }
             },
             {
-				"path": "BlahBlahBlah",
+                "path": "BlahBlahBlah",
                 "rename": "Locked Door",
                 "deactivationCondition": "DOOR_UNLOCKED",
-				"itemSocket": {
-					"itemType": "Key",
-					"insertCondition": "DOOR_UNLOCKED"
-				}
+                "itemSocket": {
+                    "itemType": "Key",
+                    "insertCondition": "DOOR_UNLOCKED"
+                }
             }
         ]
     }
@@ -245,7 +245,6 @@ You can use items and sockets to create simple puzzles purely with New Horizons 
 When the "Rusty Key" item (or any other item with `"itemType": "Key"`, for that matter) is inserted into the "Locked Door" item socket, a condition we've named `DOOR_UNLOCKED` is set to true. These conditions are mainly used for dialogue in Outer Wilds, but New Horizons also allows us to control objects with them. The locked door object has the `DOOR_UNLOCKED` condition as its `deactivationCondition`, which will cause it to disappear ("deactivate") when the condition is set.
 
 There are a handful of other properties that can be used like this: `activationCondition` and `deactivationCondition` on all details, `insertCondition` and `removalCondition` on item sockets, and `pickupCondition` on items. There are other properties that can further customize these behaviors.
-
 
 ## Use the schema
 
