@@ -39,7 +39,7 @@ namespace NewHorizons
         void LoadConfigs(IModBehaviour mod);
 
         /// <summary>
-        /// Retrieve the root GameObject of a custom planet made by creating configs. 
+        /// Retrieve the root GameObject of a custom planet made by creating configs.
         /// Will only work if the planet has been created (see GetStarSystemLoadedEvent)
         /// </summary>
         GameObject GetPlanet(string name);
@@ -132,7 +132,7 @@ namespace NewHorizons
         /// <summary>
         /// Register your own builder that will act on the given GameObject by reading the json string of its "extras" module
         /// </summary>
-        void RegisterCustomBuilder(Action<GameObject, string> builder); 
+        void RegisterCustomBuilder(Action<GameObject, string> builder);
         #endregion
 
         #region Spawn props
@@ -140,7 +140,7 @@ namespace NewHorizons
         /// Allows you to spawn a copy of a prop by specifying its path.
         /// This is the same as using Props->details in a config, but also returns the spawned gameObject to you.
         /// </summary>
-        GameObject SpawnObject(IModBehaviour mod, GameObject planet, Sector sector, string propToCopyPath, Vector3 position, Vector3 eulerAngles, 
+        GameObject SpawnObject(IModBehaviour mod, GameObject planet, Sector sector, string propToCopyPath, Vector3 position, Vector3 eulerAngles,
             float scale, bool alignWithNormal);
 
         /// <summary>
@@ -179,7 +179,7 @@ namespace NewHorizons
         void DefineStarSystem(string name, string config, IModBehaviour mod);
 
         /// <summary>
-        /// Allows creation of dialogue by directly passing the xml and dialogueInfo json contents as strings. 
+        /// Allows creation of dialogue by directly passing the xml and dialogueInfo json contents as strings.
         /// Must be called at least 2 frames before entering dialogue if you're using ReuseDialogueOptionsFrom
         /// </summary>
         /// <param name="textAssetID">TextAsset name used for compatibility with voice mod. Just has to be a unique identifier.</param>

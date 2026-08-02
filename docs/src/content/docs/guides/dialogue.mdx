@@ -168,11 +168,11 @@ The entry condition can be either a condition or a persistent condition.
 
 A condition is a yes/no value stored **for this loop and this loop only**. It can be used to show new dialogue options, stop someone from talking to you (looking at you Slate), and more.
 
-Conditions can be set in dialogue using `<SetCondition>CONDITION_NAME</SetCondition>`. This can go in a DialogueNode in which case it will set the condition to true when that node is read. There is a similar version of this for DialogueOptions called `<ConditionToSet>CONDITION_NAME</ConditionToSet>` which will set it to true when that option is selected. Conditions can be disabled using `<ConditionToCancel>CONDITION_NAME</<ConditionToCancel>` in a DialogueOption, but cannot be disabled just by entering a DialogueNode. 
+Conditions can be set in dialogue using `<SetCondition>CONDITION_NAME</SetCondition>`. This can go in a DialogueNode in which case it will set the condition to true when that node is read. There is a similar version of this for DialogueOptions called `<ConditionToSet>CONDITION_NAME</ConditionToSet>` which will set it to true when that option is selected. Conditions can be disabled using `<ConditionToCancel>CONDITION_NAME</<ConditionToCancel>` in a DialogueOption, but cannot be disabled just by entering a DialogueNode.
 
-You can lock a DialogueOption behind a condition using `<RequiredCondition>CONDITION_NAME</RequiredCondition>`, or remove a DialogueOption after the condition is set to true using `<CancelledCondition>CONDITION_NAME</CancelledCondition>`. 
+You can lock a DialogueOption behind a condition using `<RequiredCondition>CONDITION_NAME</RequiredCondition>`, or remove a DialogueOption after the condition is set to true using `<CancelledCondition>CONDITION_NAME</CancelledCondition>`.
 
-Dialogue conditions can also be set in code with `DialogueConditionManager.SharedInstance.SetConditionState("CONDITION_NAME", true/false)` or read with `DialogueConditionManager.SharedInstance.GetConditionState("CONDITION_NAME")`. 
+Dialogue conditions can also be set in code with `DialogueConditionManager.SharedInstance.SetConditionState("CONDITION_NAME", true/false)` or read with `DialogueConditionManager.SharedInstance.GetConditionState("CONDITION_NAME")`.
 
 Note that `CONDITION_NAME` is a placeholder that you would replace with whatever you want to call your condition. Consider appending conditions with the name of your mod to make for better compatibility between mods, for example a condition name like `SPOKEN_TO` is very generic and might conflict with other mods whereas `NH_EXAMPLES_SPOKEN_TO_ERNESTO` is much less likely to conflict with another mod.
 
@@ -186,7 +186,7 @@ Persistent conditions can also be set in code with `PlayerData.SetPersistentCond
 
 ### Ship Logs
 
-Dialogue can interact with ship logs, either granting them to the player (`<RevealFacts>` on a DialogueNode) or locking dialogue behind ship log completion (`<RequiredLogCondition>` on a DialogueOption). 
+Dialogue can interact with ship logs, either granting them to the player (`<RevealFacts>` on a DialogueNode) or locking dialogue behind ship log completion (`<RequiredLogCondition>` on a DialogueOption).
 
 You can also use `<DialogueTargetShipLogCondition>` in tandem with `DialogueTarget` to make it so you must have a [ship log fact](/guides/ship-log#explore-facts) to go to the next node.
 
@@ -250,7 +250,6 @@ For example, Slate's first dialogue with options is named `Scientist5`. To make 
 ```
 
 Note: If you're loading dialogue in code, 2 frames must pass before entering the conversation in order for ReuseDialogueOptionsListFrom to take effect.
-
 
 ## Dialogue FAQ
 
