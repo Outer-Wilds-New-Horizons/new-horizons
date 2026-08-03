@@ -28,6 +28,7 @@ using NewHorizons.Utility.OuterWilds;
 using NewHorizons.Utility.OWML;
 using Newtonsoft.Json.Linq;
 using OWML.Common;
+using OWML.Common.Enums;
 using OWML.ModHelper;
 using OWML.Utils;
 using System;
@@ -37,7 +38,9 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using static InputConsts;
 
 namespace NewHorizons
 {
@@ -65,6 +68,14 @@ namespace NewHorizons
         public static Dictionary<IModBehaviour, TitleScreenConfig> TitleScreenConfigs = new();
 
         public static float SecondsElapsedInLoop = -1;
+
+        public static InputCommandType DebugRaycastBindType { get; private set; }
+        public static InputCommandType DebugAirborneBindType { get; private set; }
+        public static InputCommandType DebugAirborneZBindType { get; private set; }
+
+        public static IInputCommands DebugRaycastBind => InputLibrary.GetInputCommand(DebugRaycastBindType);
+        public static IInputCommands DebugAirborneBind => InputLibrary.GetInputCommand(DebugAirborneBindType);
+        public static IInputCommands DebugAirborneZBind => InputLibrary.GetInputCommand(DebugAirborneZBindType);
 
         public static bool IsSystemReady { get; private set; }
 
@@ -274,6 +285,32 @@ namespace NewHorizons
         {
             // Patches
             Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
+
+            // Register rebindable debug inputs
+            DebugRaycastBindType = ModHelper.RebindingHelper.RegisterRebindable(
+                "Raycast",
+                "Run debug raycast and print result.",
+                Key.P,
+                GamepadBinding.None,
+                false
+            );
+            DebugAirborneBindType = ModHelper.RebindingHelper.RegisterRebindable(
+                "Toggle Airborne Raycast",
+                "Toggle airborne debug raycast mode.",
+                Key.O,
+                GamepadBinding.None,
+                false
+            );
+            DebugAirborneZBindType = ModHelper.RebindingHelper.RegisterRebindable(
+                "Adjust Airborne Distance",
+                "Adjust the distance of the airborne raycast target.",
+                Key.I,
+                GamepadBinding.DPadUp,
+                Key.K,
+                GamepadBinding.DPadDown,
+                true
+            );
+
             // the campfire on the title screen calls this from RegisterShape before it gets patched, so we have to call it again. lol 
             ShapeManager.Initialize();
 
