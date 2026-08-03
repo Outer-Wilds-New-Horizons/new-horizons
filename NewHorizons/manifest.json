@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/amazingalek/owml/master/schemas/manifest_schema.json",
   "filename": "NewHorizons.dll",
-  "author": "xen, Bwc9876, JohnCorby, MegaPiggy, and friends",
+  "author": "xen, MegaPiggy, Bwc9876, JohnCorby, and friends",
   "name": "New Horizons",
   "uniqueName": "xen.NewHorizons",
   "version": "1.29.7",
