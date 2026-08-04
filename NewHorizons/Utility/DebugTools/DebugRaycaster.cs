@@ -75,7 +75,7 @@ namespace NewHorizons.Utility.DebugTools
         {
             UpdatePromptVisibility();
 
-            if (!Main.Debug) return;
+            if (!Main.Debug || OWTime.IsPaused()) return;
 
             if (OWInput.IsNewlyPressed(Main.DebugAirborneBind))
             {
