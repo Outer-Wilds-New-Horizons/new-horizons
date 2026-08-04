@@ -181,6 +181,35 @@ namespace NewHorizons.Handlers
 
             // Done spawning
             TargetSpawnID = null;
+
+            if (!Main.Instance.IsWarpingFromShip && 
+                !Main.Instance.IsWarpingFromVessel &&
+                SpawnPointBuilder.PlayerSpawnInfo.startInShip)
+            {
+                yield return new WaitForEndOfFrame();
+
+                var playerSpawner = GameObject.FindObjectOfType<PlayerSpawner>();
+                NHLogger.LogVerbose("Debug warping into ship");
+                playerSpawner.DebugWarp(playerSpawner.GetSpawnPoint(SpawnLocation.Ship));
+
+                yield return new WaitForEndOfFrame();
+
+                Locator.GetShipBody().GetComponentInChildren<ShipCockpitController>().OnPressInteract();
+
+                var o2Volume = Locator.GetShipBody().GetComponent<OxygenVolume>();
+                var atmoVolume = SearchUtilities.Find("Ship_Body/Volumes/ShipAtmosphereVolume").GetComponent<SimpleFluidVolume>();
+
+                var resources = Locator.GetPlayerTransform().GetComponent<PlayerResources>();
+                resources._cameraFluidDetector.AddVolume(atmoVolume);
+                resources._cameraFluidDetector.OnVolumeAdded(atmoVolume);
+                resources._cameraFluidDetector.OnVolumeActivated(atmoVolume);
+
+                GlobalMessenger.FireEvent("EnterShip");
+                PlayerState.OnEnterShip();
+
+                PlayerSpawnHandler.SpawnShip();
+                OWInput.ChangeInputMode(InputMode.ShipCockpit);
+            }
         }
 
         private static void FixPlayerVelocity(bool recenter = true)
