@@ -38,19 +38,19 @@ namespace NewHorizons.Utility.DebugTools
 
             if (_raycastPrompt == null)
             {
-                _raycastPrompt = new ScreenPrompt(TranslationHandler.GetTranslation("DEBUG_RAYCAST", TranslationHandler.TextType.UI) + " <CMD>", ImageUtilities.GetButtonSprite(KeyCode.P));
+                _raycastPrompt = new ScreenPrompt(Main.DebugRaycastBind, TranslationHandler.GetTranslation("DEBUG_RAYCAST", TranslationHandler.TextType.UI));
                 Locator.GetPromptManager().AddScreenPrompt(_raycastPrompt, PromptPosition.UpperRight, false);
             }
 
             if (_airbornePrompt == null)
             {
-                _airbornePrompt = new ScreenPrompt(TranslationHandler.GetTranslation("DEBUG_AIRBORNE", TranslationHandler.TextType.UI) + " <CMD>", ImageUtilities.GetButtonSprite(KeyCode.O));
+                _airbornePrompt = new ScreenPrompt(Main.DebugAirborneBind, TranslationHandler.GetTranslation("DEBUG_AIRBORNE", TranslationHandler.TextType.UI));
                 Locator.GetPromptManager().AddScreenPrompt(_airbornePrompt, PromptPosition.UpperRight, false);
             }
 
             if (_airborneZPrompt == null)
             {
-                _airborneZPrompt = new MultiButtonScreenPrompt(TranslationHandler.GetTranslation("DEBUG_AIRBORNE_Z", TranslationHandler.TextType.UI) + " <CMD1> <CMD2>", ImageUtilities.GetButtonSprite(KeyCode.K), ImageUtilities.GetButtonSprite(KeyCode.I));
+                _airborneZPrompt = new ScreenPrompt(Main.DebugAirborneZBind, TranslationHandler.GetTranslation("DEBUG_AIRBORNE_Z", TranslationHandler.TextType.UI));
                 Locator.GetPromptManager().AddScreenPrompt(_airborneZPrompt, PromptPosition.UpperRight, false);
             }
         }
@@ -75,33 +75,23 @@ namespace NewHorizons.Utility.DebugTools
         {
             UpdatePromptVisibility();
 
-            if (!Main.Debug) return;
+            if (!Main.Debug || OWTime.IsPaused()) return;
 
-            if (Keyboard.current == null) return;
-
-            if (Keyboard.current[Key.O].wasReleasedThisFrame)
+            if (OWInput.IsNewlyPressed(Main.DebugAirborneBind))
             {
                 ToggleMode();
-            } 
-            else if (Keyboard.current[Key.P].wasReleasedThisFrame)
+            }
+            else if (OWInput.IsNewlyPressed(Main.DebugRaycastBind))
             {
                 PrintRaycast();
             }
 
-            if (isAirborneMode)
+            if (isAirborneMode && OWInput.IsNewlyPressed(Main.DebugAirborneZBind))
             {
-                if (Keyboard.current[Key.I].wasReleasedThisFrame)
-                {
-                    _z += 1;
-                    UpdateAirborneTarget();
-                    PlayAudio(AudioType.Menu_ChangeTab);
-                }
-                else if (Keyboard.current[Key.K].wasReleasedThisFrame)
-                {
-                    _z -= 1;
-                    UpdateAirborneTarget();
-                    PlayAudio(AudioType.Menu_ChangeTab);
-                }
+                int rangeValue = Mathf.Clamp(Mathf.RoundToInt(OWInput.GetValue(Main.DebugAirborneZBind)), -1, 1);
+                _z += rangeValue;
+                UpdateAirborneTarget();
+                PlayAudio(AudioType.Menu_ChangeTab);
             }
         }
 

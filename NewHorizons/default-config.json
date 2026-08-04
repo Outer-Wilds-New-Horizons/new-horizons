@@ -58,6 +58,13 @@
       "type": "text",
       "value": "",
       "tooltip": "Forces the player to spawn in this system after death. Must match the unique name of a system, eg, xen.NewHorizonsExamples"
+    },
+    "ControlsSeparator": {
+      "type": "separator"
+    },
+    "Controls": {
+      "type": "label",
+      "title": "Controls"
     }
   }
 }
