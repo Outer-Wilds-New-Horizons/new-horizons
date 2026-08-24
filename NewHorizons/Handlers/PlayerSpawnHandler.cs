@@ -203,6 +203,8 @@ namespace NewHorizons.Handlers
                 resources._cameraFluidDetector.AddVolume(atmoVolume);
                 resources._cameraFluidDetector.OnVolumeAdded(atmoVolume);
                 resources._cameraFluidDetector.OnVolumeActivated(atmoVolume);
+                resources._cameraFluidDetector.AddVolume(o2Volume);
+                resources._cameraFluidDetector.OnVolumeAdded(o2Volume);
 
                 GlobalMessenger.FireEvent("EnterShip");
                 PlayerState.OnEnterShip();

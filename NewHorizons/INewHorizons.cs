@@ -298,5 +298,12 @@ namespace NewHorizons
         /// <see langword="true"/> if the game is currently in the process of warping back to the eye from the solar system, <see langword="false"/> otherwise.
         /// </returns>
         bool IsWarpingBackToEye();
+
+        /// <summary>
+        /// Wraps the SearchUtilities.Find method, for use without needing to reference the DLL
+        /// This is a better version of GameObjects.Find in that it can find inactive objects, and falls back to finding objects by name and partial path if the full path cannot be found.
+        /// </summary>
+        /// <returns>The found GameObject or null if it doesn't exist</returns>
+        GameObject SearchUtilitiesFind(string path);
     }
 }

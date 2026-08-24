@@ -1,6 +1,7 @@
 
 using NewHorizons.External.SerializableData;
 using Newtonsoft.Json;
+using System.ComponentModel;
 
 namespace NewHorizons.External.Modules
 {
@@ -50,6 +51,20 @@ namespace NewHorizons.External.Modules
         /// Defaults to true for geysers, tornados, and volcanoes, and false for everything else.
         /// </summary>
         public bool? alignRadial;
+    }
+
+    [JsonObject]
+    public class GeneralScaleablePropInfo : GeneralPropInfo
+    {
+        /// <summary>
+        /// Scale the prop
+        /// </summary>
+        [DefaultValue(1f)] public float scale = 1f;
+
+        /// <summary>
+        /// Scale each axis of the prop. Overrides `scale`.
+        /// </summary>
+        public MVector3 stretch;
     }
 
     [JsonObject]

@@ -164,7 +164,7 @@ namespace NewHorizons.External.Configs
         public string[] initialReveal;
 
         /// <summary>
-        /// The planet to focus on when entering the ship log for the first time in a loop. If not set this will be the planet at navtigation position (1, 0)
+        /// The planet to focus on when entering the ship log for the first time in a loop. If not set this will be the planet at navtigation position (1, 0). The ID in question is the one written in the ship log XML file.
         /// </summary>
         public string shipLogStartingPlanetID;
 

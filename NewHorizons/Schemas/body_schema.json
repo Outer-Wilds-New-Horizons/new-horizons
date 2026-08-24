@@ -1025,6 +1025,14 @@
           "type": "boolean",
           "description": "Do we reset all the components on this object? Useful for certain props that have dialogue components attached to\nthem."
         },
+        "activationCondition": {
+          "type": "string",
+          "description": "Activates this game object when the dialogue/persistent condition is met"
+        },
+        "deactivationCondition": {
+          "type": "string",
+          "description": "Deactivates this game object when the dialogue/persistent condition is met"
+        },
         "scale": {
           "type": "number",
           "description": "Scale the prop",
@@ -1034,14 +1042,6 @@
         "stretch": {
           "description": "Scale each axis of the prop. Overrides `scale`.",
           "$ref": "#/definitions/MVector3"
-        },
-        "activationCondition": {
-          "type": "string",
-          "description": "Activates this game object when the dialogue/persistent condition is met"
-        },
-        "deactivationCondition": {
-          "type": "string",
-          "description": "Deactivates this game object when the dialogue/persistent condition is met"
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -1681,6 +1681,14 @@
           "type": "boolean",
           "description": "Do we reset all the components on this object? Useful for certain props that have dialogue components attached to\nthem."
         },
+        "activationCondition": {
+          "type": "string",
+          "description": "Activates this game object when the dialogue/persistent condition is met"
+        },
+        "deactivationCondition": {
+          "type": "string",
+          "description": "Deactivates this game object when the dialogue/persistent condition is met"
+        },
         "scale": {
           "type": "number",
           "description": "Scale the prop",
@@ -1690,14 +1698,6 @@
         "stretch": {
           "description": "Scale each axis of the prop. Overrides `scale`.",
           "$ref": "#/definitions/MVector3"
-        },
-        "activationCondition": {
-          "type": "string",
-          "description": "Activates this game object when the dialogue/persistent condition is met"
-        },
-        "deactivationCondition": {
-          "type": "string",
-          "description": "Deactivates this game object when the dialogue/persistent condition is met"
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -1801,6 +1801,14 @@
           "type": "boolean",
           "description": "Do we reset all the components on this object? Useful for certain props that have dialogue components attached to\nthem."
         },
+        "activationCondition": {
+          "type": "string",
+          "description": "Activates this game object when the dialogue/persistent condition is met"
+        },
+        "deactivationCondition": {
+          "type": "string",
+          "description": "Deactivates this game object when the dialogue/persistent condition is met"
+        },
         "scale": {
           "type": "number",
           "description": "Scale the prop",
@@ -1810,14 +1818,6 @@
         "stretch": {
           "description": "Scale each axis of the prop. Overrides `scale`.",
           "$ref": "#/definitions/MVector3"
-        },
-        "activationCondition": {
-          "type": "string",
-          "description": "Activates this game object when the dialogue/persistent condition is met"
-        },
-        "deactivationCondition": {
-          "type": "string",
-          "description": "Deactivates this game object when the dialogue/persistent condition is met"
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -2492,6 +2492,14 @@
           "type": "boolean",
           "description": "Do we reset all the components on this object? Useful for certain props that have dialogue components attached to\nthem."
         },
+        "activationCondition": {
+          "type": "string",
+          "description": "Activates this game object when the dialogue/persistent condition is met"
+        },
+        "deactivationCondition": {
+          "type": "string",
+          "description": "Deactivates this game object when the dialogue/persistent condition is met"
+        },
         "scale": {
           "type": "number",
           "description": "Scale the prop",
@@ -2501,14 +2509,6 @@
         "stretch": {
           "description": "Scale each axis of the prop. Overrides `scale`.",
           "$ref": "#/definitions/MVector3"
-        },
-        "activationCondition": {
-          "type": "string",
-          "description": "Activates this game object when the dialogue/persistent condition is met"
-        },
-        "deactivationCondition": {
-          "type": "string",
-          "description": "Deactivates this game object when the dialogue/persistent condition is met"
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -2910,6 +2910,16 @@
       "description": "A lesser form of DetailInfo used for the title screen and proxies since that supports fewer features",
       "additionalProperties": false,
       "properties": {
+        "scale": {
+          "type": "number",
+          "description": "Scale the prop",
+          "format": "float",
+          "default": 1.0
+        },
+        "stretch": {
+          "description": "Scale each axis of the prop. Overrides `scale`.",
+          "$ref": "#/definitions/MVector3"
+        },
         "rotation": {
           "description": "Rotation of the object",
           "$ref": "#/definitions/MVector3"
@@ -2959,16 +2969,6 @@
         "removeComponents": {
           "type": "boolean",
           "description": "Do we reset all the components on this object? Useful for certain props that have dialogue components attached to\nthem."
-        },
-        "scale": {
-          "type": "number",
-          "description": "Scale the prop",
-          "format": "float",
-          "default": 1.0
-        },
-        "stretch": {
-          "description": "Scale each axis of the prop. Overrides `scale`.",
-          "$ref": "#/definitions/MVector3"
         },
         "activationCondition": {
           "type": "string",
@@ -4355,6 +4355,14 @@
           "type": "boolean",
           "description": "Do we reset all the components on this object? Useful for certain props that have dialogue components attached to\nthem."
         },
+        "activationCondition": {
+          "type": "string",
+          "description": "Activates this game object when the dialogue/persistent condition is met"
+        },
+        "deactivationCondition": {
+          "type": "string",
+          "description": "Deactivates this game object when the dialogue/persistent condition is met"
+        },
         "scale": {
           "type": "number",
           "description": "Scale the prop",
@@ -4364,14 +4372,6 @@
         "stretch": {
           "description": "Scale each axis of the prop. Overrides `scale`.",
           "$ref": "#/definitions/MVector3"
-        },
-        "activationCondition": {
-          "type": "string",
-          "description": "Activates this game object when the dialogue/persistent condition is met"
-        },
-        "deactivationCondition": {
-          "type": "string",
-          "description": "Deactivates this game object when the dialogue/persistent condition is met"
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -5130,6 +5130,16 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "scale": {
+          "type": "number",
+          "description": "Scale the prop",
+          "format": "float",
+          "default": 1.0
+        },
+        "stretch": {
+          "description": "Scale each axis of the prop. Overrides `scale`.",
+          "$ref": "#/definitions/MVector3"
+        },
         "rotation": {
           "description": "Rotation of the object",
           "$ref": "#/definitions/MVector3"

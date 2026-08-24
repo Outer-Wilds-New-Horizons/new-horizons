@@ -6,7 +6,7 @@ using System.Runtime.Serialization;
 namespace NewHorizons.External.Modules.Props
 {
     [JsonObject]
-    public class FuelTankInfo : GeneralPropInfo
+    public class FuelTankInfo : GeneralScaleablePropInfo
     {
         /// <summary>
         /// The type of fuel tank this is.

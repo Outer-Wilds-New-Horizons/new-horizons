@@ -412,5 +412,7 @@ namespace NewHorizons
         public GameObject GetCenterOfStarSystem() => AstroObjectBuilder.CenterOfUniverse;
 
         public bool IsWarpingBackToEye() => Main.Instance.IsWarpingBackToEye;
+
+        public GameObject SearchUtilitiesFind(string path) => SearchUtilities.Find(path);
     }
 }

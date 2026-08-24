@@ -10,7 +10,7 @@ namespace NewHorizons.External.Modules.Props
     /// A lesser form of DetailInfo used for the title screen and proxies since that supports fewer features
     /// </summary>
     [JsonObject]
-    public class SimplifiedDetailInfo : GeneralPropInfo
+    public class SimplifiedDetailInfo : GeneralScaleablePropInfo
     {
         public SimplifiedDetailInfo() { }
 
@@ -40,16 +40,6 @@ namespace NewHorizons.External.Modules.Props
         /// them.
         /// </summary>
         public bool removeComponents;
-
-        /// <summary>
-        /// Scale the prop
-        /// </summary>
-        [DefaultValue(1f)] public float scale = 1f;
-
-        /// <summary>
-        /// Scale each axis of the prop. Overrides `scale`.
-        /// </summary>
-        public MVector3 stretch;
 
         /// <summary>
         /// Activates this game object when the dialogue/persistent condition is met

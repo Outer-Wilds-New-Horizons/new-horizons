@@ -153,6 +153,7 @@ namespace NewHorizons.Components.Ship
             if (_waitingToBeSeated && PlayerState.IsInsideShip() && _eyesOpen)
             {
                 Delay.FireInNUpdates(() => FinishWarpIn(), 1);
+                Delay.FireInNUpdates(() => FinishWarpIn(), 20);
                 _waitingToBeSeated = false;
             }
         }
@@ -202,6 +203,17 @@ namespace NewHorizons.Components.Ship
 
             PlayerSpawnHandler.SpawnShip();
             OWInput.ChangeInputMode(InputMode.ShipCockpit);
+
+            // Warping to TH bugs out the state again somehow and this fixes it ig
+            Locator.GetShipBody().GetComponentInChildren<HatchController>().CloseHatch();
+            foreach (var volume in Locator.GetShipBody().GetComponentsInChildren<OWTriggerVolume>(true))
+            {
+                if (volume._childEntryways != null && volume._childEntryways.Count > 0)
+                {
+                    volume._childEntryways[0].ForceEntry(Locator.GetPlayerDetector().gameObject);
+                    volume._childEntryways[0].ForceEntry(Locator.GetPlayerCameraDetector().gameObject);
+                }
+            }
         }
 
         public void InitializeWarpDriveVisuals(GameObject enableObj, GameObject disableObj)
