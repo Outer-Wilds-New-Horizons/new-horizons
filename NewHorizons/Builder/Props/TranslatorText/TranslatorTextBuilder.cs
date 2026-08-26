@@ -785,6 +785,11 @@ namespace NewHorizons.Builder.Props.TranslatorText
 
         public static void HandleUnityCreatedNomaiText(NomaiText nomaiText)
         {
+            if (nomaiText._nomaiTextAsset == null)
+            {
+                return;
+            }
+
             string xml = OWUtilities.RemoveByteOrderMark(nomaiText._nomaiTextAsset);
             XmlDocument xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(xml);
