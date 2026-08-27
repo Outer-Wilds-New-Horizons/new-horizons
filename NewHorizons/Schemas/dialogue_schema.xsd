@@ -152,7 +152,8 @@
             <xs:element name="ReuseDialogueOptionsListFrom" type="xs:string" minOccurs="0" maxOccurs="1">
                 <xs:annotation>
                     <xs:documentation>
-                        Name of another DialogueNode whose options you want to repeat to avoid having to copy paste
+                        Name of another `DialogueNode` whose options you want to repeat to avoid having to copy paste.
+                        Will override any `DialogueOption`s.
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>

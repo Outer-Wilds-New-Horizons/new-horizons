@@ -42,12 +42,12 @@ namespace NewHorizons.External.Modules.Props
         public bool removeComponents;
 
         /// <summary>
-        /// Activates this game object when the dialogue/persistent condition is met
+        /// Activates this game object when the dialogue/persistent condition is met. Will also deactivate the object when the condition is unset.
         /// </summary>
         public string activationCondition;
 
         /// <summary>
-        /// Deactivates this game object when the dialogue/persistent condition is met
+        /// Deactivates this game object when the dialogue/persistent condition is met. Will also activate the object when the condition is unset.
         /// </summary>
         public string deactivationCondition;
 
@@ -79,6 +79,7 @@ namespace NewHorizons.External.Modules.Props
         /// Also makes this detail visible on the map.
         /// Keeping many props loaded is bad for performance so use this only when it's actually relevant
         /// Most logic/behavior scripts will still only work inside the sector, as most of those scripts break if a sector is not provided.
+        /// If you are using parentPath to parent this prop to another, both the child and parent need keepLoaded set for it to take effect.
         /// </summary>
         public bool keepLoaded;
 
