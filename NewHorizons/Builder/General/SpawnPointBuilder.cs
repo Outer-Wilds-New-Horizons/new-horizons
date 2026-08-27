@@ -192,7 +192,7 @@ namespace NewHorizons.Builder.General
         {
             while (!Locator.GetToolModeSwapper().GetSignalScope().InZoomMode())
             {
-                yield return new WaitForEndOfFrame();
+                yield return new WaitForFixedUpdate();
             }
             yield return null;
             Locator.GetToolModeSwapper().GetSignalScope().ExitSignalscopeZoom();
