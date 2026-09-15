@@ -42,6 +42,11 @@ namespace NewHorizons.External.Modules
             public MVector3 offset;
 
             /// <summary>
+            /// Paths to trigger volumes to add the player/ship to when spawning. Use this to add the player to the Vessel's oxygen volume or other entryway-controlled trigger volumes.
+            /// </summary>
+            public string[] triggerVolumes;
+
+            /// <summary>
             /// Whether this planet's spawn point is the one the player/ship will initially spawn at, if multiple spawn points exist.
             /// Do not use at the same time as makeDefaultIfFactRevealed or makeDefaultIfPersistentCondition
             /// Spawns unlocked with this have lowest priority

@@ -74,5 +74,10 @@ namespace NewHorizons.External.Modules.VariableSize
         /// Optional override for the render queue. If the singularity is rendering oddly, increasing this to 3000 can help
         /// </summary>
         [Range(2501f, 3500f)] public int renderQueueOverride = 2985;
+
+        /// <summary>
+        /// Trigger volumes to add the player/ship/scout to when exiting this singularity (white holes) or remove them from when entering this singularity (black holes)
+        /// </summary>
+        public string[] entrywayVolumes;
     }
 }

@@ -20,5 +20,10 @@ namespace NewHorizons.External.Modules.Props.Remote
         /// Disable the pool that rises when you place a stone.
         /// </summary>
         public bool disablePool;
+
+        /// <summary>
+        /// Trigger volumes to temporarily add the player to when viewing the remote projection. The player will be removed from the volumes when the projection stops.
+        /// </summary>
+        public string[] entrywayVolumes;
     }
 }

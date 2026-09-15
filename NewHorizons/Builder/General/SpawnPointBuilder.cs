@@ -7,6 +7,7 @@ using NewHorizons.Utility.OWML;
 using OWML.Utils;
 using System;
 using System.Collections;
+using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
@@ -82,8 +83,7 @@ namespace NewHorizons.Builder.General
                     playerSpawn = spawnGO.AddComponent<SpawnPoint>();
                     playerSpawn._attachedBody = owRigidBody;
                     playerSpawn._spawnLocation = SpawnLocation.None;
-                    // #601 we need to actually set the right trigger volumes here
-                    playerSpawn._triggerVolumes = new OWTriggerVolume[0];
+                    playerSpawn._triggerVolumes = EntrywayHandler.ResolveTriggerVolumes(planetGO, point.triggerVolumes);
 
                     // This was a stupid hack to stop players getting stuck in the ground and now we have to keep it forever
                     var playerSpawnOffset = point.offset ?? Vector3.up * 4f;
@@ -124,9 +124,7 @@ namespace NewHorizons.Builder.General
                     shipSpawn._isShipSpawn = true;
                     shipSpawn._attachedBody = owRigidBody;
                     shipSpawn._spawnLocation = SpawnLocation.None;
-
-                    // #601 we need to actually set the right trigger volumes here
-                    shipSpawn._triggerVolumes = new OWTriggerVolume[0];
+                    shipSpawn._triggerVolumes = EntrywayHandler.ResolveTriggerVolumes(planetGO, point.triggerVolumes);
 
                     // Move it up a bit more when aligning to surface
                     var shipSpawnOffset = point.offset ?? (point.alignRadial.GetValueOrDefault() ? Vector3.up * 4 : Vector3.zero);

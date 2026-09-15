@@ -82,6 +82,8 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
 
             Locator.RegisterDreamCampfire(campfire, campfire._dreamArrivalLocation);
 
+            campfire._entrywayVolumes = EntrywayHandler.ResolveTriggerVolumes(planetGO, info.entrywayVolumes);
+
             return campfireObj;
         }
     }

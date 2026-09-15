@@ -1,3 +1,6 @@
+using NewHorizons.Components.EOTE;
+using NewHorizons.Components.Props;
+using NewHorizons.External.Modules;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.Props.EchoesOfTheEye;
 using NewHorizons.Handlers;
@@ -92,6 +95,8 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
                 cameraObj.transform.Rotate(Vector3.up, 180f, Space.Self);
                 cameraObj.transform.position += cameraObj.transform.up;
                 peephole._viewingSector = viewingSector;
+
+                EntrywayHandler.AttachVolumeList(planetGO, portholeObj, info.target.entrywayVolumes);
             }, 2);
 
             return portholeObj;

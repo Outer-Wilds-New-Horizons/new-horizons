@@ -14,5 +14,10 @@ namespace NewHorizons.External.Modules.Props.EchoesOfTheEye
         /// Path to the alarm bell this campfire is connected to.
         /// </summary>
         public string alarmBellPath;
+
+        /// <summary>
+        /// Trigger volumes to add the player to when exiting the dream world at this campfire. The player will be temporarily removed from the volumes when entering the dream world.
+        /// </summary>
+        public string[] entrywayVolumes;
     }
 }

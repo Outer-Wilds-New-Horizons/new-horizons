@@ -11,5 +11,10 @@ namespace NewHorizons.External.Modules.WarpPad
         /// Futhermore, multiple transmitters can send you to the same receiver if they all have the same frequency.
         /// </summary>
         public string frequency;
+
+        /// <summary>
+        /// Trigger volumes to add the player to when they are warped to this warp pad. The player will be removed from the volumes if they warp away using this warp pad.
+        /// </summary>
+        public string[] entrywayVolumes;
     }
 }
