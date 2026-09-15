@@ -3680,6 +3680,13 @@
           "format": "int32",
           "maximum": 3500.0,
           "minimum": 2501.0
+        },
+        "entrywayVolumes": {
+          "type": "array",
+          "description": "Trigger volumes to add the player/ship/scout to when exiting this singularity (white holes) or remove them from when entering this singularity (black holes)",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -3854,6 +3861,13 @@
         "disablePool": {
           "type": "boolean",
           "description": "Disable the pool that rises when you place a stone."
+        },
+        "entrywayVolumes": {
+          "type": "array",
+          "description": "Trigger volumes to temporarily add the player to when viewing the remote projection. The player will be removed from the volumes when the projection stops.",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -3901,6 +3915,13 @@
         "frequency": {
           "type": "string",
           "description": "This can be anything. To have a warp pad transmitter send you to a receiver you must give them the same frequency. \nTry to make it something unique so it does not overlap with other warp pad pairs.\nFuthermore, multiple transmitters can send you to the same receiver if they all have the same frequency."
+        },
+        "entrywayVolumes": {
+          "type": "array",
+          "description": "Trigger volumes to add the player to when they are warped to this warp pad. The player will be removed from the volumes if they warp away using this warp pad.",
+          "items": {
+            "type": "string"
+          }
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -3991,6 +4012,13 @@
         "frequency": {
           "type": "string",
           "description": "This can be anything. To have a warp pad transmitter send you to a receiver you must give them the same frequency. \nTry to make it something unique so it does not overlap with other warp pad pairs.\nFuthermore, multiple transmitters can send you to the same receiver if they all have the same frequency."
+        },
+        "entrywayVolumes": {
+          "type": "array",
+          "description": "Trigger volumes to add the player to when they are warped to this warp pad. The player will be removed from the volumes if they warp away using this warp pad.",
+          "items": {
+            "type": "string"
+          }
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -4656,6 +4684,13 @@
         "alarmBellPath": {
           "type": "string",
           "description": "Path to the alarm bell this campfire is connected to."
+        },
+        "entrywayVolumes": {
+          "type": "array",
+          "description": "Trigger volumes to add the player to when exiting the dream world at this campfire. The player will be temporarily removed from the volumes when entering the dream world.",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -4738,6 +4773,13 @@
         "generateSimulationMeshes": {
           "type": "boolean",
           "description": "Whether to generate simulation meshes (the models used in the \"tronworld\" or \"matrix\" view) for most objects on the current planet by cloning the existing meshes and applying the simulation materials. Leave this off if you are building your own simulation meshes or using existing objects which have them."
+        },
+        "entrywayVolumes": {
+          "type": "array",
+          "description": "Trigger volumes to temporarily add the player to when entering the dream world at this arrival point. The player will be removed from the volumes when exiting the dream world.",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -4947,6 +4989,13 @@
         "rename": {
           "type": "string",
           "description": "An optional rename of this object"
+        },
+        "entrywayVolumes": {
+          "type": "array",
+          "description": "Trigger volumes to temporarily add the player to when peeking through the porthole. The player will be removed from the volumes when they stop peeking.",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -5475,6 +5524,13 @@
           "description": "Offsets the player/ship by this local vector when spawning. Used to prevent spawning in the floor. Optional: defaults to (0, 4, 0).",
           "$ref": "#/definitions/MVector3"
         },
+        "triggerVolumes": {
+          "type": "array",
+          "description": "Paths to trigger volumes to add the player/ship to when spawning. Use this to add the player to the Vessel's oxygen volume or other entryway-controlled trigger volumes.",
+          "items": {
+            "type": "string"
+          }
+        },
         "isDefault": {
           "type": "boolean",
           "description": "Whether this planet's spawn point is the one the player/ship will initially spawn at, if multiple spawn points exist.\nDo not use at the same time as makeDefaultIfFactRevealed or makeDefaultIfPersistentCondition\nSpawns unlocked with this have lowest priority"
@@ -5539,6 +5595,13 @@
         "offset": {
           "description": "Offsets the player/ship by this local vector when spawning. Used to prevent spawning in the floor. Optional: defaults to (0, 4, 0).",
           "$ref": "#/definitions/MVector3"
+        },
+        "triggerVolumes": {
+          "type": "array",
+          "description": "Paths to trigger volumes to add the player/ship to when spawning. Use this to add the player to the Vessel's oxygen volume or other entryway-controlled trigger volumes.",
+          "items": {
+            "type": "string"
+          }
         },
         "isDefault": {
           "type": "boolean",
