@@ -5524,7 +5524,7 @@
           "description": "Offsets the player/ship by this local vector when spawning. Used to prevent spawning in the floor. Optional: defaults to (0, 4, 0).",
           "$ref": "#/definitions/MVector3"
         },
-        "triggerVolumes": {
+        "entrywayVolumes": {
           "type": "array",
           "description": "Paths to trigger volumes to add the player/ship to when spawning. Use this to add the player to the Vessel's oxygen volume or other entryway-controlled trigger volumes.",
           "items": {
@@ -5596,7 +5596,7 @@
           "description": "Offsets the player/ship by this local vector when spawning. Used to prevent spawning in the floor. Optional: defaults to (0, 4, 0).",
           "$ref": "#/definitions/MVector3"
         },
-        "triggerVolumes": {
+        "entrywayVolumes": {
           "type": "array",
           "description": "Paths to trigger volumes to add the player/ship to when spawning. Use this to add the player to the Vessel's oxygen volume or other entryway-controlled trigger volumes.",
           "items": {
