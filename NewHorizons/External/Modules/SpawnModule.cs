@@ -44,7 +44,7 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// Paths to trigger volumes to add the player/ship to when spawning. Use this to add the player to the Vessel's oxygen volume or other entryway-controlled trigger volumes.
             /// </summary>
-            public string[] triggerVolumes;
+            public string[] entrywayVolumes;
 
             /// <summary>
             /// Whether this planet's spawn point is the one the player/ship will initially spawn at, if multiple spawn points exist.
