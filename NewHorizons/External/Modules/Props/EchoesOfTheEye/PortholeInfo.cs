@@ -31,7 +31,7 @@ namespace NewHorizons.External.Modules.Props.EchoesOfTheEye
     public class PortholeTargetInfo : GeneralSolarSystemPropInfo
     {
         /// <summary>
-        /// Trigger volumes to temporarily add the player to when peeking through the porthole. The player will be removed from the volumes when they stop peeking.
+        /// Volumes to explicitly add the player to when peeking through this porthole.
         /// </summary>
         public string[] entrywayVolumes;
     }

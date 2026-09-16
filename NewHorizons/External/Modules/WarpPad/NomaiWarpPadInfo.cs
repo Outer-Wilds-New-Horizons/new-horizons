@@ -13,7 +13,7 @@ namespace NewHorizons.External.Modules.WarpPad
         public string frequency;
 
         /// <summary>
-        /// Trigger volumes to add the player to when they are warped to this warp pad. The player will be removed from the volumes if they warp away using this warp pad.
+        /// Volumes to explicitly add the warped player/scout to when using this warp pad.
         /// </summary>
         public string[] entrywayVolumes;
     }

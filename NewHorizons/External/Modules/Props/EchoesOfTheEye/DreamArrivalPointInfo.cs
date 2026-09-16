@@ -20,7 +20,7 @@ namespace NewHorizons.External.Modules.Props.EchoesOfTheEye
         public bool generateSimulationMeshes;
 
         /// <summary>
-        /// Trigger volumes to temporarily add the player to when entering the dream world at this arrival point. The player will be removed from the volumes when exiting the dream world.
+        /// Volumes to explicitly add the player to when arriving at this point.
         /// </summary>
         public string[] entrywayVolumes;
     }

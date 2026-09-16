@@ -11,8 +11,6 @@ namespace NewHorizons.Handlers
 {
     internal static class EntrywayHandler
     {
-        static GameObject _playerCameraFluidDetector;
-
         internal static EntrywayVolumeHelper AttachVolumeList(GameObject planetGO, GameObject go, string[] triggerVolumePaths)
         {
             var entrywayVolumes = ResolveTriggerVolumes(planetGO, triggerVolumePaths);
@@ -31,7 +29,7 @@ namespace NewHorizons.Handlers
             {
                 return new OWTriggerVolume[0];
             }
-            var triggerVolumes = new List<OWTriggerVolume>();
+            var triggerVolumes = new OWTriggerVolume[triggerVolumePaths.Length];
             for (int i = 0; i < triggerVolumePaths.Length; i++)
             {
                 var volumeTransform = planetGO.transform.Find(triggerVolumePaths[i]);
@@ -44,9 +42,11 @@ namespace NewHorizons.Handlers
                 if (triggerVolume == null)
                 {
                     NHLogger.LogError($"Failed to find {nameof(OWTriggerVolume)} component on object at path: {planetGO.name}/{triggerVolumePaths[i]}");
+                    continue;
                 }
+                triggerVolumes[i] = triggerVolume;
             }
-            return triggerVolumes.ToArray();
+            return triggerVolumes;
         }
 
         internal static void AddBodyToTriggerVolumes(OWRigidbody body, EntrywayVolumeHelper helper)
@@ -82,6 +82,7 @@ namespace NewHorizons.Handlers
             }
             else
             {
+                // "ShipCockpit", "NomaiShuttleBody", etc. might need special handling too but the above should cover most cases
                 foreach (var triggerVolume in triggerVolumes)
                 {
                     triggerVolume.AddObjectToVolume(body.gameObject);
@@ -144,7 +145,6 @@ namespace NewHorizons.Handlers
                 if (includeCamera)
                 {
                     triggerVolume.AddObjectToVolume(Locator.GetPlayerCameraDetector());
-                    triggerVolume.AddObjectToVolume(GetPlayerCameraFluidDetector());
                 }
             }
         }
@@ -164,18 +164,8 @@ namespace NewHorizons.Handlers
                 if (includeCamera)
                 {
                     triggerVolume.RemoveObjectFromVolume(Locator.GetPlayerCameraDetector());
-                    triggerVolume.RemoveObjectFromVolume(GetPlayerCameraFluidDetector());
                 }
             }
-        }
-
-        private static GameObject GetPlayerCameraFluidDetector()
-        {
-            if (_playerCameraFluidDetector == null)
-            {
-                _playerCameraFluidDetector = Locator.GetPlayerCamera().GetComponentInChildren<FluidDetector>().gameObject;
-            }
-            return _playerCameraFluidDetector;
         }
     }
 }

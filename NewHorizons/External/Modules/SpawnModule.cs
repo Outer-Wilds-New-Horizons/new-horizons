@@ -42,7 +42,7 @@ namespace NewHorizons.External.Modules
             public MVector3 offset;
 
             /// <summary>
-            /// Paths to trigger volumes to add the player/ship to when spawning. Use this to add the player to the Vessel's oxygen volume or other entryway-controlled trigger volumes.
+            /// Volumes to explicitly add the player/ship to when spawning. Use this to add the player to the Vessel's oxygen volume or other entryway-controlled trigger volumes.
             /// </summary>
             public string[] entrywayVolumes;
 

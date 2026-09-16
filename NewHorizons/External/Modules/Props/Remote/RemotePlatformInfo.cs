@@ -22,7 +22,7 @@ namespace NewHorizons.External.Modules.Props.Remote
         public bool disablePool;
 
         /// <summary>
-        /// Trigger volumes to temporarily add the player to when viewing the remote projection. The player will be removed from the volumes when the projection stops.
+        /// Volumes to explicitly add the player to when viewing this remote projection.
         /// </summary>
         public string[] entrywayVolumes;
     }
