@@ -74,5 +74,10 @@ namespace NewHorizons.External.Modules.VariableSize
         /// Optional override for the render queue. If the singularity is rendering oddly, increasing this to 3000 can help
         /// </summary>
         [Range(2501f, 3500f)] public int renderQueueOverride = 2985;
+
+        /// <summary>
+        /// Trigger volumes to add the player/ship/scout to when warping through this singularity. Use this to add the player to the Vessel's oxygen volume or other entryway-controlled trigger volumes.
+        /// </summary>
+        public string[] entrywayVolumes;
     }
 }

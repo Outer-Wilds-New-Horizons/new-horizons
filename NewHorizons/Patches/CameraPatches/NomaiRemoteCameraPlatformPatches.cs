@@ -1,4 +1,5 @@
 using HarmonyLib;
+using NewHorizons.Components;
 using NewHorizons.Handlers;
 
 namespace NewHorizons.Patches.CameraPatches
@@ -27,6 +28,20 @@ namespace NewHorizons.Patches.CameraPatches
                 _ => RemoteHandler.GetPlatformIDName(id),
             };
             return false;
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(nameof(NomaiRemoteCameraPlatform.SwitchToRemoteCamera))]
+        public static void NomaiRemoteCameraPlatform_SwitchToRemoteCamera(NomaiRemoteCameraPlatform __instance)
+        {
+            EntrywayHandler.AddPlayerToTriggerVolumes(__instance.GetComponent<EntrywayVolumeHelper>());
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(nameof(NomaiRemoteCameraPlatform.SwitchToPlayerCamera))]
+        public static void NomaiRemoteCameraPlatform_SwitchToPlayerCamera(NomaiRemoteCameraPlatform __instance)
+        {
+            EntrywayHandler.RemovePlayerFromTriggerVolumes(__instance.GetComponent<EntrywayVolumeHelper>());
         }
     }
 }

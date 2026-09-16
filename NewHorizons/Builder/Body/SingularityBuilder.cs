@@ -6,6 +6,7 @@ using NewHorizons.Components.Volumes;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules.VariableSize;
 using NewHorizons.External.SerializableData;
+using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OuterWilds;
 using NewHorizons.Utility.OWML;
@@ -79,22 +80,42 @@ namespace NewHorizons.Builder.Body
             Make(go, sector, config, singularity);
         }
 
+        [Obsolete]
+        public static GameObject MakeSingularity(GameObject planetGO, Sector sector, Vector3 position, Vector3 rotation, bool polarity, float horizon, float distort,
+            bool hasDestructionVolume, string targetStarSystem = null, string targetSpawnID = null, TimeValuePair[] curve = null, bool warpEffects = true, int renderQueue = 2985, string rename = null, string parentPath = null, bool isRelativeToParent = false)
+        {
+            var type = polarity ? SingularityModule.SingularityType.BlackHole : SingularityModule.SingularityType.WhiteHole;
+            var info = new SingularityModule()
+            {
+                type = type,
+                horizonRadius = horizon,
+                distortRadius = distort,
+                targetStarSystem = targetStarSystem,
+                spawnPointID = targetSpawnID,
+                curve = curve,
+                hasWarpEffects = warpEffects,
+                renderQueueOverride = renderQueue,
+                rename = rename,
+                parentPath = parentPath,
+                isRelativeToParent = isRelativeToParent,
+                position = position,
+                rotation = rotation,
+            };
+            return MakeSingularity(planetGO, sector, hasDestructionVolume, info);
+        }
+
         public static GameObject MakeWithNoUniqueID(GameObject go, Sector sector, SingularityModule singularity)
         {
-            var horizonRadius = singularity.horizonRadius;
-            var distortRadius = singularity.distortRadius != 0f ? singularity.distortRadius : horizonRadius * 2.5f;
+            if (singularity.distortRadius == 0f)
+            {
+                singularity.distortRadius = singularity.horizonRadius * 2.5f;
+            }
+
             var pairedSingularity = singularity.pairedSingularity;
-
-            bool polarity = singularity.type == SingularityModule.SingularityType.BlackHole;
-
             bool isWormHole = singularity?.targetStarSystem != null;
             bool hasHazardVolume = !isWormHole && (pairedSingularity == null);
 
-            Vector3 localPosition = singularity?.position == null ? Vector3.zero : singularity.position;
-            Vector3 localRotation = singularity?.rotation == null ? Vector3.zero : singularity.rotation;
-
-            return MakeSingularity(go, sector, localPosition, localRotation, polarity, horizonRadius, distortRadius,
-                hasHazardVolume, singularity.targetStarSystem, singularity.spawnPointID, singularity.curve, singularity.hasWarpEffects, singularity.renderQueueOverride, singularity.rename, singularity.parentPath, singularity.isRelativeToParent);
+            return MakeSingularity(go, sector, hasHazardVolume, singularity);
         }
 
         public static void Make(GameObject go, Sector sector, PlanetConfig config, SingularityModule singularity)
@@ -176,29 +197,23 @@ namespace NewHorizons.Builder.Body
             }
         }
 
-        public static GameObject MakeSingularity(GameObject planetGO, Sector sector, Vector3 position, Vector3 rotation, bool polarity, float horizon, float distort,
-            bool hasDestructionVolume, string targetStarSystem = null, string targetSpawnID = null, TimeValuePair[] curve = null, bool warpEffects = true, int renderQueue = 2985, string rename = null, string parentPath = null, bool isRelativeToParent = false)
-        {
+        public static GameObject MakeSingularity(GameObject planetGO, Sector sector, bool hasDestructionVolume, SingularityModule info) {
             // polarity true = black, false = white
+            bool polarity = info.type == SingularityModule.SingularityType.BlackHole;
+            float horizon = info.horizonRadius;
+            float distort = info.distortRadius;
 
-            var info = new SingularityModule
-            {
-                position = position,
-                rotation = rotation,
-                isRelativeToParent = isRelativeToParent,
-                parentPath = parentPath,
-                rename = rename,
-            };
+            int renderQueue = info.renderQueueOverride != 0 ? info.renderQueueOverride : 2985;
 
             var singularity = GeneralPropBuilder.MakeNew(polarity ? "BlackHole" : "WhiteHole", planetGO, ref sector, info);
 
             var singularityRenderer = MakeSingularityGraphics(singularity, polarity, horizon, distort, renderQueue);
 
             SingularitySizeController sizeController = null;
-            if (curve != null)
+            if (info.curve != null)
             {
                 sizeController = singularityRenderer.gameObject.AddComponent<SingularitySizeController>();
-                sizeController.SetScaleCurve(curve);
+                sizeController.SetScaleCurve(info.curve);
                 sizeController.size = distort;
                 sizeController.innerScale = horizon;
                 sizeController.material = singularityRenderer.material;
@@ -223,7 +238,7 @@ namespace NewHorizons.Builder.Body
 
             if (polarity)
             {
-                if (hasDestructionVolume || targetStarSystem != null)
+                if (hasDestructionVolume || info.targetStarSystem != null)
                 {
                     var destructionVolumeGO = new GameObject("DestructionVolume");
                     destructionVolumeGO.layer = Layer.BasicEffectVolume;
@@ -245,11 +260,11 @@ namespace NewHorizons.Builder.Body
                     {
                         destructionVolumeGO.AddComponent<BlackHoleDestructionVolume>();
                     }
-                    else if (targetStarSystem != null)
+                    else if (info.targetStarSystem != null)
                     {
                         var wormholeVolume = destructionVolumeGO.AddComponent<BlackHoleWarpVolume>();
-                        wormholeVolume.TargetSolarSystem = targetStarSystem;
-                        wormholeVolume.TargetSpawnID = targetSpawnID;
+                        wormholeVolume.TargetSolarSystem = info.targetStarSystem;
+                        wormholeVolume.TargetSpawnID = info.spawnPointID;
                     }
                 }
                 else
@@ -283,7 +298,7 @@ namespace NewHorizons.Builder.Body
                     var blackHoleSphereCollider = blackHoleVolume.GetComponent<SphereCollider>();
                     blackHoleSphereCollider.radius = horizon;
                     if (sizeController != null) sizeController.sphereCollider = blackHoleSphereCollider;
-                    if (!warpEffects)
+                    if (!info.hasWarpEffects)
                     {
                         Delay.FireOnNextUpdate(() =>
                         {
@@ -328,6 +343,8 @@ namespace NewHorizons.Builder.Body
                 whiteHoleVolume.enabled = true;
                 whiteHoleFluidVolume.enabled = true;
             }
+
+            EntrywayHandler.AttachVolumeList(planetGO, singularity, info.entrywayVolumes);
 
             singularity.SetActive(true);
             return singularity;

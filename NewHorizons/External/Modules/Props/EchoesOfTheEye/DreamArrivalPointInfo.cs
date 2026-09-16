@@ -18,5 +18,10 @@ namespace NewHorizons.External.Modules.Props.EchoesOfTheEye
         /// Whether to generate simulation meshes (the models used in the "tronworld" or "matrix" view) for most objects on the current planet by cloning the existing meshes and applying the simulation materials. Leave this off if you are building your own simulation meshes or using existing objects which have them.
         /// </summary>
         public bool generateSimulationMeshes;
+
+        /// <summary>
+        /// Volumes to explicitly add the player to when arriving at this point.
+        /// </summary>
+        public string[] entrywayVolumes;
     }
 }

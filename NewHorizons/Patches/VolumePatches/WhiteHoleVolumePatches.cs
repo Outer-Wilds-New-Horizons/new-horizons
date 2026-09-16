@@ -1,4 +1,6 @@
 using HarmonyLib;
+using NewHorizons.Components;
+using NewHorizons.Handlers;
 using System;
 using System.Collections.Generic;
 
@@ -23,6 +25,13 @@ namespace NewHorizons.Patches.VolumePatches
             }
             catch (Exception) { }
             return false;
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(nameof(WhiteHoleVolume.ReceiveWarpedBody))]
+        public static void WhiteHoleVolume_ReceiveWarpedBody(WhiteHoleVolume __instance, OWRigidbody warpedBody, RelativeLocationData locationData)
+        {
+            EntrywayHandler.AddBodyToTriggerVolumes(warpedBody, __instance.GetComponent<EntrywayVolumeHelper>());
         }
     }
 }
