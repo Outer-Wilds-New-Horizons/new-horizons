@@ -3683,7 +3683,7 @@
         },
         "entrywayVolumes": {
           "type": "array",
-          "description": "Trigger volumes to add the player/ship/scout to when exiting this singularity (white holes) or remove them from when entering this singularity (black holes)",
+          "description": "Trigger volumes to add the player/ship/scout to when warping through this singularity. Use this to add the player to the Vessel's oxygen volume or other entryway-controlled trigger volumes.",
           "items": {
             "type": "string"
           }
@@ -3864,7 +3864,7 @@
         },
         "entrywayVolumes": {
           "type": "array",
-          "description": "Trigger volumes to temporarily add the player to when viewing the remote projection. The player will be removed from the volumes when the projection stops.",
+          "description": "Volumes to explicitly add the player to when viewing this remote projection.",
           "items": {
             "type": "string"
           }
@@ -3918,7 +3918,7 @@
         },
         "entrywayVolumes": {
           "type": "array",
-          "description": "Trigger volumes to add the player to when they are warped to this warp pad. The player will be removed from the volumes if they warp away using this warp pad.",
+          "description": "Volumes to explicitly add the warped player/scout to when using this warp pad.",
           "items": {
             "type": "string"
           }
@@ -4015,7 +4015,7 @@
         },
         "entrywayVolumes": {
           "type": "array",
-          "description": "Trigger volumes to add the player to when they are warped to this warp pad. The player will be removed from the volumes if they warp away using this warp pad.",
+          "description": "Volumes to explicitly add the warped player/scout to when using this warp pad.",
           "items": {
             "type": "string"
           }
@@ -4687,7 +4687,7 @@
         },
         "entrywayVolumes": {
           "type": "array",
-          "description": "Trigger volumes to add the player to when exiting the dream world at this campfire. The player will be temporarily removed from the volumes when entering the dream world.",
+          "description": "Volumes to explicitly add the player to when waking up at this campfire.",
           "items": {
             "type": "string"
           }
@@ -4776,7 +4776,7 @@
         },
         "entrywayVolumes": {
           "type": "array",
-          "description": "Trigger volumes to temporarily add the player to when entering the dream world at this arrival point. The player will be removed from the volumes when exiting the dream world.",
+          "description": "Volumes to explicitly add the player to when arriving at this point.",
           "items": {
             "type": "string"
           }
@@ -4992,7 +4992,7 @@
         },
         "entrywayVolumes": {
           "type": "array",
-          "description": "Trigger volumes to temporarily add the player to when peeking through the porthole. The player will be removed from the volumes when they stop peeking.",
+          "description": "Volumes to explicitly add the player to when peeking through this porthole.",
           "items": {
             "type": "string"
           }
@@ -5526,7 +5526,7 @@
         },
         "entrywayVolumes": {
           "type": "array",
-          "description": "Paths to trigger volumes to add the player/ship to when spawning. Use this to add the player to the Vessel's oxygen volume or other entryway-controlled trigger volumes.",
+          "description": "Volumes to explicitly add the player/ship to when spawning. Use this to add the player to the Vessel's oxygen volume or other entryway-controlled trigger volumes.",
           "items": {
             "type": "string"
           }
@@ -5598,7 +5598,7 @@
         },
         "entrywayVolumes": {
           "type": "array",
-          "description": "Paths to trigger volumes to add the player/ship to when spawning. Use this to add the player to the Vessel's oxygen volume or other entryway-controlled trigger volumes.",
+          "description": "Volumes to explicitly add the player/ship to when spawning. Use this to add the player to the Vessel's oxygen volume or other entryway-controlled trigger volumes.",
           "items": {
             "type": "string"
           }
