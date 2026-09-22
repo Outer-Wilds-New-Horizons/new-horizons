@@ -1,3 +1,4 @@
+using Epic.OnlineServices;
 using NewHorizons.Components;
 using NewHorizons.Utility.OWML;
 using System;
@@ -13,14 +14,39 @@ namespace NewHorizons.Handlers
     {
         internal static EntrywayVolumeHelper AttachVolumeList(GameObject planetGO, GameObject go, string[] triggerVolumePaths)
         {
-            var entrywayVolumes = ResolveTriggerVolumes(planetGO, triggerVolumePaths);
-            if (entrywayVolumes.Length == 0)
+            if (triggerVolumePaths == null || triggerVolumePaths.Length == 0)
             {
                 return null;
             }
             var helper = go.AddComponent<EntrywayVolumeHelper>();
-            helper.entrywayVolumes = entrywayVolumes;
+            ResolveTriggerVolumesWithRetry(planetGO, triggerVolumePaths, entrywayVolumes => helper.entrywayVolumes = entrywayVolumes);
             return helper;
+        }
+
+        internal static void ResolveTriggerVolumesWithRetry(GameObject planetGO, string[] triggerVolumePaths, Func<OWTriggerVolume[], OWTriggerVolume[]> onResolve)
+        {
+            if (triggerVolumePaths == null || triggerVolumePaths.Length == 0)
+            {
+                onResolve.Invoke(new OWTriggerVolume[0]);
+                return;
+            }
+            // Try to resolve the trigger volumes immediately
+            var entrywayVolumes = ResolveTriggerVolumes(planetGO, triggerVolumePaths);
+            // Equal lengths means all volumes resolved successfully
+            if (entrywayVolumes.Length == triggerVolumePaths.Length)
+            {
+
+                onResolve.Invoke(entrywayVolumes);
+            }
+            else
+            {
+                // Some volumes failed to resolve, so try again after a one-frame delay
+                Delay.FireOnNextUpdate(() =>
+                {
+                    var entrywayVolumes = ResolveTriggerVolumes(planetGO, triggerVolumePaths);
+                    onResolve.Invoke(entrywayVolumes);
+                });
+            }
         }
 
         internal static OWTriggerVolume[] ResolveTriggerVolumes(GameObject planetGO, string[] triggerVolumePaths)
@@ -29,7 +55,7 @@ namespace NewHorizons.Handlers
             {
                 return new OWTriggerVolume[0];
             }
-            var triggerVolumes = new OWTriggerVolume[triggerVolumePaths.Length];
+            var triggerVolumes = new List<OWTriggerVolume>(triggerVolumePaths.Length);
             for (int i = 0; i < triggerVolumePaths.Length; i++)
             {
                 var volumeTransform = planetGO.transform.Find(triggerVolumePaths[i]);
@@ -44,9 +70,9 @@ namespace NewHorizons.Handlers
                     NHLogger.LogError($"Failed to find {nameof(OWTriggerVolume)} component on object at path: {planetGO.name}/{triggerVolumePaths[i]}");
                     continue;
                 }
-                triggerVolumes[i] = triggerVolume;
+                triggerVolumes.Add(triggerVolume);
             }
-            return triggerVolumes;
+            return triggerVolumes.ToArray();
         }
 
         internal static void AddBodyToTriggerVolumes(OWRigidbody body, EntrywayVolumeHelper helper)

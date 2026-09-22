@@ -293,6 +293,8 @@ namespace NewHorizons.Builder.Body
 
                     blackHoleVolume.SetActive(true);
 
+                    EntrywayHandler.AttachVolumeList(planetGO, blackHoleVolume, info.entrywayVolumes);
+
                     bhVolume._audioSector = sector;
                     bhVolume._emissionSource = oneShotOWAudioSource;
                     var blackHoleSphereCollider = blackHoleVolume.GetComponent<SphereCollider>();
@@ -342,9 +344,10 @@ namespace NewHorizons.Builder.Body
 
                 whiteHoleVolume.enabled = true;
                 whiteHoleFluidVolume.enabled = true;
+
+                EntrywayHandler.AttachVolumeList(planetGO, whiteHoleVolumeGO, info.entrywayVolumes);
             }
 
-            EntrywayHandler.AttachVolumeList(planetGO, singularity, info.entrywayVolumes);
 
             singularity.SetActive(true);
             return singularity;

@@ -29,7 +29,7 @@ namespace NewHorizons.Patches.VolumePatches
 
         [HarmonyPostfix]
         [HarmonyPatch(nameof(WhiteHoleVolume.ReceiveWarpedBody))]
-        public static void WhiteHoleVolume_ReceiveWarpedBody(WhiteHoleVolume __instance, OWRigidbody warpedBody, RelativeLocationData locationData)
+        public static void WhiteHoleVolume_ReceiveWarpedBody(WhiteHoleVolume __instance, OWRigidbody warpedBody, RelativeLocationData entryData)
         {
             EntrywayHandler.AddBodyToTriggerVolumes(warpedBody, __instance.GetComponent<EntrywayVolumeHelper>());
         }
