@@ -163,7 +163,7 @@ namespace NewHorizons.Utility
             if (!string.IsNullOrEmpty(parent))
             {
                 // multiple enumeration but its fine
-                go = possibleMatches.FirstOrDefault(x => x.transform.parent.name == parent);
+                go = possibleMatches.FirstOrDefault(x => x.transform.parent?.name == parent);
                 if (go == null)
                 {
                     go = possibleMatches.FirstOrDefault();

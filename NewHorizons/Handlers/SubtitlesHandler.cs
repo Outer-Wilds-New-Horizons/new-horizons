@@ -80,6 +80,11 @@ namespace NewHorizons.Handlers
             _subtitleDisplay.gameObject.GetAddComponent<LayoutElement>().minWidth = SUBTITLE_WIDTH;
 
             AddSubtitles();
+
+            if (possibleSubtitles.Count == 0)
+            {
+                _subtitleDisplay.gameObject.SetActive(false);
+            }
         }
 
         private void AddSubtitles()
