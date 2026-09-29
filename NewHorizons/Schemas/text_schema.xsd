@@ -29,12 +29,18 @@
         <xs:sequence>
             <xs:element name="ID" type="xs:positiveInteger" minOccurs="1" maxOccurs="1">
                 <xs:annotation>
-                    <xs:documentation> The id of this text block </xs:documentation>
+                    <xs:documentation>
+                        The id of this text block. The first text block should have an id of `1`.
+                        For Nomai recorders and computers, ids must be sequential.
+                    </xs:documentation>
                 </xs:annotation>
             </xs:element>
             <xs:element name="ParentID" type="xs:positiveInteger" minOccurs="0" maxOccurs="1">
                 <xs:annotation>
-                    <xs:documentation> The id of the parent text block </xs:documentation>
+                    <xs:documentation>
+                        The id of the text block that this one branches off of, if this is not the first text block.
+                        Not needed for recorders and computers.
+                    </xs:documentation>
                 </xs:annotation>
             </xs:element>
             <xs:element name="LocationA" type="empty" minOccurs="0" maxOccurs="1">
@@ -49,7 +55,9 @@
             </xs:element>
             <xs:element name="Text" type="xs:string" minOccurs="1" maxOccurs="1">
                 <xs:annotation>
-                    <xs:documentation> The text to show for this option </xs:documentation>
+                    <xs:documentation>
+                        The text to show on the player's translation tool
+                    </xs:documentation>
                 </xs:annotation>
             </xs:element>
         </xs:sequence>

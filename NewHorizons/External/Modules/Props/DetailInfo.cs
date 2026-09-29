@@ -42,12 +42,12 @@ namespace NewHorizons.External.Modules.Props
         public bool removeComponents;
 
         /// <summary>
-        /// Activates this game object when the dialogue/persistent condition is met
+        /// Activates this game object when the dialogue/persistent condition is met. Will also deactivate the object when the condition is unset.
         /// </summary>
         public string activationCondition;
 
         /// <summary>
-        /// Deactivates this game object when the dialogue/persistent condition is met
+        /// Deactivates this game object when the dialogue/persistent condition is met. Will also activate the object when the condition is unset.
         /// </summary>
         public string deactivationCondition;
 
