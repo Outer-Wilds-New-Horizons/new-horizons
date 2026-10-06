@@ -96,7 +96,7 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
                 cameraObj.transform.position += cameraObj.transform.up;
                 peephole._viewingSector = viewingSector;
 
-                EntrywayHandler.AttachVolumeList(planetGO, portholeObj, info.target.entrywayVolumes);
+                EntrywayHandler.AttachVolumeList(planetGO, peephole.gameObject, info.target.entrywayVolumes);
             }, 2);
 
             return portholeObj;
