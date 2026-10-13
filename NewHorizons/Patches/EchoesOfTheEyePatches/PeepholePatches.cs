@@ -1,8 +1,7 @@
 using HarmonyLib;
-using NewHorizons.Components.EOTE;
+using NewHorizons.Components;
+using NewHorizons.Handlers;
 using System.Collections.Generic;
-using System.Reflection.Emit;
-using UnityEngine;
 
 namespace NewHorizons.Patches.EchoesOfTheEyePatches
 {
@@ -37,6 +36,8 @@ namespace NewHorizons.Patches.EchoesOfTheEyePatches
                     }
                 }
             }
+
+            EntrywayHandler.AddPlayerToTriggerVolumes(__instance.GetComponent<EntrywayVolumeHelper>());
         }
 
         [HarmonyPostfix]
@@ -64,6 +65,8 @@ namespace NewHorizons.Patches.EchoesOfTheEyePatches
             }
 
             _previousSectors.Clear();
+
+            EntrywayHandler.RemovePlayerFromTriggerVolumes(__instance.GetComponent<EntrywayVolumeHelper>());
         }
     }
 }

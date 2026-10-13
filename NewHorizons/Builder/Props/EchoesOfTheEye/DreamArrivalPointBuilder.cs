@@ -57,6 +57,8 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
             arrivalPoint._location = DreamHandler.GetDreamArrivalLocation(info.id);
             Locator.RegisterDreamArrivalPoint(arrivalPoint, arrivalPoint._location);
 
+            EntrywayHandler.AttachVolumeList(planetGO, arrivalPointObj, info.entrywayVolumes);
+
             return arrivalPointObj;
         }
     }

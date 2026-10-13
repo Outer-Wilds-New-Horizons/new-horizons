@@ -3,6 +3,7 @@ using NewHorizons.Components;
 using NewHorizons.External.Modules;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.WarpPad;
+using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OuterWilds;
 using NewHorizons.Utility.OWML;
@@ -125,6 +126,11 @@ namespace NewHorizons.Builder.Props
 
             receiverObject.SetActive(true);
 
+            if (EntrywayHandler.AttachVolumeList(planetGO, receiverObject, info.entrywayVolumes))
+            {
+                receiverObject.AddComponent<NomaiWarpPlatformEntrywayController>();
+            }
+
             if (info.computer != null)
             {
                 CreateComputer(planetGO, planetSector, mod, info.computer, receiver);
@@ -148,6 +154,11 @@ namespace NewHorizons.Builder.Props
             transmitterObject.AddComponent<NomaiWarpTransmitterCooldown>();
 
             transmitterObject.SetActive(true);
+
+            if (EntrywayHandler.AttachVolumeList(planetGO, transmitterObject, info.entrywayVolumes))
+            {
+                transmitterObject.AddComponent<NomaiWarpPlatformEntrywayController>();
+            }
         }
 
         private static void CreateComputer(GameObject planetGO, Sector sector, IModBehaviour mod, GeneralPropInfo computerInfo, NomaiWarpReceiver receiver)

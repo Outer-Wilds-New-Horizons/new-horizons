@@ -182,6 +182,10 @@ namespace NewHorizons.Handlers
             // Done spawning
             TargetSpawnID = null;
 
+            // Handle spawn point trigger volumes
+            EntrywayHandler.AddPlayerToTriggerVolumes(GetDefaultPlayerSpawn()._triggerVolumes);
+            EntrywayHandler.AddBodyToTriggerVolumes(Locator.GetShipBody(), GetDefaultShipSpawn()._triggerVolumes);
+
             if (!Main.Instance.IsWarpingFromShip && 
                 !Main.Instance.IsWarpingFromVessel &&
                 SpawnPointBuilder.PlayerSpawnInfo.startInShip)

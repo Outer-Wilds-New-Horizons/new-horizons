@@ -267,6 +267,8 @@ namespace NewHorizons.Builder.Props
             if (info.disablePool) platform.FindChild("RemoteViewer_Pool").SetActive(false);
 
             platform.SetActive(true);
+
+            EntrywayHandler.AttachVolumeList(go, platform, info.entrywayVolumes);
         }
 
         public static void MakeStone(GameObject go, Sector sector, NomaiRemoteCameraPlatform.ID id, Texture2D decal, ProjectionStoneInfo info, IModBehaviour mod)

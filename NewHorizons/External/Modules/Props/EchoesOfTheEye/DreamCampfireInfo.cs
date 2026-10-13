@@ -14,5 +14,10 @@ namespace NewHorizons.External.Modules.Props.EchoesOfTheEye
         /// Path to the alarm bell this campfire is connected to.
         /// </summary>
         public string alarmBellPath;
+
+        /// <summary>
+        /// Volumes to explicitly add the player to when waking up at this campfire.
+        /// </summary>
+        public string[] entrywayVolumes;
     }
 }
