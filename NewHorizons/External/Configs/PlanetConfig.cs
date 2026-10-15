@@ -25,6 +25,10 @@ namespace NewHorizons.External.Configs
         #region Fields
         /// <summary>
         /// Unique name of your planet. If not specified, the file name (without the extension) is used.
+        /// Set this to the name of an existing planet to update that planet.
+        /// If you are creating a new planet, its name must be unique within the star system and not match a vanilla planet.
+        /// You could prefix this with the name of your mod to enure uniqueness,
+        /// and use the `translations/english.json` file to set the planet's English display name.
         /// </summary>
         public string name;
 
