@@ -92,7 +92,7 @@ namespace NewHorizons.Handlers
                 // #1034 Vessel warp sometimes has the player get flung away into space and die
                 // We do what we do with regular spawns where we keep resetting their position to the right one while invincible until we're relatively certain
                 // that the spawning sequence is done
-                Delay.StartCoroutine(FixPlayerSpawning(25, vesselSpawnPoint));
+                Delay.StartCoroutine(FixPlayerSpawning(20, vesselSpawnPoint));
             }
             else
             {
@@ -113,7 +113,7 @@ namespace NewHorizons.Handlers
             {
                 vesselSpawn.WarpPlayer();
                 frameCount++;
-                yield return null; // Wait for the next frame
+                yield return new WaitForFixedUpdate(); // Wait for the next frame
             }
 
             InvulnerabilityHandler.MakeInvulnerable(false);
