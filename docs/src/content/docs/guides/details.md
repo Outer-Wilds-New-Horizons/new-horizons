@@ -8,6 +8,7 @@ For physical objects there are currently two ways of setting them up: specify an
 - Use "Object Explorer" to search
 - Generally you can find planets by writing their name with no spaces/punctuation followed by "\_Body".
 - There's also [this community-maintained list of props](https://docs.google.com/spreadsheets/d/1VJaglB1kRL0VqaXhvXepIeymo93zqhWex-j7_QDm6NE/edit?usp=sharing) which you can use to find interesting props and check to see if they have collision.
+- There's is this other In-Game Prop list [here](https://docs.google.com/spreadsheets/d/15cd3-BE2IZt-dyRmn7HM5vaSjycWIAKWiSdOP9EDvBI/edit?gid=0#gid=0).
 
 ## Debug Raycast
 
