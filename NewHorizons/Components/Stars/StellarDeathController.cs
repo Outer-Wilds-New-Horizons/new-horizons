@@ -16,7 +16,7 @@ namespace NewHorizons.Components.Stars
         public AnimationCurve supernovaAlpha = new AnimationCurve(new Keyframe(5, 1, 0, 0, 1f / 3f, 1f / 3f), new Keyframe(15, 1.0002f, 0, 0, 1f / 3f, 1f / 3f), new Keyframe(50, 0, -0.0578f, 1 / 3f, -0.0578f, 1 / 3f));
         public float supernovaDuration = 10f; //s
         public float supernovaSpeed = 10f; //m/s
-
+        
         public OWAudioSource audioSource;
         public StellarDeathController mainStellerDeathController;
 
@@ -31,7 +31,9 @@ namespace NewHorizons.Components.Stars
         {
             _cachedParticleRenderers = new ParticleSystemRenderer[explosionParticles.Length];
             for (int index = 0; index < explosionParticles.Length; ++index)
+            {
                 _cachedParticleRenderers[index] = explosionParticles[index].GetComponent<ParticleSystemRenderer>();
+            }
         }
 
         public void Activate()
@@ -53,7 +55,10 @@ namespace NewHorizons.Components.Stars
             _time = 0.0f;
             _currentSupernovaScale = 200f;
             _localSupernovaMat = new Material(supernovaMaterial);
-            surface.sharedMaterial = _localSupernovaMat;
+            if (surface != null)
+            {
+                surface.sharedMaterial = _localSupernovaMat;
+            }
 
             if (audioSource == null) return;
 
@@ -81,10 +86,13 @@ namespace NewHorizons.Components.Stars
             float shockwaveTime = Mathf.Clamp01(_time / shockwaveLength);
             shockwave.transform.localScale = Vector3.one * shockwaveScale.Evaluate(shockwaveTime);
             shockwave.material.color = Color.Lerp(Color.black, shockwave.sharedMaterial.color, shockwaveAlpha.Evaluate(shockwaveTime));
-
+            
             var t = Mathf.Clamp01(_time / supernovaDuration);
             _currentSupernovaScale = Mathf.Lerp(200, supernovaScale, t);
-            surface.transform.localScale = Vector3.one * _currentSupernovaScale;
+            if (surface != null)
+            {
+                surface.transform.localScale = Vector3.one * _currentSupernovaScale;
+            }
             _localSupernovaMat.color = Color.Lerp(Color.black, supernovaMaterial.color, supernovaAlpha.Evaluate(_time));
 
             float distanceToPlayer = PlayerState.InDreamWorld() ? 20000f : Vector3.Distance(transform.position, Locator.GetPlayerCamera().transform.position) - GetSupernovaRadius();
