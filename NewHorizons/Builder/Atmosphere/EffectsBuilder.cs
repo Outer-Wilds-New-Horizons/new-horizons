@@ -103,14 +103,35 @@ namespace NewHorizons.Builder.Atmosphere
                     emitter.transform.position = planetGO.transform.position;
 
                     var vfe = emitter.GetComponent<VectionFieldEmitter>();
+                    if (particleField.overrideFieldRadius != null)
+                    {
+                        vfe.fieldRadius = particleField.overrideFieldRadius.Value;
+                    }
+                    var max = 0;
+                    var curve = particleField.densityByHeightCurve?.ToAnimationCurve();
+                    if (curve != null)
+                    {
+                        foreach (var key in curve.keys)
+                        {
+                            max = Mathf.Max(max, (int)key.value);
+                        }
+                    }
+                    else
+                    {
+                        max = GetDefaultDensityByType(particleField.type);
+                        curve = new AnimationCurve(new Keyframe[]
+                        {
+                            new Keyframe(minHeight - 0.5f, 0),
+                            new Keyframe(minHeight, max),
+                            new Keyframe(maxHeight, 0f)
+                        });
+                    }
+                    var settings = emitter.GetComponent<ParticleSystem>().main;
+                    settings.maxParticles = max;
+
                     var pvc = emitter.GetComponent<PlanetaryVectionController>();
                     pvc._vectionFieldEmitter = vfe;
-                    pvc._densityByHeight = particleField.densityByHeightCurve != null ? particleField.densityByHeightCurve.ToAnimationCurve() : new AnimationCurve(new Keyframe[]
-                    {
-                        new Keyframe(minHeight - 0.5f, 0),
-                        new Keyframe(minHeight, 10f),
-                        new Keyframe(maxHeight, 0f)
-                    });
+                    pvc._densityByHeight = curve;
                     pvc._followTarget = particleField.followTarget == ParticleFieldModule.FollowTarget.Probe ? PlanetaryVectionController.FollowTarget.Probe : PlanetaryVectionController.FollowTarget.Player;
                     pvc._activeInSector = sector;
                     pvc._exclusionSectors = new Sector[] { };
@@ -145,6 +166,31 @@ namespace NewHorizons.Builder.Atmosphere
                 ParticleFieldModule.ParticleFieldType.Pollen => _pollenEmitterPrefab,
                 ParticleFieldModule.ParticleFieldType.Current => _currentEmitterPrefab,
                 _ => null,
+            };
+        }
+
+        public static int GetDefaultDensityByType(ParticleFieldModule.ParticleFieldType type)
+        {
+            return type switch
+            {
+                ParticleFieldModule.ParticleFieldType.Rain => 50,
+                ParticleFieldModule.ParticleFieldType.SnowflakesHeavy => 50,
+                ParticleFieldModule.ParticleFieldType.SnowflakesLight => 5,
+                ParticleFieldModule.ParticleFieldType.Embers => 25,
+                ParticleFieldModule.ParticleFieldType.Clouds => 600,
+                ParticleFieldModule.ParticleFieldType.Leaves => 10,
+                ParticleFieldModule.ParticleFieldType.Bubbles => 10,
+                ParticleFieldModule.ParticleFieldType.Fog => 50,
+                ParticleFieldModule.ParticleFieldType.CrystalMotes => 2,
+                ParticleFieldModule.ParticleFieldType.RockMotes => 3,
+                ParticleFieldModule.ParticleFieldType.IceMotes => 2,
+                ParticleFieldModule.ParticleFieldType.SandMotes => 5,
+                ParticleFieldModule.ParticleFieldType.Crawlies => 2,
+                ParticleFieldModule.ParticleFieldType.Fireflies => 15,
+                ParticleFieldModule.ParticleFieldType.Plankton => 50,
+                ParticleFieldModule.ParticleFieldType.Pollen => 3,
+                ParticleFieldModule.ParticleFieldType.Current => 200,
+                _ => 0,
             };
         }
 

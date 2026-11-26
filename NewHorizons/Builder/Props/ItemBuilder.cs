@@ -16,13 +16,6 @@ namespace NewHorizons.Builder.Props
 
         internal static void Init()
         {
-            if (_itemTypes != null)
-            {
-                foreach (var value in _itemTypes.Values)
-                {
-                    EnumUtils.Remove<ItemType>(value);
-                }
-            }
             _itemTypes = new Dictionary<string, ItemType>();
         }
 
@@ -43,6 +36,16 @@ namespace NewHorizons.Builder.Props
             }
 
             var itemType = GetOrCreateItemType(itemTypeName);
+
+            if (itemType == ItemType.WarpCore)
+            {
+                // WarpCores cannot be naively made by NH #1121
+                NHLogger.LogError($"Your custom item {itemName} cannot use the {ItemType.WarpCore} type. " +
+                    $"These items have more complicated code that cannot be handled by NH alone. " +
+                    $"If you really want to implement a WarpCore like the one used to power the Vessel, " +
+                    $"either just duplicate an existing warp core prop or write custom code.");
+                return null;
+            }
 
             var item = go.GetAddComponent<NHItem>();
             item._sector = sector;
@@ -141,11 +144,7 @@ namespace NewHorizons.Builder.Props
         {
             go.layer = Layer.Interactible;
 
-            var itemType = EnumUtils.TryParse(info.itemType, true, out ItemType result) ? result : ItemType.Invalid;
-            if (itemType == ItemType.Invalid && !string.IsNullOrEmpty(info.itemType))
-            {
-                itemType = EnumUtilities.Create<ItemType>(info.itemType);
-            }
+            var itemType = GetOrCreateItemType(info.itemType);
 
             var socket = go.GetAddComponent<NHItemSocket>();
             socket._sector = sector;
@@ -158,7 +157,8 @@ namespace NewHorizons.Builder.Props
             }
             if (socket._socketTransform == null)
             {
-                var socketGO = GeneralPropBuilder.MakeNew("Socket", planetGO, sector, info, defaultParent: go.transform);
+                var socketSector = sector;
+                var socketGO = GeneralPropBuilder.MakeNew("Socket", planetGO, ref socketSector, info, defaultParent: go.transform);
                 socketGO.SetActive(true);
                 socket._socketTransform = socketGO.transform;
             }
@@ -205,7 +205,7 @@ namespace NewHorizons.Builder.Props
             }
             else if (!string.IsNullOrEmpty(name))
             {
-                itemType = EnumUtils.Create<ItemType>(name);
+                itemType = EnumUtilities.Create<ItemType>(name);
                 _itemTypes.Add(name, itemType);
             }
             return itemType;
@@ -213,7 +213,23 @@ namespace NewHorizons.Builder.Props
 
         public static bool IsCustomItemType(ItemType type)
         {
-            return _itemTypes.ContainsValue(type);
+            if (_itemTypes.ContainsValue(type)) return true;
+
+            switch (type)
+            {
+                case ItemType.Invalid:
+                case ItemType.Scroll:
+                case ItemType.WarpCore:
+                case ItemType.SharedStone:
+                case ItemType.ConversationStone:
+                case ItemType.Lantern:
+                case ItemType.SlideReel:
+                case ItemType.DreamLantern:
+                case ItemType.VisionTorch:
+                    return false;
+                default:
+                    return true;
+            }
         }
     }
 }

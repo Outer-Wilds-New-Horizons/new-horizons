@@ -1,3 +1,4 @@
+using NewHorizons.Components.EOTE;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.Props.EchoesOfTheEye;
 using NewHorizons.Handlers;
@@ -59,7 +60,7 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
 
             if (prefab == null || sector == null) return null;
 
-            var candleObj = DetailBuilder.Make(planetGO, sector, mod, prefab, new DetailInfo(info));
+            var candleObj = DetailBuilder.Make(planetGO, ref sector, mod, prefab, new DetailInfo(info));
 
             var dreamCandle = candleObj.GetComponent<DreamCandle>();
 
@@ -69,6 +70,12 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
 
             dreamCandle._startLit = info.startLit;
             dreamCandle.SetLit(info.startLit, false, true);
+
+            if (info.condition != null)
+            {
+                var conditionController = dreamCandle.gameObject.AddComponent<DreamLightConditionController>();
+                conditionController.SetFromInfo(info.condition);
+            }
 
             return candleObj;
         }

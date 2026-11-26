@@ -2,5 +2,11 @@
   "$schema": "https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/main/NewHorizons/Schemas/translation_schema.json",
   "UIDictionary": {
     "Vessel": "Vascello"
+  },
+  "OtherDictionary": {
+    "NOMAI_SHUTTLE_COMPUTER": "La <![CDATA[<color=orange>navetta</color>]]> al momento sta riposando sulla <![CDATA[<color=lightblue>{0}</color>]]>.",
+    "UNKNOWN_LANGUAGE_UNTRANSLATED": "<!> Iscrizione sconosciuta non tradotta <!>",
+    "KNOWN_LANGUAGE_UNTRANSLATED": "<!> Iscrizione {0} non tradotta <!>",
+    "LANGUAGE_NAME_GHOSTBIRD": "abitante"
   }
 }

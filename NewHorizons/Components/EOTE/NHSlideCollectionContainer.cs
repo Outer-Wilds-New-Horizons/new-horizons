@@ -17,27 +17,25 @@ public class NHSlideCollectionContainer : SlideCollectionContainer
     [HarmonyPatch(typeof(SlideCollectionContainer), nameof(SlideCollectionContainer.Initialize))]
     public static bool SlideCollectionContainer_Initialize(SlideCollectionContainer __instance)
     {
-        if (__instance is NHSlideCollectionContainer container)
-        {
-            if (__instance._initialized)
-                return false;
-            __instance.SetupReadFlags();
-            __instance.RegisterPerSlideCompletion();
-            if (__instance.streamingTexturesAvailable)
-                __instance.SetupStreaming();
-            __instance.BuildMusicRangesIndex();
-            __instance._changeSlidesAllowed = true;
-            __instance._initialized = true;
-            __instance._slideCollection.isVision = __instance._owningItem == null;
-            foreach (var factID in __instance._playWithShipLogFacts)
-            {
-                var fact = Locator.GetShipLogManager().GetFact(factID);
-                fact?.RegisterSlideCollection(__instance._slideCollection);
-                // in original it logs. we dont want that here ig
-            }
+        // We used to only do this for our custom class
+        // However the error logs for DLC slides happen in all new systems so we just use this always to not log
+        if (__instance._initialized)
             return false;
+        __instance.SetupReadFlags();
+        __instance.RegisterPerSlideCompletion();
+        if (__instance.streamingTexturesAvailable)
+            __instance.SetupStreaming();
+        __instance.BuildMusicRangesIndex();
+        __instance._changeSlidesAllowed = true;
+        __instance._initialized = true;
+        __instance._slideCollection.isVision = __instance._owningItem == null;
+        foreach (var factID in __instance._playWithShipLogFacts)
+        {
+            var fact = Locator.GetShipLogManager().GetFact(factID);
+            fact?.RegisterSlideCollection(__instance._slideCollection);
+            // In original it logs here. We dont want that because it spams when loading
         }
-        return true;
+        return false;
     }
 
     [HarmonyPostfix]

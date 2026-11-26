@@ -72,7 +72,7 @@ namespace NewHorizons.Handlers
             {
                 foreach (var condition in effects.setPersistentConditions)
                 {
-                    if (!PlayerData.GetPersistentCondition(condition) != checkPassed)
+                    if (PlayerData.GetPersistentCondition(condition) != checkPassed)
                     {
                         PlayerData.SetPersistentCondition(condition, checkPassed);
                     }

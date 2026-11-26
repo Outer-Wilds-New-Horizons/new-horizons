@@ -1,6 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/main/NewHorizons/Schemas/translation_schema.json",
- "DialogueDictionary": {
+  "DialogueDictionary": {
     "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_1": "Twój statek jest teraz wyposażony z napędem warp!",
     "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_2": "Możesz użyć nowy \"Tryb międzygwiezdny\" w Dzienniku Pokładowym żeby zablokować twój autopilot na inny Układ Gwiazdy.",
     "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_3": "A potem zapnij pasy i zaangażój wypaczanie!"
@@ -16,5 +16,11 @@
     "RICH_PRESENCE_EXPLORING": "Eksploruje {0}.",
     "RICH_PRESENCE_WARPING": "Wypaczanie do {0}.",
     "Vessel": "Statku"
+  },
+  "OtherDictionary": {
+    "NOMAI_SHUTTLE_COMPUTER": "<![CDATA[<color=orange>Wahadłowiec/color>]]> znajduje się obecnie na <![CDATA[<color=lightblue>{0}</color>]]>.",
+    "UNKNOWN_LANGUAGE_UNTRANSLATED": "<!> Nieprzetłumaczone zapiski nieznanego pochodzenia <!>",
+    "KNOWN_LANGUAGE_UNTRANSLATED": "<!> Nieprzetłumaczone zapiski {0} <!>",
+    "LANGUAGE_NAME_GHOSTBIRD": "Mieszkaniec"
   }
 }

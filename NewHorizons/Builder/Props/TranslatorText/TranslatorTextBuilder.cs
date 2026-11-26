@@ -1,12 +1,16 @@
+using NewHorizons.Components;
+using NewHorizons.Components.Props;
 using NewHorizons.External;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.TranslatorText;
 using NewHorizons.External.SerializableData;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
+using NewHorizons.Utility.Files;
 using NewHorizons.Utility.Geometry;
 using NewHorizons.Utility.OWML;
 using Newtonsoft.Json;
+using OWML.Common;
 using OWML.Utils;
 using System;
 using System.Collections.Generic;
@@ -146,7 +150,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
                 case NomaiTextType.Wall:
                     {
                         var nomaiWallTextObj = MakeWallText(planetGO, sector, info, xmlContent, nhBody).gameObject;
-                        nomaiWallTextObj = GeneralPropBuilder.MakeFromExisting(nomaiWallTextObj, planetGO, sector, info);
+                        nomaiWallTextObj = GeneralPropBuilder.MakeFromExisting(nomaiWallTextObj, planetGO, ref sector, info);
 
                         if (info.normal != null)
                         {
@@ -169,7 +173,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
                     }
                 case NomaiTextType.Scroll:
                     {
-                        var customScroll = GeneralPropBuilder.MakeFromPrefab(_scrollPrefab, _scrollPrefab.name, planetGO, sector, info);
+                        var customScroll = GeneralPropBuilder.MakeFromPrefab(_scrollPrefab, _scrollPrefab.name, planetGO, ref sector, info);
 
                         var nomaiWallText = MakeWallText(planetGO, sector, info, xmlContent, nhBody);
                         nomaiWallText.transform.parent = customScroll.transform;
@@ -221,7 +225,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
                     }
                 case NomaiTextType.Computer:
                     {
-                        var computerObject = GeneralPropBuilder.MakeFromPrefab(ComputerPrefab, ComputerPrefab.name, planetGO, sector, info);
+                        var computerObject = GeneralPropBuilder.MakeFromPrefab(ComputerPrefab, ComputerPrefab.name, planetGO, ref sector, info);
 
                         var computer = computerObject.GetComponent<NomaiComputer>();
                         computer.SetSector(sector);
@@ -231,6 +235,16 @@ namespace NewHorizons.Builder.Props.TranslatorText
                         computer._nomaiTextAsset = new TextAsset(xmlContent);
                         computer._nomaiTextAsset.name = Path.GetFileNameWithoutExtension(info.xmlFile);
                         AddTranslation(xmlContent);
+
+                        if (info.computerStartsOff)
+                        {
+                            computer._startActivated = false;
+                        }
+
+                        if (!string.IsNullOrEmpty(info.computerCondition))
+                        {
+                            ConditionalNomaiComputerToggle.SetUp(computerObject, info.computerCondition, info.computerStartsOff);
+                        }
 
                         // Make sure the computer model is loaded
                         StreamingHandler.SetUpStreaming(computerObject, sector);
@@ -242,7 +256,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
                     }
                 case NomaiTextType.PreCrashComputer:
                     {
-                        var computerObject = DetailBuilder.Make(planetGO, sector, nhBody.Mod, PreCrashComputerPrefab, new DetailInfo(info));
+                        var computerObject = DetailBuilder.Make(planetGO, ref sector, nhBody.Mod, PreCrashComputerPrefab, new DetailInfo(info));
                         computerObject.SetActive(false);
 
                         var computer = computerObject.GetComponent<NomaiVesselComputer>();
@@ -262,6 +276,16 @@ namespace NewHorizons.Builder.Props.TranslatorText
                         //fifthRing._baseTextColor = new Color(0.8824, 0.9604, 2.5, 1);
                         //fifthRing._baseTextShadowColor = new Color(0.3529, 0.3843, 1, 0.25);
                         fifthRing._computer = computer;
+
+                        if (info.computerStartsOff)
+                        {
+                            computer._startActivated = false;
+                        }
+
+                        if (!string.IsNullOrEmpty(info.computerCondition))
+                        {
+                            ConditionalNomaiComputerToggle.SetUp(computerObject, info.computerCondition, info.computerStartsOff);
+                        }
 
                         computerObject.SetActive(true);
 
@@ -284,7 +308,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
                 case NomaiTextType.CairnEmberTwin:
                     {
                         var cairnPrefab = info.type == NomaiTextType.CairnTimberHearth ? _cairnTHPrefab : (info.type == NomaiTextType.CairnEmberTwin ? _cairnCTPrefab : _cairnBHPrefab);
-                        var cairnObject = GeneralPropBuilder.MakeFromPrefab(cairnPrefab, cairnPrefab.name, planetGO, sector, info);
+                        var cairnObject = GeneralPropBuilder.MakeFromPrefab(cairnPrefab, cairnPrefab.name, planetGO, ref sector, info);
 
                         // Idk do we have to set it active before finding things?
                         cairnObject.SetActive(true);
@@ -323,7 +347,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
                 case NomaiTextType.Recorder:
                     {
                         var prefab = (info.type == NomaiTextType.PreCrashRecorder ? _preCrashRecorderPrefab : _recorderPrefab);
-                        var recorderObject = DetailBuilder.Make(planetGO, sector, nhBody.Mod, prefab, new DetailInfo(info));
+                        var recorderObject = DetailBuilder.Make(planetGO, ref sector, nhBody.Mod, prefab, new DetailInfo(info));
                         recorderObject.SetActive(false);
 
                         var nomaiText = recorderObject.GetComponentInChildren<NomaiText>();
@@ -343,7 +367,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
                     }
                 case NomaiTextType.Trailmarker:
                     {
-                        var trailmarkerObject = GeneralPropBuilder.MakeFromPrefab(_trailmarkerPrefab, _trailmarkerPrefab.name, planetGO, sector, info);
+                        var trailmarkerObject = GeneralPropBuilder.MakeFromPrefab(_trailmarkerPrefab, _trailmarkerPrefab.name, planetGO, ref sector, info);
 
                         // shrink because that is what mobius does on all trailmarkers or else they are the size of the player
                         trailmarkerObject.transform.localScale = Vector3.one * 0.75f;
@@ -373,7 +397,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
                             path = "BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_HangingCity/Sector_HangingCity_District2/Interactables_HangingCity_District2/VisibleFrom_HangingCity/Props_NOM_Whiteboard (1)",
                             rename = info.rename ?? "Props_NOM_Whiteboard",
                         };
-                        var whiteboardObject = DetailBuilder.Make(planetGO, sector, nhBody.Mod, whiteboardInfo);
+                        var whiteboardObject = DetailBuilder.Make(planetGO, ref sector, nhBody.Mod, whiteboardInfo);
 
                         // Spawn a scroll and insert it into the whiteboard, but only if text is provided
                         if (!string.IsNullOrEmpty(info.xmlFile))
@@ -471,7 +495,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
 
             if (info.arcInfo != null && info.arcInfo.Count() != dict.Values.Count())
             {
-                NHLogger.LogError($"Can't make NomaiWallText, arcInfo length [{info.arcInfo.Count()}] doesn't equal number of TextBlocks [{dict.Values.Count()}] in the xml");
+                NHLogger.LogError($"Can't make NomaiWallText [{info.xmlFile}], arcInfo length [{info.arcInfo.Count()}] doesn't equal number of TextBlocks [{dict.Values.Count()}] in the xml");
                 return;
             }
 
@@ -503,7 +527,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
                     arcReadFromCache.transform.localEulerAngles = new Vector3(0, 0, cachedData[i].zRotation);
                 }
 
-                GameObject arc = MakeArc(arcInfo, conversationZone, parent, textEntryID, arcReadFromCache);
+                GameObject arc = MakeArc(nhBody?.Mod, arcInfo, conversationZone, parent, textEntryID, arcReadFromCache);
                 arc.name = $"Arc {textEntryID} - Child of {parentID}";
 
                 arcsByID.Add(textEntryID, arc);
@@ -562,14 +586,23 @@ namespace NewHorizons.Builder.Props.TranslatorText
             }
         }
 
-        internal static GameObject MakeArc(NomaiTextArcInfo arcInfo, GameObject conversationZone, GameObject parent, int textEntryID, GameObject prebuiltArc = null)
+        internal static GameObject MakeArc(IModBehaviour mod, NomaiTextArcInfo arcInfo, GameObject conversationZone, GameObject parent, int textEntryID, GameObject prebuiltArc = null)
         {
             GameObject arc;
             var type = arcInfo != null ? arcInfo.type : NomaiTextArcInfo.NomaiTextArcType.Adult;
+
+            var hasCustomImage = !string.IsNullOrEmpty(arcInfo?.customTextImage);
+
+            if (hasCustomImage)
+            {
+                type = NomaiTextArcInfo.NomaiTextArcType.Custom;
+            }
+
             NomaiTextArcBuilder.SpiralProfile profile;
             Material mat;
             Mesh overrideMesh = null;
-            Color? overrideColor = null;
+            Color? overrideUnreadColor = null;
+            Color? overrideTranslatedColor = null;
             switch (type)
             {
                 case NomaiTextArcInfo.NomaiTextArcType.Child:
@@ -580,7 +613,18 @@ namespace NewHorizons.Builder.Props.TranslatorText
                     profile = NomaiTextArcBuilder.adultSpiralProfile;
                     mat = _childArcMaterial;
                     break;
+                case NomaiTextArcInfo.NomaiTextArcType.Custom:
                 case NomaiTextArcInfo.NomaiTextArcType.Stranger when _ghostArcMaterial != null:
+                    if (type == NomaiTextArcInfo.NomaiTextArcType.Stranger)
+                    {
+                        overrideUnreadColor = new Color(0.0158f, 1.0f, 0.5601f, 1f);
+                        overrideTranslatedColor = new Color(0.4f, 0.6f, 0.5f, 1f);
+                    }
+                    else
+                    {
+                        overrideUnreadColor = Color.white;
+                        overrideTranslatedColor = Color.gray;
+                    }
                     profile = NomaiTextArcBuilder.strangerSpiralProfile;
                     mat = _ghostArcMaterial;
                     overrideMesh = MeshUtilities.RectangleMeshFromCorners(new Vector3[]{ 
@@ -589,7 +633,6 @@ namespace NewHorizons.Builder.Props.TranslatorText
                         new Vector3(-0.9f, 2.0f, 0.0f), 
                         new Vector3(0.9f, 2.0f, 0.0f) 
                     });
-                    overrideColor = new Color(0.0158f, 1.0f, 0.5601f, 1f);
                     break;
                 case NomaiTextArcInfo.NomaiTextArcType.Adult:
                 default:
@@ -597,7 +640,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
                     mat = _adultArcMaterial;
                     break;
             }
-            
+
             if (prebuiltArc != null) 
             {
                 arc = prebuiltArc;
@@ -609,7 +652,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
             }
 
             // Hardcoded stranger point fix
-            if (type == NomaiTextArcInfo.NomaiTextArcType.Stranger)
+            if (type == NomaiTextArcInfo.NomaiTextArcType.Stranger || type == NomaiTextArcInfo.NomaiTextArcType.Custom)
             {
                 Delay.FireOnNextUpdate(() =>
                 {
@@ -630,11 +673,50 @@ namespace NewHorizons.Builder.Props.TranslatorText
             arc.GetComponent<MeshRenderer>().enabled = false;
 
             if (overrideMesh != null)
+            {
                 arc.GetComponent<MeshFilter>().sharedMesh = overrideMesh;
+            }
 
-            if (overrideColor != null)
-                arc.GetComponent<NomaiTextLine>()._targetColor = (Color)overrideColor;
+            if (arcInfo?.overrideUnreadColor != null)
+            {
+                overrideUnreadColor = arcInfo.overrideUnreadColor.ToColor();
+                overrideTranslatedColor = null;
+            }
 
+            if (arcInfo?.overrideTranslatedColor != null)
+            {
+                overrideTranslatedColor = arcInfo.overrideTranslatedColor.ToColor();
+            }
+
+            if (overrideUnreadColor != null)
+            {
+                NHTranslatorTextLineColorizer colorizer = arc.AddComponent<NHTranslatorTextLineColorizer>();
+                colorizer.unreadColor = (Color)overrideUnreadColor;
+                if (overrideTranslatedColor != null)
+                {
+                    colorizer.calculateTranslatedColor = false;
+                    colorizer.translatedColor = (Color)overrideTranslatedColor;
+                }
+            }
+
+            if (hasCustomImage)
+            {
+                var img = ImageUtilities.GetTexture(mod, arcInfo.customTextImage);
+                arc.GetComponent<MeshRenderer>().material.mainTexture = img;
+            }
+
+            // Make stranger have default language name (unless overridden) and custom be unknown (unless specified)
+            if (type is NomaiTextArcInfo.NomaiTextArcType.Stranger or NomaiTextArcInfo.NomaiTextArcType.Custom 
+                || !string.IsNullOrEmpty(arcInfo?.legiblePersistentCondition) || !string.IsNullOrEmpty(arcInfo?.customLanguageName))
+            {
+                var customTranslatableComponent = arc.AddComponent<ConditionalNomaiTextTranslatable>();
+                customTranslatableComponent.legiblePersistentCondition = arcInfo?.legiblePersistentCondition;
+                customTranslatableComponent.customLanguageName = !string.IsNullOrEmpty(arcInfo?.customLanguageName)
+                    ? arcInfo.customLanguageName
+                    : (type == NomaiTextArcInfo.NomaiTextArcType.Stranger ? "LANGUAGE_NAME_GHOSTBIRD" : null);
+            }
+
+            arc.GetComponent<NomaiTextLine>().enabled = true;
             arc.SetActive(true);
 
             if (arcInfo != null) arcInfoToCorrespondingSpawnedGameObject[arcInfo] = arc;
@@ -690,6 +772,22 @@ namespace NewHorizons.Builder.Props.TranslatorText
             XmlDocument xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(xmlPath);
 
+            XmlNode xmlNode = xmlDocument.SelectSingleNode("NomaiObject");
+            XmlNodeList xmlNodeList = xmlNode.SelectNodes("TextBlock");
+
+            foreach (object obj in xmlNodeList)
+            {
+                XmlNode xmlNode2 = (XmlNode)obj;
+                var text = xmlNode2.SelectSingleNode("Text").InnerText;
+                TranslationHandler.AddDialogue(text);
+            }
+        }
+
+        public static void HandleUnityCreatedNomaiText(NomaiText nomaiText)
+        {
+            string xml = OWUtilities.RemoveByteOrderMark(nomaiText._nomaiTextAsset);
+            XmlDocument xmlDocument = new XmlDocument();
+            xmlDocument.LoadXml(xml);
             XmlNode xmlNode = xmlDocument.SelectSingleNode("NomaiObject");
             XmlNodeList xmlNodeList = xmlNode.SelectNodes("TextBlock");
 

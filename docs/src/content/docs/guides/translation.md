@@ -82,16 +82,13 @@ Please enter the DeepL API key for the first time only. The API key will be save
 ### Note
 
 - Not supported extracting UIDictionary and AchievementTranslations
-
     - It is difficult to parse these automatically, and the number of words is small that it would be better to add them by MOD developers manually for better results.
     - Translating UIDictionary and AchievementTranslations is supported.
 
 - Not supported translation into Korean
-
     - Translation is provided by the DeepL API, so it is not possible to translate into languages that are not supported by DeepL.
 
 - The generated translations are "**not**" perfect
-
     - It is a machine translation though DeepL. The translations on DeepL are known to be too casual or to abbreviate some sentences.
     - It will need to be manually corrected to make it a good translation. However, this tool allows you to prototype and is more efficient than starting from scratch. Also, the CDATA tag has been removed from the translated text and must be added manually.
 

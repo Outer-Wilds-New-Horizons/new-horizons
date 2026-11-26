@@ -118,6 +118,16 @@ namespace NewHorizons
         T QueryTitleScreen<T>(IModBehaviour mod, string path);
 
         /// <summary>
+        /// Uses JSONPath to query an addon manifest
+        /// </summary>
+        object QueryAddonManifest(Type outType, IModBehaviour mod, string path);
+
+        ///<summary>
+        /// Uses JSONPath to query an addon manifest
+        /// </summary>
+        T QueryAddonManifest<T>(IModBehaviour mod, string path);
+
+        /// <summary>
         /// Register your own builder that will act on the given GameObject by reading the json string of its "extras" module
         /// </summary>
         void RegisterCustomBuilder(Action<GameObject, string> builder); 
@@ -255,5 +265,45 @@ namespace NewHorizons
         /// <param name="persistentConditionRequired">Persistent condition required for this title screen to appear.</param>
         /// <param name="factRequired">Ship log fact required for this title screen to appear.</param>
         void RegisterTitleScreenBuilder(IModBehaviour mod, Action<GameObject> builder, bool disableNHPlanets = true, bool shareTitleScreen = false, string persistentConditionRequired = null, string factRequired = null);
+
+        /// <summary>
+        /// Clears all loaded configs for the given system.
+        /// This exists solely for Nomai Sky to use :bleh:
+        /// </summary>
+        /// <param name="name"></param>
+        void ClearSystem(string name);
+
+        /// <summary>
+        /// Gets the transform of the player's spawn point.
+        /// </summary>
+        /// <returns>The transform of the player's spawn point.</returns>
+        Transform GetPlayerSpawnPoint();
+
+        /// <summary>
+        /// Gets the transform of the ship's spawn point.
+        /// </summary>
+        /// <returns>The transform of the ship's spawn point.</returns>
+        Transform GetShipSpawnPoint();
+
+        /// <summary>
+        /// Gets the center body of the current star system.
+        /// </summary>
+        GameObject GetCenterOfStarSystem();
+
+        /// <summary>
+        /// When resuming to the eye from title screen, the game briefly loads the solar system before warping the player to the eye in order to grab prefabs and other assets that are only in the solar system.
+        /// That can cause problems for mods if they try to do things when the solar system scene is finished loading, so this method allows you to check if that's currently happening and adjust accordingly.
+        /// </summary>
+        /// <returns>
+        /// <see langword="true"/> if the game is currently in the process of warping back to the eye from the solar system, <see langword="false"/> otherwise.
+        /// </returns>
+        bool IsWarpingBackToEye();
+
+        /// <summary>
+        /// Wraps the SearchUtilities.Find method, for use without needing to reference the DLL
+        /// This is a better version of GameObjects.Find in that it can find inactive objects, and falls back to finding objects by name and partial path if the full path cannot be found.
+        /// </summary>
+        /// <returns>The found GameObject or null if it doesn't exist</returns>
+        GameObject SearchUtilitiesFind(string path);
     }
 }

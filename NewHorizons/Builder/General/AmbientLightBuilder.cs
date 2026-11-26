@@ -1,8 +1,7 @@
 using UnityEngine;
-using NewHorizons.Utility;
 using NewHorizons.External.Modules;
+using NewHorizons.Utility;
 using NewHorizons.Utility.Files;
-using NewHorizons.Components;
 
 namespace NewHorizons.Builder.General
 {
@@ -18,31 +17,47 @@ namespace NewHorizons.Builder.General
             lightGO.name = "AmbientLight";
 
             var light = lightGO.GetComponent<Light>();
+
+            var intensity = config.intensity;
+            var outerRadius = config.outerRadius ?? surfaceSize * 2;
+            var innerRadius = config.innerRadius ?? surfaceSize;
+            innerRadius = Mathf.Sqrt(innerRadius / outerRadius);
+            var isShell = config.isShell;
+            SetAmbientLightProperties(light, intensity, outerRadius, innerRadius, isShell, 0.0225f/*from timber hearth*/);
+
+            if (config.tint != null)
+            {
+                var tint = config.tint.ToColor();
+                SetCookieFromBundleCubemap(light, "AmbientLight_QM", tint);
+            }
+
+            return light;
+        }
+
+        public static void SetAmbientLightProperties(Light light, float intensity, float outerRadius, float innerRadius, bool isShell, float falloffExponent)
+        {
+            light.intensity = intensity;
+            light.range = outerRadius;
+            var shell = isShell ? 1f : 0f;
             /*
              * R is inner radius
              * G is shell (1 for shell, 0 for no shell)
              * B is always 1
              * A is falloff exponent
              */
+            light.color = new Color(innerRadius, shell, 1f, falloffExponent);
+        }
 
-            light.intensity = config.intensity;
-            light.range = config.outerRadius ?? surfaceSize * 2;
-            var innerRadius = config.innerRadius ?? surfaceSize;
-            innerRadius = Mathf.Sqrt(innerRadius / light.range);
-            var shell = config.isShell ? 1f : 0f;
-            light.color = new Color(innerRadius, shell, 1f, 0.0225f/*from timber hearth*/);
-
-            if (config.tint != null)
-            {
-                var tint = config.tint.ToColor();
-                var key = $"AmbientLight_QM > tint {tint}";
+        internal static void SetCookieFromBundleCubemap(Light light, string bundleCubemap, Color tint)
+        {
+                var key = $"{bundleCubemap} > tint {tint}";
                 if (ImageUtilities.CheckCachedTexture(key, out var existingTexture))
                 {
                     light.cookie = existingTexture;
                 }
                 else
                 {
-                    var baseCubemap = AssetBundleUtilities.NHPrivateAssetBundle.LoadAsset<Cubemap>("AmbientLight_QM");
+                    var baseCubemap = AssetBundleUtilities.NHPrivateAssetBundle.LoadAsset<Cubemap>(bundleCubemap);
                     var cubemap = new Cubemap(baseCubemap.width, baseCubemap.format, baseCubemap.mipmapCount != 1);
                     cubemap.name = key;
                     cubemap.wrapMode = baseCubemap.wrapMode;
@@ -63,9 +78,6 @@ namespace NewHorizons.Builder.General
 
                     light.cookie = cubemap;
                 }
-            }
-
-            return light;
         }
     }
 }

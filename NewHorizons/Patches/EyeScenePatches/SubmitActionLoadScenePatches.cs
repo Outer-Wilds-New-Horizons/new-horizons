@@ -28,6 +28,9 @@ namespace NewHorizons.Patches.EyeScenePatches
                 __instance._sceneToLoad = SubmitActionLoadScene.LoadableScenes.GAME;
             }
 
+            // Credits doesn't need to load any assets, so just let it do its thing
+            if (__instance._sceneToLoad == SubmitActionLoadScene.LoadableScenes.CREDITS) return true;
+
             // Don't bother going through this stuff if we don't have to
             if (AssetBundleUtilities.AreRequiredAssetsLoaded()) return true;
             
@@ -42,7 +45,7 @@ namespace NewHorizons.Patches.EyeScenePatches
                 __instance.ResetStringBuilder();
                 __instance._nowLoadingSB.Append(UITextLibrary.GetString(UITextType.LoadingMessage));
                 __instance._nowLoadingSB.Append(0.ToString("P0"));
-                __instance._loadingText.text = __instance._nowLoadingSB.ToString();
+                if (__instance._loadingText != null) __instance._loadingText.text = __instance._nowLoadingSB.ToString();
 
                 return AssetBundleUtilities.AreRequiredAssetsLoaded();
             }, () =>

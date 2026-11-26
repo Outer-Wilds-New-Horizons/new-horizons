@@ -1,3 +1,4 @@
+using NewHorizons.Builder.General;
 using NewHorizons.Components.SizeControllers;
 using NewHorizons.Components.Stars;
 using NewHorizons.External.Modules.VariableSize;
@@ -122,7 +123,7 @@ namespace NewHorizons.Builder.Body
             ambientLightGO.SetActive(true);
 
             Light ambientLight = ambientLightGO.GetComponent<Light>();
-            ambientLight.range = starModule.size * OuterRadiusRatio;
+            AmbientLightBuilder.SetAmbientLightProperties(ambientLight, starModule.solarLuminosity, starModule.size * OuterRadiusRatio, 0.9129f/*from sun*/, false, 0.04f/*from sun*/);
 
             var heatVolume = new GameObject("HeatVolume");
             heatVolume.transform.SetParent(starGO.transform, false);
@@ -177,7 +178,7 @@ namespace NewHorizons.Builder.Body
             if (starModule.lightTint != null) lightColour = starModule.lightTint.ToColor();
 
             light.color = lightColour;
-            ambientLight.color = new Color(lightColour.r, lightColour.g, lightColour.b, lightColour.a == 0 ? 0.0001f : lightColour.a);
+            AmbientLightBuilder.SetCookieFromBundleCubemap(ambientLight, "AmbientLight_STAR", lightColour);
 
             // used to use CopyPropertiesFrom, but that doesnt work here. instead, just copy settings from unity explorer
             var faceActiveCamera = sunLight.AddComponent<FaceActiveCamera>();
@@ -470,7 +471,6 @@ namespace NewHorizons.Builder.Body
                 stellarDeath.surface = starGO.GetComponentInChildren<TessellatedSphereRenderer>(true);
             }
             var duration = starModule.supernovaSize / starModule.supernovaSpeed;
-            stellarDeath.supernovaScale = new AnimationCurve(new Keyframe(0, 200, 0, 0, 1f / 3f, 1f / 3f), new Keyframe(duration, starModule.supernovaSize, 1758.508f, 1758.508f, 1f / 3f, 1f / 3f));
             stellarDeath.supernovaAlpha = new AnimationCurve(new Keyframe(duration * 0.1f, 1, 0, 0, 1f / 3f, 1f / 3f), new Keyframe(duration * 0.3f, 1.0002f, 0, 0, 1f / 3f, 1f / 3f), new Keyframe(duration, 0, -0.0578f, 1 / 3f, -0.0578f, 1 / 3f));
             stellarDeath.explosionParticles = supernova._explosionParticles;
             stellarDeath.shockwave = supernova._shockwave;
@@ -478,6 +478,11 @@ namespace NewHorizons.Builder.Body
             stellarDeath.shockwaveAlpha = supernova._shockwaveAlpha;
             stellarDeath.shockwaveScale = supernova._shockwaveScale;
             stellarDeath.supernovaMaterial = supernova._supernovaMaterial;
+
+            stellarDeath.supernovaScale = starModule.supernovaSize;
+            stellarDeath.supernovaDuration = duration;
+            stellarDeath.supernovaSpeed = starModule.supernovaSpeed;
+
             Object.Destroy(supernova);
 
             if (starModule.supernovaTint != null)

@@ -15,15 +15,15 @@ To define a Star System config for the Eye of the Universe, name your star syste
 
 ```json title="systems/EyeOfTheUniverse.json"
 {
-  "$schema": "https://raw.githubusercontent.com/Outer-Wilds-New-Horizons/new-horizons/main/NewHorizons/Schemas/star_system_schema.json",
-  "name": "EyeOfTheUniverse",
-  // etc.
+    "$schema": "https://raw.githubusercontent.com/Outer-Wilds-New-Horizons/new-horizons/main/NewHorizons/Schemas/star_system_schema.json",
+    "name": "EyeOfTheUniverse"
+    // etc.
 }
 ```
 
 ### Existing Planet
 
-The existing areas of the Eye of the Universe, such as the "sixth planet" and funnel, the museum/observatory, the forest of galaxies, and the campfire, are all contained within one static "planet" (despite visually being distinct locations). To add to these areas, you'll need to specify a planet config file with a `"name"` of `"EyeOfTheUniverse"` and *also* a `"starSystem"` of `"EyeOfTheUniverse"`, as the star system and "planet" share the same name.
+The existing areas of the Eye of the Universe, such as the "sixth planet" and funnel, the museum/observatory, the forest of galaxies, and the campfire, are all contained within one static "planet" (despite visually being distinct locations). To add to these areas, you'll need to specify a planet config file with a `"name"` of `"EyeOfTheUniverse"` and _also_ a `"starSystem"` of `"EyeOfTheUniverse"`, as the star system and "planet" share the same name.
 
 ```json title="planets/EyeOfTheUniverse.json"
 {
@@ -34,7 +34,7 @@ The existing areas of the Eye of the Universe, such as the "sixth planet" and fu
         "details": [
             // etc.
         ]
-    },
+    }
     // etc.
 }
 ```
@@ -52,7 +52,7 @@ You can also add props to the Vessel at the Eye:
         "details": [
             // etc.
         ]
-    },
+    }
     // etc.
 }
 ```
@@ -70,6 +70,7 @@ Custom travelers will automatically be included in the inflation animation that 
 [Eye Travelers](#eye-travelers), [Quantum Instruments](#quantum-instruments), and [Instrument Zones](#instrument-zones) are all linked by their `"id"` properties. Ensure that your ID matches between those details and is unique enough to not conflict with other mods.
 
 Here's an example config:
+
 ```json title="planets/EyeOfTheUniverse.json"
 {
     "$schema": "https://raw.githubusercontent.com/Outer-Wilds-New-Horizons/new-horizons/main/NewHorizons/Schemas/body_schema.json",
@@ -85,7 +86,7 @@ Here's an example config:
                     "detectionRadius": 0,
                     "identificationRadius": 10,
                     "onlyAudibleToScope": false,
-                    "position": {"x": 0, "y": 0.75, "z": 0},
+                    "position": { "x": 0, "y": 0.75, "z": 0 },
                     "isRelativeToParent": true
                 },
                 "finaleAudio": "planets/MetronomeFinale.wav",
@@ -93,7 +94,7 @@ Here's an example config:
                 "participatingCondition": "EyeSlateParticipating",
                 "dialogue": {
                     "xmlFile": "planets/EyeSlate.xml",
-                    "position": {"x": 0.0, "y": 1.5, "z": 0.0},
+                    "position": { "x": 0.0, "y": 1.5, "z": 0.0 },
                     "isRelativeToParent": true
                 },
                 "path": "TimberHearth_Body/Sector_TH/Sector_Village/Sector_StartingCamp/Characters_StartingCamp/Villager_HEA_Slate"
@@ -106,7 +107,13 @@ Here's an example config:
 To see the full list of eye traveler properties and descriptions of what each property does, check [the EyeTravelerInfo schema](/schemas/body-schema/defs/eyetravelerinfo/).
 
 <Aside title="On Compatibility">
-New Horizons changes the campfire sequence in minor ways to make it easier for mods which add additional travelers to be compatible with each other. The audio handling is changed so that instrument audio will be synchronized and layered with each other automatically. All travelers will be automatically repositioned in a circle around the campfire based on the total number of travelers, both vanilla and modded. As long as other details (such as quantum instruments and instrument zones) are not placed in the same locations as other existing mods, the campfire sequence changes will be compatible.
+    New Horizons changes the campfire sequence in minor ways to make it easier for mods which add
+    additional travelers to be compatible with each other. The audio handling is changed so that
+    instrument audio will be synchronized and layered with each other automatically. All travelers
+    will be automatically repositioned in a circle around the campfire based on the total number of
+    travelers, both vanilla and modded. As long as other details (such as quantum instruments and
+    instrument zones) are not placed in the same locations as other existing mods, the campfire
+    sequence changes will be compatible.
 </Aside>
 
 ### Audio
@@ -120,6 +127,7 @@ The game plays all of the looping audio clips (including your custom one) simult
 ### Dialogue
 
 The dialogue XML for your traveler works like other dialogue (see the [Dialogue](/guides/dialogue/) guide) but there are specially named conditions you will need to use for the functionality to work as expected:
+
 - Use `<EntryCondition>AnyTravelersGathered</EntryCondition>` to check if any traveler has been gathered yet. This includes Riebeck and Esker, so it should always be true, unless you forcibly enable your traveler to be enabled early.
 - Use `<EntryCondition>AllTravelersGathered</EntryCondition>` to check if all of the travelers have been gathered and are ready to start playing.
 - Use `<EntryCondition>JamSessionIsOver</EntryCondition>` to check if the travelers have stopped playing the song and the sphere of possibilities has appeared.
@@ -259,7 +267,7 @@ Quantum instruments will automatically be included in the inflation animation th
                     "name": "Slate",
                     "audio": "planets/MetronomeLoop.wav"
                     // etc.
-                },
+                }
                 // etc.
             }
         ],
@@ -269,11 +277,11 @@ Quantum instruments will automatically be included in the inflation animation th
                 "gatherWithScope": false,
                 "gatherCondition": "EyeSlateGather",
                 "path": "TimberHearth_Body/Sector_TH/Sector_Village/Sector_StartingCamp/Props_StartingCamp/OtherComponentsGroup/Props_HEA_CampsiteLogAssets/Props_HEA_MarshmallowCanOpened",
-                "position": {"x": -43.94369, "y": 0, "z": 7506.436},
+                "position": { "x": -43.94369, "y": 0, "z": 7506.436 },
                 "signal": {
                     "detectionRadius": 0,
                     "identificationRadius": 10,
-                    "position": {"x": 0, "y": 0.1, "z": 0},
+                    "position": { "x": 0, "y": 0.1, "z": 0 },
                     "isRelativeToParent": true
                 }
             }
@@ -300,7 +308,7 @@ Custom instrument zones will automatically be included in the inflation animatio
     "EyeOfTheUniverse": {
         "eyeTravelers": [
             {
-                "id": "Slate",
+                "id": "Slate"
                 // etc.
             }
         ],
@@ -309,10 +317,8 @@ Custom instrument zones will automatically be included in the inflation animatio
                 "id": "Slate",
                 "deactivationCondition": "EyeSlateGather",
                 "path": "TimberHearth_Body/Sector_TH/Sector_Village/Sector_StartingCamp/Props_StartingCamp/OtherComponentsGroup/Props_HEA_CampsiteLogAssets",
-                "removeChildren": [
-                    "Props_HEA_MarshmallowCanOpened"
-                ],
-                "position": {"x": -43.30302, "y": 0, "z": 7507.822}
+                "removeChildren": ["Props_HEA_MarshmallowCanOpened"],
+                "position": { "x": -43.30302, "y": 0, "z": 7507.822 }
             }
         ]
     }
@@ -331,7 +337,7 @@ Because the objects are not available outside of this workaround, objects from t
 
 #### Custom Planets
 
-While you *can* define completely custom planets the same as you would in a regular custom solar system, they may exhibit weird orbital behaviors or pass through the existing static Eye of the Universe objects. Prefer adding onto the existing bodies or setting a `"staticPosition"` on your planet configs to lock them in place.
+While you _can_ define completely custom planets the same as you would in a regular custom solar system, they may exhibit weird orbital behaviors or pass through the existing static Eye of the Universe objects. Prefer adding onto the existing bodies or setting a `"staticPosition"` on your planet configs to lock them in place.
 
 #### The Player Ship and Ship Logs
 

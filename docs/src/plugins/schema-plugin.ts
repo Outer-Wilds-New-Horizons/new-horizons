@@ -1,11 +1,11 @@
 import { generateSchema } from "../util/schema_generator";
-import type { StarlightPlugin } from "@astrojs/starlight/types";
+import type { StarlightPlugin, HookParameters } from "@astrojs/starlight/types";
 
 export interface SchemaPluginOptions {
     schemas: string[];
 }
 
-type Context = Parameters<StarlightPlugin["hooks"]["setup"]>[0];
+type Context = HookParameters<"config:setup">;
 
 const makePlugin = (options: SchemaPluginOptions): StarlightPlugin => {
     const setup = ({ logger }: Context) => {

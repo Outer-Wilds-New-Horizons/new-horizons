@@ -3,6 +3,8 @@ title: Ship Log
 description: A guide to editing the ship log in New Horizons
 ---
 
+import { Aside } from "@astrojs/starlight/components";
+
 ## Understanding Ship Logs
 
 First thing's first, I'll define some terminology regarding ship logs in the game, and how ship logs are structured.
@@ -15,6 +17,10 @@ An entry is split up into facts, a fact can either be a rumor fact or an explore
 
 ![entryExample](@/assets/docs-images/ship_log/entry_example.webp)
 _In red you can see an entry, in green you can see the entry's facts_
+
+<Aside title="On naming facts and entries">
+Consider prefixing all your ship log facts and entries with the name of your mod to prevent incompatibilities with other mods! For example instead of having a fact called `SECRET_LEARNED` try `[YOUR_MOD_NAME]_SECRET_LEARNED`.
+</Aside>
 
 #### Curiosities
 

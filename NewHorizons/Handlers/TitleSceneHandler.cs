@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using Color = UnityEngine.Color;
 
@@ -27,8 +28,12 @@ namespace NewHorizons.Handlers
         internal static bool reloaded = false;
         internal static bool reopenProfile = false;
 
+        internal static TitleScreenInfo CurrentTitleScreenConfig { get; private set; }
+
         public static void Init()
         {
+            CurrentTitleScreenConfig = null;
+
             var scene = SearchUtilities.Find("Scene");
             var background = SearchUtilities.Find("Scene/Background");
             var planetPivot = SearchUtilities.Find("Scene/Background/PlanetPivot");
@@ -73,6 +78,8 @@ namespace NewHorizons.Handlers
             if (randomBuilder != null)
             {
                 validBuilders.RemoveAt(index);
+
+                NHLogger.LogVerbose("Selected title screen: " + randomBuilder.ToString());
 
                 // display nh planets if not disabled
                 if (!randomBuilder.DisableNHPlanets)
@@ -136,6 +143,8 @@ namespace NewHorizons.Handlers
 
         public static void BuildConfig(IModBehaviour mod, TitleScreenInfo config)
         {
+            CurrentTitleScreenConfig = config;
+
             if (config.menuTextTint != null)
             {
                 TitleScreenColourHandler.SetColour(config.menuTextTint.ToColor());
@@ -160,14 +169,22 @@ namespace NewHorizons.Handlers
             {
                 var musicSource = SearchUtilities.Find("Scene/AudioSource_Music").GetComponent<OWAudioSource>();
                 var audioType = AudioTypeHandler.GetAudioType(config.music, mod);
-                Delay.FireOnNextUpdate(() => musicSource.AssignAudioLibraryClip(audioType));
+                Delay.FireOnNextUpdate(() =>
+                {
+                    musicSource.AssignAudioLibraryClip(audioType);
+                    musicSource.SetMaxVolume(config.musicVolume);
+                });
             }
 
             if (!string.IsNullOrEmpty(config.ambience))
             {
                 var ambienceSource = SearchUtilities.Find("Scene/AudioSource_Ambience").GetComponent<OWAudioSource>();
                 var audioType = AudioTypeHandler.GetAudioType(config.ambience, mod);
-                Delay.FireOnNextUpdate(() => ambienceSource.AssignAudioLibraryClip(audioType));
+                Delay.FireOnNextUpdate(() =>
+                {
+                    ambienceSource.AssignAudioLibraryClip(audioType);
+                    ambienceSource.SetMaxVolume(config.ambienceVolume);
+                });
             }
 
             var background = SearchUtilities.Find("Scene/Background");
@@ -175,16 +192,14 @@ namespace NewHorizons.Handlers
 
             if (config.Background != null)
             {
-                if (config.Background.removeChildren != null)
-                {
-                    RemoveChildren(background, config.Background.removeChildren);
-                }
+                if (config.Background.removeChildren != null) background.RemoveChildren(config.Background.removeChildren, true);
 
                 if (config.Background.details != null)
                 {
                     foreach (var simplifiedDetail in config.Background.details)
                     {
-                        DetailBuilder.Make(background, background.GetComponentInParent<Sector>(), mod, new DetailInfo(simplifiedDetail));
+                        var sector = background.GetComponentInParent<Sector>();
+                        DetailBuilder.Make(background, ref sector, mod, new DetailInfo(simplifiedDetail));
                     }
                 }
 
@@ -194,16 +209,14 @@ namespace NewHorizons.Handlers
 
             if (config.MenuPlanet != null)
             {
-                if (config.MenuPlanet.removeChildren != null)
-                {
-                    RemoveChildren(menuPlanet, config.MenuPlanet.removeChildren);
-                }
+                if (config.MenuPlanet.removeChildren != null) menuPlanet.RemoveChildren(config.MenuPlanet.removeChildren, true);
 
                 if (config.MenuPlanet.details != null)
                 {
                     foreach (var simplifiedDetail in config.MenuPlanet.details)
                     {
-                        DetailBuilder.Make(menuPlanet, menuPlanet.GetComponentInParent<Sector>(), mod, new DetailInfo(simplifiedDetail));
+                        var sector = menuPlanet.GetComponentInParent<Sector>();
+                        DetailBuilder.Make(menuPlanet, ref sector, mod, new DetailInfo(simplifiedDetail));
                     }
                 }
 
@@ -215,28 +228,6 @@ namespace NewHorizons.Handlers
                 {
                     SearchUtilities.Find("Scene/Background/PlanetPivot/PlanetRoot").SetActive(false);
                 }
-            }
-        }
-
-        private static void RemoveChildren(GameObject go, string[] paths)
-        {
-            foreach (var childPath in paths)
-            {
-                var flag = true;
-                foreach (var childObj in go.transform.FindAll(childPath))
-                {
-                    flag = false;
-                    // idk why we wait here but we do
-                    Delay.FireInNUpdates(() =>
-                    {
-                        if (childObj != null && childObj.gameObject != null)
-                        {
-                            childObj.gameObject.SetActive(false);
-                        }
-                    }, 2);
-                }
-
-                if (flag) NHLogger.LogWarning($"Couldn't find \"{childPath}\".");
             }
         }
 
@@ -467,6 +458,19 @@ namespace NewHorizons.Handlers
             {
                 builderList.list.RemoveAll(builder => builder is TitleScreenConfigBuilder);
             }
+
+            CurrentTitleScreenConfig = null;
+        }
+
+        internal static void ReopenProfileMenu()
+        {
+            var profileButton = SearchUtilities.Find("TitleMenu/TitleCanvas/TitleLayoutGroup/MainMenuBlock/MainMenuLayoutGroup/Button-Profile");
+            var profileButtonAction = profileButton.GetComponent<SubmitActionMenu>();
+            profileButtonAction.Submit();
+            profileButtonAction._menuToOpen.OnDeactivateMenu += () =>
+            {
+                EventSystem.current.SetSelectedGameObject(profileButton);
+            };
         }
 
         internal class TitleScreenBuilderList

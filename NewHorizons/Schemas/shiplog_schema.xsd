@@ -8,14 +8,14 @@
                 <xs:element name="ID" type="xs:string" minOccurs="1" maxOccurs="1">
                     <xs:annotation>
                         <xs:documentation>
-                            ID of the planet these entries are for
+                            An ID for the AstroObject (i.e., a celestial body config like a planet/star/station/etc) that these entries are for. This ID is mostly only used internally and doesn't necessarily need to match the config ID, just make sure it's unique. Best practice: just use the config ID.
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>
                 <xs:element name="Entry" type="Entry" minOccurs="0" maxOccurs="unbounded">
                     <xs:annotation>
                         <xs:documentation>
-                            A set of entries that belong to this planet
+                            A set of entries that belong to this AstroObject (celestial body)
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>

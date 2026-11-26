@@ -45,5 +45,10 @@ namespace NewHorizons.External.Modules.Props.EchoesOfTheEye
         /// If set, projected objects will be set to fully active or fully disabled instantly instead of smoothly fading lights/renderers/colliders. Use this if the normal behavior is insufficient for the objects you're using.
         /// </summary>
         public bool toggleProjectedObjectsActive;
+
+        /// <summary>
+        /// A condition to set when the totem is lit.
+        /// </summary>
+        public DreamLightConditionInfo condition;
     }
 }

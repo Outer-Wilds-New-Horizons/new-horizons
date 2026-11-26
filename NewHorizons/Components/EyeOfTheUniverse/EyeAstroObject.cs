@@ -19,5 +19,20 @@ namespace NewHorizons.Components.EyeOfTheUniverse
         {
             Locator.RegisterAstroObject(this);
         }
+
+        public override bool TryGetTranslatedCustomName(out string translatedCustomName)
+        {
+            if (GetAstroObjectName() == AstroObject.Name.Eye)
+            {
+                translatedCustomName = UITextLibrary.GetString(UITextType.LocationEye);
+                return true;
+            }
+            return base.TryGetTranslatedCustomName(out translatedCustomName);
+        }
+
+        public override bool HasCustomDisplayName()
+        {
+            return true;
+        }
     }
 }

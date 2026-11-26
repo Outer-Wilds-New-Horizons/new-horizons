@@ -25,7 +25,10 @@
     "Vessel": "船"
   },
   "OtherDictionary": {
-    "NOMAI_SHUTTLE_COMPUTER": "<![CDATA[<color=orange>シャトル</color>]]>は現在<![CDATA[<color=lightblue>{0}</color>]]>に停泊している。"
+    "NOMAI_SHUTTLE_COMPUTER": "<![CDATA[<color=orange>シャトル</color>]]>は現在<![CDATA[<color=lightblue>{0}</color>]]>に停泊している。",
+    "UNKNOWN_LANGUAGE_UNTRANSLATED": "<!> 未訳の未知の文書 <!>",
+    "KNOWN_LANGUAGE_UNTRANSLATED": "<!> 未訳の{0}の文書 <!>",
+    "LANGUAGE_NAME_GHOSTBIRD": "住人"
   },
   "AchievementTranslations": {
     "NH_EATEN_OUTSIDE_BRAMBLE": {

@@ -1,3 +1,4 @@
+using NewHorizons.Components.EOTE;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.Props.EchoesOfTheEye;
 using NewHorizons.Handlers;
@@ -25,7 +26,7 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
                 _prefab = SearchUtilities.Find("DreamWorld_Body/Sector_DreamWorld/Sector_DreamZone_3/Interactibles_DreamZone_3/Prefab_IP_DreamObjectProjector_Bridge").InstantiateInactive().Rename("Prefab_ProjectionTotem").DontDestroyOnLoad();
                 if (_prefab == null)
                 {
-                    NHLogger.LogWarning($"Tried to make a grapple totem but couldn't. Do you have the DLC installed?");
+                    NHLogger.LogWarning($"Tried to make a projection totem but couldn't. Do you have the DLC installed?");
                     return;
                 }
                 else
@@ -43,7 +44,7 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
 
             if (_prefab == null || sector == null) return null;
 
-            var totemObj = DetailBuilder.Make(planetGO, sector, mod, _prefab, new DetailInfo(info));
+            var totemObj = DetailBuilder.Make(planetGO, ref sector, mod, _prefab, new DetailInfo(info));
 
             var projector = totemObj.GetComponent<DreamObjectProjector>();
 
@@ -116,6 +117,13 @@ namespace NewHorizons.Builder.Props.EchoesOfTheEye
             projector._lit = info.startLit;
             projector._startLit = info.startLit;
             projector._extinguishOnly = info.extinguishOnly;
+
+            if (info.condition != null)
+            {
+                var conditionController = projector.gameObject.AddComponent<DreamLightConditionController>();
+                conditionController.SetFromInfo(info.condition);
+            }
+
             /*
             Delay.FireOnNextUpdate(() =>
             {

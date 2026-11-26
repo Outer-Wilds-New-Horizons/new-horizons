@@ -1,3 +1,4 @@
+using NewHorizons.Builder.General;
 using NewHorizons.Builder.Props;
 using NewHorizons.Builder.Props.Audio;
 using NewHorizons.Builder.Props.TranslatorText;
@@ -83,7 +84,7 @@ namespace NewHorizons
 
         public GameObject GetPlanet(string name)
         {
-            return Main.BodyDict.Values.SelectMany(x => x)?.ToList()?.FirstOrDefault(x => x.Config.name == name)?.Object;
+            return Main.BodyDict[Main.Instance.CurrentStarSystem].FirstOrDefault(x => x.Config.name == name)?.Object;
         }
 
         public string GetCurrentStarSystem() => Main.Instance.CurrentStarSystem;
@@ -198,6 +199,24 @@ namespace NewHorizons
             return default;
         }
 
+        public object QueryAddonManifest(Type outType, IModBehaviour mod, string jsonPath)
+        {
+            var addonConfig = Main.AddonConfigs[mod];
+            return addonConfig == null
+                ? null
+                : QueryJson(outType, Path.Combine(mod.ModHelper.Manifest.ModFolderPath, "addon-manifest.json"), jsonPath);
+        }
+
+        public T QueryAddonManifest<T>(IModBehaviour mod, string jsonPath)
+        {
+            var data = QueryAddonManifest(typeof(T), mod, jsonPath);
+            if (data is T result)
+            {
+                return result;
+            }
+            return default;
+        }
+
         public GameObject SpawnObject(IModBehaviour mod, GameObject planet, Sector sector, string propToCopyPath, Vector3 position, Vector3 eulerAngles,
             float scale, bool alignRadial)
         {
@@ -209,7 +228,7 @@ namespace NewHorizons
                 scale = scale,
                 alignRadial = alignRadial
             };
-            return DetailBuilder.Make(planet, sector, mod, prefab, detailInfo);
+            return DetailBuilder.Make(planet, ref sector, mod, prefab, detailInfo);
         }
 
         public AudioSignal SpawnSignal(IModBehaviour mod, GameObject root, string audio, string name, string frequency,
@@ -367,5 +386,33 @@ namespace NewHorizons
 
         public void RegisterTitleScreenBuilder(IModBehaviour mod, Action<GameObject> builder, bool disableNHPlanets = true, bool shareTitleScreen = false, string persistentConditionRequired = null, string factRequired = null)
              => TitleSceneHandler.RegisterBuilder(mod, builder, disableNHPlanets, shareTitleScreen, persistentConditionRequired, factRequired);
+
+        public void ClearSystem(string name)
+        {
+            if (Main.SystemDict.ContainsKey(name))
+            {
+                Main.SystemDict.Remove(name);
+            }
+            if (Main.BodyDict.ContainsKey(name))
+            {
+                Main.BodyDict.Remove(name);
+            }
+        }
+
+        public Transform GetPlayerSpawnPoint()
+        {
+            return PlayerSpawnHandler.GetDefaultPlayerSpawn().transform;
+        }
+
+        public Transform GetShipSpawnPoint()
+        {
+            return PlayerSpawnHandler.GetDefaultShipSpawn().transform;
+        }
+
+        public GameObject GetCenterOfStarSystem() => AstroObjectBuilder.CenterOfUniverse;
+
+        public bool IsWarpingBackToEye() => Main.Instance.IsWarpingBackToEye;
+
+        public GameObject SearchUtilitiesFind(string path) => SearchUtilities.Find(path);
     }
 }

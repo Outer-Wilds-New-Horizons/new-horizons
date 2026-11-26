@@ -7,10 +7,12 @@ namespace NewHorizons.Builder.Volumes
     {
         public static SpeedTrapVolume Make(GameObject planetGO, Sector sector, SpeedTrapVolumeInfo info)
         {
-            var volume = VolumeBuilder.Make<SpeedTrapVolume>(planetGO, sector, info);
+            var volume = VolumeBuilder.Make<SpeedTrapVolume>(planetGO, ref sector, info);
 
             volume._speedLimit = info.speedLimit;
             volume._acceleration = info.acceleration;
+
+            volume.gameObject.SetActive(true);
 
             return volume;
         }

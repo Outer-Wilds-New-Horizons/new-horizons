@@ -1,4 +1,5 @@
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWML;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -72,6 +73,12 @@ namespace NewHorizons.Handlers
                         var materials = streamingHandle.GetComponent<Renderer>().sharedMaterials;
 
                         if (materials.Length == 0) continue;
+
+                        if (materials[0] == null)
+                        {
+                            NHLogger.LogError($"Renderer on {streamingHandle.transform.GetPath()} has a null material!");
+                            continue;
+                        }
 
                         // Gonna assume that if theres more than one material its probably in the same asset bundle anyway right
                         if (_materialCache.TryGetValue(materials[0], out assetBundle))

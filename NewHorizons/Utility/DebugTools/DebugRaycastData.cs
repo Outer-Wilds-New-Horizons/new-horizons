@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace NewHorizons.Utility.DebugTools
 {
-    struct DebugRaycastData
+    public struct DebugRaycastData
     {
         public bool hit;
         public Vector3 pos;
@@ -16,7 +16,7 @@ namespace NewHorizons.Utility.DebugTools
         public GameObject hitObject;
     }
 
-    struct DebugRaycastPlane
+    public struct DebugRaycastPlane
     {
         public Vector3 origin;
         public Vector3 normal;

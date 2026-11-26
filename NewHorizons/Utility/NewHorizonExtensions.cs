@@ -274,6 +274,14 @@ namespace NewHorizons.Utility
             return UnityEngine.Object.Instantiate(original);
         }
 
+        public static GameObject Instantiate(this GameObject original, Vector3 localPosition, Quaternion localRotation, Transform parent)
+        {
+            var copy = UnityEngine.Object.Instantiate(original, parent, false);
+            copy.transform.localPosition = localPosition;
+            copy.transform.localRotation = localRotation;
+            return copy;
+        }
+
         public static T DontDestroyOnLoad<T>(this T target) where T : UnityEngine.Object
         {
             UnityEngine.Object.DontDestroyOnLoad(target);
@@ -448,6 +456,54 @@ namespace NewHorizons.Utility
         public static string GetKey(this AstroObject ao)
         {
             return ao._name == AstroObject.Name.CustomString ? ao.GetCustomName() : ao._name.ToString();
+        }
+
+        public static bool IsPlayerSpawn(this SpawnPoint spawnPoint) => !spawnPoint.IsShipSpawn();
+
+        public static SpawnPoint GetPlayerSpawnPoint(this PlayerSpawner playerSpawner, SpawnLocation location)
+        {
+            return playerSpawner._spawnList
+                .Where(IsPlayerSpawn)
+                .FirstOrDefault(spawnPoint => spawnPoint.GetSpawnLocation() == location);
+        }
+
+        public static SpawnPoint GetShipSpawnPoint(this PlayerSpawner playerSpawner, SpawnLocation location)
+        {
+            return playerSpawner._spawnList
+                .Where(sp => sp.IsShipSpawn())
+                .FirstOrDefault(spawnPoint => spawnPoint.GetSpawnLocation() == location);
+        }
+
+        public static void RemoveChildren(this GameObject go, string[] paths, bool wait)
+        {
+            foreach (var childPath in paths)
+            {
+                var flag = true;
+                foreach (var childObj in go.transform.FindAll(childPath))
+                {
+                    flag = false;
+                    if (wait)
+                    {
+                        // idk why we wait here but we do
+                        Delay.FireInNUpdates(() =>
+                        {
+                            if (childObj != null && childObj.gameObject != null)
+                            {
+                                childObj.gameObject.SetActive(false);
+                            }
+                        }, 2);
+                    }
+                    else
+                    {
+                        if (childObj != null && childObj.gameObject != null)
+                        {
+                            childObj.gameObject.SetActive(false);
+                        }
+                    }
+                }
+
+                if (flag) NHLogger.LogWarning($"Couldn't find \"{childPath}\".");
+            }
         }
 
         public static CodeMatcher LogInstructions(this CodeMatcher matcher, string prefix)

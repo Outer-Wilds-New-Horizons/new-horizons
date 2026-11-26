@@ -1,11 +1,24 @@
 {
+  "$schema": "https://raw.githubusercontent.com/amazingalek/owml/master/schemas/config_schema.json",
   "enabled": true,
   "settings": {
     "CustomTitleScreen": {
       "title": "Custom Title Screen",
       "type": "toggle",
       "value": true,
-      "tooltip": "Displays planets from installed mods on the title screen."
+      "tooltip": "Display custom title screens from installed mods."
+    },
+    "UseLegacyStarChart": {
+      "title": "Use Legacy Star Chart Mode",
+      "type": "toggle",
+      "value": false,
+      "tooltip": "Enable this if you prefer the classic card-based mode."
+    },
+    "WarpDriveVisuals": {
+      "title": "Warp Drive Visuals",
+      "type": "toggle",
+      "value": true,
+      "tooltip": "Disable this if you prefer no model on the ship for the warp drive."
     },
     "DebugSeparator": {
       "type": "separator"
@@ -45,6 +58,13 @@
       "type": "text",
       "value": "",
       "tooltip": "Forces the player to spawn in this system after death. Must match the unique name of a system, eg, xen.NewHorizonsExamples"
+    },
+    "ControlsSeparator": {
+      "type": "separator"
+    },
+    "Controls": {
+      "type": "label",
+      "title": "Controls"
     }
   }
 }

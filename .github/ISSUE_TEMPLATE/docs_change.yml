@@ -1,0 +1,12 @@
+name: Documentation Change
+description: Suggest additions/changes to documentation
+labels: ["documentation"]
+body:
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggestion
+      description: What do you want to see changes in the docs?
+      render: Shell
+    validations:
+      required: true

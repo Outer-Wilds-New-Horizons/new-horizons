@@ -7,10 +7,12 @@ namespace NewHorizons.Builder.Volumes.VisorEffects
     {
         public static VisorFrostEffectVolume Make(GameObject planetGO, Sector sector, VisorEffectModule.FrostEffectVolumeInfo info)
         {
-            var volume = PriorityVolumeBuilder.Make<VisorFrostEffectVolume>(planetGO, sector, info);
+            var volume = PriorityVolumeBuilder.Make<VisorFrostEffectVolume>(planetGO, ref sector, info);
 
             volume._frostRate = info.frostRate;
             volume._maxFrost = info.maxFrost;
+
+            volume.gameObject.SetActive(true);
 
             return volume;
         }

@@ -72,6 +72,22 @@ namespace NewHorizons.Builder.Props
             SlideReel6PristinePrefab = NHPrivateAssetBundle.LoadAsset<GameObject>("Prefab_DW_Reel_6");
             SlideReel6RustedPrefab = NHPrivateAssetBundle.LoadAsset<GameObject>("Prefab_IP_Reel_Rusted_6");
             SlideReel6DestroyedPrefab = NHPrivateAssetBundle.LoadAsset<GameObject>("Prefab_IP_Reel_Destroyed_6");
+            AssetBundleUtilities.ReplaceShaders(SlideReelWholePrefab);
+            AssetBundleUtilities.ReplaceShaders(SlideReelWholePristinePrefab);
+            AssetBundleUtilities.ReplaceShaders(SlideReelWholeRustedPrefab);
+            AssetBundleUtilities.ReplaceShaders(SlideReelWholeDestroyedPrefab);
+            AssetBundleUtilities.ReplaceShaders(SlideReel8Prefab);
+            AssetBundleUtilities.ReplaceShaders(SlideReel8PristinePrefab);
+            AssetBundleUtilities.ReplaceShaders(SlideReel8RustedPrefab);
+            AssetBundleUtilities.ReplaceShaders(SlideReel8DestroyedPrefab);
+            AssetBundleUtilities.ReplaceShaders(SlideReel7Prefab);
+            AssetBundleUtilities.ReplaceShaders(SlideReel7PristinePrefab);
+            AssetBundleUtilities.ReplaceShaders(SlideReel7RustedPrefab);
+            AssetBundleUtilities.ReplaceShaders(SlideReel7DestroyedPrefab);
+            AssetBundleUtilities.ReplaceShaders(SlideReel6Prefab);
+            AssetBundleUtilities.ReplaceShaders(SlideReel6PristinePrefab);
+            AssetBundleUtilities.ReplaceShaders(SlideReel6RustedPrefab);
+            AssetBundleUtilities.ReplaceShaders(SlideReel6DestroyedPrefab);
 
             if (_autoPrefab == null)
             {
@@ -148,7 +164,7 @@ namespace NewHorizons.Builder.Props
 
             if (prefab == null) return null;
 
-            var slideReelObj = GeneralPropBuilder.MakeFromPrefab(prefab, $"Prefab_IP_Reel_{GetSlideReelName(info.reelModel, info.reelCondition)}_{mod.ModHelper.Manifest.Name}", planetGO, sector, info);
+            var slideReelObj = GeneralPropBuilder.MakeFromPrefab(prefab, $"Prefab_IP_Reel_{GetSlideReelName(info.reelModel, info.reelCondition)}_{mod.ModHelper.Manifest.Name}", planetGO, ref sector, info);
 
             var slideReel = slideReelObj.GetComponent<SlideReelItem>();
             slideReel.SetSector(sector);
@@ -358,7 +374,7 @@ namespace NewHorizons.Builder.Props
 
             if (_autoPrefab == null) return null;
 
-            var projectorObj = GeneralPropBuilder.MakeFromPrefab(_autoPrefab, $"Prefab_IP_AutoProjector_{mod.ModHelper.Manifest.Name}", planetGO, sector, info);
+            var projectorObj = GeneralPropBuilder.MakeFromPrefab(_autoPrefab, $"Prefab_IP_AutoProjector_{mod.ModHelper.Manifest.Name}", planetGO, ref sector, info);
 
             var autoProjector = projectorObj.GetComponent<AutoSlideProjector>();
             autoProjector._sector = sector;
@@ -421,7 +437,7 @@ namespace NewHorizons.Builder.Props
             if (_visionTorchDetectorPrefab == null) return null;
 
             // spawn a trigger for the vision torch
-            var visionTorchTargetGO = DetailBuilder.Make(planetGO, sector, mod, _visionTorchDetectorPrefab, new DetailInfo(info) { scale = 2, rename = !string.IsNullOrEmpty(info.rename) ? info.rename : "VisionStaffDetector" });
+            var visionTorchTargetGO = DetailBuilder.Make(planetGO, ref sector, mod, _visionTorchDetectorPrefab, new DetailInfo(info) { scale = 2, rename = !string.IsNullOrEmpty(info.rename) ? info.rename : "VisionStaffDetector" });
 
             if (visionTorchTargetGO == null)
             {
@@ -466,7 +482,7 @@ namespace NewHorizons.Builder.Props
 
             // Spawn the torch itself
             var prefab = info.reelCondition == ProjectionInfo.SlideReelCondition.Pristine ? _standingVisionTorchCleanPrefab : _standingVisionTorchPrefab;
-            var standingTorch = DetailBuilder.Make(planetGO, sector, mod, prefab, new DetailInfo(info));
+            var standingTorch = DetailBuilder.Make(planetGO, ref sector, mod, prefab, new DetailInfo(info));
 
             if (standingTorch == null)
             {

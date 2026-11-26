@@ -70,7 +70,7 @@ namespace NewHorizons.OtherMods.AchievementsPlus
             {
                 _achievements.Add(achievement);
 
-                API.RegisterAchievement(achievement.ID, achievement.secret, mod);
+                API.RegisterAchievement(achievement.ID, achievement.secret, achievement.showDescriptionNotAchieved, mod);
             }
         }
 
@@ -83,12 +83,14 @@ namespace NewHorizons.OtherMods.AchievementsPlus
             API.EarnAchievement(unique_id);
         }
 
-        public static void Register(string unique_id, bool secret, ModBehaviour mod)
+        public static void Register(string unique_id, bool secret, bool showDescriptionNotAchieved, ModBehaviour mod)
         {
             if (!Enabled) return;
 
-            API.RegisterAchievement(unique_id, secret, mod);
+            API.RegisterAchievement(unique_id, secret, showDescriptionNotAchieved, mod);
         }
+
+        public static void Register(string unique_id, bool secret, ModBehaviour mod) => Register(unique_id, secret, false, mod);
 
         public static bool HasAchievement(string unique_id)
         {

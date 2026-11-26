@@ -16,6 +16,8 @@ namespace NewHorizons.Builder.Props
     {
         public static TravelerEyeController MakeEyeTraveler(GameObject planetGO, Sector sector, EyeTravelerInfo info, NewHorizonsBody nhBody)
         {
+            var planetSector = sector;
+
             var travelerData = EyeSceneHandler.CreateEyeTravelerData(info.id);
             travelerData.info = info;
             travelerData.requirementsMet = true;
@@ -35,7 +37,7 @@ namespace NewHorizons.Builder.Props
                 return null;
             }
 
-            var go = DetailBuilder.Make(planetGO, sector, nhBody.Mod, info);
+            var go = DetailBuilder.Make(planetGO, ref sector, nhBody.Mod, info);
 
             var travelerController = go.GetAddComponent<TravelerEyeController>();
             if (!string.IsNullOrEmpty(info.startPlayingCondition))
@@ -57,7 +59,8 @@ namespace NewHorizons.Builder.Props
                 {
                     info.dialogue.isRelativeToParent = true;
                 }
-                GeneralPropBuilder.MakeFromExisting(dialogueTree.gameObject, planetGO, sector, info.dialogue, defaultParent: go.transform);
+                var dialogueSector = planetSector;
+                GeneralPropBuilder.MakeFromExisting(dialogueTree.gameObject, planetGO, ref dialogueSector, info.dialogue, defaultParent: go.transform);
 
                 if (travelerController._dialogueTree != null)
                 {
@@ -96,7 +99,8 @@ namespace NewHorizons.Builder.Props
                 {
                     info.signal.isRelativeToParent = true;
                 }
-                GeneralPropBuilder.MakeFromExisting(signalGO, planetGO, sector, info.signal, defaultParent: go.transform);
+                var signalSector = planetSector;
+                GeneralPropBuilder.MakeFromExisting(signalGO, planetGO, ref signalSector, info.signal, defaultParent: go.transform);
 
                 var signal = signalGO.GetComponent<AudioSignal>();
                 travelerController._signal = signal;
@@ -136,6 +140,8 @@ namespace NewHorizons.Builder.Props
 
         public static QuantumInstrument MakeQuantumInstrument(GameObject planetGO, Sector sector, QuantumInstrumentInfo info, NewHorizonsBody nhBody)
         {
+            var planetSector = sector;
+
             var travelerData = EyeSceneHandler.GetEyeTravelerData(info.id);
 
             if (travelerData != null && !travelerData.requirementsMet)
@@ -143,7 +149,7 @@ namespace NewHorizons.Builder.Props
                 return null;
             }
 
-            var go = DetailBuilder.Make(planetGO, sector, nhBody.Mod, info);
+            var go = DetailBuilder.Make(planetGO, ref sector, nhBody.Mod, info);
             go.layer = Layer.Interactible;
             if (info.interactRadius > 0f)
             {
@@ -190,12 +196,13 @@ namespace NewHorizons.Builder.Props
 
             if (!string.IsNullOrEmpty(info.signal.audio))
             {
-                var signalGO = SignalBuilder.Make(planetGO, sector, info.signal, nhBody.Mod);
+                var signalSector = planetSector;
+                var signalGO = SignalBuilder.Make(planetGO, signalSector, info.signal, nhBody.Mod);
                 if (info.signal.position == null && info.signal.parentPath == null)
                 {
                     info.signal.isRelativeToParent = true;
                 }
-                GeneralPropBuilder.MakeFromExisting(signalGO, planetGO, sector, info.signal, defaultParent: go.transform);
+                GeneralPropBuilder.MakeFromExisting(signalGO, planetGO, ref signalSector, info.signal, defaultParent: go.transform);
             }
             else
             {
@@ -214,7 +221,7 @@ namespace NewHorizons.Builder.Props
                 return null;
             }
 
-            var go = DetailBuilder.Make(planetGO, sector, nhBody.Mod, info);
+            var go = DetailBuilder.Make(planetGO, ref sector, nhBody.Mod, info);
 
             var instrumentZone = go.AddComponent<InstrumentZone>();
 

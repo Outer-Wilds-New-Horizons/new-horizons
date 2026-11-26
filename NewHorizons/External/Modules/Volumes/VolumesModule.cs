@@ -1,5 +1,6 @@
 using NewHorizons.External.Modules.Volumes.VolumeInfos;
 using Newtonsoft.Json;
+using System;
 
 namespace NewHorizons.External.Modules.Volumes
 {
@@ -10,6 +11,11 @@ namespace NewHorizons.External.Modules.Volumes
         /// Add audio volumes to this planet.
         /// </summary>
         public AudioVolumeInfo[] audioVolumes;
+
+        /// <summary>
+        /// Add condition trigger volumes to this planet. Sets a condition when the player, scout, or ship enters this volume.
+        /// </summary>
+        public ConditionTriggerVolumeInfo[] conditionTriggerVolumes;
 
         /// <summary>
         /// Add day night audio volumes to this planet. These volumes play a different clip depending on the time of day.
@@ -28,10 +34,27 @@ namespace NewHorizons.External.Modules.Volumes
         public FluidVolumeInfo[] fluidVolumes;
 
         /// <summary>
+        /// Add force volumes to this planet.
+        /// </summary>
+        public ForceModule forces;
+
+        /// <summary>
         /// Add hazard volumes to this planet.
         /// Causes damage to player when inside this volume.
         /// </summary>
         public HazardVolumeInfo[] hazardVolumes;
+
+        /// <summary>
+        /// Add interaction volumes to this planet.
+        /// They can be interacted with by the player to trigger various effects.
+        /// </summary>
+        public InteractionVolumeInfo[] interactionVolumes;
+
+        /// <summary>
+        /// Add player recovery volumes to this planet.
+        /// They can be interacted with by the player to refuel or heal.
+        /// </summary>
+        public PlayerRecoveryVolumeInfo[] playerRecoveryVolumes;
 
         /// <summary>
         /// Add interference volumes to this planet.
@@ -65,6 +88,12 @@ namespace NewHorizons.External.Modules.Volumes
         public NotificationVolumeInfo[] notificationVolumes;
 
         /// <summary>
+        /// Add quantum toggle volumes to this planet.
+        /// Toggles the ability for specified quantum objects to change their quantum state when entering the volume.
+        /// </summary>
+        public QuantumToggleVolumeInfo[] quantumToggleVolumes;
+
+        /// <summary>
         /// Add oxygen volumes to this planet.
         /// </summary>
         public OxygenVolumeInfo[] oxygenVolumes;
@@ -79,6 +108,11 @@ namespace NewHorizons.External.Modules.Volumes
         /// These will stop the player from seeing/targeting any reference frames.
         /// </summary>
         public VolumeInfo[] referenceFrameBlockerVolumes;
+
+        /// <summary>
+        /// Add repair volumes to this planet.
+        /// </summary>
+        public RepairVolumeInfo[] repairVolumes;
 
         /// <summary>
         /// Add triggers that reveal parts of the ship log on this planet.
@@ -102,6 +136,13 @@ namespace NewHorizons.External.Modules.Volumes
         public SpeedTrapVolumeInfo[] speedTrapVolumes;
 
         /// <summary>
+        /// Add speed limiter volumes to this planet.
+        /// Slows down the player, ship, and probe when they enter this volume.
+        /// Used on the Stranger in DLC.
+        /// </summary>
+        public SpeedLimiterVolumeInfo[] speedLimiterVolumes;
+
+        /// <summary>
         /// Add visor effect volumes to this planet.
         /// </summary>
         public VisorEffectModule visorEffects;
@@ -113,13 +154,18 @@ namespace NewHorizons.External.Modules.Volumes
         public PriorityVolumeInfo[] zeroGravityVolumes;
 
         /// <summary>
-        /// Entering this volume will load a new solar system.
+        /// Entering this volume will load a new star system.
         /// </summary>
-        public ChangeStarSystemVolumeInfo[] solarSystemVolume;
+        public ChangeStarSystemVolumeInfo[] starSystemVolumes;
 
         /// <summary>
         /// Enter this volume to be sent to the end credits scene
         /// </summary>
         public LoadCreditsVolumeInfo[] creditsVolume;
+
+        #region Obsolete
+        [Obsolete("Use starSystemVolumes instead")]
+        public ChangeStarSystemVolumeInfo[] solarSystemVolume;
+        #endregion
     }
 }

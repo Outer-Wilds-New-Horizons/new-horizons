@@ -22,13 +22,16 @@ namespace NewHorizons.External.Modules.VariableSize
         [Obsolete("goSupernova is deprecated, please use stellarDeathType instead")] [DefaultValue(true)] public bool goSupernova = true;
 
         /// <summary>
-        /// How long in minutes this star will last until it supernovas.
+        /// How long in minutes this star will last until it dies. This value is ignored if <see cref="stellarDeathType"/> is set to <see cref="StellarDeathType.None"/>.
         /// </summary>
         [DefaultValue(22f)]
         public float lifespan = 22f;
 
         /// <summary>
-        /// Should we add a star controller to this body? If you want clouds to work on a binary brown dwarf system, set this to false.
+        /// The StarController component is used to calculate atmospheric shaders (e.g., sunrise/sunset and) on planets.
+        /// When there are multiple stars in a system, the closest and brightest one to the player is used to calculate these.
+        /// Sometimes you do not want a StarController, say if the star is within clouds or an atmosphere or is meant to be overpowered by a brighter star.
+        /// In those instances, set this to False. An atmosphere which has shaders enabled with a star inside it will appear bugged.
         /// </summary>
         [DefaultValue(true)] public bool hasStarController = true;
 
@@ -151,7 +154,8 @@ namespace NewHorizons.External.Modules.VariableSize
     [JsonConverter(typeof(StringEnumConverter))]
     public enum StellarRemnantType
     {
-        [EnumMember(Value = @"default")] Default,
+        [EnumMember(Value = @"none")] None = -1,
+        [EnumMember(Value = @"default")] Default = 0,
         [EnumMember(Value = @"whiteDwarf")] WhiteDwarf,
         [EnumMember(Value = @"neutronStar")] NeutronStar,
         [Obsolete] Pulsar,

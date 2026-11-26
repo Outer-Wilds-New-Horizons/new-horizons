@@ -76,7 +76,7 @@ namespace NewHorizons.Builder.Props
             if (_prefab == null || planetGO == null || sector == null) return null;
 
             var detailInfo = new DetailInfo(info) { keepLoaded = true };
-            var shuttleObject = DetailBuilder.Make(planetGO, sector, mod, _prefab, detailInfo);
+            var shuttleObject = DetailBuilder.Make(planetGO, ref sector, mod, _prefab, detailInfo);
             shuttleObject.SetActive(false);
 
             StreamingHandler.SetUpStreaming(shuttleObject, sector);

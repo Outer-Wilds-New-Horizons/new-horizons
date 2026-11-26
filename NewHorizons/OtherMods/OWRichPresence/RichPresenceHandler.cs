@@ -34,11 +34,30 @@ namespace NewHorizons.OtherMods.OWRichPresence
             }
         }
 
+        public static string NameToImageKey(string name)
+        {
+            string result = name
+                .Replace(" ", "")
+                .Replace("'", "")
+                .Replace("-", "")
+                .Replace(".", "_")
+                .Replace("#", "_")
+                .ToLowerInvariant();
+
+            // If starts with number, prefix with underscore
+            if (!string.IsNullOrEmpty(result) && char.IsDigit(result[0]))
+            {
+                result = "_" + result;
+            }
+
+            return result;
+        }
+
         public static void SetUpPlanet(string name, GameObject go, Sector sector, bool isStar = false, bool hasAtmosphere = false)
         {
             if (!Enabled) return;
 
-            NHLogger.LogVerbose($"Registering {go.name} to OWRichPresence");
+            NHLogger.LogVerbose($"Registering {name} to OWRichPresence");
 
             var localizedName = TranslationHandler.GetTranslation(name, TranslationHandler.TextType.UI);
             var message = TranslationHandler.GetTranslation("RICH_PRESENCE_EXPLORING", TranslationHandler.TextType.UI).Replace("{0}", localizedName);
@@ -47,7 +66,10 @@ namespace NewHorizons.OtherMods.OWRichPresence
             if (isStar) fallbackKey = "defaultstar";
             else if (hasAtmosphere) fallbackKey = "defaultplanetatmosphere";
 
-            API.CreateTrigger(go, sector, message, name.Replace(" ", "").Replace("'", "").Replace("-", "").ToLowerInvariant(), fallbackKey);
+            string imageKey = NameToImageKey(name);
+            NHLogger.LogVerbose($"Using image key {imageKey} with a fallback key of {fallbackKey} for OWRichPresence");
+
+            API.CreateTrigger(go, sector, message, imageKey, fallbackKey);
         }
 
         public static void OnStarSystemLoaded(string name)

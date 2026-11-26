@@ -19,9 +19,14 @@ namespace NewHorizons.OtherMods.AchievementsPlus
         public string ID;
 
         /// <summary>
-        /// Should the name and description of the achievement be hidden until it is unlocked. Good for hiding spoilers!
+        /// Should the name and description of the achievement be hidden until it is unlocked. Good for hiding spoilers! This should be false if <see cref="showDescriptionNotAchieved"/> is true.
         /// </summary>
         public bool secret;
+
+        /// <summary>
+        /// Should an alternate description be shown before the achievement is unlocked. Good for giving hints on how to unlock the achievement without outright spoiling it. Ignored if <see cref="secret"/> is true.
+        /// </summary>
+        public bool showDescriptionNotAchieved;
 
         /// <summary>
         /// A list of facts that must be discovered before this achievement is unlocked. You can also set the achievement

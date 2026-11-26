@@ -1,11 +1,12 @@
 {
   "$schema": "https://raw.githubusercontent.com/outer-wilds-new-horizons/new-horizons/main/NewHorizons/Schemas/translation_schema.json",
   "DialogueDictionary": {
-    "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_1": "Your ship is now equiped with a warp drive!",
+    "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_1": "Your ship is now equipped with a warp drive!",
     "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_2": "You can use the new \"Interstellar Mode\" page in the ship log to lock-on your autopilot to another star system.",
     "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_3": "Then just buckle up and engage the autopilot to warp there!"
   },
   "UIDictionary": {
+    "INSTALL_OUTER_WILDS_CHINESE_FONT_FIX": "What why is this message being shown when the language is not set to Chinese go report this bug!",
     "INTERSTELLAR_MODE": "Interstellar Mode",
     "FREQ_STATUE": "Nomai Statue",
     "FREQ_WARP_CORE": "Anti-Graviton Flux",
@@ -18,15 +19,44 @@
     "OUTDATED_VERSION_WARNING": "WARNING\n\nNew Horizons only works on version {0} or higher. You're on version {1}.\n\nPlease update your game or uninstall NH.",
     "JSON_FAILED_TO_LOAD": "Invalid file(s): {0}",
     "DEBUG_RAYCAST": "Raycast",
+    "DEBUG_AIRBORNE": "Toggle Airborne Raycast",
+    "DEBUG_AIRBORNE_Z": "Adjust Airborne Distance",
     "DEBUG_PLACE": "Place Object",
     "DEBUG_PLACE_TEXT": "Place Nomai Text",
     "DEBUG_UNDO": "Undo",
     "DEBUG_REDO": "Redo",
     "Vessel": "Vessel",
-    "DLC_REQUIRED": "WARNING\n\nYou have addons (like {0}) installed which require the DLC but it is not enabled.\n\nYour mods may not function as intended."
+    "DLC_REQUIRED": "WARNING\n\nYou have addons (like {0}) installed which require the DLC but it is not enabled.\n\nYour mods may not function as intended.",
+    "SolarSystem": "The Outer Wilds",
+
+    "Custom Title Screen": "Custom Title Screen",
+    "Display custom title screens from installed mods.": "Display custom title screens from installed mods.",
+    "Use Legacy Star Chart Mode": "Use Legacy Star Chart Mode",
+    "Enable this if you prefer the classic card-based mode.": "Enable this if you prefer the classic card-based mode.",
+    "Warp Drive Visuals": "Warp Drive Visuals",
+    "Disable this if you prefer no model on the ship for the warp drive.": "Disable this if you prefer no model on the ship for the warp drive.",
+    "Debug": "Debug",
+    "Enables the debug raycast, visible quantum object colliders, and debug options menu.": "Enables the debug raycast, visible quantum object colliders, and debug options menu.",
+    "Visualize Quantum Objects": "Visualize Quantum Objects",
+    "Draws boundaries around quantum objects when Debug mode is on.": "Draws boundaries around quantum objects when Debug mode is on.",
+    "Visualize Bramble Volume Names": "Visualize Bramble Volume Names",
+    "Adds a label to all custom spherical fog warp volumes and entrances/exits when Debug mode is on.": "Adds a label to all custom spherical fog warp volumes and entrances/exits when Debug mode is on.",
+    "Verbose Logs": "Verbose Logs",
+    "Makes logs much more detailed. Useful when debugging.": "Makes logs much more detailed. Useful when debugging.",
+    "Sequential Pre-caching": "Sequential Pre-caching",
+    "This is a debug option intended for mod creators. Prevents running out of memory when computing slide reel caches, but is slower and will cause in-game lag.": "This is a debug option intended for mod creators. Prevents running out of memory when computing slide reel caches, but is slower and will cause in-game lag.",
+    "Default System Override": "Default System Override",
+    "Forces the player to spawn in this system after death. Must match the unique name of a system, eg, xen.NewHorizonsExamples": "Forces the player to spawn in this system after death. Must match the unique name of a system, eg, xen.NewHorizonsExamples",
+    "Controls": "Controls",
+    "Run debug raycast and print result.": "Run debug raycast and print result.",
+    "Toggle airborne debug raycast mode.": "Toggle airborne debug raycast mode.",
+    "Adjust the distance of the airborne raycast target.": "Adjust the distance of the airborne raycast target."
   },
   "OtherDictionary": {
-    "NOMAI_SHUTTLE_COMPUTER": "The <![CDATA[<color=orange>shuttle</color>]]> is currently resting at <![CDATA[<color=lightblue>{0}</color>]]>."
+    "NOMAI_SHUTTLE_COMPUTER": "The <![CDATA[<color=orange>shuttle</color>]]> is currently resting at <![CDATA[<color=lightblue>{0}</color>]]>.",
+    "UNKNOWN_LANGUAGE_UNTRANSLATED": "<!> Untranslated unknown writing <!>",
+    "KNOWN_LANGUAGE_UNTRANSLATED": "<!> Untranslated {0} writing <!>",
+    "LANGUAGE_NAME_GHOSTBIRD": "Inhabitant"
   },
   "AchievementTranslations": {
     "NH_EATEN_OUTSIDE_BRAMBLE": {

@@ -45,8 +45,8 @@ A title screen config file will look something like this:
                     {
                         "assetBundle": "assetbundles/test",
                         "path": "Assets/Prefabs/Background.prefab",
-                        "position": {"x": 200, "y": 280, "z": -50},
-                        "rotation": {"x": 310, "y": 0, "z": 310},
+                        "position": { "x": 200, "y": 280, "z": -50 },
+                        "rotation": { "x": 310, "y": 0, "z": 310 },
                         "scale": 0.05
                     }
                 ],
@@ -61,8 +61,8 @@ A title screen config file will look something like this:
                         "path": "Assets/Prefabs/ArtificialGravity.prefab",
                         "removeChildren": ["Gravity"],
                         "parentPath": "PlanetRoot",
-                        "position": {"x": 0, "y": 32, "z": 0},
-                        "rotation": {"x": 90, "y": 0, "z": 0},
+                        "position": { "x": 0, "y": 32, "z": 0 },
+                        "rotation": { "x": 90, "y": 0, "z": 0 },
                         "scale": 10
                     }
                 ],

@@ -99,6 +99,11 @@ namespace NewHorizons.External.Modules
             /// If you spawn on a planet with no oxygen, you probably want to set this to true ;;)
             /// </summary>
             public bool startWithSuit;
+
+            /// <summary>
+            /// Spawns you in the pilot seat of your ship. This will ignore the spawn point position. Be sure to provide a valid ship spawn point as well!
+            /// </summary>
+            public bool startInShip;
         }
 
         [JsonObject]

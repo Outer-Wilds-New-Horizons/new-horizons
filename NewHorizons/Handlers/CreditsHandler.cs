@@ -182,8 +182,16 @@ namespace NewHorizons.Handlers
         private static XmlNode[] StringToNodes(XmlDocument docContext, string text)
         {
             var doc = new XmlDocument();
-            // Doing this funny thing so that theres a single parent root thing
-            doc.LoadXml("<root>" + text + "</root>");
+            try
+            {
+                // Doing this funny thing so that theres a single parent root thing
+                doc.LoadXml("<root>" + text + "</root>");
+            }
+            catch (XmlException e)
+            {
+                NHLogger.LogError($"Failed to load credits xml:\n\n<root>{text}</root>\n\n{e}");
+                return new XmlNode[0];
+            }
 
             // ArgumentException: The node to be inserted is from a different document context.
             var nodes = new List<XmlNode>();

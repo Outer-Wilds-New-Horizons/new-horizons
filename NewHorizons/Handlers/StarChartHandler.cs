@@ -1,17 +1,22 @@
-using Epic.OnlineServices;
 using NewHorizons.Components.ShipLog;
 using NewHorizons.External;
+using NewHorizons.External.Configs;
 using NewHorizons.OtherMods.CustomShipLogModes;
 using NewHorizons.Utility;
+using NewHorizons.Utility.Files;
 using NewHorizons.Utility.OWML;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using UnityEngine;
 
 namespace NewHorizons.Handlers
 {
     public static class StarChartHandler
     {
+        public static IShipLogStarChartMode CurrentMode => Main.UseLegacyStarChart ? ShipLogLegacyStarChartMode : ShipLogStarChartMode;
         public static ShipLogStarChartMode ShipLogStarChartMode;
+        public static ShipLogLegacyStarChartMode ShipLogLegacyStarChartMode;
 
         private static Dictionary<string, string> _starSystemToFactID;
         private static Dictionary<string, string> _factIDToStarSystem;
@@ -37,9 +42,8 @@ namespace NewHorizons.Handlers
                 starChartLog.transform.localPosition = Vector3.zero;
                 starChartLog.transform.localRotation = Quaternion.Euler(0, 0, 0);
 
-                ShipLogStarChartMode = starChartLog.AddComponent<ShipLogStarChartMode>();
-
-                Object.Instantiate(reticleImage, starChartLog.transform);
+                var starChartReticle = Object.Instantiate(reticleImage, starChartLog.transform);
+                starChartReticle.name = "ReticleImage";
 
                 var scaleRoot = new GameObject("ScaleRoot");
                 scaleRoot.transform.parent = starChartLog.transform;
@@ -52,6 +56,12 @@ namespace NewHorizons.Handlers
                 panRoot.transform.localScale = Vector3.one;
                 panRoot.transform.localPosition = Vector3.zero;
                 panRoot.transform.localRotation = Quaternion.Euler(0, 0, 0);
+
+                var starChartLogLegacy = Object.Instantiate(starChartLog, shipLogRoot.transform);
+                starChartLogLegacy.name = "LegacyStarChartMode";
+
+                ShipLogStarChartMode = starChartLog.AddComponent<ShipLogStarChartMode>();
+                ShipLogLegacyStarChartMode = starChartLogLegacy.AddComponent<ShipLogLegacyStarChartMode>();
 
                 CustomShipLogModesHandler.AddInterstellarMode();
             }
@@ -78,7 +88,7 @@ namespace NewHorizons.Handlers
         }
 
         /// <summary>
-        /// Can the player warp to any system at all
+        /// Can the player warp to any system at all right now
         /// </summary>
         /// <returns></returns>
         public static bool CanWarp()
@@ -90,6 +100,44 @@ namespace NewHorizons.Handlers
                     return true;
                 }
             }
+            return false;
+        }
+
+        /// <summary>
+        /// Whether there exists at least one system that can ever exit via warp drive and a different system that can ever be entered via warp drive.
+        /// This is used to determine whether the ship's warp drive model should be shown.
+        /// Systems with <see cref="StarSystemConfig.optOutWarpDriveModel"/> are ignored for this check.
+        /// </summary>
+        /// <returns></returns>
+        public static bool CanShowWarpDriveModel()
+        {
+            if (Main.SystemDict[Main.Instance.CurrentStarSystem].Config.optOutWarpDriveModel)
+            {
+                NHLogger.Log($"CanShowWarpDriveModel - Current system [{Main.Instance.CurrentStarSystem}] has opted out of warp drive model.");
+                return false;
+            }
+
+            var optInSystems = _systems.Where(s => !s.Config.optOutWarpDriveModel);
+            var canToSystems = optInSystems.Where(s => CanEverWarpToSystem(s.UniqueID)).Select(s => s.UniqueID).ToList();
+            var canFromSystems = optInSystems.Where(s => CanEverWarpFromSystem(s.UniqueID)).Select(s => s.UniqueID).ToList();
+
+            NHLogger.LogVerbose($"CanShowWarpDriveModel - canToSystems: {string.Join(", ", canToSystems)}");
+            NHLogger.LogVerbose($"CanShowWarpDriveModel - canFromSystems: {string.Join(", ", canFromSystems)}");
+
+            // We need at least one pair where from != to
+            foreach (var from in canFromSystems)
+            {
+                foreach (var to in canToSystems)
+                {
+                    if (from != to)
+                    {
+                        NHLogger.Log($"CanShowWarpDriveModel - Can exit [{from}] and enter [{to}]");
+                        return true;
+                    }
+                }
+            }
+
+            NHLogger.Log($"CanShowWarpDriveModel - Cannot find valid enter/exit system pair.");
             return false;
         }
 
@@ -115,15 +163,7 @@ namespace NewHorizons.Handlers
             return ShipLogHandler.KnowsFact(factID);
         }
 
-        public static bool CanExitViaWarpDrive() => Main.Instance.CurrentStarSystem == "SolarSystem" || (_canExitViaWarpDrive
-                && (string.IsNullOrEmpty(_factRequiredToExitViaWarpDrive) || ShipLogHandler.KnowsFact(_factRequiredToExitViaWarpDrive)));
-
-        /// <summary>
-        /// Is it actually a valid warp target
-        /// </summary>
-        /// <param name="system"></param>
-        /// <returns></returns>
-        public static bool CanWarpToSystem(string system)
+        public static bool HasShipSpawn(string system)
         {
             var config = Main.SystemDict[system];
 
@@ -132,7 +172,26 @@ namespace NewHorizons.Handlers
             else if (system.Equals("EyeOfTheUniverse")) canWarpTo = false;
             else if (config.HasShipSpawn) canWarpTo = true;
 
-            var canEnterViaWarpDrive = Main.SystemDict[system].Config.canEnterViaWarpDrive || system == "SolarSystem";
+            return canWarpTo;
+        }
+
+        public static bool CanEverEnterViaWarpDrive(string system) => system == "SolarSystem" ||
+            Main.SystemDict[system].Config.canEnterViaWarpDrive;
+
+        public static bool CanEverExitViaWarpDrive(string system) => system == "SolarSystem" ||
+            Main.SystemDict[system].Config.canExitViaWarpDrive;
+
+        public static bool CanExitViaWarpDrive() => Main.Instance.CurrentStarSystem == "SolarSystem" || (_canExitViaWarpDrive
+                && (string.IsNullOrEmpty(_factRequiredToExitViaWarpDrive) || ShipLogHandler.KnowsFact(_factRequiredToExitViaWarpDrive)));
+
+        /// <summary>
+        /// Is it actually a valid warp target right now
+        /// </summary>
+        /// <param name="system"></param>
+        /// <returns></returns>
+        public static bool CanWarpToSystem(string system)
+        {
+            var canWarpTo = CanEverWarpToSystem(system);
 
             var canExitViaWarpDrive = CanExitViaWarpDrive();
 
@@ -140,13 +199,40 @@ namespace NewHorizons.Handlers
             if (Main.Instance.CurrentStarSystem == "SolarSystem")
                 canExitViaWarpDrive = true;
 
-            NHLogger.LogVerbose(canEnterViaWarpDrive, canExitViaWarpDrive, system, HasUnlockedSystem(system));
+            var hasUnlockedSystem = HasUnlockedSystem(system);
+
+            NHLogger.LogVerbose("CanWarpToSystem - ", system, canWarpTo, canExitViaWarpDrive, hasUnlockedSystem);
 
             return canWarpTo
-                    && canEnterViaWarpDrive
                     && canExitViaWarpDrive
                     && system != Main.Instance.CurrentStarSystem
-                    && HasUnlockedSystem(system);
+                    && hasUnlockedSystem;
+        }
+
+        /// <summary>
+        /// Is it actually a valid warp target ever
+        /// </summary>
+        /// <param name="system"></param>
+        /// <returns></returns>
+        public static bool CanEverWarpToSystem(string system)
+        {
+            var hasShipSpawn = HasShipSpawn(system);
+            var canEnterViaWarpDrive = CanEverEnterViaWarpDrive(system);
+
+            return hasShipSpawn && canEnterViaWarpDrive;
+        }
+
+        /// <summary>
+        /// Is it actually a valid warp target ever
+        /// </summary>
+        /// <param name="system"></param>
+        /// <returns></returns>
+        public static bool CanEverWarpFromSystem(string system)
+        {
+            var hasShipSpawn = HasShipSpawn(system);
+            var canExitViaWarpDrive = CanEverExitViaWarpDrive(system);
+
+            return hasShipSpawn && canExitViaWarpDrive;
         }
 
         public static void OnRevealFact(string factID)
@@ -154,21 +240,22 @@ namespace NewHorizons.Handlers
             if (!string.IsNullOrEmpty(_factRequiredToExitViaWarpDrive) && factID == _factRequiredToExitViaWarpDrive)
             {
                 _canExitViaWarpDrive = true;
-                if (!Main.HasWarpDrive)
+                if (!Main.HasWarpDriveFunctionality)
                 {
-                    var flagActuallyAddedACard = false;
-                    // Add all cards that now work
+                    var flagActuallyAddedAStar = false;
+                    // Add all stars that now work
                     foreach (var starSystem in Main.SystemDict.Keys)
                     {
                         if (CanWarpToSystem(starSystem))
                         {
-                            ShipLogStarChartMode.AddSystemCard(starSystem);
-                            flagActuallyAddedACard = true;
+                            ShipLogStarChartMode.AddStarSystem(starSystem);
+                            ShipLogLegacyStarChartMode.AddStarSystem(starSystem);
+                            flagActuallyAddedAStar = true;
                         }
                     }
-                    if (flagActuallyAddedACard)
+                    if (flagActuallyAddedAStar)
                     {
-                        Main.Instance.EnableWarpDrive();
+                        Main.Instance.EnableWarpDriveFunctionality();
                     }
                 }
                 else
@@ -182,11 +269,12 @@ namespace NewHorizons.Handlers
                 var knowsWarpFact = string.IsNullOrEmpty(_factRequiredToExitViaWarpDrive) || ShipLogHandler.KnowsFact(_factRequiredToExitViaWarpDrive);
 
                 NHLogger.Log($"Just learned [{factID}] and unlocked [{systemUnlocked}]");
-                if (!Main.HasWarpDrive && knowsWarpFact)
+                if (!Main.HasWarpDriveFunctionality && knowsWarpFact)
                 {
-                    Main.Instance.EnableWarpDrive();
+                    Main.Instance.EnableWarpDriveFunctionality();
                 }
-                ShipLogStarChartMode?.AddSystemCard(systemUnlocked);
+                ShipLogStarChartMode.AddStarSystem(systemUnlocked);
+                ShipLogLegacyStarChartMode.AddStarSystem(systemUnlocked);
             }
         }
 
@@ -197,6 +285,40 @@ namespace NewHorizons.Handlers
             _factIDToStarSystem.Add(factID, system);
         }
 
-        public static bool IsWarpDriveLockedOn() => StarChartHandler.ShipLogStarChartMode.GetTargetStarSystem() != null;
+        public static bool IsWarpDriveLockedOn() => StarChartHandler.CurrentMode.GetTargetStarSystem() != null;
+
+        public static Texture GetSystemCardTexture(string uniqueID)
+        {
+            Texture texture = null;
+            try
+            {
+                if (uniqueID.Equals("SolarSystem"))
+                {
+                    texture = ImageUtilities.GetTexture(Main.Instance, "Assets/hearthian system.png");
+                }
+                else if (uniqueID.Equals("EyeOfTheUniverse"))
+                {
+                    texture = ImageUtilities.GetTexture(Main.Instance, "Assets/eye symbol.png");
+                }
+                else
+                {
+                    var mod = Main.SystemDict[uniqueID].Mod;
+
+                    var path = Path.Combine("systems", uniqueID + ".png");
+
+                    // Else check the old location
+                    if (!File.Exists(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, path)))
+                    {
+                        path = Path.Combine("planets", uniqueID + ".png");
+                    }
+
+                    NHLogger.LogVerbose($"StarChartHandler - Trying to load {path}");
+                    texture = ImageUtilities.GetTexture(mod, path);
+                }
+            }
+            catch (System.Exception) { }
+
+            return texture;
+        }
     }
 }

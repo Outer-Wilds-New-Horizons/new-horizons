@@ -37,7 +37,7 @@ this is ideal for simple projects and people just starting out.
 
 The [Outer Wilds Mod Template](https://github.com/ow-mods/ow-mod-template) is used for mods that use custom code,
 **you must enable "Use New Horizons" in order for it to work with New Horizons**.
-This is ideal for people that want to expand on New Horizons and add custom behaviour.
+This is for people who want to make a regular mod **with custom code** allowing them to implement new features on top of what New Horizons already offers them. Find out more with the [OWML getting started guide](https://owml.outerwildsmods.com/guides/getting-started).
 
 ## Texturing
 
@@ -56,6 +56,7 @@ These mods are useful when developing your addon
 - [Save Editor](https://outerwildsmods.com/mods/saveeditor) - Useful when creating a custom [ship log](/ship-log), can be used to reveal all custom facts so you can see them in the ship's computer.
 - [Time Saver](https://outerwildsmods.com/mods/timesaver/) - Lets you skip some repeated cutscenes and get into the game faster.
 - [The Examples Mod](https://github.com/Outer-Wilds-New-Horizons/nh-examples) - A mod that contains examples of how to use New Horizons features.
+- [Nomai Text Printer](https://github.com/coderCleric/NomaiTextPrinter) - Useful for saving text changes (such as moving arcs with Unity Explorer) to your json files.
 
 ## Helpful Tools
 

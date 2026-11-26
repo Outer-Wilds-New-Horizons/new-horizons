@@ -3,6 +3,8 @@ using NewHorizons.External.Modules.Props;
 using NewHorizons.External.SerializableData;
 using NewHorizons.Handlers;
 using Newtonsoft.Json;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace NewHorizons.External.Configs
 {
@@ -63,9 +65,26 @@ namespace NewHorizons.External.Configs
         public string music;
 
         /// <summary>
+        /// How long (in seconds) it should take for the music to fade in from 0 to the configured volume.
+        /// 0 disables fade-in and music will be at full volume immediately.
+        /// Vanilla is 8.
+        /// </summary>
+        [DefaultValue(8f)] public float musicFadeInTime = 8f;
+
+        /// <summary>
+        /// Volume multiplier for the music (0.0 - 1.0). Vanilla is 0.1.
+        /// </summary>
+        [Range(0f, 1f)][DefaultValue(0.1f)] public float musicVolume = 0.1f;
+
+        /// <summary>
         /// The ambience audio that will play on the title screen. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list.
         /// </summary>
         public string ambience;
+
+        /// <summary>
+        /// Volume multiplier for the ambience (0.0 - 1.0). Vanilla is 0.7.
+        /// </summary>
+        [Range(0f, 1f)][DefaultValue(0.7f)] public float ambienceVolume = 0.7f;
 
         /// <summary>
         /// Edit properties of the background

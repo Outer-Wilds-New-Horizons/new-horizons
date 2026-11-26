@@ -7,10 +7,10 @@ using System.ComponentModel;
 namespace NewHorizons.External.Modules.Props
 {
     /// <summary>
-    /// A lesser form of DetailInfo used for the title screen since that supports fewer features
+    /// A lesser form of DetailInfo used for the title screen and proxies since that supports fewer features
     /// </summary>
     [JsonObject]
-    public class SimplifiedDetailInfo : GeneralPropInfo
+    public class SimplifiedDetailInfo : GeneralScaleablePropInfo
     {
         public SimplifiedDetailInfo() { }
 
@@ -42,14 +42,16 @@ namespace NewHorizons.External.Modules.Props
         public bool removeComponents;
 
         /// <summary>
-        /// Scale the prop
+        /// Activates this game object when the dialogue/persistent condition is met
         /// </summary>
-        [DefaultValue(1f)] public float scale = 1f;
+        public string activationCondition;
 
         /// <summary>
-        /// Scale each axis of the prop. Overrides `scale`.
+        /// Deactivates this game object when the dialogue/persistent condition is met
         /// </summary>
-        public MVector3 stretch;
+        public string deactivationCondition;
+
+        [Obsolete("alignToNormal is deprecated. Use alignRadial instead")] public bool alignToNormal;
     }
 
     [JsonObject]
@@ -65,6 +67,7 @@ namespace NewHorizons.External.Modules.Props
         public DetailInfo(SimplifiedDetailInfo info)
         {
             keepLoaded = true;
+            blinkWhenActiveChanged = false;
             JsonConvert.PopulateObject(JsonConvert.SerializeObject(info), this);
         }
 
@@ -109,16 +112,6 @@ namespace NewHorizons.External.Modules.Props
         public bool ignoreSun;
 
         /// <summary>
-        /// Activates this game object when the dialogue condition is met
-        /// </summary>
-        public string activationCondition;
-
-        /// <summary>
-        /// Deactivates this game object when the dialogue condition is met
-        /// </summary>
-        public string deactivationCondition;
-
-        /// <summary>
         /// Should the player close their eyes while the activation state changes. Only relevant if activationCondition or deactivationCondition are set.
         /// </summary>
         [DefaultValue(true)] public bool blinkWhenActiveChanged = true;
@@ -132,8 +125,6 @@ namespace NewHorizons.External.Modules.Props
         /// Should this detail be treated as a socket for an interactible item
         /// </summary>
         public ItemSocketInfo itemSocket;
-
-        [Obsolete("alignToNormal is deprecated. Use alignRadial instead")] public bool alignToNormal;
     }
 
 }

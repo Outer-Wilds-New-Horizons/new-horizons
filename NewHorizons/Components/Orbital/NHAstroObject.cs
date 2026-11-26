@@ -1,4 +1,7 @@
+using NewHorizons.Components.EyeOfTheUniverse;
 using NewHorizons.External.Modules;
+using NewHorizons.Handlers;
+using System;
 namespace NewHorizons.Components.Orbital
 {
     public class NHAstroObject : AstroObject, IOrbitalParameters
@@ -43,6 +46,33 @@ namespace NewHorizons.Components.Orbital
         public OrbitalParameters GetOrbitalParameters(Gravity primaryGravity, Gravity secondaryGravity)
         {
             return OrbitalParameters.FromTrueAnomaly(primaryGravity, secondaryGravity, eccentricity, semiMajorAxis, inclination, argumentOfPeriapsis, longitudeOfAscendingNode, trueAnomaly);
+        }
+
+        public virtual bool TryGetTranslatedCustomName(out string translatedCustomName)
+        {
+            var customName = GetCustomName();
+            if (!string.IsNullOrWhiteSpace(customName))
+            {
+                translatedCustomName = TranslationHandler.GetTranslation(customName, TranslationHandler.TextType.UI, false);
+                return true;
+            }
+            else
+            {
+                translatedCustomName = null;
+                return false;
+            }
+        }
+
+        public string GetTranslatedCustomName()
+        {
+            if (TryGetTranslatedCustomName(out string translatedCustomName)) 
+                return translatedCustomName;
+            return null;
+        }
+
+        public virtual bool HasCustomDisplayName()
+        {
+            return !isVanilla && !HideDisplayName;
         }
     }
 }

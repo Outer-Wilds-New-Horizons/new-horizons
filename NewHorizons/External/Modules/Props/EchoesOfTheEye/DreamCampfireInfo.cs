@@ -1,18 +1,18 @@
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NewHorizons.External.Modules.Props.EchoesOfTheEye
 {
     [JsonObject]
-    public class DreamCampfireInfo : GeneralPropInfo
+    public class DreamCampfireInfo : CampfireInfo
     {
         /// <summary>
         /// Unique ID for this dream-world campfire
         /// </summary>
         public string id;
+
+        /// <summary>
+        /// Path to the alarm bell this campfire is connected to.
+        /// </summary>
+        public string alarmBellPath;
     }
 }

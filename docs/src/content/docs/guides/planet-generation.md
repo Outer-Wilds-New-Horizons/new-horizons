@@ -90,8 +90,8 @@ This makes the second planet a quantum state of the first, anything you specify 
 }
 ```
 
-Keep in mind that if you  redefine `Orbit` on all configs (even with the same parameters each time), **the planet will change its position within its orbit when changing states.**
-*If you want your Quantum Planet's position to* ***NOT*** *change,* ***only define `Orbit` on the main state***.
+Keep in mind that if you redefine `Orbit` on all configs (even with the same parameters each time), **the planet will change its position within its orbit when changing states.**
+_If you want your Quantum Planet's position to_ **_NOT_** _change,_ **_only define `Orbit` on the main state_**.
 
 ## Barycenters (Focal Points)
 

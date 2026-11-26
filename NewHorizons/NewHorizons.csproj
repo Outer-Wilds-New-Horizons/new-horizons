@@ -17,25 +17,25 @@
         <DebugType>none</DebugType>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="OuterWildsGameLibs" Version="1.1.15.1018" />
-        <PackageReference Include="OWML" Version="2.12.1" />
+        <PackageReference Include="OuterWildsGameLibs" Version="1.1.16.1372" />
+        <PackageReference Include="OWML" Version="2.16.2" />
         <Reference Include="../Lib/System.ComponentModel.Annotations.dll" />
     </ItemGroup>
     <ItemGroup>
         <None Include="../Lib/System.ComponentModel.Annotations.dll">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
         <None Include="default-config.json">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
         <None Include="manifest.json">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
         <None Include="Assets\**">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
 		<None Include="Icons\**">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
     </ItemGroup>
     <ItemGroup>

@@ -1,4 +1,5 @@
 using NewHorizons.Builder.General;
+using NewHorizons.Builder.Props.TranslatorText;
 using NewHorizons.Components;
 using NewHorizons.Components.Orbital;
 using NewHorizons.Components.Props;
@@ -12,6 +13,7 @@ using OWML.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -19,7 +21,7 @@ namespace NewHorizons.Builder.Props
 {
     public static class DetailBuilder
     {
-        private static readonly Dictionary<(Sector, string), (GameObject prefab, bool isItem)> _fixedPrefabCache = new();
+        private static readonly Dictionary<(Sector, string, string), (GameObject prefab, bool isItem)> _fixedPrefabCache = new();
         private static GameObject _emptyPrefab;
 
         private static readonly Dictionary<DetailInfo, GameObject> _detailInfoToGameObject = new();
@@ -46,12 +48,20 @@ namespace NewHorizons.Builder.Props
         // In particular, Outer Wives needs this method signature
         [Obsolete]
         public static GameObject Make(GameObject go, Sector sector, GameObject prefab, DetailInfo detail)
-            => Make(go, sector, mod: null, prefab, detail);
+            => Make(go, ref sector, mod: null, prefab, detail);
 
         // Dreamstalker needed this one
         [Obsolete]
         public static GameObject Make(GameObject go, Sector sector, DetailInfo detail)
-            => Make(go, sector, mod: null, detail);
+            => Make(go, ref sector, mod: null, detail);
+
+        // Changed to ref sector
+        [Obsolete]
+        public static GameObject Make(GameObject go, Sector sector, IModBehaviour mod, GameObject prefab, DetailInfo detail)
+            => Make(go, ref sector, mod, prefab, detail);
+        // Intentionally not marking this one Obsolete because it's only used by PropBuildManager and would clutter that code
+        public static GameObject Make(GameObject planetGO, Sector sector, IModBehaviour mod, DetailInfo info)
+            => Make(planetGO, ref sector, mod, info);
         #endregion
 
         private static void SceneManager_sceneUnloaded(Scene scene)
@@ -68,7 +78,7 @@ namespace NewHorizons.Builder.Props
         /// <summary>
         /// Create a detail using an asset bundle or a path in the scene hierarchy of the item to copy.
         /// </summary>
-        public static GameObject Make(GameObject planetGO, Sector sector, IModBehaviour mod, DetailInfo info)
+        public static GameObject Make(GameObject planetGO, ref Sector sector, IModBehaviour mod, DetailInfo info)
         {
             if (sector == null) info.keepLoaded = true;
 
@@ -77,7 +87,7 @@ namespace NewHorizons.Builder.Props
                 // Shouldn't happen
                 if (mod == null) return null;
 
-                return Make(planetGO, sector, mod, AssetBundleUtilities.LoadPrefab(info.assetBundle, info.path, mod), info);
+                return Make(planetGO, ref sector, mod, AssetBundleUtilities.LoadPrefab(info.assetBundle, info.path, mod), info);
             }
 
             if (_emptyPrefab == null) _emptyPrefab = new GameObject("Empty");
@@ -92,14 +102,14 @@ namespace NewHorizons.Builder.Props
             }
             else
             {
-                return Make(planetGO, sector, mod, prefab, info);
+                return Make(planetGO, ref sector, mod, prefab, info);
             }
         }
 
         /// <summary>
         /// Create a detail using a prefab.
         /// </summary>
-        public static GameObject Make(GameObject go, Sector sector, IModBehaviour mod, GameObject prefab, DetailInfo detail)
+        public static GameObject Make(GameObject go, ref Sector sector, IModBehaviour mod, GameObject prefab, DetailInfo detail)
         {
             if (prefab == null) return null;
 
@@ -111,14 +121,14 @@ namespace NewHorizons.Builder.Props
             bool isFromAssetBundle = !string.IsNullOrEmpty(detail.assetBundle);
 
             // We save copies with all their components fixed, good if the user is placing the same detail more than once
-            if (detail?.path != null && _fixedPrefabCache.TryGetValue((sector, detail.path), out var storedPrefab))
+            if (detail?.path != null && _fixedPrefabCache.TryGetValue((sector, detail.path, detail.sectorPath), out var storedPrefab))
             {
-                prop = GeneralPropBuilder.MakeFromPrefab(storedPrefab.prefab, prefab.name, go, sector, detail);
+                prop = GeneralPropBuilder.MakeFromPrefab(storedPrefab.prefab, prefab.name, go, ref sector, detail);
                 isItem = storedPrefab.isItem;
             }
             else
             {
-                prop = GeneralPropBuilder.MakeFromPrefab(prefab, prefab.name, go, sector, detail);
+                prop = GeneralPropBuilder.MakeFromPrefab(prefab, prefab.name, go, ref sector, detail);
 
                 StreamingHandler.SetUpStreaming(prop, detail.keepLoaded ? null : sector);
 
@@ -176,6 +186,11 @@ namespace NewHorizons.Builder.Props
                         {
                             DialogueBuilder.HandleUnityCreatedDialogue(dialogue);
                         }
+                        // Same for translator text
+                        if (isFromAssetBundle && component is NomaiText nomaiText)
+                        {
+                            TranslatorTextBuilder.HandleUnityCreatedNomaiText(nomaiText);
+                        }
 
                         // copied details need their lanterns fixed
                         if (!isFromAssetBundle && component is DreamLanternController lantern)
@@ -194,7 +209,7 @@ namespace NewHorizons.Builder.Props
                 if (detail.path != null)
                 {
                     // We put these in DontDestroyOnLoad so that QSB will ignore them and so they don't clutter up the scene.
-                    _fixedPrefabCache.Add((sector, detail.path), (prop.InstantiateInactive().DontDestroyOnLoad(), isItem));
+                    _fixedPrefabCache.Add((sector, detail.path, detail.sectorPath), (prop.InstantiateInactive().DontDestroyOnLoad(), isItem));
                 }
             }
 
@@ -211,20 +226,7 @@ namespace NewHorizons.Builder.Props
 
             prop.transform.localScale = detail.stretch ?? (detail.scale != 0 ? Vector3.one * detail.scale : prefab.transform.localScale);
 
-            if (detail.removeChildren != null)
-            {
-                foreach (var childPath in detail.removeChildren)
-                {
-                    var flag = true;
-                    foreach (var childObj in prop.transform.FindAll(childPath))
-                    {
-                        flag = false;
-                        childObj.gameObject.SetActive(false);
-                    }
-
-                    if (flag) NHLogger.LogWarning($"Couldn't find \"{childPath}\".");
-                }
-            }
+            if (detail.removeChildren != null) prop.RemoveChildren(detail.removeChildren, false);
 
             if (detail.removeComponents)
             {
@@ -361,6 +363,11 @@ namespace NewHorizons.Builder.Props
                     singleLightSensor._sector.OnSectorOccupantsUpdated += singleLightSensor.OnSectorOccupantsUpdated;
                 }
             }
+
+            else if (component is Campfire campfire)
+            {
+                campfire._sector = sector;
+            }
         }
 
         /// <summary>
@@ -454,15 +461,20 @@ namespace NewHorizons.Builder.Props
 
             // If it's not a moving ghostbird (ie Prefab_IP_GhostBird/Ghostbird_IP_ANIM) make sure it doesnt spam NREs
             // Manual parent chain so we can find inactive
-            else if (component is GhostIK or GhostEffects && component.transform.parent.GetComponent<GhostBrain>() == null)
+            else if (component is GhostIK or GhostEffects or ProxyGhostController && component.transform.parent.GetComponent<GhostBrain>() == null)
             {
-                UnityEngine.Object.DestroyImmediate(component);
-            }
-            // If it's not a moving anglerfish (ie Anglerfish_Body/Beast_Anglerfish) make sure the anim controller is regular
-            // Manual parent chain so we can find inactive
-            else if(component is AnglerfishAnimController && component.transform.parent.GetComponent<AnglerfishController>() == null)
-            {
-                component.gameObject.AddComponent<AnglerAnimFixer>();
+                // Disable all IK by default bc the targets are going to be on the stranger (fixes ghost birds having broken arms #1136)
+                if (component is ProxyGhostController proxyGhostController)
+                {
+                    proxyGhostController._leftFootIK = false;
+                    proxyGhostController._rightFootIK = false;
+                    proxyGhostController._leftHandIK = false;
+                    proxyGhostController._rightHandIK = false;
+                }
+                else
+                {
+                    UnityEngine.Object.DestroyImmediate(component);
+                }
             }
             // Add custom logic to NH-spawned rafts to handle fluid changes
             else if (component is RaftController raft)
@@ -473,47 +485,14 @@ namespace NewHorizons.Builder.Props
             {
                 // These flood toggles are to disable flooded docks on the Stranger
                 // Presumably the user isn't making one of those
-                foreach (var toggle in dock.GetComponents<FloodToggle>().Concat(dock.GetComponentsInChildren<FloodToggle>()))
+                foreach (var toggle in dock.GetComponentsInChildren<FloodToggle>())
                 {
                     Component.DestroyImmediate(toggle);
                 }
-                foreach (var floodSensor in dock.GetComponents<RingRiverFloodSensor>().Concat(dock.GetComponentsInChildren<RingRiverFloodSensor>()))
+                foreach (var floodSensor in dock.GetComponentsInChildren<RingRiverFloodSensor>())
                 {
                     Component.DestroyImmediate(floodSensor);
                 }
-            }
-        }
-
-        /// <summary>
-        /// Has to happen after AnglerfishAnimController awake to remove the events it has set up.
-        /// Otherwise results in the anglerfish 1) having its animations controlled by an actual fish 2) randomly having different animations on solarsystem load
-        /// Can't do delay because it needs to work with scatter (copies a prefab made using MakeDetail).
-        /// </summary>
-        [RequireComponent(typeof(AnglerfishAnimController))]
-        private class AnglerAnimFixer : MonoBehaviour
-        {
-            public void Start()
-            {
-                var angler = GetComponent<AnglerfishAnimController>();
-
-                NHLogger.LogVerbose("Fixing anglerfish animation");
-
-                // Remove any event reference to its angler so that they dont change its state
-                if (angler._anglerfishController)
-                {
-                    angler._anglerfishController.OnChangeAnglerState -= angler.OnChangeAnglerState;
-                    angler._anglerfishController.OnAnglerTurn -= angler.OnAnglerTurn;
-                    angler._anglerfishController.OnAnglerSuspended -= angler.OnAnglerSuspended;
-                    angler._anglerfishController.OnAnglerUnsuspended -= angler.OnAnglerUnsuspended;
-                }
-                // Disable the angler anim controller because we don't want Update or LateUpdate to run, just need it to set the initial Animator state
-                angler.enabled = false;
-                angler.OnChangeAnglerState(AnglerfishController.AnglerState.Lurking);
-
-                angler._animator.SetFloat("MoveSpeed", angler._moveCurrent);
-                angler._animator.SetFloat("Jaw", angler._jawCurrent);
-
-                Destroy(this);
             }
         }
 

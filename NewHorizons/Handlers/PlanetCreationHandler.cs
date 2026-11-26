@@ -5,6 +5,7 @@ using NewHorizons.Builder.Orbital;
 using NewHorizons.Builder.Props;
 using NewHorizons.Builder.ShipLog;
 using NewHorizons.Builder.Volumes;
+using NewHorizons.Components;
 using NewHorizons.Components.Orbital;
 using NewHorizons.Components.Quantum;
 using NewHorizons.Components.Stars;
@@ -20,10 +21,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using NewHorizons.Streaming;
-using Newtonsoft.Json;
-using NewHorizons.External.Modules.VariableSize;
-using NewHorizons.Components;
 
 namespace NewHorizons.Handlers
 {
@@ -45,6 +42,16 @@ namespace NewHorizons.Handlers
 
         public static void Init(List<NewHorizonsBody> bodies)
         {
+            // TH gets preloaded in title screen. custom systems dont need this
+            if (Main.Instance.CurrentStarSystem is not ("SolarSystem" or "EyeOfTheUniverse"))
+            {
+                foreach (var bundle in StreamingManager.s_activeBundles)
+                {
+                    // save memory NOW instead of next frame when other stuff has loaded and taken memory
+                    bundle.UnloadImmediate();
+                }
+            }
+            
             // Start by destroying all planets if need be
             if (Main.SystemDict[Main.Instance.CurrentStarSystem].Config.destroyStockPlanets)
             {
@@ -254,6 +261,8 @@ namespace NewHorizons.Handlers
                             var orbit = body.Config.Orbit.semiMajorAxis == 0 ? quantumPlanet.groundState.orbit : body.Config.Orbit;
 
                             quantumPlanet.states.Add(new QuantumPlanet.State(sector, orbit));
+
+                            RichPresenceHandler.SetUpPlanet(body.Config.name, existingPlanet, sector, body.Config.Star != null, body.Config.Atmosphere != null);
                         }
                         catch (Exception ex)
                         {
@@ -774,7 +783,7 @@ namespace NewHorizons.Handlers
             SplashColourizer.Make(go, body.Config, sphereOfInfluence);
 
             // We allow removing children afterwards so you can also take bits off of the modules you used
-            if (body.Config.removeChildren != null) RemoveChildren(go, body);
+            if (body.Config.removeChildren != null) go.RemoveChildren(body.Config.removeChildren, true);
 
             return go;
         }
@@ -1001,28 +1010,6 @@ namespace NewHorizons.Handlers
             if (distanceToCenter > SolarSystemRadius && trackForSolarSystemRadius)
             {
                 SolarSystemRadius = distanceToCenter;
-            }
-        }
-
-        private static void RemoveChildren(GameObject go, NewHorizonsBody body)
-        {
-            foreach (var childPath in body.Config.removeChildren)
-            {
-                var flag = true;
-                foreach (var childObj in go.transform.FindAll(childPath))
-                {
-                    flag = false;
-                    // idk why we wait here but we do
-                    Delay.FireInNUpdates(() =>
-                    {
-                        if (childObj != null && childObj.gameObject != null)
-                        {
-                            childObj.gameObject.SetActive(false);
-                        }
-                    }, 2);
-                }
-
-                if (flag) NHLogger.LogWarning($"Couldn't find \"{childPath}\".");
             }
         }
     }

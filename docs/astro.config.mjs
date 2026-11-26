@@ -1,5 +1,6 @@
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
+import { unified } from "@astrojs/markdown-remark";
 
 import rehypeExternalLinks from "rehype-external-links";
 
@@ -37,9 +38,16 @@ const twMeta = (name, val) => ({
 // https://astro.build/config
 export default defineConfig({
     site: url,
-    compressHTML: true,
     markdown: {
-        rehypePlugins: [rehypeExternalLinks]
+        processor: unified({
+            rehypePlugins: [rehypeExternalLinks]
+        })
+    },
+    vite: {
+        resolve: {
+            // What the FUCK IS GOING ON
+            noExternal: ["js-yaml"]
+        }
     },
     integrations: [
         starlight({
@@ -57,10 +65,14 @@ export default defineConfig({
                 src: "/src/assets/icon.webp",
                 alt: "The New Horizons Logo"
             },
-            social: {
-                github: "https://github.com/Outer-Wilds-New-Horizons/new-horizons",
-                discord: "https://discord.gg/wusTQYbYTc"
-            },
+            social: [
+                {
+                    icon: "github",
+                    label: "GitHub",
+                    href: "https://github.com/Outer-Wilds-New-Horizons/new-horizons"
+                },
+                { icon: "discord", label: "Discord", href: "https://discord.gg/wusTQYbYTc" }
+            ],
             head: [
                 ogMeta("image", `${url}/og_image.webp`),
                 ogMeta("image:width", "1200"),
@@ -72,15 +84,23 @@ export default defineConfig({
             sidebar: [
                 {
                     label: "Start Here",
-                    autogenerate: {
-                        directory: "start-here"
-                    }
+                    items: [
+                        {
+                            autogenerate: {
+                                directory: "start-here"
+                            }
+                        }
+                    ]
                 },
                 {
                     label: "Guides",
-                    autogenerate: {
-                        directory: "guides"
-                    }
+                    items: [
+                        {
+                            autogenerate: {
+                                directory: "guides"
+                            }
+                        }
+                    ]
                 },
                 {
                     label: "Schemas",
@@ -97,9 +117,13 @@ export default defineConfig({
                 },
                 {
                     label: "Reference",
-                    autogenerate: {
-                        directory: "reference"
-                    }
+                    items: [
+                        {
+                            autogenerate: {
+                                directory: "reference"
+                            }
+                        }
+                    ]
                 }
             ]
         })

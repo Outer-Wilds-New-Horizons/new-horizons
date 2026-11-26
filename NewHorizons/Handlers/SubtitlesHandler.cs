@@ -10,7 +10,7 @@ using UnityEngine.UI;
 
 namespace NewHorizons.Handlers
 {
-    class SubtitlesHandler : MonoBehaviour
+    public class SubtitlesHandler : MonoBehaviour
     {
         public static float SUBTITLE_HEIGHT = 97;
         public static float SUBTITLE_WIDTH = 669; // nice
@@ -80,6 +80,11 @@ namespace NewHorizons.Handlers
             _subtitleDisplay.gameObject.GetAddComponent<LayoutElement>().minWidth = SUBTITLE_WIDTH;
 
             AddSubtitles();
+
+            if (possibleSubtitles.Count == 0)
+            {
+                _subtitleDisplay.gameObject.SetActive(false);
+            }
         }
 
         private void AddSubtitles()

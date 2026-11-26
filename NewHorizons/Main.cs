@@ -13,7 +13,9 @@ using NewHorizons.Components.Ship;
 using NewHorizons.Components.SizeControllers;
 using NewHorizons.External;
 using NewHorizons.External.Configs;
+using NewHorizons.External.SerializableData;
 using NewHorizons.Handlers;
+using NewHorizons.OtherMods;
 using NewHorizons.OtherMods.AchievementsPlus;
 using NewHorizons.OtherMods.MenuFramework;
 using NewHorizons.OtherMods.OWRichPresence;
@@ -24,7 +26,9 @@ using NewHorizons.Utility.DebugTools;
 using NewHorizons.Utility.Files;
 using NewHorizons.Utility.OuterWilds;
 using NewHorizons.Utility.OWML;
+using Newtonsoft.Json.Linq;
 using OWML.Common;
+using OWML.Common.Enums;
 using OWML.ModHelper;
 using OWML.Utils;
 using System;
@@ -34,7 +38,9 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using static InputConsts;
 
 namespace NewHorizons
 {
@@ -49,6 +55,8 @@ namespace NewHorizons
         public static bool VisualizeBrambleVolumeNames { get; private set; }
         public static bool VerboseLogs { get; private set; }
         public static bool SequentialPreCaching { get; private set; }
+        public static bool UseLegacyStarChart { get; private set; }
+        public static bool WarpDriveVisuals { get; private set; }
         public static bool CustomTitleScreen { get; private set; }
         public static string DefaultSystemOverride { get; private set; }
         private static bool _wasConfigured = false;
@@ -61,7 +69,21 @@ namespace NewHorizons
 
         public static float SecondsElapsedInLoop = -1;
 
-        public static bool IsSystemReady { get; private set; }    
+        public static InputCommandType DebugRaycastBindType { get; private set; }
+        public static InputCommandType DebugAirborneBindType { get; private set; }
+        public static InputCommandType DebugAirborneZBindType { get; private set; }
+
+        public static IInputCommands DebugRaycastBind => InputLibrary.GetInputCommand(DebugRaycastBindType);
+        public static IInputCommands DebugAirborneBind => InputLibrary.GetInputCommand(DebugAirborneBindType);
+        public static IInputCommands DebugAirborneZBind => InputLibrary.GetInputCommand(DebugAirborneZBindType);
+
+        public static bool IsSystemReady { get; private set; }
+
+        public static bool IsInvalidStarSystem(string starSystem)
+        {
+            return starSystem != "SolarSystem" && starSystem != "EyeOfTheUniverse" 
+                && (!SystemDict.ContainsKey(starSystem) || !BodyDict.ContainsKey(starSystem));
+        }
 
         public string DefaultStarSystem => SystemDict.ContainsKey(DefaultSystemOverride) ? DefaultSystemOverride : _defaultStarSystem;
         public string CurrentStarSystem
@@ -73,10 +95,18 @@ namespace NewHorizons
             set
             {
                 // Prevent invalid values
-                if (value != "SolarSystem" && value != "EyeOfTheUniverse" && !SystemDict.ContainsKey(value) && !BodyDict.ContainsKey(value))
+                if (IsInvalidStarSystem(value) && value != DefaultStarSystem)
                 {
                     NHLogger.LogError($"System \"{value}\" does not exist!");
-                    _currentStarSystem = DefaultStarSystem;
+                    if (value != DefaultStarSystem)
+                    {
+                        _currentStarSystem = DefaultStarSystem;
+                    }
+                    else
+                    {
+                        _currentStarSystem = "SolarSystem";
+                    }
+                    return;
                 }
                 _currentStarSystem = value;
             }
@@ -93,8 +123,8 @@ namespace NewHorizons
         public bool WearingSuit { get; private set; } = false;
 
         public bool IsChangingStarSystem { get; private set; } = false;
-
-        public static bool HasWarpDrive { get; private set; } = false;
+        public static bool HasWarpDriveVisuals { get; private set; } = false;
+        public static bool HasWarpDriveFunctionality { get; private set; } = false;
 
         private string _defaultStarSystem = "SolarSystem";
 
@@ -142,6 +172,8 @@ namespace NewHorizons
             VisualizeBrambleVolumeNames = config.GetSettingsValue<bool>(nameof(VisualizeBrambleVolumeNames));
             VerboseLogs = config.GetSettingsValue<bool>(nameof(VerboseLogs));
             SequentialPreCaching = config.GetSettingsValue<bool>(nameof(SequentialPreCaching));
+            UseLegacyStarChart = config.GetSettingsValue<bool>(nameof(UseLegacyStarChart));
+            WarpDriveVisuals = config.GetSettingsValue<bool>(nameof(WarpDriveVisuals));
 
             if (currentScene == "SolarSystem")
             {
@@ -186,11 +218,13 @@ namespace NewHorizons
 
             BodyDict["SolarSystem"] = new List<NewHorizonsBody>();
             BodyDict["EyeOfTheUniverse"] = new List<NewHorizonsBody>(); // Keep this empty tho fr
+            var vanillaLoopDuration = OtherModUtil.IsEnabled("dnlwtsn.SlowTime") ? 60 : 22;
             SystemDict["SolarSystem"] = new NewHorizonsSystem("SolarSystem", new StarSystemConfig() { name = "SolarSystem" }, "", Instance)
             {
                 Config =
                 {
                     destroyStockPlanets = false,
+                    loopDuration = vanillaLoopDuration,
                     Vessel = new StarSystemConfig.VesselModule()
                     {
                         coords = new StarSystemConfig.NomaiCoordinates
@@ -199,6 +233,11 @@ namespace NewHorizons
                             y = new int[5]{ 4,5,3,2,1 },
                             z = new int[5]{ 4,1,2,5,0 }
                         }
+                    },
+                    StarChart = new StarSystemConfig.StarChartModule()
+                    {
+                        position = new MVector2(0, 0),
+                        disappearanceTime = vanillaLoopDuration + (40f/60f)
                     }
                 }
             };
@@ -217,7 +256,14 @@ namespace NewHorizons
                             z = new int[6] { 1, 2, 3, 0, 5, 4 }
                         }
                     },
-                    canEnterViaWarpDrive = false
+                    canEnterViaWarpDrive = false,
+                    canExitViaWarpDrive = false,
+                    StarChart = new StarSystemConfig.StarChartModule()
+                    {
+                        position = new MVector2(0, 5),
+                        starTexturePath = "Assets/eye symbol starchart.png",
+                        disappearanceTime = 0
+                    }
                 }
             };
 
@@ -239,6 +285,32 @@ namespace NewHorizons
         {
             // Patches
             Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
+
+            // Register rebindable debug inputs
+            DebugRaycastBindType = ModHelper.RebindingHelper.RegisterRebindable(
+                "Raycast",
+                "Run debug raycast and print result.",
+                Key.P,
+                GamepadBinding.None,
+                false
+            );
+            DebugAirborneBindType = ModHelper.RebindingHelper.RegisterRebindable(
+                "Toggle Airborne Raycast",
+                "Toggle airborne debug raycast mode.",
+                Key.O,
+                GamepadBinding.None,
+                false
+            );
+            DebugAirborneZBindType = ModHelper.RebindingHelper.RegisterRebindable(
+                "Adjust Airborne Distance",
+                "Adjust the distance of the airborne raycast target.",
+                Key.I,
+                GamepadBinding.DPadUp,
+                Key.K,
+                GamepadBinding.DPadDown,
+                true
+            );
+
             // the campfire on the title screen calls this from RegisterShape before it gets patched, so we have to call it again. lol 
             ShapeManager.Initialize();
 
@@ -314,13 +386,11 @@ namespace NewHorizons
 
             // Caches of other assets only have to be cleared if we changed star systems
             if (ForceClearCaches || CurrentStarSystem != _previousStarSystem)
-            {
-                ForceClearCaches = false;
-                
+            {               
                 NHLogger.Log($"Changing star system from {_previousStarSystem} to {CurrentStarSystem} - Clearing system-specific caches!");
                 ImageUtilities.ClearCache();
                 AudioUtilities.ClearCache();
-                AssetBundleUtilities.ClearCache();
+                AssetBundleUtilities.ClearCache(ForceClearCaches);
                 ProcGenBuilder.ClearCache();
             }
 
@@ -339,6 +409,24 @@ namespace NewHorizons
             var isCreditsFast = scene.name == LoadManager.SceneToName(OWScene.Credits_Fast);
             var isCreditsFinal = scene.name == LoadManager.SceneToName(OWScene.Credits_Final);
             var isPostCredits = scene.name == LoadManager.SceneToName(OWScene.PostCreditsScene);
+
+            if (ForceClearCaches)
+            {
+                // When we force clear the cache we have to ensure that bundles that are normally preloaded are loaded properly
+                foreach (var mod in Main.MountedAddons)
+                {
+                    if (AddonConfigs.TryGetValue(mod, out var config) && config.preloadAssetBundles != null)
+                    {
+                        foreach (var bundle in config.preloadAssetBundles)
+                        {
+                            AssetBundleUtilities.PreloadBundleSynchronously(bundle, mod);
+                        }
+                    }
+                }
+            }
+
+            ForceClearCaches = false;
+
 
             if (isSolarSystem)
             {
@@ -376,14 +464,24 @@ namespace NewHorizons
                     WaterBuilder.InitPrefabs();
                     GravityCannonBuilder.InitPrefab();
                     ShuttleBuilder.InitPrefab();
+                    CampfireBuilder.InitPrefab();
+                    FuelTankBuilder.InitPrefabs();
 
                     if (HasDLC)
                     {
+                        FuelTankBuilder.InitDLCPrefab();
                         ProjectionBuilder.InitPrefabs();
                         CloakBuilder.InitPrefab();
                         RaftBuilder.InitPrefab();
+                        RaftDockBuilder.InitPrefab();
+                        AlarmBellBuilder.InitPrefab();
                         DreamCampfireBuilder.InitPrefab();
                         DreamArrivalPointBuilder.InitPrefab();
+                        DreamCandleBuilder.InitPrefabs();
+                        PortholeBuilder.InitPrefabs();
+                        AlarmTotemBuilder.InitPrefab();
+                        GrappleTotemBuilder.InitPrefab();
+                        ProjectionTotemBuilder.InitPrefab();
                     }
 
                     WarpPadBuilder.InitPrefabs();
@@ -400,8 +498,8 @@ namespace NewHorizons
             }
             else if (IsWarpingBackToEye)
             {
-                IsWarpingBackToEye = false;
                 ManualOnStartSceneLoad(OWScene.EyeOfTheUniverse);
+                IsWarpingBackToEye = false;
                 // LoadSceneImmediate doesn't cover the screen and you see the solar system for a frame without this
                 LoadManager.s_instance._fadeCanvas.enabled = true;
                 LoadManager.s_instance._fadeImage.color = Color.black;
@@ -436,6 +534,11 @@ namespace NewHorizons
             if (isTitleScreen && CustomTitleScreen)
             {
                 TitleSceneHandler.Init();
+            }
+
+            if (isTitleScreen)
+            {
+                MenuHandler.TitleScreen();
             }
 
             // EOTU fixes
@@ -478,6 +581,8 @@ namespace NewHorizons
                     {
                         SupernovaEffectBuilder.ReplaceVanillaWithNH(supernovaPlanetEffectController);
                     }
+
+                    SpawnPointBuilder.MakeVanillaShipSpawn();
                 }
 
                 PlanetCreationHandler.Init(BodyDict[CurrentStarSystem]);
@@ -494,15 +599,20 @@ namespace NewHorizons
                 if (isSolarSystem)
                 {
                     // Warp drive
-                    HasWarpDrive = StarChartHandler.CanWarp();
+                    HasWarpDriveVisuals = WarpDriveVisuals && StarChartHandler.CanShowWarpDriveModel();
+                    HasWarpDriveFunctionality = StarChartHandler.CanWarp();
                     if (ShipWarpController == null)
                     {
                         ShipWarpController = SearchUtilities.Find("Ship_Body").AddComponent<ShipWarpController>();
                         ShipWarpController.Init();
                     }
-                    if (HasWarpDrive == true)
+                    if (HasWarpDriveVisuals)
                     {
-                        EnableWarpDrive();
+                        EnableWarpDriveVisuals();
+                    }
+                    if (HasWarpDriveFunctionality)
+                    {
+                        EnableWarpDriveFunctionality();
                     }
 
                     var shouldWarpInFromShip = IsWarpingFromShip && ShipWarpController != null;
@@ -627,9 +737,29 @@ namespace NewHorizons
             }
         }
 
-        public void EnableWarpDrive()
+        public void EnableWarpDriveVisuals()
         {
-            NHLogger.LogVerbose("Setting up warp drive");
+            NHLogger.LogVerbose("Setting up warp drive visuals");
+
+            GameObject shipObject = AssetBundleUtilities.NHPrivateAssetBundle.LoadAsset<GameObject>("Assets/StarChart/WarpDrive.prefab");
+            GameObject shipWarpDrive = Instantiate(shipObject, GameObject.Find("Ship_Body").transform);
+            shipWarpDrive.name = "WarpDrive";
+            AssetBundleUtilities.ReplaceShaders(shipWarpDrive);
+
+            if (ShipWarpController != null)
+            {
+                ShipWarpController.InitializeWarpDriveVisuals(
+                    enableObj: shipWarpDrive.transform.Find("EnableOnWarp").gameObject,
+                    disableObj: shipWarpDrive.transform.Find("DisableOnWarp").gameObject
+                );
+            }
+
+            HasWarpDriveVisuals = true;
+        }
+
+        public void EnableWarpDriveFunctionality()
+        {
+            NHLogger.LogVerbose("Setting up warp drive functionality");
 
             // In weird edge case when starting in another system on a new expedition, don't want it to briefly pop up during warp
             if (!IsWarpingFromShip)
@@ -638,7 +768,7 @@ namespace NewHorizons
                 PlanetCreationHandler.LoadBody(LoadConfig(this, "Assets/WarpDriveConfig.json"));
             }
 
-            HasWarpDrive = true;
+            HasWarpDriveFunctionality = true;
         }
 
         /// <summary>
@@ -684,6 +814,31 @@ namespace NewHorizons
             }
 
             var starSystemName = starSystemConfig.name;
+
+            if (starSystemName != "SolarSystem" && starSystemName != "EyeOfTheUniverse" && starSystemName != "Jam3" && starSystemName != "Jam5")
+            {
+                bool hasSpaces = starSystemName.Contains(" ");
+                bool missingNamespace = !starSystemName.Contains(".");
+
+                if (hasSpaces || missingNamespace)
+                {
+                    var message = $"Invalid star system name [{starSystemName}] in file [{relativePath}].\n";
+
+                    if (hasSpaces)
+                    {
+                        message += "Star system names should NOT contain spaces.\n";
+                    }
+
+                    if (missingNamespace)
+                    {
+                        message += "Star system names should be namespaced to prevent conflicts.\n";
+                    }
+
+                    message += "Use a namespaced format like \"Author.SystemName\" (example: \"Ernesto.AnglerfishNest\").";
+
+                    NHLogger.LogWarning(message);
+                }
+            }
 
             starSystemConfig.Migrate();
             starSystemConfig.FixCoordinates();
@@ -840,7 +995,7 @@ namespace NewHorizons
             {
                 MenuHandler.RegisterOneTimePopup(mod, TranslationHandler.GetTranslation(addonConfig.popupMessage, TranslationHandler.TextType.UI), addonConfig.repeatPopup);
             }
-            if (addonConfig.preloadAssetBundles != null)
+            if (addonConfig.preloadAssetBundles != null && !ForceClearCaches)
             {
                 foreach (var bundle in addonConfig.preloadAssetBundles)
                 {
@@ -1086,12 +1241,23 @@ namespace NewHorizons
         void OnDeath(DeathType _)
         {
             VesselWarpController.s_relativeLocationSaved = false;
+
             // We reset the solar system on death
             if (!IsChangingStarSystem)
             {
                 if (SystemDict[CurrentStarSystem].Config.respawnHere) return;
 
                 ResetCurrentStarSystem();
+
+                if (CurrentStarSystem == "SolarSystem")
+                {
+                    // Go back to regular warp/spawn behaviour when respawning in regular system
+                    IsWarpingFromVessel = false;
+                    IsWarpingFromShip = false;
+                    DidWarpFromShip = false;
+                    DidWarpFromVessel = false;
+                    WearingSuit = false;
+                }
             }
         }
 

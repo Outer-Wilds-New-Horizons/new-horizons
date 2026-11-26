@@ -45,6 +45,21 @@
         "$ref": "#/definitions/GameOverModule"
       }
     },
+    "extras": {
+      "type": "object",
+      "description": "Extra data that may be used by extension mods",
+      "additionalProperties": {
+        "type": [
+          "array",
+          "boolean",
+          "integer",
+          "null",
+          "number",
+          "object",
+          "string"
+        ]
+      }
+    },
     "$schema": {
       "type": "string",
       "description": "The schema to validate with"
@@ -62,7 +77,11 @@
         },
         "secret": {
           "type": "boolean",
-          "description": "Should the name and description of the achievement be hidden until it is unlocked. Good for hiding spoilers!"
+          "description": "Should the name and description of the achievement be hidden until it is unlocked. Good for hiding spoilers! This should be false if showDescriptionNotAchieved is true."
+        },
+        "showDescriptionNotAchieved": {
+          "type": "boolean",
+          "description": "Should an alternate description be shown before the achievement is unlocked. Good for giving hints on how to unlock the achievement without outright spoiling it. Ignored if secret is true."
         },
         "factIDs": {
           "type": "array",
@@ -102,6 +121,27 @@
         "condition": {
           "type": "string",
           "description": "Condition that must be true for this game over to trigger. If this is on a LoadCreditsVolume, leave empty to always trigger this game over.\nNote this is a regular dialogue condition, not a persistent condition."
+        },
+        "audio": {
+          "type": "string",
+          "description": "The audio to use for the credits music. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list.\nCredits will be silent unless this attribute is specified.\nNote: only applies when creditsType is set to \"custom\"."
+        },
+        "audioVolume": {
+          "type": "number",
+          "description": "The length of the fade in and out for the credits music.\nNote: only applies when creditsType is set to \"custom\".",
+          "format": "float",
+          "default": 1.0
+        },
+        "audioLooping": {
+          "type": "boolean",
+          "description": "Determines if the credits music should loop.\nNote: only applies when creditsType is set to \"custom\".",
+          "default": false
+        },
+        "length": {
+          "type": "number",
+          "description": "Duration of the credits scroll in seconds.\nNote: only applies when creditsType is set to \"custom\".",
+          "format": "float",
+          "default": 120.0
         },
         "creditsType": {
           "description": "The type of credits that will run after the game over message is shown",
@@ -152,12 +192,14 @@
         "Fast",
         "Final",
         "Kazoo",
+        "Custom",
         "None"
       ],
       "enum": [
         "fast",
         "final",
         "kazoo",
+        "custom",
         "none"
       ]
     }
