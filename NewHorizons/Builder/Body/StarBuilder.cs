@@ -1,4 +1,3 @@
-using NewHorizons.Builder.General;
 using NewHorizons.Components.SizeControllers;
 using NewHorizons.Components.Stars;
 using NewHorizons.External.Modules.VariableSize;
@@ -8,6 +7,7 @@ using NewHorizons.Utility.OuterWilds;
 using OWML.Common;
 using System.Linq;
 using UnityEngine;
+using static Mono.Security.X509.X520;
 
 namespace NewHorizons.Builder.Body
 {
@@ -122,7 +122,7 @@ namespace NewHorizons.Builder.Body
             ambientLightGO.SetActive(true);
 
             Light ambientLight = ambientLightGO.GetComponent<Light>();
-            AmbientLightBuilder.SetAmbientLightProperties(ambientLight, starModule.solarLuminosity, starModule.size * OuterRadiusRatio, 0.9129f/*from sun*/, false, 0.04f/*from sun*/);
+            ambientLight.range = starModule.size * OuterRadiusRatio;
 
             var heatVolume = new GameObject("HeatVolume");
             heatVolume.transform.SetParent(starGO.transform, false);
@@ -177,7 +177,7 @@ namespace NewHorizons.Builder.Body
             if (starModule.lightTint != null) lightColour = starModule.lightTint.ToColor();
 
             light.color = lightColour;
-            AmbientLightBuilder.SetCookieFromBundleCubemap(ambientLight, "AmbientLight_STAR", lightColour);
+            ambientLight.color = new Color(lightColour.r, lightColour.g, lightColour.b, lightColour.a == 0 ? 0.0001f : lightColour.a);
 
             // used to use CopyPropertiesFrom, but that doesnt work here. instead, just copy settings from unity explorer
             var faceActiveCamera = sunLight.AddComponent<FaceActiveCamera>();
@@ -288,27 +288,27 @@ namespace NewHorizons.Builder.Body
 
             var starGO = MakeStarGraphics(planetGO, sector, starModule, mod);
             starGO.SetActive(false);
-
-            var ramp = starGO.GetComponentInChildren<TessellatedSphereRenderer>(true).sharedMaterial.GetTexture(ColorRamp);
-
-            var starEvolutionController = starGO.AddComponent<StarEvolutionController>();
+            var starEvolutionController = starGO.GetComponent<StarEvolutionController>();
             starEvolutionController.isRemnant = isStellarRemnant;
-            if (starModule.curve != null) starEvolutionController.SetScaleCurve(starModule.curve);
-            starEvolutionController.size = starModule.size;
-            starEvolutionController.startColour = starModule.tint;
-            starEvolutionController.endColour = starModule.endTint;
-
-            starEvolutionController.normalRamp = !string.IsNullOrEmpty(starModule.starRampTexture) ? ImageUtilities.GetTexture(mod, starModule.starRampTexture) : ramp;
-            if (!string.IsNullOrEmpty(starModule.starCollapseRampTexture))
-            {
-                starEvolutionController.collapseRamp = ImageUtilities.GetTexture(mod, starModule.starCollapseRampTexture);
-            }
 
             StellarDeathController supernova = null;
             var willExplode = !isStellarRemnant && starModule.stellarDeathType != StellarDeathType.None;
             if (willExplode)
             {
-                supernova = MakeSupernova(starGO, starModule);
+                if (starModule.stellarDeathType == StellarDeathType.PlanetaryNebula)
+                {
+                    starEvolutionController.planetaryNebula =
+                    [
+                         MakeSupernova(starGO, starModule, true, true),
+                         MakeSupernova(starGO, starModule, true, true),
+                         MakeSupernova(starGO, starModule, true, true)
+                    ];
+                }                                                 
+                else
+                {
+                    supernova = MakeSupernova(starGO, starModule);
+                    starEvolutionController.supernova = supernova;
+                }
 
                 starEvolutionController.supernovaSize = starModule.supernovaSize;
                 var duration = starModule.supernovaSize / starModule.supernovaSpeed;
@@ -316,7 +316,7 @@ namespace NewHorizons.Builder.Body
                 starEvolutionController.supernovaScaleEnd = duration;
                 starEvolutionController.supernovaScaleStart = duration * 0.9f;
                 starEvolutionController.deathType = starModule.stellarDeathType;
-                starEvolutionController.supernova = supernova;
+
                 starEvolutionController.supernovaColour = starModule.supernovaTint;
                 starEvolutionController.lifespan = starModule.lifespan;
             }
@@ -358,6 +358,20 @@ namespace NewHorizons.Builder.Body
             if (starModule.tint != null)
             {
                 emitter.tint = starModule.tint.ToColor();
+            }
+
+            var ramp = starGO.GetComponentInChildren<TessellatedSphereRenderer>(true).sharedMaterial.GetTexture(ColorRamp);
+
+            var starEvolutionController = starGO.AddComponent<StarEvolutionController>();
+            if (starModule.curve != null) starEvolutionController.SetScaleCurve(starModule.curve);
+            starEvolutionController.size = starModule.size;
+            starEvolutionController.startColour = starModule.tint;
+            starEvolutionController.endColour = starModule.endTint;
+
+            starEvolutionController.normalRamp = !string.IsNullOrEmpty(starModule.starRampTexture) ? ImageUtilities.GetTexture(mod, starModule.starRampTexture) : ramp;
+            if (!string.IsNullOrEmpty(starModule.starCollapseRampTexture))
+            {
+                starEvolutionController.collapseRamp = ImageUtilities.GetTexture(mod, starModule.starCollapseRampTexture);
             }
 
             var material = new Material(_flareMaterial);
@@ -413,6 +427,11 @@ namespace NewHorizons.Builder.Body
                     Color.RGBToHSV(adjustedEndColour, out var hEnd, out var sEnd, out var vEnd);
                     var darkenedEndColor = Color.HSVToRGB(hEnd, sEnd * 1.2f, vEnd * 0.1f);
                     surface.sharedMaterial.SetTexture(ColorRamp, ImageUtilities.LerpGreyscaleImageAlongX(_colorOverTime, adjustedColour, darkenedColor, adjustedEndColour, darkenedEndColor));
+
+                    if (string.IsNullOrEmpty(starModule.starCollapseRampTexture))
+                    {
+                        starEvolutionController.collapseRamp = ImageUtilities.LerpGreyscaleImageAlongX(_colorOverTime, adjustedEndColour, darkenedEndColor, Color.white, Color.white);
+                    }
                 }
                 else
                 {
@@ -422,10 +441,10 @@ namespace NewHorizons.Builder.Body
 
             if (!string.IsNullOrEmpty(starModule.starRampTexture))
             {
-                var ramp = ImageUtilities.GetTexture(mod, starModule.starRampTexture);
-                if (ramp != null)
+                var starRamp = ImageUtilities.GetTexture(mod, starModule.starRampTexture);
+                if (starRamp != null)
                 {
-                    surface.sharedMaterial.SetTexture(ColorRamp, ramp);
+                    surface.sharedMaterial.SetTexture(ColorRamp, starRamp);
                 }
             }
 
@@ -434,7 +453,7 @@ namespace NewHorizons.Builder.Body
             return starGO;
         }
 
-        public static StellarDeathController MakeSupernova(GameObject starGO, StarModule starModule, bool noAudio = false)
+        public static StellarDeathController MakeSupernova(GameObject starGO, StarModule starModule, bool noAudio = false, bool noSurface = false)
         {
             InitPrefabs();
 
@@ -445,8 +464,11 @@ namespace NewHorizons.Builder.Body
 
             var supernova = supernovaGO.GetComponent<SupernovaEffectController>();
             var stellarDeath = supernovaGO.AddComponent<StellarDeathController>();
-            stellarDeath.enabled = false; 
-            stellarDeath.surface = starGO.GetComponentInChildren<TessellatedSphereRenderer>(true);
+            stellarDeath.enabled = false;
+            if (!noSurface)
+            {
+                stellarDeath.surface = starGO.GetComponentInChildren<TessellatedSphereRenderer>(true);
+            }
             var duration = starModule.supernovaSize / starModule.supernovaSpeed;
             stellarDeath.supernovaAlpha = new AnimationCurve(new Keyframe(duration * 0.1f, 1, 0, 0, 1f / 3f, 1f / 3f), new Keyframe(duration * 0.3f, 1.0002f, 0, 0, 1f / 3f, 1f / 3f), new Keyframe(duration, 0, -0.0578f, 1 / 3f, -0.0578f, 1 / 3f));
             stellarDeath.explosionParticles = supernova._explosionParticles;
