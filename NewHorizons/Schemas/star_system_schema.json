@@ -33,8 +33,11 @@
       "default": true
     },
     "factRequiredForWarp": {
-      "type": "string",
+      "type": "array",
       "description": "The FactID that must be revealed before it can be warped to. Don't set `canEnterViaWarpDrive` to `false` if\nyou're using this, because it will be overwritten."
+      "items": {
+        "type": "string"
+      }
     },
     "canExitViaWarpDrive": {
       "type": "boolean",
